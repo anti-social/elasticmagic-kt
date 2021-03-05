@@ -2,7 +2,7 @@ package dev.evo.elasticmagic
 
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
-import io.kotest.matchers.string.shouldStartWith
+import io.kotest.matchers.types.shouldNotBeSameInstanceAs
 
 import kotlin.test.Test
 
@@ -38,6 +38,61 @@ class DocumentTests {
     }
 
     @Test
+    fun testCustomFieldType() {
+        val myType = object : Type<String> {
+            override fun deserialize(v: Any): String {
+                TODO("not implemented")
+            }
+        }
+
+        val userDoc = object : Document() {
+            val status by field(myType)
+            val cls by field("class", myType)
+        }
+
+        userDoc.status.getFieldType() shouldBe myType
+        userDoc.status.getFieldName() shouldBe "status"
+        userDoc.status.getQualifiedFieldName() shouldBe "status"
+        userDoc.cls.getFieldType() shouldBe myType
+        userDoc.cls.getFieldName() shouldBe "class"
+        userDoc.cls.getQualifiedFieldName() shouldBe "class"
+    }
+
+    @Test
+    fun testSubFields() {
+        class NameFields<T> : SubFields<T>() {
+            val sort by keyword()
+            val autocomplete by text()
+        }
+
+        val productDoc = object : Document() {
+            val name by text().subFields(::NameFields)
+            val keywords by text().subFields(::NameFields)
+        }
+
+        productDoc.name.getFieldType() shouldBe TextType
+        productDoc.name.getFieldName() shouldBe "name"
+        productDoc.name.getQualifiedFieldName() shouldBe "name"
+        productDoc.name.sort.getFieldType() shouldBe KeywordType
+        productDoc.name.sort.getFieldName() shouldBe "sort"
+        productDoc.name.sort.getQualifiedFieldName() shouldBe "name.sort"
+        productDoc.name.autocomplete.getFieldType() shouldBe TextType
+        productDoc.name.autocomplete.getFieldName() shouldBe "autocomplete"
+        productDoc.name.autocomplete.getQualifiedFieldName() shouldBe "name.autocomplete"
+        productDoc.keywords.getFieldType() shouldBe TextType
+        productDoc.keywords.getFieldName() shouldBe "keywords"
+        productDoc.keywords.getQualifiedFieldName() shouldBe "keywords"
+        productDoc.keywords.sort.getFieldType() shouldBe KeywordType
+        productDoc.keywords.sort.getFieldName() shouldBe "sort"
+        productDoc.keywords.sort.getQualifiedFieldName() shouldBe "keywords.sort"
+        productDoc.keywords.autocomplete.getFieldType() shouldBe TextType
+        productDoc.keywords.autocomplete.getFieldName() shouldBe "autocomplete"
+        productDoc.keywords.autocomplete.getQualifiedFieldName() shouldBe "keywords.autocomplete"
+
+        productDoc.name shouldNotBeSameInstanceAs productDoc.keywords
+    }
+
+    @Test
     fun testSubDocument() {
         class OpinionDoc : SubDocument() {
             val count by int()
@@ -54,8 +109,6 @@ class DocumentTests {
         }
 
         val userDoc = UserDoc()
-        userDoc.getFieldName() shouldBe ""
-        userDoc.getQualifiedFieldName() shouldBe ""
         userDoc.company.getFieldName() shouldBe "company"
         userDoc.company.getQualifiedFieldName() shouldBe "company"
         userDoc.company.name.getFieldName() shouldBe "name"
@@ -69,6 +122,8 @@ class DocumentTests {
         userDoc.opinion.count.getFieldName() shouldBe "count"
         userDoc.opinion.count.getQualifiedFieldName() shouldBe "opinion.count"
         userDoc.opinion.count.getFieldType() shouldBe IntType
+
+        userDoc.opinion shouldNotBeSameInstanceAs userDoc.company.opinion
     }
 
     @Test
@@ -85,21 +140,5 @@ class DocumentTests {
             UserDoc()
         }
         ex.message shouldBe "Field [company2] has already been initialized as [company1]"
-    }
-
-    @Test
-    fun testSubDocument_preventUninitialized() {
-        class CompanyDoc : Document() {
-            val name by text()
-        }
-
-        class UserDoc : Document() {
-            val company by obj(::CompanyDoc)
-        }
-
-        val ex = shouldThrow<IllegalStateException> {
-            UserDoc()
-        }
-        ex.message shouldStartWith "Document instance cannot be a sub document:"
     }
 }
