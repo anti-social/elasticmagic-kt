@@ -39,25 +39,46 @@ class DocumentTests {
         emptyDoc.meta.parent.getQualifiedFieldName() shouldBe "_parent"
     }
 
-    @Test
-    fun testCustomMeta() {
-        val customMetaFields = object : MetaFields() {
-            override val routing by keyword(
-                "_routing",
-                params = mapOf(
-                    "required" to true,
-                ),
-            )
-            override val source by keyword(
-                "_source",
-                params = mapOf(
-                    "enabled" to false,
-                )
-            )
-        }
+    // @Test
+    // fun testCustomMeta() {
+    //     val customMetaFields = object : MetaFields() {
+    //         override val routing by MetaField(
+    //             params = mapOf(
+    //                 "required" to true,
+    //             ),
+    //         )
+    //         override val source by keyword(
+    //             "_source",
+    //             params = mapOf(
+    //                 "enabled" to false,
+    //             )
+    //         )
+    //     }
+    //
+    //     val emptyDoc = object : Document() {
+    //         override val meta = customMetaFields
+    //     }
+    //
+    //     emptyDoc.meta.routing.getFieldName() shouldBe "_routing"
+    //     emptyDoc.meta.routing.getQualifiedFieldName() shouldBe "_routing"
+    //     emptyDoc.meta.routing.getMappingParams() shouldContainExactly mapOf(
+    //         "required" to true,
+    //     )
+    //     emptyDoc.meta.source.getFieldName() shouldBe "_source"
+    //     emptyDoc.meta.source.getQualifiedFieldName() shouldBe "_source"
+    //     emptyDoc.meta.source.getMappingParams() shouldContainExactly mapOf(
+    //         "enabled" to false,
+    //     )
+    // }
 
+    @Test
+    fun testMetaFieldParams() {
         val emptyDoc = object : Document() {
-            override val meta = customMetaFields
+            init {
+                meta.routing.required(true)
+                meta.source.enabled(false)
+                meta.size.enabled(true)
+            }
         }
 
         emptyDoc.meta.routing.getFieldName() shouldBe "_routing"
@@ -69,6 +90,11 @@ class DocumentTests {
         emptyDoc.meta.source.getQualifiedFieldName() shouldBe "_source"
         emptyDoc.meta.source.getMappingParams() shouldContainExactly mapOf(
             "enabled" to false,
+        )
+        emptyDoc.meta.size.getFieldName() shouldBe "_size"
+        emptyDoc.meta.size.getQualifiedFieldName() shouldBe "_size"
+        emptyDoc.meta.size.getMappingParams() shouldContainExactly mapOf(
+            "enabled" to true,
         )
     }
 

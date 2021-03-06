@@ -46,11 +46,12 @@ open class BaseField : FieldOperations {
 /**
  * Represents field in an Elasticsearch document.
  */
-class Field<T>(
-    private val name: String? = null,
-    private val type: Type<T>,
-    private val params: MappingParams,
+open class Field<T>(
+    protected val name: String? = null,
+    protected val type: Type<T>,
+    params: MappingParams,
 ) : BaseField() {
+    protected val params: MutableMappingParams = params.toMutable()
 
     fun getFieldType(): Type<T> = type
 
@@ -60,14 +61,21 @@ class Field<T>(
         return SubFields.SubFieldsProperty(name, type, factory)
     }
 
-    operator fun provideDelegate(
+    open operator fun provideDelegate(
         thisRef: FieldSet, prop: KProperty<*>
-    ): ReadOnlyProperty<FieldSet, Field<T>> {
-        _setFieldName(name ?: prop.name)
+    ): ReadOnlyProperty<FieldSet, Field<T>> = FieldProperty(this, thisRef, prop)
 
-        thisRef._fields.add(this)
+    class FieldProperty<F: Field<T>, T>(
+        private val field: F, fieldSet: FieldSet, prop: KProperty<*>
+    ) : ReadOnlyProperty<FieldSet, F> {
+        init {
+            field._setFieldName(field.name ?: prop.name)
+            fieldSet._fields.add(field)
+        }
 
-        return ReadOnlyProperty { _, _ -> this }
+        override fun getValue(thisRef: FieldSet, property: KProperty<*>): F {
+            return field
+        }
     }
 }
 
@@ -88,7 +96,7 @@ abstract class FieldSet {
         params: MappingParams? = null,
     ): Field<T> {
         @Suppress("NAME_SHADOWING")
-        val params = params?.toMutableMap() ?: MappingParams()
+        val params = params?.toMutableMap() ?: MutableMappingParams()
         params.putNotNull("doc_values", docValues)
         params.putNotNull("index", index)
         params.putNotNull("store", store)
@@ -193,7 +201,7 @@ abstract class FieldSet {
         params: MappingParams? = null,
     ): Field<String> {
         @Suppress("NAME_SHADOWING")
-        val params = params?.toMutableMap() ?: MappingParams()
+        val params = params?.toMutableMap() ?: MutableMappingParams()
         params.putNotNull("normalizer", normalizer)
         return field(
             name, KeywordType,
@@ -215,7 +223,7 @@ abstract class FieldSet {
         params: MappingParams? = null,
     ): Field<String> {
         @Suppress("NAME_SHADOWING")
-        val params = params?.toMutableMap() ?: MappingParams()
+        val params = params?.toMutableMap() ?: MutableMappingParams()
         params.putNotNull("index_options", indexOptions)
         params.putNotNull("norms", norms)
         params.putNotNull("boost", boost)
@@ -370,47 +378,40 @@ abstract class SubDocument : BaseDocument(), FieldOperations {
  * https://www.elastic.co/guide/en/elasticsearch/reference/7.10/mapping-fields.html
  */
 open class MetaFields : FieldSet() {
-    val id by keyword("_id")
-    val type by keyword("_type")
-    val index by keyword("_index")
+    val id by MetaField("_id", KeywordType)
+    val type by MetaField("_type", KeywordType)
+    val index by MetaField("_index", KeywordType)
 
-    open val routing by keyword("_routing")
+    val routing by MetaField("_routing", KeywordType)
 
-    open val fieldNames by keyword("_field_names")
-    open val ignored by keyword("_ignored")
+    val fieldNames by MetaField("_field_names", KeywordType)
+    val ignored by MetaField("_ignored", KeywordType)
 
     // TODO: what type should the source field be?
-    open val source by keyword("_source")
-    open val size by long("_size")
+    val source by MetaField("_source", KeywordType)
+    val size by MetaField("_size", LongType)
 
     // These are to support Elasticsearch 5.x
-    val uid by keyword("_uid")
-    open val parent by keyword("_parent")
-    open val all by keyword("_all")
+    val uid by MetaField("_uid", KeywordType)
+    val parent by MetaField("_parent", KeywordType)
+    val all by MetaField("_all", KeywordType)
 
-    // TODO: possibly it would be better not allowing to override meta fields directly
-    //
-    // First variant:
-    // open val overrideMappingParams: Map<String, MappingParams> = emptyMap()
-    //
-    // Another approach:
-    // fun requireRouting() {
-    //     routing.mappingParameter("required", true)
-    // }
-    // init {
-    //     meta.requireRouting()
-    // }
-    //
-    // Or similar approach:
-    // val routing by RoutingField("_routing")
-    // class RoutingField : Field<String>("_routing", KeywordType) {
-    //     fun required() {
-    //         params["required"] = true
-    //     }
-    // }
-    // init {
-    //     routing.required()
-    // }
+    open class MetaField<T>(
+        name: String, type: Type<T>, params: MappingParams = MappingParams()
+    ) : Field<T>(
+        name, type, params
+    ) {
+        fun mappingParam(name: String, value: Any) {
+            params[name] = value
+        }
+
+        fun enabled(enabled: Boolean) = mappingParam("enabled", enabled)
+        fun required(required: Boolean) = mappingParam("required", required)
+
+        override operator fun provideDelegate(
+            thisRef: FieldSet, prop: KProperty<*>
+        ): ReadOnlyProperty<FieldSet, MetaField<T>> = FieldProperty(this, thisRef, prop)
+    }
 }
 
 /**
