@@ -49,9 +49,12 @@ open class BaseField : FieldOperations {
 class Field<T>(
     private val name: String? = null,
     private val type: Type<T>,
+    private val params: MappingParams,
 ) : BaseField() {
 
     fun getFieldType(): Type<T> = type
+
+    fun getMappingParams(): MappingParams = params
 
     fun <V: SubFields<T>> subFields(factory: () -> V): SubFields.SubFieldsProperty<T, V> {
         return SubFields.SubFieldsProperty(name, type, factory)
@@ -76,15 +79,155 @@ abstract class FieldSet {
     @Suppress("PropertyName")
     internal val _fields: ArrayList<BaseField> = ArrayList()
 
-    fun <T> field(name: String?, type: Type<T>) = Field(name, type)
-    fun <T> field(type: Type<T>) = field(null, type)
-    fun boolean(name: String? = null) = field(name, BooleanType)
-    fun int(name: String? = null) = field(name, IntType)
-    fun long(name: String? = null) = field(name, LongType)
-    fun float(name: String? = null) = field(name, FloatType)
-    fun double(name: String? = null) = field(name, DoubleType)
-    fun keyword(name: String? = null) = field(name, KeywordType)
-    fun text(name: String? = null) = field(name, TextType)
+    fun <T> field(
+        name: String?,
+        type: Type<T>,
+        docValues: Boolean? = null,
+        index: Boolean? = null,
+        store: Boolean? = null,
+        params: MappingParams? = null,
+    ): Field<T> {
+        @Suppress("NAME_SHADOWING")
+        val params = params?.toMutableMap() ?: MappingParams()
+        params.putNotNull("doc_values", docValues)
+        params.putNotNull("index", index)
+        params.putNotNull("store", store)
+        return Field(name, type, params)
+    }
+    fun <T> field(
+        type: Type<T>,
+        docValues: Boolean? = null,
+        index: Boolean? = null,
+        store: Boolean? = null,
+        params: MappingParams? = null,
+    ): Field<T> {
+        return field(
+            null, type,
+            docValues = docValues,
+            index = index,
+            store = store,
+            params = params,
+        )
+    }
+    fun boolean(
+        name: String? = null,
+        docValues: Boolean? = null,
+        index: Boolean? = null,
+        store: Boolean? = null,
+        params: MappingParams? = null,
+    ): Field<Boolean> {
+        return field(
+            name, BooleanType,
+            docValues = docValues,
+            index = index,
+            store = store,
+            params = params,
+        )
+    }
+    fun int(
+        name: String? = null,
+        docValues: Boolean? = null,
+        index: Boolean? = null,
+        store: Boolean? = null,
+        params: MappingParams? = null,
+    ): Field<Int> {
+        return field(
+            name, IntType,
+            docValues = docValues,
+            index = index,
+            store = store,
+            params = params,
+        )
+    }
+    fun long(
+        name: String? = null,
+        docValues: Boolean? = null,
+        index: Boolean? = null,
+        store: Boolean? = null,
+        params: MappingParams? = null,
+    ): Field<Long> {
+        return field(
+            name, LongType,
+            docValues = docValues,
+            index = index,
+            store = store,
+            params = params,
+        )
+    }
+    fun float(
+        name: String? = null,
+        docValues: Boolean? = null,
+        index: Boolean? = null,
+        store: Boolean? = null,
+        params: MappingParams? = null,
+    ): Field<Float> {
+        return field(
+            name, FloatType,
+            docValues = docValues,
+            index = index,
+            store = store,
+            params = params,
+        )
+    }
+    fun double(
+        name: String? = null,
+        docValues: Boolean? = null,
+        index: Boolean? = null,
+        store: Boolean? = null,
+        params: MappingParams? = null,
+    ): Field<Double> {
+        return field(
+            name, DoubleType,
+            docValues = docValues,
+            index = index,
+            store = store,
+            params = params,
+        )
+    }
+    fun keyword(
+        name: String? = null,
+        normalizer: String? = null,
+        docValues: Boolean? = null,
+        index: Boolean? = null,
+        store: Boolean? = null,
+        params: MappingParams? = null,
+    ): Field<String> {
+        @Suppress("NAME_SHADOWING")
+        val params = params?.toMutableMap() ?: MappingParams()
+        params.putNotNull("normalizer", normalizer)
+        return field(
+            name, KeywordType,
+            docValues = docValues,
+            index = index,
+            store = store,
+            params = params,
+        )
+    }
+    fun text(
+        name: String? = null,
+        index: Boolean? = null,
+        indexOptions: String? = null,
+        store: Boolean? = null,
+        norms: Boolean? = null,
+        boost: Double? = null,
+        analyzer: String? = null,
+        searchAnalyzer: String? = null,
+        params: MappingParams? = null,
+    ): Field<String> {
+        @Suppress("NAME_SHADOWING")
+        val params = params?.toMutableMap() ?: MappingParams()
+        params.putNotNull("index_options", indexOptions)
+        params.putNotNull("norms", norms)
+        params.putNotNull("boost", boost)
+        params.putNotNull("analyzer", analyzer)
+        params.putNotNull("search_analyzer", searchAnalyzer)
+        return field(
+            name, TextType,
+            index = index,
+            store = store,
+            params = params,
+        )
+    }
 }
 
 /**

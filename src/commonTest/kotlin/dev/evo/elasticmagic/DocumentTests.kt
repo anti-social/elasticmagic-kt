@@ -1,6 +1,7 @@
 package dev.evo.elasticmagic
 
 import io.kotest.assertions.throwables.shouldThrow
+import io.kotest.matchers.maps.shouldContainExactly
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldNotBeSameInstanceAs
 
@@ -57,6 +58,36 @@ class DocumentTests {
         userDoc.cls.getFieldType() shouldBe myType
         userDoc.cls.getFieldName() shouldBe "class"
         userDoc.cls.getQualifiedFieldName() shouldBe "class"
+    }
+
+    @Test
+    fun testMappingParameters() {
+        val logEventDoc = object : Document() {
+            val message = text(
+                norms = false, boost = 0.5, analyzer = "standard"
+            )
+            val requestId = keyword(
+                normalizer = "no_spaces"
+            )
+            val threadId = int(
+                index = false,
+            )
+        }
+
+        logEventDoc.message.getFieldType() shouldBe TextType
+        logEventDoc.message.getMappingParams() shouldContainExactly mapOf(
+            "boost" to 0.5,
+            "norms" to false,
+            "analyzer" to "standard",
+        )
+        logEventDoc.requestId.getFieldType() shouldBe KeywordType
+        logEventDoc.requestId.getMappingParams() shouldContainExactly mapOf(
+            "normalizer" to "no_spaces",
+        )
+        logEventDoc.threadId.getFieldType() shouldBe IntType
+        logEventDoc.threadId.getMappingParams() shouldContainExactly mapOf(
+            "index" to false,
+        )
     }
 
     @Test
