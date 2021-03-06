@@ -49,10 +49,8 @@ open class BaseField : FieldOperations {
 open class Field<T>(
     protected val name: String? = null,
     protected val type: Type<T>,
-    params: MappingParams,
+    protected val params: MappingParams,
 ) : BaseField() {
-    protected val params: MutableMappingParams = params.toMutable()
-
     fun getFieldType(): Type<T> = type
 
     fun getMappingParams(): MappingParams = params
@@ -96,10 +94,12 @@ abstract class FieldSet {
         params: MappingParams? = null,
     ): Field<T> {
         @Suppress("NAME_SHADOWING")
-        val params = params?.toMutableMap() ?: MutableMappingParams()
-        params.putNotNull("doc_values", docValues)
-        params.putNotNull("index", index)
-        params.putNotNull("store", store)
+        val params = MappingParams(
+            params,
+            "doc_values" to docValues,
+            "index" to index,
+            "store" to store,
+        )
         return Field(name, type, params)
     }
     fun <T> field(
@@ -201,8 +201,11 @@ abstract class FieldSet {
         params: MappingParams? = null,
     ): Field<String> {
         @Suppress("NAME_SHADOWING")
-        val params = params?.toMutableMap() ?: MutableMappingParams()
-        params.putNotNull("normalizer", normalizer)
+        val params = MappingParams(
+            params,
+            "normalizer" to normalizer,
+        )
+
         return field(
             name, KeywordType,
             docValues = docValues,
@@ -223,12 +226,14 @@ abstract class FieldSet {
         params: MappingParams? = null,
     ): Field<String> {
         @Suppress("NAME_SHADOWING")
-        val params = params?.toMutableMap() ?: MutableMappingParams()
-        params.putNotNull("index_options", indexOptions)
-        params.putNotNull("norms", norms)
-        params.putNotNull("boost", boost)
-        params.putNotNull("analyzer", analyzer)
-        params.putNotNull("search_analyzer", searchAnalyzer)
+        val params = MappingParams(
+            params,
+            "index_options" to indexOptions,
+            "norms" to norms,
+            "boost" to boost,
+            "analyzer" to analyzer,
+            "search_analyzer" to searchAnalyzer,
+        )
         return field(
             name, TextType,
             index = index,
@@ -382,35 +387,78 @@ open class MetaFields : FieldSet() {
     val type by MetaField("_type", KeywordType)
     val index by MetaField("_index", KeywordType)
 
-    val routing by MetaField("_routing", KeywordType)
+    open val routing by RoutingField()
 
-    val fieldNames by MetaField("_field_names", KeywordType)
+    open val fieldNames by FieldNamesField()
     val ignored by MetaField("_ignored", KeywordType)
 
-    // TODO: what type should the source field be?
-    val source by MetaField("_source", KeywordType)
-    val size by MetaField("_size", LongType)
+    open val source by SourceField()
+    open val size by SizeField()
 
     // These are to support Elasticsearch 5.x
     val uid by MetaField("_uid", KeywordType)
-    val parent by MetaField("_parent", KeywordType)
-    val all by MetaField("_all", KeywordType)
+    open val parent by ParentField()
+    open val all by AllField()
+
+    // TODO: Could we get rid of overriding provideDelegate operator?
 
     open class MetaField<T>(
         name: String, type: Type<T>, params: MappingParams = MappingParams()
     ) : Field<T>(
         name, type, params
     ) {
-        fun mappingParam(name: String, value: Any) {
-            params[name] = value
-        }
-
-        fun enabled(enabled: Boolean) = mappingParam("enabled", enabled)
-        fun required(required: Boolean) = mappingParam("required", required)
-
         override operator fun provideDelegate(
             thisRef: FieldSet, prop: KProperty<*>
         ): ReadOnlyProperty<FieldSet, MetaField<T>> = FieldProperty(this, thisRef, prop)
+    }
+
+    class RoutingField(
+        required: Boolean? = null,
+    ) : MetaField<String>("_routing", KeywordType, MappingParams("required" to required)) {
+        override operator fun provideDelegate(
+            thisRef: FieldSet, prop: KProperty<*>
+        ): ReadOnlyProperty<FieldSet, RoutingField> = FieldProperty(this, thisRef, prop)
+    }
+
+    class FieldNamesField(
+        enabled: Boolean? = null,
+    ) : MetaField<String>("_field_names", KeywordType, MappingParams("enabled" to enabled)) {
+        override operator fun provideDelegate(
+            thisRef: FieldSet, prop: KProperty<*>
+        ): ReadOnlyProperty<FieldSet, FieldNamesField> = FieldProperty(this, thisRef, prop)
+    }
+
+    // TODO: What type should the source field be?
+    class SourceField(
+        enabled: Boolean? = null,
+    ) : MetaField<String>("_source", KeywordType, MappingParams("enabled" to enabled)) {
+        override operator fun provideDelegate(
+            thisRef: FieldSet, prop: KProperty<*>
+        ): ReadOnlyProperty<FieldSet, SourceField> = FieldProperty(this, thisRef, prop)
+    }
+
+    class SizeField(
+        enabled: Boolean? = null,
+    ) : MetaField<Long>("_size", LongType, MappingParams("enabled" to enabled)) {
+        override operator fun provideDelegate(
+            thisRef: FieldSet, prop: KProperty<*>
+        ): ReadOnlyProperty<FieldSet, SizeField> = FieldProperty(this, thisRef, prop)
+    }
+
+    class ParentField(
+        type: String? = null,
+    ) : MetaField<String>("_parent", KeywordType, MappingParams("type" to type)) {
+        override operator fun provideDelegate(
+            thisRef: FieldSet, prop: KProperty<*>
+        ): ReadOnlyProperty<FieldSet, ParentField> = FieldProperty(this, thisRef, prop)
+    }
+
+    class AllField(
+        enabled: Boolean? = null,
+    ) : MetaField<String>("_all", KeywordType, MappingParams("enabled" to enabled)) {
+        override operator fun provideDelegate(
+            thisRef: FieldSet, prop: KProperty<*>
+        ): ReadOnlyProperty<FieldSet, AllField> = FieldProperty(this, thisRef, prop)
     }
 }
 

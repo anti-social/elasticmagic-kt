@@ -37,47 +37,17 @@ class DocumentTests {
         emptyDoc.meta.uid.getQualifiedFieldName() shouldBe "_uid"
         emptyDoc.meta.parent.getFieldName() shouldBe "_parent"
         emptyDoc.meta.parent.getQualifiedFieldName() shouldBe "_parent"
+        emptyDoc.meta.all.getFieldName() shouldBe "_all"
+        emptyDoc.meta.all.getQualifiedFieldName() shouldBe "_all"
     }
-
-    // @Test
-    // fun testCustomMeta() {
-    //     val customMetaFields = object : MetaFields() {
-    //         override val routing by MetaField(
-    //             params = mapOf(
-    //                 "required" to true,
-    //             ),
-    //         )
-    //         override val source by keyword(
-    //             "_source",
-    //             params = mapOf(
-    //                 "enabled" to false,
-    //             )
-    //         )
-    //     }
-    //
-    //     val emptyDoc = object : Document() {
-    //         override val meta = customMetaFields
-    //     }
-    //
-    //     emptyDoc.meta.routing.getFieldName() shouldBe "_routing"
-    //     emptyDoc.meta.routing.getQualifiedFieldName() shouldBe "_routing"
-    //     emptyDoc.meta.routing.getMappingParams() shouldContainExactly mapOf(
-    //         "required" to true,
-    //     )
-    //     emptyDoc.meta.source.getFieldName() shouldBe "_source"
-    //     emptyDoc.meta.source.getQualifiedFieldName() shouldBe "_source"
-    //     emptyDoc.meta.source.getMappingParams() shouldContainExactly mapOf(
-    //         "enabled" to false,
-    //     )
-    // }
 
     @Test
     fun testMetaFieldParams() {
         val emptyDoc = object : Document() {
-            init {
-                meta.routing.required(true)
-                meta.source.enabled(false)
-                meta.size.enabled(true)
+            override val meta = object : MetaFields() {
+                override val routing by RoutingField(required = true)
+                override val source by SourceField(enabled = false)
+                override val size by SizeField(enabled = true)
             }
         }
 
