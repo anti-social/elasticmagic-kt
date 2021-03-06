@@ -10,6 +10,7 @@ open class BaseField : FieldOperations {
     override fun getFieldName(): String = name
 
     override fun getQualifiedFieldName(): String {
+        // Metadata fields are not bound
         return if (::qualifiedName.isInitialized) {
             qualifiedName
         } else {
@@ -248,4 +249,6 @@ open class MetaFields : FieldSet() {
  */
 abstract class Document : BaseDocument() {
     open val meta = MetaFields()
+
+    open val docType: String = "_doc"
 }

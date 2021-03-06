@@ -12,6 +12,7 @@ class DocumentTests {
     fun testMetaFields() {
         val emptyDoc = object : Document() {}
 
+        emptyDoc.docType shouldBe "_doc"
         emptyDoc.meta.id.getFieldType() shouldBe KeywordType
         emptyDoc.meta.id.getFieldName() shouldBe "_id"
         emptyDoc.meta.id.getQualifiedFieldName() shouldBe "_id"
