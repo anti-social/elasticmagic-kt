@@ -40,6 +40,39 @@ class DocumentTests {
     }
 
     @Test
+    fun testCustomMeta() {
+        val customMetaFields = object : MetaFields() {
+            override val routing by keyword(
+                "_routing",
+                params = mapOf(
+                    "required" to true,
+                ),
+            )
+            override val source by keyword(
+                "_source",
+                params = mapOf(
+                    "enabled" to false,
+                )
+            )
+        }
+
+        val emptyDoc = object : Document() {
+            override val meta = customMetaFields
+        }
+
+        emptyDoc.meta.routing.getFieldName() shouldBe "_routing"
+        emptyDoc.meta.routing.getQualifiedFieldName() shouldBe "_routing"
+        emptyDoc.meta.routing.getMappingParams() shouldContainExactly mapOf(
+            "required" to true,
+        )
+        emptyDoc.meta.source.getFieldName() shouldBe "_source"
+        emptyDoc.meta.source.getQualifiedFieldName() shouldBe "_source"
+        emptyDoc.meta.source.getMappingParams() shouldContainExactly mapOf(
+            "enabled" to false,
+        )
+    }
+
+    @Test
     fun testCustomFieldType() {
         val myType = object : Type<String> {
             override fun deserialize(v: Any): String {

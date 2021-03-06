@@ -374,17 +374,43 @@ open class MetaFields : FieldSet() {
     val type by keyword("_type")
     val index by keyword("_index")
 
-    val routing by keyword("_routing")
+    open val routing by keyword("_routing")
 
-    val fieldNames by keyword("_field_names")
-    val ignored by keyword("_ignored")
+    open val fieldNames by keyword("_field_names")
+    open val ignored by keyword("_ignored")
 
-    val source by keyword("_source")
-    val size by long("_size")
+    // TODO: what type should the source field be?
+    open val source by keyword("_source")
+    open val size by long("_size")
 
-    // These are deprecated but retained to support Elasticsearch 5.x
+    // These are to support Elasticsearch 5.x
     val uid by keyword("_uid")
-    val parent by keyword("_parent")
+    open val parent by keyword("_parent")
+    open val all by keyword("_all")
+
+    // TODO: possibly it would be better not allowing to override meta fields directly
+    //
+    // First variant:
+    // open val overrideMappingParams: Map<String, MappingParams> = emptyMap()
+    //
+    // Another approach:
+    // fun requireRouting() {
+    //     routing.mappingParameter("required", true)
+    // }
+    // init {
+    //     meta.requireRouting()
+    // }
+    //
+    // Or similar approach:
+    // val routing by RoutingField("_routing")
+    // class RoutingField : Field<String>("_routing", KeywordType) {
+    //     fun required() {
+    //         params["required"] = true
+    //     }
+    // }
+    // init {
+    //     routing.required()
+    // }
 }
 
 /**
