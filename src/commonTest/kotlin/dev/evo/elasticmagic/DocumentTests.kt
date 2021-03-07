@@ -71,6 +71,7 @@ class DocumentTests {
     @Test
     fun testCustomFieldType() {
         val myType = object : Type<String> {
+            override val name = "mine"
             override fun deserialize(v: Any): String {
                 TODO("not implemented")
             }

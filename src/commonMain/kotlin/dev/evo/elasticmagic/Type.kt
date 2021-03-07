@@ -1,12 +1,16 @@
 package dev.evo.elasticmagic
 
 interface Type<T> {
+    val name: String
+
     fun deserialize(v: Any): T
 }
 
 abstract class NumberType<T: Number> : Type<T>
 
 object IntType : NumberType<Int>() {
+    override val name = "integer"
+
     override fun deserialize(v: Any) = when(v) {
         is Int -> v
         is Long -> v.toInt()
@@ -16,6 +20,8 @@ object IntType : NumberType<Int>() {
 }
 
 object LongType : NumberType<Long>() {
+    override val name = "long"
+
     override fun deserialize(v: Any) = when(v) {
         is Int -> v.toLong()
         is Long -> v
@@ -25,6 +31,8 @@ object LongType : NumberType<Long>() {
 }
 
 object FloatType : NumberType<Float>() {
+    override val name = "float"
+
     override fun deserialize(v: Any) = when(v) {
         is Int -> v.toFloat()
         is Long -> v.toFloat()
@@ -36,6 +44,8 @@ object FloatType : NumberType<Float>() {
 }
 
 object DoubleType : NumberType<Double>() {
+    override val name = "double"
+
     override fun deserialize(v: Any) = when(v) {
         is Int -> v.toDouble()
         is Long -> v.toDouble()
@@ -47,6 +57,8 @@ object DoubleType : NumberType<Double>() {
 }
 
 object BooleanType : Type<Boolean> {
+    override val name = "boolean"
+
     override fun deserialize(v: Any) = when(v) {
         is Boolean -> v
         is String -> v.toBoolean()
@@ -60,6 +72,22 @@ abstract class StringType : Type<String> {
     }
 }
 
-object KeywordType : StringType()
+object KeywordType : StringType() {
+    override val name = "keyword"
+}
 
-object TextType : StringType()
+object TextType : StringType() {
+    override val name = "text"
+}
+
+open class ObjectType<T> : Type<T> {
+    override val name = "object"
+
+    override fun deserialize(v: Any): T {
+        TODO("not implemented")
+    }
+}
+
+class NestedType<T> : ObjectType<T>() {
+    override val name = "nested"
+}

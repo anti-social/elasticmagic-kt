@@ -55,8 +55,12 @@ open class Field<T>(
 
     fun getMappingParams(): MappingParams = params
 
+    open fun getSubFields(): SubFields<*>? = null
+
+    open fun getSubDocument(): SubDocument? = null
+
     fun <V: SubFields<T>> subFields(factory: () -> V): SubFields.SubFieldsProperty<T, V> {
-        return SubFields.SubFieldsProperty(name, type, factory)
+        return SubFields.SubFieldsProperty(name, type, params, factory)
     }
 
     open operator fun provideDelegate(
@@ -83,7 +87,7 @@ open class Field<T>(
  */
 abstract class FieldSet {
     @Suppress("PropertyName")
-    internal val _fields: ArrayList<BaseField> = ArrayList()
+    internal val _fields: ArrayList<Field<*>> = ArrayList()
 
     fun <T> field(
         name: String?,
@@ -271,6 +275,7 @@ abstract class SubFields<T> : FieldSet(), FieldOperations {
     class SubFieldsProperty<T, V: SubFields<T>>(
         private val name: String?,
         private val type: Type<T>,
+        private val params: MappingParams,
         private val subFieldsFactory: () -> V,
     ) {
         operator fun provideDelegate(
@@ -287,15 +292,22 @@ abstract class SubFields<T> : FieldSet(), FieldOperations {
                 })
             }
 
-            thisRef._fields.add(FieldWrapper(subFields))
+            thisRef._fields.add(FieldWrapper(subFields, type, params))
 
             return ReadOnlyProperty { _, _ -> subFields }
         }
     }
 
-    private class FieldWrapper(private val subFields: SubFields<*>) : BaseField() {
+    internal class FieldWrapper<T>(
+        private val subFields: SubFields<*>,
+        type: Type<T>,
+        params: MappingParams,
+    ) : Field<T>(subFields.getFieldName(), type, params) {
         override fun getFieldName(): String = subFields.getFieldName()
         override fun getQualifiedFieldName(): String = subFields.getQualifiedFieldName()
+
+        override fun getSubFields(): SubFields<*> = subFields
+
         override fun _setFieldName(fieldName: String) {
             subFields.setFieldName(fieldName)
         }
@@ -308,17 +320,33 @@ abstract class SubFields<T> : FieldSet(), FieldOperations {
 
 abstract class BaseDocument : FieldSet() {
     fun <V: SubDocument> `object`(
-        name: String?, factory: () -> V
+        name: String?, params: MappingParams, factory: () -> V
     ): SubDocument.SubDocumentProperty<V> {
-        return SubDocument.SubDocumentProperty(name, factory)
+        return SubDocument.SubDocumentProperty(name, ObjectType(), params, factory)
     }
-    fun <V: SubDocument> `object`(factory: () -> V) = `object`(null, factory)
-    fun <V: SubDocument> obj(name: String?, factory: () -> V) = `object`(name, factory)
-    fun <V: SubDocument> obj(factory: () -> V) = `object`(null, factory)
+    fun <V: SubDocument> `object`(
+        params: MappingParams, factory: () -> V
+    ) = `object`(null, params, factory)
+    fun <V: SubDocument> `object`(factory: () -> V) =
+        `object`(null, MappingParams(), factory)
+    fun <V: SubDocument> obj(
+        name: String?, params: MappingParams, factory: () -> V
+    ) = `object`(name, params, factory)
+    fun <V: SubDocument> obj(
+        params: MappingParams, factory: () -> V
+    ) = `object`(null, params, factory)
+    fun <V: SubDocument> obj(factory: () -> V) =
+        `object`(null, MappingParams(), factory)
 
     // TODO: make NestedDocument
-    fun <V: SubDocument> nested(name: String?, factory: () -> V) = `object`(name, factory)
-    fun <V: SubDocument> nested(factory: () -> V) = `object`(null, factory)
+    fun <V: SubDocument> nested(
+        name: String?, params: MappingParams, factory: () -> V
+    ) = SubDocument.SubDocumentProperty(name, NestedType(), params, factory)
+    fun <V: SubDocument> nested(
+        params: MappingParams, factory: () -> V
+    ) = nested(null, params, factory)
+    fun <V: SubDocument> nested(factory: () -> V) =
+        nested(null, MappingParams(), factory)
 }
 
 /**
@@ -344,6 +372,8 @@ abstract class SubDocument : BaseDocument(), FieldOperations {
 
     class SubDocumentProperty<V: SubDocument>(
         private val name: String?,
+        private val type: Type<V>,
+        private val params: MappingParams,
         private val subDocumentFactory: () -> V,
     ) {
         operator fun provideDelegate(
@@ -359,15 +389,23 @@ abstract class SubDocument : BaseDocument(), FieldOperations {
                 })
             }
 
-            thisRef._fields.add(FieldWrapper(subDocument))
+            thisRef._fields.add(FieldWrapper(subDocument, type, params))
 
             return ReadOnlyProperty { _, _ -> subDocument }
         }
     }
 
-    private class FieldWrapper(private val subDocument: SubDocument) : BaseField() {
+    internal class FieldWrapper<T: SubDocument>(
+        private val subDocument: SubDocument,
+        type: Type<T>,
+        params: MappingParams,
+    ) : Field<T>(subDocument.getFieldName(), type, params) {
         override fun getFieldName(): String = subDocument.getFieldName()
+
         override fun getQualifiedFieldName(): String = subDocument.getQualifiedFieldName()
+
+        override fun getSubDocument(): SubDocument? = subDocument
+
         override fun _setFieldName(fieldName: String) {
             subDocument.setFieldName(fieldName)
         }
@@ -431,7 +469,13 @@ open class MetaFields : FieldSet() {
     // TODO: What type should the source field be?
     class SourceField(
         enabled: Boolean? = null,
-    ) : MetaField<String>("_source", KeywordType, MappingParams("enabled" to enabled)) {
+        includes: List<String>? = null,
+        excludes: List<String>? = null,
+    ) : MetaField<String>(
+        "_source",
+        KeywordType,
+        MappingParams("enabled" to enabled, "includes" to includes, "excludes" to excludes)
+    ) {
         override operator fun provideDelegate(
             thisRef: FieldSet, prop: KProperty<*>
         ): ReadOnlyProperty<FieldSet, SourceField> = FieldProperty(this, thisRef, prop)
