@@ -49,11 +49,11 @@ open class BaseField : FieldOperations {
 open class Field<T>(
     protected val name: String? = null,
     protected val type: Type<T>,
-    protected val params: MappingParams,
+    protected val params: Params,
 ) : BaseField() {
     fun getFieldType(): Type<T> = type
 
-    fun getMappingParams(): MappingParams = params
+    fun getMappingParams(): Params = params
 
     open fun getSubFields(): SubFields<*>? = null
 
@@ -95,10 +95,10 @@ abstract class FieldSet {
         docValues: Boolean? = null,
         index: Boolean? = null,
         store: Boolean? = null,
-        params: MappingParams? = null,
+        params: Params? = null,
     ): Field<T> {
         @Suppress("NAME_SHADOWING")
-        val params = MappingParams(
+        val params = Params(
             params,
             "doc_values" to docValues,
             "index" to index,
@@ -111,7 +111,7 @@ abstract class FieldSet {
         docValues: Boolean? = null,
         index: Boolean? = null,
         store: Boolean? = null,
-        params: MappingParams? = null,
+        params: Params? = null,
     ): Field<T> {
         return field(
             null, type,
@@ -126,7 +126,7 @@ abstract class FieldSet {
         docValues: Boolean? = null,
         index: Boolean? = null,
         store: Boolean? = null,
-        params: MappingParams? = null,
+        params: Params? = null,
     ): Field<Boolean> {
         return field(
             name, BooleanType,
@@ -141,7 +141,7 @@ abstract class FieldSet {
         docValues: Boolean? = null,
         index: Boolean? = null,
         store: Boolean? = null,
-        params: MappingParams? = null,
+        params: Params? = null,
     ): Field<Int> {
         return field(
             name, IntType,
@@ -156,7 +156,7 @@ abstract class FieldSet {
         docValues: Boolean? = null,
         index: Boolean? = null,
         store: Boolean? = null,
-        params: MappingParams? = null,
+        params: Params? = null,
     ): Field<Long> {
         return field(
             name, LongType,
@@ -171,7 +171,7 @@ abstract class FieldSet {
         docValues: Boolean? = null,
         index: Boolean? = null,
         store: Boolean? = null,
-        params: MappingParams? = null,
+        params: Params? = null,
     ): Field<Float> {
         return field(
             name, FloatType,
@@ -186,7 +186,7 @@ abstract class FieldSet {
         docValues: Boolean? = null,
         index: Boolean? = null,
         store: Boolean? = null,
-        params: MappingParams? = null,
+        params: Params? = null,
     ): Field<Double> {
         return field(
             name, DoubleType,
@@ -202,10 +202,10 @@ abstract class FieldSet {
         docValues: Boolean? = null,
         index: Boolean? = null,
         store: Boolean? = null,
-        params: MappingParams? = null,
+        params: Params? = null,
     ): Field<String> {
         @Suppress("NAME_SHADOWING")
-        val params = MappingParams(
+        val params = Params(
             params,
             "normalizer" to normalizer,
         )
@@ -227,10 +227,10 @@ abstract class FieldSet {
         boost: Double? = null,
         analyzer: String? = null,
         searchAnalyzer: String? = null,
-        params: MappingParams? = null,
+        params: Params? = null,
     ): Field<String> {
         @Suppress("NAME_SHADOWING")
-        val params = MappingParams(
+        val params = Params(
             params,
             "index_options" to indexOptions,
             "norms" to norms,
@@ -275,7 +275,7 @@ abstract class SubFields<T> : FieldSet(), FieldOperations {
     class SubFieldsProperty<T, V: SubFields<T>>(
         private val name: String?,
         private val type: Type<T>,
-        private val params: MappingParams,
+        private val params: Params,
         private val subFieldsFactory: () -> V,
     ) {
         operator fun provideDelegate(
@@ -301,7 +301,7 @@ abstract class SubFields<T> : FieldSet(), FieldOperations {
     internal class FieldWrapper<T>(
         private val subFields: SubFields<*>,
         type: Type<T>,
-        params: MappingParams,
+        params: Params,
     ) : Field<T>(subFields.getFieldName(), type, params) {
         override fun getFieldName(): String = subFields.getFieldName()
         override fun getQualifiedFieldName(): String = subFields.getQualifiedFieldName()
@@ -320,33 +320,33 @@ abstract class SubFields<T> : FieldSet(), FieldOperations {
 
 abstract class BaseDocument : FieldSet() {
     fun <V: SubDocument> `object`(
-        name: String?, factory: () -> V, params: MappingParams = MappingParams()
+        name: String?, factory: () -> V, params: Params = Params()
     ): SubDocument.SubDocumentProperty<V> {
         return SubDocument.SubDocumentProperty(name, ObjectType(), params, factory)
     }
     fun <V: SubDocument> `object`(
-        factory: () -> V, params: MappingParams = MappingParams()
+        factory: () -> V, params: Params = Params()
     ): SubDocument.SubDocumentProperty<V> {
         return `object`(null, factory, params)
     }
     fun <V: SubDocument> obj(
-        name: String?, factory: () -> V, params: MappingParams = MappingParams(),
+        name: String?, factory: () -> V, params: Params = Params(),
     ): SubDocument.SubDocumentProperty<V> {
         return `object`(name, factory, params)
     }
     fun <V: SubDocument> obj(
-        factory: () -> V, params: MappingParams = MappingParams()
+        factory: () -> V, params: Params = Params()
     ): SubDocument.SubDocumentProperty<V> {
         return `object`(factory, params)
     }
 
     fun <V: SubDocument> nested(
-        name: String?, factory: () -> V, params: MappingParams = MappingParams()
+        name: String?, factory: () -> V, params: Params = Params()
     ): SubDocument.SubDocumentProperty<V> {
         return SubDocument.SubDocumentProperty(name, NestedType(), params, factory)
     }
     fun <V: SubDocument> nested(
-        factory: () -> V, params: MappingParams = MappingParams()
+        factory: () -> V, params: Params = Params()
     ): SubDocument.SubDocumentProperty<V> {
         return nested(null, factory, params)
     }
@@ -376,7 +376,7 @@ abstract class SubDocument : BaseDocument(), FieldOperations {
     class SubDocumentProperty<V: SubDocument>(
         private val name: String?,
         private val type: Type<V>,
-        private val params: MappingParams,
+        private val params: Params,
         private val subDocumentFactory: () -> V,
     ) {
         operator fun provideDelegate(
@@ -401,7 +401,7 @@ abstract class SubDocument : BaseDocument(), FieldOperations {
     internal class FieldWrapper<T: SubDocument>(
         private val subDocument: SubDocument,
         type: Type<T>,
-        params: MappingParams,
+        params: Params,
     ) : Field<T>(subDocument.getFieldName(), type, params) {
         override fun getFieldName(): String = subDocument.getFieldName()
 
@@ -444,7 +444,7 @@ open class MetaFields : FieldSet() {
     // TODO: Could we get rid of overriding provideDelegate operator?
 
     open class MetaField<T>(
-        name: String, type: Type<T>, params: MappingParams = MappingParams()
+        name: String, type: Type<T>, params: Params = Params()
     ) : Field<T>(
         name, type, params
     ) {
@@ -455,7 +455,7 @@ open class MetaFields : FieldSet() {
 
     class RoutingField(
         required: Boolean? = null,
-    ) : MetaField<String>("_routing", KeywordType, MappingParams("required" to required)) {
+    ) : MetaField<String>("_routing", KeywordType, Params("required" to required)) {
         override operator fun provideDelegate(
             thisRef: FieldSet, prop: KProperty<*>
         ): ReadOnlyProperty<FieldSet, RoutingField> = FieldProperty(this, thisRef, prop)
@@ -463,7 +463,7 @@ open class MetaFields : FieldSet() {
 
     class FieldNamesField(
         enabled: Boolean? = null,
-    ) : MetaField<String>("_field_names", KeywordType, MappingParams("enabled" to enabled)) {
+    ) : MetaField<String>("_field_names", KeywordType, Params("enabled" to enabled)) {
         override operator fun provideDelegate(
             thisRef: FieldSet, prop: KProperty<*>
         ): ReadOnlyProperty<FieldSet, FieldNamesField> = FieldProperty(this, thisRef, prop)
@@ -477,7 +477,7 @@ open class MetaFields : FieldSet() {
     ) : MetaField<String>(
         "_source",
         KeywordType,
-        MappingParams("enabled" to enabled, "includes" to includes, "excludes" to excludes)
+        Params("enabled" to enabled, "includes" to includes, "excludes" to excludes)
     ) {
         override operator fun provideDelegate(
             thisRef: FieldSet, prop: KProperty<*>
@@ -486,7 +486,7 @@ open class MetaFields : FieldSet() {
 
     class SizeField(
         enabled: Boolean? = null,
-    ) : MetaField<Long>("_size", LongType, MappingParams("enabled" to enabled)) {
+    ) : MetaField<Long>("_size", LongType, Params("enabled" to enabled)) {
         override operator fun provideDelegate(
             thisRef: FieldSet, prop: KProperty<*>
         ): ReadOnlyProperty<FieldSet, SizeField> = FieldProperty(this, thisRef, prop)
@@ -494,7 +494,7 @@ open class MetaFields : FieldSet() {
 
     class ParentField(
         type: String? = null,
-    ) : MetaField<String>("_parent", KeywordType, MappingParams("type" to type)) {
+    ) : MetaField<String>("_parent", KeywordType, Params("type" to type)) {
         override operator fun provideDelegate(
             thisRef: FieldSet, prop: KProperty<*>
         ): ReadOnlyProperty<FieldSet, ParentField> = FieldProperty(this, thisRef, prop)
@@ -502,7 +502,7 @@ open class MetaFields : FieldSet() {
 
     class AllField(
         enabled: Boolean? = null,
-    ) : MetaField<String>("_all", KeywordType, MappingParams("enabled" to enabled)) {
+    ) : MetaField<String>("_all", KeywordType, Params("enabled" to enabled)) {
         override operator fun provideDelegate(
             thisRef: FieldSet, prop: KProperty<*>
         ): ReadOnlyProperty<FieldSet, AllField> = FieldProperty(this, thisRef, prop)

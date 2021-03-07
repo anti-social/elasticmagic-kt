@@ -1,7 +1,7 @@
 package dev.evo.elasticmagic.compile
 
 import dev.evo.elasticmagic.Document
-import dev.evo.elasticmagic.MappingParams
+import dev.evo.elasticmagic.Params
 import dev.evo.elasticmagic.SubDocument
 import dev.evo.elasticmagic.SubFields
 
@@ -81,7 +81,7 @@ class MappingCompilerTests {
 
         class CompanyDoc : SubDocument() {
             val name by text(analyzer = "standard")
-            val opinion by obj(::OpinionDoc, params = MappingParams("enabled" to false))
+            val opinion by obj(::OpinionDoc, params = Params("enabled" to false))
         }
 
         val userDoc = object : Document() {

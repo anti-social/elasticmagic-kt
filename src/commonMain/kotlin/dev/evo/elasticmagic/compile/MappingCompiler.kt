@@ -46,10 +46,7 @@ open class MappingCompiler<OBJ, ARR>(
     }
 
     protected fun ObjectCtx.visit(field: Field<*>) {
-        val typeName = field.getFieldType().name
-        if (typeName != null) {
-            field("type", typeName)
-        }
+        field("type", field.getFieldType().name)
         visit(field.getMappingParams())
         val subFields = field.getSubFields()
         if (subFields != null) {
@@ -63,7 +60,7 @@ open class MappingCompiler<OBJ, ARR>(
         }
     }
 
-    protected fun ObjectCtx.visit(params: MappingParams) {
+    protected fun ObjectCtx.visit(params: Params) {
         for ((name, value) in params) {
             field(name, value)
         }
