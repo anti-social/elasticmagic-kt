@@ -194,8 +194,8 @@ class DocumentTests {
         val companyDoc = CompanyDoc()
 
         class UserDoc : Document() {
-            val company1 by obj { companyDoc }
-            val company2 by obj { companyDoc }
+            val company1 by obj({ companyDoc })
+            val company2 by obj({ companyDoc })
         }
 
         val ex = shouldThrow<IllegalStateException> {

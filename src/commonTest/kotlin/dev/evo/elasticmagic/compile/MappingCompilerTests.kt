@@ -81,7 +81,7 @@ class MappingCompilerTests {
 
         class CompanyDoc : SubDocument() {
             val name by text(analyzer = "standard")
-            val opinion by obj(MappingParams("enabled" to false), ::OpinionDoc)
+            val opinion by obj(::OpinionDoc, params = MappingParams("enabled" to false))
         }
 
         val userDoc = object : Document() {

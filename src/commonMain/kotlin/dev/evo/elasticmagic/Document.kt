@@ -320,33 +320,36 @@ abstract class SubFields<T> : FieldSet(), FieldOperations {
 
 abstract class BaseDocument : FieldSet() {
     fun <V: SubDocument> `object`(
-        name: String?, params: MappingParams, factory: () -> V
+        name: String?, factory: () -> V, params: MappingParams = MappingParams()
     ): SubDocument.SubDocumentProperty<V> {
         return SubDocument.SubDocumentProperty(name, ObjectType(), params, factory)
     }
     fun <V: SubDocument> `object`(
-        params: MappingParams, factory: () -> V
-    ) = `object`(null, params, factory)
-    fun <V: SubDocument> `object`(factory: () -> V) =
-        `object`(null, MappingParams(), factory)
+        factory: () -> V, params: MappingParams = MappingParams()
+    ): SubDocument.SubDocumentProperty<V> {
+        return `object`(null, factory, params)
+    }
     fun <V: SubDocument> obj(
-        name: String?, params: MappingParams, factory: () -> V
-    ) = `object`(name, params, factory)
+        name: String?, factory: () -> V, params: MappingParams = MappingParams(),
+    ): SubDocument.SubDocumentProperty<V> {
+        return `object`(name, factory, params)
+    }
     fun <V: SubDocument> obj(
-        params: MappingParams, factory: () -> V
-    ) = `object`(null, params, factory)
-    fun <V: SubDocument> obj(factory: () -> V) =
-        `object`(null, MappingParams(), factory)
+        factory: () -> V, params: MappingParams = MappingParams()
+    ): SubDocument.SubDocumentProperty<V> {
+        return `object`(factory, params)
+    }
 
-    // TODO: make NestedDocument
     fun <V: SubDocument> nested(
-        name: String?, params: MappingParams, factory: () -> V
-    ) = SubDocument.SubDocumentProperty(name, NestedType(), params, factory)
+        name: String?, factory: () -> V, params: MappingParams = MappingParams()
+    ): SubDocument.SubDocumentProperty<V> {
+        return SubDocument.SubDocumentProperty(name, NestedType(), params, factory)
+    }
     fun <V: SubDocument> nested(
-        params: MappingParams, factory: () -> V
-    ) = nested(null, params, factory)
-    fun <V: SubDocument> nested(factory: () -> V) =
-        nested(null, MappingParams(), factory)
+        factory: () -> V, params: MappingParams = MappingParams()
+    ): SubDocument.SubDocumentProperty<V> {
+        return nested(null, factory, params)
+    }
 }
 
 /**
