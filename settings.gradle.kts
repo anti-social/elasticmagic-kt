@@ -1,3 +1,3 @@
 
-rootProject.name = "elasticmagic-kt"
+rootProject.name = "elasticmagic"
 

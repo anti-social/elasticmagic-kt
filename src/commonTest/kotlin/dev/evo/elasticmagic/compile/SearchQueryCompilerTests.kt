@@ -10,7 +10,7 @@ import io.kotest.matchers.maps.shouldContainExactly
 import kotlin.test.Test
 
 class SearchQueryCompilerTests {
-    private val compiler = SearchQueryCompiler(StandardSerializer())
+    private val compiler = SearchQueryCompiler(StdSerializer())
 
     @Test
     fun testEmpty() {

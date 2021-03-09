@@ -11,7 +11,7 @@ import io.kotest.matchers.maps.shouldContainExactly
 import kotlin.test.Test
 
 class MappingCompilerTests {
-    private val compiler = MappingCompiler(StandardSerializer())
+    private val compiler = MappingCompiler(StdSerializer())
 
     @Test
     fun testEmptyMapping() {

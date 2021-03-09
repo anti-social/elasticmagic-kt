@@ -7,11 +7,11 @@ import dev.evo.elasticmagic.compile.Serializer.ObjectCtx
 
 open class SearchQueryCompiler<OBJ, ARR>(
     private val serializer: Serializer<OBJ, ARR>
-) : Compiler<SearchQuery, SearchQueryCompiler.Result<OBJ>> {
+) : Compiler<SearchQuery<*>, SearchQueryCompiler.Result<OBJ>> {
 
     data class Result<OBJ>(val docType: String?, val body: OBJ)
 
-    override fun compile(searchQuery: SearchQuery): Result<OBJ> {
+    override fun compile(searchQuery: SearchQuery<*>): Result<OBJ> {
         val preparedSearchQuery = searchQuery.prepare()
         return Result(
             preparedSearchQuery.docType,

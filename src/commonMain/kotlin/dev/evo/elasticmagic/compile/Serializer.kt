@@ -17,7 +17,7 @@ interface Serializer<OBJ, ARR> {
     fun array(block: ArrayCtx.() -> Unit): ARR
 }
 
-class StandardSerializer(
+class StdSerializer(
     private val ignoreNullValues: Boolean = false,
     private val mapFactory: () -> MutableMap<String, Any?> = ::HashMap,
     private val arrayFactory: () -> MutableList<Any?> = ::ArrayList
