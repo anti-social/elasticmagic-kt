@@ -1,6 +1,10 @@
 
 rootProject.name = "elasticmagic"
 
-include("json")
+include(
+    "json",
+    "transport"
+)
 
 project(":json").name = "elasticmagic-json"
+project(":transport").name = "elasticmagic-transport"
