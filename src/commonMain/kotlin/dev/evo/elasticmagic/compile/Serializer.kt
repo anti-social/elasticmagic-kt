@@ -18,7 +18,6 @@ interface Serializer<OBJ, ARR> {
 }
 
 class StdSerializer(
-    private val ignoreNullValues: Boolean = false,
     private val mapFactory: () -> MutableMap<String, Any?> = ::HashMap,
     private val arrayFactory: () -> MutableList<Any?> = ::ArrayList
 ) : Serializer<Map<String, Any?>, List<Any?>> {
@@ -27,9 +26,7 @@ class StdSerializer(
         private val map: MutableMap<String, Any?>
     ) : Serializer.ObjectCtx {
         override fun field(name: String, value: Any?) {
-            if (value != null || !ignoreNullValues) {
-                map[name] = value
-            }
+            map[name] = value
         }
 
         override fun array(name: String, block: Serializer.ArrayCtx.() -> Unit) {
@@ -49,9 +46,7 @@ class StdSerializer(
         private val array: MutableList<Any?>
     ) : Serializer.ArrayCtx {
         override fun value(value: Any?) {
-            if (value != null || !ignoreNullValues) {
-                array.add(value)
-            }
+            array.add(value)
         }
 
         override fun array(block: Serializer.ArrayCtx.() -> Unit) {
