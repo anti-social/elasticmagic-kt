@@ -4,9 +4,8 @@ import dev.evo.elasticmagic.Document
 import dev.evo.elasticmagic.MultiMatch
 import dev.evo.elasticmagic.SearchQuery
 import dev.evo.elasticmagic.SubDocument
-import io.kotest.matchers.maps.shouldContainExactly
 
-import io.kotest.matchers.shouldBe
+import io.kotest.matchers.maps.shouldContainExactly
 
 import kotlin.test.Test
 
@@ -14,7 +13,56 @@ class SearchQueryCompilerTests {
     private val compiler = SearchQueryCompiler(StandardSerializer())
 
     @Test
-    fun test() {
+    fun testEmpty() {
+        val res = compiler.compile(SearchQuery())
+        res.body shouldContainExactly emptyMap()
+    }
+
+    @Test
+    fun testComposeFilters() {
+        val userDoc = object : Document() {
+            val status by int()
+            val rank by float()
+            val opinionsCount by int("opinions_count")
+        }
+
+        val query = SearchQuery()
+            .filter(userDoc.status.eq(0))
+            .filter(userDoc.rank.gte(90.0))
+            .filter(userDoc.opinionsCount.gt(5))
+
+        val res = compiler.compile(query)
+        res.body shouldContainExactly mapOf(
+            "query" to mapOf(
+                "bool" to mapOf(
+                    "filter" to listOf(
+                        mapOf(
+                            "term" to mapOf(
+                                "status" to 0
+                            )
+                        ),
+                        mapOf(
+                            "range" to mapOf(
+                                "rank" to mapOf(
+                                    "gte" to 90.0
+                                )
+                            )
+                        ),
+                        mapOf(
+                            "range" to mapOf(
+                                "opinions_count" to mapOf(
+                                    "gt" to 5
+                                )
+                            )
+                        ),
+                    )
+                )
+            )
+        )
+    }
+
+    @Test
+    fun testFilteredQuery() {
         class OpinionDoc : SubDocument() {
             val count by int()
         }

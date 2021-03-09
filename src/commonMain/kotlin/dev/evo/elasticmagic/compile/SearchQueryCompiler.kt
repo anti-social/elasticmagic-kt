@@ -23,17 +23,19 @@ open class SearchQueryCompiler<OBJ, ARR>(
 
     protected fun ObjectCtx.visit(searchQuery: PreparedSearchQuery) {
         val query = searchQuery.query
-        val filteredQuery: QueryExpression = if (searchQuery.filters.isNotEmpty()) {
+        val filteredQuery: QueryExpression? = if (searchQuery.filters.isNotEmpty()) {
             if (query != null) {
                 Bool(must = listOf(query), filter = searchQuery.filters)
             } else {
                 Bool(filter = searchQuery.filters)
             }
         } else {
-            searchQuery.query ?: MatchAll()
+            searchQuery.query
         }
-        obj("query") {
-            visit(filteredQuery)
+        if (filteredQuery != null) {
+            obj("query") {
+                visit(filteredQuery)
+            }
         }
     }
 
@@ -124,7 +126,7 @@ open class SearchQueryCompiler<OBJ, ARR>(
     }
 
     protected fun ObjectCtx.visit(bool: Bool) {
-obj(bool.name) {
+        obj(bool.name) {
             if (!bool.filter.isNullOrEmpty()) {
                 array("filter") {
                     visit(bool.filter)
