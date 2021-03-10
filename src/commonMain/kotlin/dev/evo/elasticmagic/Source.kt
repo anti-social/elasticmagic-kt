@@ -18,4 +18,8 @@ class StdSource : Source() {
     override fun getField(name: String): Any? {
         return source[name]
     }
+
+    override fun toString(): String {
+        return "StdSource(source = $source)"
+    }
 }

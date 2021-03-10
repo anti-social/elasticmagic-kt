@@ -3,6 +3,7 @@ package dev.evo.elasticmagic.json.compile
 import dev.evo.elasticmagic.Document
 import dev.evo.elasticmagic.SearchQuery
 import dev.evo.elasticmagic.compile.SearchQueryCompiler
+import dev.evo.elasticmagic.json.JsonSerializer
 
 import io.kotest.matchers.shouldBe
 

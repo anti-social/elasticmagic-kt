@@ -1,6 +1,7 @@
 package dev.evo.elasticmagic
 
 abstract class BaseSearchQuery<S: Source, T: BaseSearchQuery<S, T>>(
+    protected val sourceFactory: () -> S,
     protected var query: QueryExpression? = null,
 ) {
     protected val filters = mutableListOf<QueryExpression>()
@@ -54,28 +55,29 @@ abstract class BaseSearchQuery<S: Source, T: BaseSearchQuery<S, T>>(
         this.filters += filters
     }
 
-    fun prepare(): PreparedSearchQuery {
+    fun prepare(): PreparedSearchQuery<S> {
         return PreparedSearchQuery(
+            sourceFactory,
             docType = "_doc",
             query = query,
             filters = filters.toList(),
         )
     }
 
-    suspend fun execute(index: ElasticsearchIndex): SearchQueryResult<S> {
-        return index.search(this)
-    }
-
-
-    fun execute(index: ElasticsearchSyncIndex): SearchQueryResult<S> {
-        return index.search(this)
-    }
+    // suspend fun <R> execute(index: ElasticsearchIndex<R>): SearchQueryResult<R, S> {
+    //     return index.search(this)
+    // }
+    //
+    //
+    // fun <R> execute(index: ElasticsearchSyncIndex<R>): SearchQueryResult<R, S> {
+    //     return index.search(this)
+    // }
 }
 
 open class SearchQuery<S: Source>(
-    protected val sourceFactory: () -> S,
+    sourceFactory: () -> S,
     query: QueryExpression? = null,
-) : BaseSearchQuery<S, SearchQuery<S>>(query) {
+) : BaseSearchQuery<S, SearchQuery<S>>(sourceFactory, query) {
 
     companion object {
         operator fun invoke(query: QueryExpression? = null): SearchQuery<StdSource> {
@@ -95,25 +97,27 @@ open class SearchQuery<S: Source>(
     }
 }
 
-data class PreparedSearchQuery(
+data class PreparedSearchQuery<S: Source>(
+    val sourceFactory: () -> S,
     val docType: String? = null,
     val query: QueryExpression? = null,
     val filters: List<QueryExpression> = emptyList(),
 )
 
-data class SearchQueryResult<T: Source>(
+data class SearchQueryResult<R, S: Source>(
+    val rawResult: R?,
     val took: Long,
     val timedOut: Boolean,
     val totalHits: Long?,
     val totalHitsRelation: String?,
-    val maxScore: Double,
-    val hits: List<SearchHit<T>>,
+    val maxScore: Double?,
+    val hits: List<SearchHit<S>>,
 )
 
-data class SearchHit<T: Source>(
+data class SearchHit<S: Source>(
     val index: String,
     val type: String,
     val id: String,
     val score: Double?,
-    val source: T,
+    val source: S?,
 )

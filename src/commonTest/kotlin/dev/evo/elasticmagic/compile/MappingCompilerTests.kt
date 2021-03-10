@@ -4,6 +4,7 @@ import dev.evo.elasticmagic.Document
 import dev.evo.elasticmagic.Params
 import dev.evo.elasticmagic.SubDocument
 import dev.evo.elasticmagic.SubFields
+import dev.evo.elasticmagic.serde.StdSerializer
 
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.maps.shouldContainExactly

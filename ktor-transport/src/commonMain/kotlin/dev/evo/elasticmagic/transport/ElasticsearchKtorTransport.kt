@@ -12,21 +12,45 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.Parameters
 import io.ktor.http.takeFrom
+import kotlinx.serialization.json.Json
+
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.jsonObject
 
 class ElasticsearchKtorTransport(
     baseUrl: String,
     engine: HttpClientEngine,
     configure: Config.() -> Unit = {},
-) : ElasticsearchTransport(
+) : ElasticsearchTransport<JsonObject>(
     baseUrl,
     Config().apply(configure),
 ) {
-
     private val client = HttpClient(engine) {
         expectSuccess = false
 
         // Enable compressed response from Elasticsearch
         ContentEncoding()
+    }
+
+    companion object {
+        private val json = Json
+    }
+
+    override suspend fun objRequest(
+        method: Method,
+        path: String,
+        parameters: Map<String, List<String>>?,
+        body: JsonObject?
+    ): JsonObject {
+        val response = if (body != null) {
+            request(method, path, parameters) {
+                append(json.encodeToString(JsonElement.serializer(), body))
+            }
+        } else {
+            request(method, path, parameters, null)
+        }
+        return json.decodeFromString(JsonElement.serializer(), response).jsonObject
     }
 
     @Suppress("NAME_SHADOWING")

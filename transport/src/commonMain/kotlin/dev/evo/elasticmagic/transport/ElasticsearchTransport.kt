@@ -1,8 +1,5 @@
 package dev.evo.elasticmagic.transport
 
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonElement
-
 enum class Method {
     GET, PUT, POST, DELETE
 }
@@ -51,14 +48,10 @@ expect class GzipEncoder() : RequestEncoder
 typealias RequestBodyBuilder = RequestEncoder.() -> Unit
 
 
-abstract class ElasticsearchTransport(
+abstract class ElasticsearchTransport<OBJ>(
     val baseUrl: String,
     config: Config,
 ) {
-    companion object {
-        private val json = Json.Default
-    }
-
     class Config {
         var gzipRequests: Boolean = false
     }
@@ -70,21 +63,12 @@ abstract class ElasticsearchTransport(
             StringEncoderFactory()
         }
 
-    suspend fun jsonRequest(
+    abstract suspend fun objRequest(
         method: Method,
         path: String,
         parameters: Map<String, List<String>>? = null,
-        body: JsonElement? = null
-    ): JsonElement {
-        val response = if (body != null) {
-            request(method, path, parameters) {
-                append(json.encodeToString(JsonElement.serializer(), body))
-            }
-        } else {
-            request(method, path, parameters, null)
-        }
-        return json.decodeFromString(JsonElement.serializer(), response)
-    }
+        body: OBJ? = null
+    ): OBJ
 
     abstract suspend fun request(
         method: Method,

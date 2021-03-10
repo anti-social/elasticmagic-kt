@@ -1,7 +1,8 @@
 package dev.evo.elasticmagic.compile
 
 import dev.evo.elasticmagic.*
-import dev.evo.elasticmagic.compile.Serializer.ObjectCtx
+import dev.evo.elasticmagic.serde.Serializer
+import dev.evo.elasticmagic.serde.Serializer.ObjectCtx
 
 open class MappingCompiler<OBJ, ARR>(
     private val serializer: Serializer<OBJ, ARR>

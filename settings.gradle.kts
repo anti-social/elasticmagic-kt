@@ -4,7 +4,9 @@ rootProject.name = "elasticmagic"
 include(
     "json",
     "transport",
-    "ktor-transport"
+    "ktor-transport",
+    "tests"
+
 )
 
 project(":json").name = "elasticmagic-json"

@@ -4,6 +4,7 @@ import dev.evo.elasticmagic.Document
 import dev.evo.elasticmagic.MultiMatch
 import dev.evo.elasticmagic.SearchQuery
 import dev.evo.elasticmagic.SubDocument
+import dev.evo.elasticmagic.serde.StdSerializer
 
 import io.kotest.matchers.maps.shouldContainExactly
 

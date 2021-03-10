@@ -1,16 +1,14 @@
 kotlin {
     sourceSets {
-        val commonMain by getting {
+        val jvmTest by getting {
             dependencies {
+                implementation(project(":"))
+                implementation(project(":elasticmagic-json"))
                 implementation(project(":elasticmagic-transport"))
+                implementation(project(":elasticmagic-ktor-transport"))
                 implementation(Libs.ktorClient("core"))
-                implementation(Libs.ktorClient("encoding"))
+                implementation(Libs.ktorClient("cio"))
                 implementation(Libs.kotlinSerialization("json"))
-            }
-        }
-        val commonTest by getting {
-            dependencies {
-                implementation(Libs.ktorClient("mock"))
             }
         }
     }

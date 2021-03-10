@@ -1,17 +1,17 @@
 package dev.evo.elasticmagic.compile
 
 import dev.evo.elasticmagic.*
-import dev.evo.elasticmagic.Params
-import dev.evo.elasticmagic.compile.Serializer.ArrayCtx
-import dev.evo.elasticmagic.compile.Serializer.ObjectCtx
+import dev.evo.elasticmagic.serde.Serializer
+import dev.evo.elasticmagic.serde.Serializer.ArrayCtx
+import dev.evo.elasticmagic.serde.Serializer.ObjectCtx
 
 open class SearchQueryCompiler<OBJ, ARR>(
     private val serializer: Serializer<OBJ, ARR>
-) : Compiler<SearchQuery<*>, SearchQueryCompiler.Result<OBJ>> {
+) : Compiler<BaseSearchQuery<*, *>, SearchQueryCompiler.Result<OBJ>> {
 
     data class Result<OBJ>(val docType: String?, val body: OBJ)
 
-    override fun compile(searchQuery: SearchQuery<*>): Result<OBJ> {
+    override fun compile(searchQuery: BaseSearchQuery<*, *>): Result<OBJ> {
         val preparedSearchQuery = searchQuery.prepare()
         return Result(
             preparedSearchQuery.docType,
@@ -21,7 +21,7 @@ open class SearchQueryCompiler<OBJ, ARR>(
         )
     }
 
-    protected fun ObjectCtx.visit(searchQuery: PreparedSearchQuery) {
+    protected fun ObjectCtx.visit(searchQuery: PreparedSearchQuery<*>) {
         val query = searchQuery.query
         val filteredQuery: QueryExpression? = if (searchQuery.filters.isNotEmpty()) {
             if (query != null) {
@@ -206,17 +206,38 @@ open class SearchQueryCompiler<OBJ, ARR>(
         }
     }
 
-    protected fun ArrayCtx.visit(expressions: List<Expression>) {
-        for (expr in expressions) {
-            obj {
-                visit(expr)
+    protected fun ArrayCtx.visit(values: List<*>) {
+        for (value in values) {
+            when (value) {
+                is Map<*, *> -> obj {
+                    visit(value)
+                }
+                is List<*> -> array {
+                    visit(value)
+                }
+                is Expression -> obj {
+                    visit(value)
+                }
+                else -> value(value)
             }
         }
     }
 
-    protected fun ObjectCtx.visit(params: Params) {
+    protected fun ObjectCtx.visit(params: Map<*, *>) {
         for ((name, value) in params) {
-            field(name, value)
+            require(name is String) {
+                "Expected string but was: ${if (name != null) name::class else null}"
+            }
+            when (value) {
+                is Map<*, *> -> obj(name) {
+                    visit(value)
+                }
+                is List<*> -> array(name) {
+                    visit(value)
+                }
+                is Expression -> field(name, visit(value))
+                else -> field(name, value)
+            }
         }
     }
 }
