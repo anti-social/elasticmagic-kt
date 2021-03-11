@@ -20,11 +20,12 @@ class ElasticsearchClusterTests {
 
     @Test
     fun test() = runBlocking {
-        val transport = ElasticsearchKtorTransport(
+        val esTransport = ElasticsearchKtorTransport(
             "http://es6-stg-prom-lb.prom.dev-cloud.evo.:9200",
             CIO.create {}
         )
-        val cluster = ElasticsearchCluster(transport, JsonCompilers)
+        val compilers = JsonCompilers(ElasticsearchVersion(6, 0, 0))
+        val cluster = ElasticsearchCluster(esTransport, compilers)
         // val index = cluster["ua_trunk_catalog"]
         val index = cluster["adv_ua_weight_factors"]
 
@@ -41,7 +42,7 @@ class ElasticsearchClusterTests {
         }
             .filter(FactorsDoc.partition.eq(17))
             .filter(FactorsDoc.clickPrice.gt(2.2))
-        println(JsonCompilers.searchQuery.compile(query).body)
+        println(compilers.searchQuery.compile(query).body)
 
         val searchResult = index.search(query)
         println(searchResult)

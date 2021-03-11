@@ -1,6 +1,7 @@
 package dev.evo.elasticmagic.compile
 
 import dev.evo.elasticmagic.Document
+import dev.evo.elasticmagic.ElasticsearchVersion
 import dev.evo.elasticmagic.MultiMatch
 import dev.evo.elasticmagic.SearchQuery
 import dev.evo.elasticmagic.SubDocument
@@ -11,7 +12,10 @@ import io.kotest.matchers.maps.shouldContainExactly
 import kotlin.test.Test
 
 class SearchQueryCompilerTests {
-    private val compiler = SearchQueryCompiler(StdSerializer())
+    private val compiler = SearchQueryCompiler(
+        ElasticsearchVersion(6, 0, 0),
+        StdSerializer(),
+    )
 
     @Test
     fun testEmpty() {

@@ -1,6 +1,7 @@
 package dev.evo.elasticmagic.json.compile
 
 import dev.evo.elasticmagic.Document
+import dev.evo.elasticmagic.ElasticsearchVersion
 import dev.evo.elasticmagic.SearchQuery
 import dev.evo.elasticmagic.compile.SearchQueryCompiler
 import dev.evo.elasticmagic.json.JsonSerializer
@@ -23,7 +24,10 @@ import kotlin.test.Test
 
 class SearchQueryCompilerJsonTests {
     private val serializer = JsonSerializer()
-    private val compiler = SearchQueryCompiler(serializer)
+    private val compiler = SearchQueryCompiler(
+        ElasticsearchVersion(6, 0, 0),
+        serializer
+    )
 
     // @Test
     // fun test() {

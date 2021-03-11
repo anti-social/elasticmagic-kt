@@ -1,6 +1,7 @@
 package dev.evo.elasticmagic.compile
 
 import dev.evo.elasticmagic.Document
+import dev.evo.elasticmagic.ElasticsearchVersion
 import dev.evo.elasticmagic.Params
 import dev.evo.elasticmagic.SubDocument
 import dev.evo.elasticmagic.SubFields
@@ -12,7 +13,10 @@ import io.kotest.matchers.maps.shouldContainExactly
 import kotlin.test.Test
 
 class MappingCompilerTests {
-    private val compiler = MappingCompiler(StdSerializer())
+    private val compiler = MappingCompiler(
+        ElasticsearchVersion(6, 0, 0),
+        StdSerializer()
+    )
 
     @Test
     fun testEmptyMapping() {

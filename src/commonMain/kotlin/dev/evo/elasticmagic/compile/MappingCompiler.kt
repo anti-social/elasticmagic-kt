@@ -5,65 +5,60 @@ import dev.evo.elasticmagic.serde.Serializer
 import dev.evo.elasticmagic.serde.Serializer.ObjectCtx
 
 open class MappingCompiler<OBJ>(
+    esVersion: ElasticsearchVersion,
     private val serializer: Serializer<OBJ>
-) : Compiler<Document, MappingCompiler.Compiled<OBJ>> {
+) : BaseCompiler<Document, MappingCompiler.Compiled<OBJ>>(esVersion) {
 
     data class Compiled<OBJ>(val docType: String, val body: OBJ)
 
-    override fun compile(doc: Document): Compiled<OBJ> {
-        return MappingCompiler.Compiled(
-            doc.docType,
+    override fun compile(input: Document): Compiled<OBJ> {
+        return Compiled(
+            input.docType,
             serializer.obj {
-                visit(doc.meta)
-                visit(doc as BaseDocument)
+                visit(this, input.meta)
+                visit(this, input as BaseDocument)
             }
         )
     }
 
-    protected fun ObjectCtx.visit(meta: MetaFields) {
+    protected fun visit(ctx: ObjectCtx, meta: MetaFields) {
         for (metaField in meta._fields) {
             val mappingParams = metaField.getMappingParams()
             if (mappingParams.isEmpty()) {
                 continue
             }
-            obj(metaField.getQualifiedFieldName()) {
-                visit(mappingParams)
+            ctx.obj(metaField.getQualifiedFieldName()) {
+                visit(this, mappingParams)
             }
         }
     }
 
-    protected fun ObjectCtx.visit(doc: BaseDocument) {
-        obj("properties") {
-            visit(doc as FieldSet)
+    protected fun visit(ctx: ObjectCtx, doc: BaseDocument) {
+        ctx.obj("properties") {
+            visit(this, doc as FieldSet)
         }
     }
 
-    protected fun ObjectCtx.visit(fieldSet: FieldSet) {
+    protected fun visit(ctx: ObjectCtx, fieldSet: FieldSet) {
         for (field in fieldSet._fields) {
-            obj(field.getFieldName()) {
-                visit(field)
+            ctx.obj(field.getFieldName()) {
+                visit(this, field)
             }
         }
     }
 
-    protected fun ObjectCtx.visit(field: Field<*>) {
-        field("type", field.getFieldType().name)
-        visit(field.getMappingParams())
+    protected fun visit(ctx: ObjectCtx, field: Field<*>) {
+        ctx.field("type", field.getFieldType().name)
+        visit(ctx, field.getMappingParams())
         val subFields = field.getSubFields()
         if (subFields != null) {
-            obj("fields") {
-                visit(subFields as FieldSet)
+            ctx.obj("fields") {
+                visit(this, subFields as FieldSet)
             }
         }
         val subDocument = field.getSubDocument()
         if (subDocument != null) {
-            visit(subDocument)
-        }
-    }
-
-    protected fun ObjectCtx.visit(params: Params) {
-        for ((name, value) in params) {
-            field(name, value)
+            visit(ctx, subDocument)
         }
     }
 }
