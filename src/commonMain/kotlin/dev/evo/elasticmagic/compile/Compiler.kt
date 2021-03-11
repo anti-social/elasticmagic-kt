@@ -9,11 +9,11 @@ interface Compiler<I, R> {
     // fun processResult(input: )
 }
 
-interface CompilerProvider<OBJ, ARR> {
-    val serializer: Serializer<OBJ, ARR>
-    val deserializer: Deserializer<OBJ, ARR>
+interface CompilerProvider<OBJ> {
+    val serializer: Serializer<OBJ>
+    val deserializer: Deserializer<OBJ>
 
-    val mapping: MappingCompiler<OBJ, ARR>
+    val mapping: MappingCompiler<OBJ>
 
-    val searchQuery: SearchQueryCompiler<OBJ, ARR>
+    val searchQuery: SearchQueryCompiler<OBJ>
 }

@@ -1,6 +1,6 @@
 package dev.evo.elasticmagic.serde
 
-interface Serializer<OBJ, ARR> {
+interface Serializer<OBJ> {
     interface ObjectCtx {
         fun field(name: String, value: Int?)
         fun field(name: String, value: Long?)
@@ -50,5 +50,4 @@ interface Serializer<OBJ, ARR> {
     }
 
     fun obj(block: ObjectCtx.() -> Unit): OBJ
-    fun array(block: ArrayCtx.() -> Unit): ARR
 }

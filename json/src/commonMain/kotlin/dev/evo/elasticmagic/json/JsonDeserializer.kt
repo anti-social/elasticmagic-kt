@@ -7,15 +7,13 @@ import kotlinx.serialization.json.double
 import kotlinx.serialization.json.float
 import kotlinx.serialization.json.int
 import kotlinx.serialization.json.JsonArray
-import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
-import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.long
 
-class JsonDeserializer : Deserializer<JsonObject, JsonArray> {
+class JsonDeserializer : Deserializer<JsonObject> {
     private class ObjectCtx(private val obj: JsonObject) : Deserializer.ObjectCtx {
         override fun intOrNull(name: String): Int? {
             return obj[name]?.jsonPrimitive?.int
@@ -98,9 +96,5 @@ class JsonDeserializer : Deserializer<JsonObject, JsonArray> {
 
     override fun obj(obj: JsonObject): Deserializer.ObjectCtx {
         return ObjectCtx(obj)
-    }
-
-    override fun array(arr: JsonArray): Deserializer.ArrayCtx {
-        return ArrayCtx(arr)
     }
 }

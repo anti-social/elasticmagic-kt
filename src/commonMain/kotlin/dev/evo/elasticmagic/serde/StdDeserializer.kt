@@ -1,6 +1,6 @@
 package dev.evo.elasticmagic.serde
 
-class StdDeserializer : Deserializer<Map<String, Any?>, List<Any?>> {
+class StdDeserializer : Deserializer<Map<String, Any?>> {
     companion object {
         fun coerceToInt(v: Any?): Int? {
             return when (v) {
@@ -111,9 +111,5 @@ class StdDeserializer : Deserializer<Map<String, Any?>, List<Any?>> {
 
     override fun obj(obj: Map<String, Any?>): Deserializer.ObjectCtx {
         return ObjectCtx(obj)
-    }
-
-    override fun array(arr: List<Any?>): Deserializer.ArrayCtx {
-        return ArrayCtx(arr)
     }
 }

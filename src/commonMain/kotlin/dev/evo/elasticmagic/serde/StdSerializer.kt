@@ -3,7 +3,7 @@ package dev.evo.elasticmagic.serde
 class StdSerializer(
     private val mapFactory: () -> MutableMap<String, Any?> = ::HashMap,
     private val arrayFactory: () -> MutableList<Any?> = ::ArrayList
-) : Serializer<Map<String, Any?>, List<Any?>> {
+) : Serializer<Map<String, Any?>> {
 
     private inner class ObjectCtx(
         private val map: MutableMap<String, Any?>
@@ -89,11 +89,5 @@ class StdSerializer(
         val map = mapFactory()
         ObjectCtx(map).block()
         return map
-    }
-
-    override fun array(block: Serializer.ArrayCtx.() -> Unit): List<Any?> {
-        val list = arrayFactory()
-        ArrayCtx(list).block()
-        return list
     }
 }

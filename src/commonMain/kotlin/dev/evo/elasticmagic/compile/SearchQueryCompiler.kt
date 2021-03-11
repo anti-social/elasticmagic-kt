@@ -5,8 +5,8 @@ import dev.evo.elasticmagic.serde.Serializer
 import dev.evo.elasticmagic.serde.Serializer.ArrayCtx
 import dev.evo.elasticmagic.serde.Serializer.ObjectCtx
 
-open class SearchQueryCompiler<OBJ, ARR>(
-    private val serializer: Serializer<OBJ, ARR>
+open class SearchQueryCompiler<OBJ>(
+    private val serializer: Serializer<OBJ>
 ) : Compiler<BaseSearchQuery<*, *>, SearchQueryCompiler.Result<OBJ>> {
 
     data class Result<OBJ>(val docType: String?, val body: OBJ)

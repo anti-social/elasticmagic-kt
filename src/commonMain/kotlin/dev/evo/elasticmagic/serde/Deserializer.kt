@@ -1,6 +1,6 @@
 package dev.evo.elasticmagic.serde
 
-interface Deserializer<OBJ, ARR> {
+interface Deserializer<OBJ> {
     interface ObjectCtx {
         fun intOrNull(name: String): Int?
         fun int(name: String): Int = intOrNull(name) ?: error("not an integer")
@@ -41,6 +41,4 @@ interface Deserializer<OBJ, ARR> {
     }
 
     fun obj(obj: OBJ): ObjectCtx
-
-    fun array(arr: ARR): ArrayCtx
 }

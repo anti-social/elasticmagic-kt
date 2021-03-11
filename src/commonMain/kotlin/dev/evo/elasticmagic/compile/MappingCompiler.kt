@@ -4,8 +4,8 @@ import dev.evo.elasticmagic.*
 import dev.evo.elasticmagic.serde.Serializer
 import dev.evo.elasticmagic.serde.Serializer.ObjectCtx
 
-open class MappingCompiler<OBJ, ARR>(
-    private val serializer: Serializer<OBJ, ARR>
+open class MappingCompiler<OBJ>(
+    private val serializer: Serializer<OBJ>
 ) : Compiler<Document, MappingCompiler.Result<OBJ>> {
 
     data class Result<OBJ>(val docType: String, val body: OBJ)

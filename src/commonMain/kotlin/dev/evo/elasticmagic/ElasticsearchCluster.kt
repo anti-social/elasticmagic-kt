@@ -4,19 +4,19 @@ import dev.evo.elasticmagic.compile.CompilerProvider
 import dev.evo.elasticmagic.transport.ElasticsearchTransport
 import dev.evo.elasticmagic.transport.Method
 
-class ElasticsearchCluster<OBJ, ARR>(
+class ElasticsearchCluster<OBJ>(
     private val esTransport: ElasticsearchTransport<OBJ>,
-    private val compilerProvider: CompilerProvider<OBJ, ARR>,
+    private val compilerProvider: CompilerProvider<OBJ>,
 ) {
-    operator fun get(indexName: String): ElasticsearchIndex<OBJ, ARR> {
+    operator fun get(indexName: String): ElasticsearchIndex<OBJ> {
         return ElasticsearchIndex(indexName, esTransport, compilerProvider)
     }
 }
 
-class ElasticsearchIndex<OBJ, ARR>(
+class ElasticsearchIndex<OBJ>(
     val indexName: String,
     private val esTransport: ElasticsearchTransport<OBJ>,
-    private val compilerProvider: CompilerProvider<OBJ, ARR>,
+    private val compilerProvider: CompilerProvider<OBJ>,
 ) {
     suspend fun <S : Source> search(
         searchQuery: BaseSearchQuery<S, *>

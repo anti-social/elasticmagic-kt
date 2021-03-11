@@ -2,20 +2,18 @@ package dev.evo.elasticmagic.json
 
 import dev.evo.elasticmagic.serde.Serializer
 
-import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonArrayBuilder
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonObjectBuilder
 import kotlinx.serialization.json.add
 import kotlinx.serialization.json.addJsonArray
 import kotlinx.serialization.json.addJsonObject
-import kotlinx.serialization.json.buildJsonArray
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import kotlinx.serialization.json.putJsonArray
 import kotlinx.serialization.json.putJsonObject
 
-class JsonSerializer : Serializer<JsonObject, JsonArray> {
+class JsonSerializer : Serializer<JsonObject> {
     private class ObjectCtx(private val objBuilder: JsonObjectBuilder) : Serializer.ObjectCtx {
         override fun field(name: String, value: Int?) {
             objBuilder.put(name, value)
@@ -95,12 +93,6 @@ class JsonSerializer : Serializer<JsonObject, JsonArray> {
     override fun obj(block: Serializer.ObjectCtx.() -> Unit): JsonObject {
         return buildJsonObject {
             ObjectCtx(this).block()
-        }
-    }
-
-    override fun array(block: Serializer.ArrayCtx.() -> Unit): JsonArray {
-        return buildJsonArray {
-            ArrayCtx(this).block()
         }
     }
 }
