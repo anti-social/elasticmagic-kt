@@ -6,18 +6,35 @@ import dev.evo.elasticmagic.compile.SearchQueryCompiler
 import dev.evo.elasticmagic.json.JsonSerializer
 
 import io.kotest.matchers.shouldBe
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 
+// import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.addJsonObject
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import kotlinx.serialization.json.putJsonArray
 import kotlinx.serialization.json.putJsonObject
+import kotlinx.serialization.serializer
+import kotlin.reflect.typeOf
 
 import kotlin.test.Test
 
 class SearchQueryCompilerJsonTests {
     private val serializer = JsonSerializer()
     private val compiler = SearchQueryCompiler(serializer)
+
+    // @Test
+    // fun test() {
+    //     val data = mapOf("1" to 2, "2" to 2)
+    //     val js = Json.encodeToString(data)
+    //     // val js = Json.encodeToString(serializer<Map<String, Any>>(), mapOf("1" to 2))
+    //     println(js)
+    //     // Json.decodeFromString(js)
+    //     //     .also(::println)
+    //     0 shouldBe 1
+    // }
 
     @Test
     fun testEmpty() {

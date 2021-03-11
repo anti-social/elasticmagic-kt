@@ -6,12 +6,12 @@ import dev.evo.elasticmagic.serde.Serializer.ObjectCtx
 
 open class MappingCompiler<OBJ>(
     private val serializer: Serializer<OBJ>
-) : Compiler<Document, MappingCompiler.Result<OBJ>> {
+) : Compiler<Document, MappingCompiler.Compiled<OBJ>> {
 
-    data class Result<OBJ>(val docType: String, val body: OBJ)
+    data class Compiled<OBJ>(val docType: String, val body: OBJ)
 
-    override fun compile(doc: Document): Result<OBJ> {
-        return MappingCompiler.Result(
+    override fun compile(doc: Document): Compiled<OBJ> {
+        return MappingCompiler.Compiled(
             doc.docType,
             serializer.obj {
                 visit(doc.meta)

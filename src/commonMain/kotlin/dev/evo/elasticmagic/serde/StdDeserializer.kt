@@ -58,6 +58,10 @@ class StdDeserializer : Deserializer<Map<String, Any?>> {
     private class ObjectCtx(
         private val map: Map<*, *>,
     ) : Deserializer.ObjectCtx {
+        override fun iterator(): ObjectIterator {
+            return ObjectIterator(map.iterator())
+        }
+
         override fun intOrNull(name: String): Int? = coerceToInt(map[name])
 
         override fun longOrNull(name: String): Long? = coerceToLong(map[name])
@@ -79,10 +83,64 @@ class StdDeserializer : Deserializer<Map<String, Any?>> {
         }
     }
 
+    private class ObjectIterator(
+        val iter: Iterator<Map.Entry<*, *>>,
+    ) : Deserializer.ObjectIterator {
+        override fun hasNext(): Boolean = iter.hasNext()
+
+        override fun anyOrNull(): Pair<String, Any?> {
+            TODO("not implemented")
+        }
+
+        override fun intOrNull(): Pair<String, Int?> {
+            val (key, value) = iter.next()
+            return key as String to coerceToInt(value)
+        }
+
+        override fun longOrNull(): Pair<String, Long?> {
+            val (key, value) = iter.next()
+            return key as String to coerceToLong(value)
+        }
+
+        override fun floatOrNull(): Pair<String, Float?> {
+            val (key, value) = iter.next()
+            return key as String to coerceToFloat(value)
+        }
+
+        override fun doubleOrNull(): Pair<String, Double?> {
+            val (key, value) = iter.next()
+            return key as String to coerceToDouble(value)
+        }
+
+        override fun booleanOrNull(): Pair<String, Boolean?> {
+            val (key, value) = iter.next()
+            return key as String to coerceToBoolean(value)
+        }
+
+        override fun stringOrNull(): Pair<String, String?> {
+            val (key, value) = iter.next()
+            return key as String to coerceToString(value)
+        }
+
+        override fun objOrNull(): Pair<String, Deserializer.ObjectCtx?> {
+            val (key, value) = iter.next()
+            return key as String to coerceToMap(value)?.let(::ObjectCtx)
+        }
+
+        override fun arrayOrNull(): Pair<String, Deserializer.ArrayCtx?> {
+            val (key, value) = iter.next()
+            return key as String to coerceToList(value)?.let(::ArrayCtx)
+        }
+    }
+
     private class ArrayCtx(
         private val iter: Iterator<Any?>,
     ) : Deserializer.ArrayCtx, Iterator<Any?> by iter {
         constructor(arr: List<Any?>) : this(arr.iterator())
+
+        override fun anyOrNull(): Any? {
+            TODO("not implemented")
+        }
 
         override fun intOrNull(): Int? = coerceToInt(iter.next())
 

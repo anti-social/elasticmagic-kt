@@ -3,8 +3,8 @@ package dev.evo.elasticmagic.compile
 import dev.evo.elasticmagic.serde.Deserializer
 import dev.evo.elasticmagic.serde.Serializer
 
-interface Compiler<I, R> {
-    fun compile(input: I): R
+interface Compiler<I, O> {
+    fun compile(input: I): O
 
     // fun processResult(input: )
 }

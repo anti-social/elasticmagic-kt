@@ -2,6 +2,7 @@ package dev.evo.elasticmagic.serde
 
 interface Deserializer<OBJ> {
     interface ObjectCtx {
+        fun iterator(): ObjectIterator
         fun intOrNull(name: String): Int?
         fun int(name: String): Int = intOrNull(name) ?: error("not an integer")
         fun longOrNull(name: String): Long?
@@ -20,8 +21,62 @@ interface Deserializer<OBJ> {
         fun array(name: String): ArrayCtx = arrayOrNull(name) ?: error("not an array")
     }
 
+    interface ObjectIterator {
+        fun hasNext(): Boolean
+        fun anyOrNull(): Pair<String, Any?>
+        fun intOrNull(): Pair<String, Int?>
+        fun int(): Pair<String, Int> {
+            return intOrNull().let { (k, v) ->
+                if (v != null) k to v else error("not an integer")
+            }
+        }
+        fun longOrNull(): Pair<String, Long?>
+        fun long(): Pair<String, Long> {
+            return longOrNull().let { (k, v) ->
+                if (v != null) k to v else error("not an integer")
+            }
+        }
+        fun floatOrNull(): Pair<String, Float?>
+        fun float(): Pair<String, Float> {
+            return floatOrNull().let { (k, v) ->
+                if (v != null) k to v else error("not an integer")
+            }
+        }
+        fun doubleOrNull(): Pair<String, Double?>
+        fun double(): Pair<String, Double> {
+            return doubleOrNull().let { (k, v) ->
+                if (v != null) k to v else error("not an integer")
+            }
+        }
+        fun booleanOrNull(): Pair<String, Boolean?>
+        fun boolean(): Pair<String, Boolean> {
+            return booleanOrNull().let { (k, v) ->
+                if (v != null) k to v else error("not an integer")
+            }
+        }
+        fun stringOrNull(): Pair<String, String?>
+        fun string(): Pair<String, String> {
+            return stringOrNull().let { (k, v) ->
+                if (v != null) k to v else error("not an integer")
+            }
+        }
+        fun objOrNull(): Pair<String, ObjectCtx?>
+        fun obj(): Pair<String, ObjectCtx> {
+            return objOrNull().let { (k, v) ->
+                if (v != null) k to v else error("not an integer")
+            }
+        }
+        fun arrayOrNull(): Pair<String, ArrayCtx?>
+        fun array(): Pair<String, ArrayCtx> {
+            return arrayOrNull().let { (k, v) ->
+                if (v != null) k to v else error("not an integer")
+            }
+        }
+    }
+
     interface ArrayCtx {
         fun hasNext(): Boolean
+        fun anyOrNull(): Any?
         fun intOrNull(): Int?
         fun int(): Int = intOrNull() ?: error("not a boolean")
         fun longOrNull(): Long?
@@ -41,4 +96,32 @@ interface Deserializer<OBJ> {
     }
 
     fun obj(obj: OBJ): ObjectCtx
+}
+
+internal fun Deserializer.ObjectCtx.toMap(): Map<String, Any?> {
+    val objIterator = iterator()
+    val map = mutableMapOf<String, Any?>()
+    while (objIterator.hasNext()) {
+        val (key, v) = objIterator.anyOrNull()
+        val value = when (v) {
+            is Deserializer.ObjectCtx -> v.toMap()
+            is Deserializer.ArrayCtx -> v.toList()
+            else -> v
+        }
+        map[key] = value
+    }
+    return map
+}
+
+internal fun Deserializer.ArrayCtx.toList(): List<Any?> {
+    val list = mutableListOf<Any?>()
+    while (hasNext()) {
+        val value = when (val v = anyOrNull()) {
+            is Deserializer.ObjectCtx -> v.toMap()
+            is Deserializer.ArrayCtx -> v.toList()
+            else -> v
+        }
+        list.add(value)
+    }
+    return list
 }

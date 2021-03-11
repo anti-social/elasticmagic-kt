@@ -1,6 +1,7 @@
 package dev.evo.elasticmagic
 
 import dev.evo.elasticmagic.compile.CompilerProvider
+import dev.evo.elasticmagic.serde.toMap
 import dev.evo.elasticmagic.transport.ElasticsearchTransport
 import dev.evo.elasticmagic.transport.Method
 
@@ -41,10 +42,9 @@ class ElasticsearchIndex<OBJ>(
                 val rawHit = rawHits.obj()
                 val source = rawHit.objOrNull("_source")?.let { rawSource ->
                     val source = preparedSearchQuery.sourceFactory()
-                    // TODO
-                    // for ((fieldName, fieldValue) in rawSource) {
-                    //     source.setField(fieldName, fieldValue)
-                    // }
+                    for ((fieldName, fieldValue) in rawSource.toMap()) {
+                        source.setField(fieldName, fieldValue)
+                    }
                     source
                 }
                 hits.add(

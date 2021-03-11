@@ -3,7 +3,7 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation(project(":"))
-                implementation(Libs.kotlinSerialization("json"))
+                api(Libs.kotlinSerialization("json"))
             }
         }
     }

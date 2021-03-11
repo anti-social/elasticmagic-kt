@@ -8,7 +8,7 @@ import dev.evo.elasticmagic.json.JsonSerializer
 
 import kotlinx.serialization.json.JsonObject
 
-object JsonCompilerProvider : CompilerProvider<JsonObject> {
+object JsonCompilers : CompilerProvider<JsonObject> {
     override val serializer = JsonSerializer()
     override val deserializer = JsonDeserializer()
 

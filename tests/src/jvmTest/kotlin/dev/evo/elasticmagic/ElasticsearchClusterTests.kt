@@ -1,6 +1,6 @@
 package dev.evo.elasticmagic
 
-import dev.evo.elasticmagic.json.compile.JsonCompilerProvider
+import dev.evo.elasticmagic.json.compile.JsonCompilers
 import dev.evo.elasticmagic.transport.ElasticsearchKtorTransport
 
 import io.kotest.matchers.shouldBe
@@ -24,7 +24,7 @@ class ElasticsearchClusterTests {
             "http://es6-stg-prom-lb.prom.dev-cloud.evo.:9200",
             CIO.create {}
         )
-        val cluster = ElasticsearchCluster(transport, JsonCompilerProvider)
+        val cluster = ElasticsearchCluster(transport, JsonCompilers)
         // val index = cluster["ua_trunk_catalog"]
         val index = cluster["adv_ua_weight_factors"]
 
@@ -41,7 +41,7 @@ class ElasticsearchClusterTests {
         }
             .filter(FactorsDoc.partition.eq(17))
             .filter(FactorsDoc.clickPrice.gt(2.2))
-        println(JsonCompilerProvider.searchQuery.compile(query).body)
+        println(JsonCompilers.searchQuery.compile(query).body)
 
         val searchResult = index.search(query)
         println(searchResult)

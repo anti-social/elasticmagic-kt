@@ -3,9 +3,9 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation(project(":elasticmagic-transport"))
-                implementation(Libs.ktorClient("core"))
+                api(Libs.ktorClient("core"))
                 implementation(Libs.ktorClient("encoding"))
-                implementation(Libs.kotlinSerialization("json"))
+                api(Libs.kotlinSerialization("json"))
             }
         }
         val commonTest by getting {
