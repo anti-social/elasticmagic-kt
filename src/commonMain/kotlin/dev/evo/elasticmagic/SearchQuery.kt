@@ -104,8 +104,8 @@ data class PreparedSearchQuery<S: Source>(
     val filters: List<QueryExpression> = emptyList(),
 )
 
-data class SearchQueryResult<R, S: Source>(
-    val rawResult: R?,
+data class SearchQueryResult<S: Source>(
+    val rawResult: Map<String, Any?>?,
     val took: Long,
     val timedOut: Boolean,
     val totalHits: Long?,

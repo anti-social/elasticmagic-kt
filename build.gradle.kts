@@ -84,7 +84,8 @@ configure<KotlinMultiplatformExtension> {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation(project(":elasticmagic-transport"))
+                api(project(":elasticmagic-serde"))
+                api(project(":elasticmagic-transport"))
             }
         }
     }

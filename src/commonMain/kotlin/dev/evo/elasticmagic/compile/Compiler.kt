@@ -68,11 +68,12 @@ abstract class BaseCompiler<I, O>(
     }
 }
 
-interface CompilerProvider<OBJ> {
-    val serializer: Serializer<OBJ>
-    val deserializer: Deserializer<OBJ>
+class CompilerProvider<OBJ>(
+    esVersion: ElasticsearchVersion,
+    val serializer: Serializer<OBJ>,
+    val deserializer: Deserializer<OBJ>,
+) {
+    val mapping: MappingCompiler<OBJ> = MappingCompiler(esVersion, serializer)
 
-    val mapping: MappingCompiler<OBJ>
-
-    val searchQuery: SearchQueryCompiler<OBJ>
+    val searchQuery: SearchQueryCompiler<OBJ> = SearchQueryCompiler(esVersion, serializer)
 }

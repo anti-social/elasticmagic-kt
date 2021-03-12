@@ -2,13 +2,15 @@
 rootProject.name = "elasticmagic"
 
 include(
-    "json",
+    "serde",
+    "serde-json",
     "transport",
-    "ktor-transport",
+    "transport-ktor",
     "tests"
 
 )
 
-project(":json").name = "elasticmagic-json"
+project(":serde").name = "elasticmagic-serde"
+project(":serde-json").name = "elasticmagic-serde-json"
 project(":transport").name = "elasticmagic-transport"
-project(":ktor-transport").name = "elasticmagic-ktor-transport"
+project(":transport-ktor").name = "elasticmagic-transport-ktor"

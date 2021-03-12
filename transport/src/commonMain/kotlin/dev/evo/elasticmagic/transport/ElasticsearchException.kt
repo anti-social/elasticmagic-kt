@@ -1,81 +1,55 @@
 package dev.evo.elasticmagic.transport
 
-// import kotlinx.serialization.SerializationException
-// import kotlinx.serialization.json.Json
-// import kotlinx.serialization.json.jsonArray
-// import kotlinx.serialization.json.JsonArray
-// import kotlinx.serialization.json.JsonElement
-// import kotlinx.serialization.json.jsonObject
-// import kotlinx.serialization.json.JsonObject
-// import kotlinx.serialization.json.JsonPrimitive
-
 sealed class ElasticsearchException(msg: String) : Exception(msg) {
-    open class TransportError(
+    open class Transport(
         val statusCode: Int,
-        val error: String
-    ) : ElasticsearchException("Elasticsearch server respond with an error") {
-        // private val json = Json.Default
+        val error: TransportError,
+    ) : ElasticsearchException("Elasticsearch responded with an error") {
+        // TODO:
         open val isRetriable = false
 
         companion object {
-            private const val MAX_TEXT_ERROR_LENGTH = 80
+            private const val MAX_TEXT_ERROR_LENGTH = 256
 
-            private fun trimRawError(error: String) =
-                error.slice(0 until error.length.coerceAtMost(MAX_TEXT_ERROR_LENGTH))
+            private fun trimText(text: String) =
+                text.slice(0 until text.length.coerceAtMost(MAX_TEXT_ERROR_LENGTH))
 
-            // private fun jsonElementToString(element: JsonElement) = when (element) {
-            //     is JsonObject -> element.toString()
-            //     is JsonArray -> element.toString()
-            //     is JsonPrimitive -> element.content
-            // }
+            fun fromStatusCode(statusCode: Int, error: TransportError): Transport {
+                return when (statusCode) {
+                    400 -> Request(error)
+                    401 -> Authentication(error)
+                    403 -> Authorization(error)
+                    404 -> NotFound(error)
+                    409 -> Conflict(error)
+                    504 -> GatewayTimeout(error)
+                    else -> Transport(statusCode, error)
+                }
+            }
         }
-
-        // fun reason(): String? {
-        //     return try {
-        //         val info = json.decodeFromString(JsonElement.serializer(), error).jsonObject
-        //         when (val error = info["error"]) {
-        //             null -> return null
-        //             is JsonObject -> {
-        //                 val rootCause = error["root_cause"]?.jsonArray?.get(0)?.jsonObject
-        //                     ?: return null
-        //                 StringBuilder().apply {
-        //                     append(
-        //                         jsonElementToString(rootCause["reason"] ?: return null)
-        //                     )
-        //                     rootCause["resource.id"]?.let(::append)
-        //                     rootCause["resource.type"]?.let(::append)
-        //                 }.toString()
-        //             }
-        //             is JsonPrimitive -> error.content
-        //             is JsonArray -> error.toString()
-        //         }
-        //
-        //     } catch (ex: SerializationException) {
-        //         return trimRawError(error)
-        //     } catch (ex: IllegalStateException) {
-        //         return trimRawError(error)
-        //     }
-        // }
 
         override fun toString(): String {
-            // val reasonArg = when (val reason = reason()) {
-            //     null -> ""
-            //     else -> ", \"$reason\""
-            // }
-            val reasonArg = trimRawError(error)
-            return "${this::class.simpleName}(${statusCode}${reasonArg})"
+            val reason = when (error) {
+                is TransportError.Structured -> {
+                    val rootCause = error.rootCauses.getOrNull(0)
+                    buildString {
+                        if (rootCause != null) {
+                            append(rootCause.reason)
+                        } else {
+                            append(error.reason)
+                        }
+                    }
+                }
+                is TransportError.Simple -> trimText(error.error)
+            }
+
+            // val reasonArg = trimRawError(error)
+            return "${this::class.simpleName}(statusCode=${statusCode}, ${reason})"
         }
     }
-    class RequestError(error: String)
-        : TransportError(400, error)
-    class AuthenticationError(error: String)
-        : TransportError(401, error)
-    class AuthorizationError(error: String)
-        : TransportError(403, error)
-    class NotFoundError(error: String)
-        : TransportError(404, error)
-    class ConflictError(error: String)
-        : TransportError(409, error)
-    class GatewayTimeout(error: String)
-        : TransportError(504, error)
+    class Request(error: TransportError) : Transport(400, error)
+    class Authentication(error: TransportError) : Transport(401, error)
+    class Authorization(error: TransportError) : Transport(403, error)
+    class NotFound(error: TransportError) : Transport(404, error)
+    class Conflict(error: TransportError) : Transport(409, error)
+    class GatewayTimeout(error: TransportError) : Transport(504, error)
 }

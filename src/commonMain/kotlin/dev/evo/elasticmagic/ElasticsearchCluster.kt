@@ -21,7 +21,7 @@ class ElasticsearchIndex<OBJ>(
 ) {
     suspend fun <S : Source> search(
         searchQuery: BaseSearchQuery<S, *>
-    ): SearchQueryResult<OBJ, S> {
+    ): SearchQueryResult<S> {
         val preparedSearchQuery = searchQuery.prepare()
         val compiled = compilerProvider.searchQuery.compile(searchQuery)
         val result = esTransport.objRequest(
@@ -71,10 +71,10 @@ class ElasticsearchIndex<OBJ>(
     }
 }
 
-interface ElasticsearchSyncCluster<R> {
-    operator fun get(indexName: String): ElasticsearchSyncIndex<R>
+interface ElasticsearchSyncCluster<OBJ> {
+    operator fun get(indexName: String): ElasticsearchSyncIndex<OBJ>
 }
 
-interface ElasticsearchSyncIndex<R> {
-    fun <S: Source> search(searchQuery: BaseSearchQuery<S, *>): SearchQueryResult<R, S>
+interface ElasticsearchSyncIndex<OBJ> {
+    fun <S: Source> search(searchQuery: BaseSearchQuery<S, *>): SearchQueryResult<S>
 }
