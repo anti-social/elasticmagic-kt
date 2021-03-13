@@ -48,7 +48,7 @@ expect class GzipEncoder() : RequestEncoder
 typealias RequestBodyBuilder = RequestEncoder.() -> Unit
 
 
-abstract class ElasticsearchTransport<OBJ>(
+abstract class ElasticsearchTransport(
     val baseUrl: String,
     config: Config,
 ) {
@@ -62,13 +62,6 @@ abstract class ElasticsearchTransport<OBJ>(
         } else {
             StringEncoderFactory()
         }
-
-    abstract suspend fun objRequest(
-        method: Method,
-        path: String,
-        parameters: Map<String, List<String>>? = null,
-        body: OBJ? = null
-    ): OBJ
 
     abstract suspend fun request(
         method: Method,

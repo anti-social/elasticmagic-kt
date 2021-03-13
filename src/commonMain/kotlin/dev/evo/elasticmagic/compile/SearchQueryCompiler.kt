@@ -5,24 +5,24 @@ import dev.evo.elasticmagic.serde.Serializer
 import dev.evo.elasticmagic.serde.Serializer.ArrayCtx
 import dev.evo.elasticmagic.serde.Serializer.ObjectCtx
 
-open class SearchQueryCompiler<OBJ>(
+open class SearchQueryCompiler(
     esVersion: ElasticsearchVersion,
-    private val serializer: Serializer<OBJ>,
-) : BaseCompiler<BaseSearchQuery<*, *>, SearchQueryCompiler.Result<OBJ>>(esVersion) {
+) : BaseCompiler<BaseSearchQuery<*, *>>(esVersion) {
 
     interface Visitable {
-        fun accept(ctx: ObjectCtx, compiler: SearchQueryCompiler<*>)
+        fun accept(ctx: ObjectCtx, compiler: SearchQueryCompiler)
     }
 
-    data class Result<OBJ>(val docType: String?, val body: OBJ)
+    data class Compiled<T>(val docType: String?, override val body: T?): Compiler.Compiled<T>()
 
-    override fun compile(input: BaseSearchQuery<*, *>): Result<OBJ> {
+    override fun <T> compile(serializer: Serializer<T>, input: BaseSearchQuery<*, *>): Compiled<T> {
         val preparedSearchQuery = input.prepare()
-        return Result(
+        val body = serializer.buildObj {
+            visit(this, preparedSearchQuery)
+        }
+        return Compiled(
             preparedSearchQuery.docType,
-            serializer.obj {
-                visit(this, preparedSearchQuery)
-            }
+            body
         )
     }
 

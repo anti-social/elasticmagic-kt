@@ -1,7 +1,10 @@
 package dev.evo.elasticmagic.serde.json
 
+import dev.evo.elasticmagic.serde.DeserializationException
 import dev.evo.elasticmagic.serde.Deserializer
 
+import kotlinx.serialization.SerializationException
+import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.boolean
 import kotlinx.serialization.json.double
 import kotlinx.serialization.json.float
@@ -207,8 +210,17 @@ object JsonDeserializer : Deserializer<JsonObject> {
         }
     }
 
-    override fun obj(obj: JsonObject): Deserializer.ObjectCtx {
+    override fun wrapObj(obj: JsonObject): Deserializer.ObjectCtx {
         return ObjectCtx(obj)
+    }
+
+    override fun objFromStringOrNull(data: String): Deserializer.ObjectCtx? {
+        val jsonObj =  try {
+            Json.decodeFromString(JsonElement.serializer(), data) as? JsonObject
+        } catch (e: SerializationException) {
+            throw DeserializationException("Cannot deserialize data", e)
+        }
+        return jsonObj?.let(::wrapObj)
     }
 }
 

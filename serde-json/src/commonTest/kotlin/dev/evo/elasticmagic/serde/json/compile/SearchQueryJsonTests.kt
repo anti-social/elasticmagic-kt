@@ -25,12 +25,11 @@ import kotlin.test.Test
 class SearchQueryCompilerJsonTests {
     private val compiler = SearchQueryCompiler(
         ElasticsearchVersion(6, 0, 0),
-        JsonSerializer
     )
 
     @Test
     fun testEmpty() {
-        val compiled = compiler.compile(SearchQuery())
+        val compiled = compiler.compile(JsonSerializer, SearchQuery())
         compiled.body shouldBe buildJsonObject {}
     }
 
@@ -47,7 +46,7 @@ class SearchQueryCompilerJsonTests {
             .filter(userDoc.rank.gte(90.0))
             .filter(userDoc.opinionsCount.gt(5))
 
-        val res = compiler.compile(query)
+        val res = compiler.compile(JsonSerializer, query)
         res.body shouldBe buildJsonObject {
             putJsonObject("query") {
                 putJsonObject("bool") {

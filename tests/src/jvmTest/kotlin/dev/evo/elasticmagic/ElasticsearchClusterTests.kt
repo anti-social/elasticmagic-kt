@@ -53,7 +53,7 @@ class ElasticsearchClusterTests {
         }
             .filter(FactorsDoc.partition.eq(17))
             .filter(FactorsDoc.clickPrice.gt(2.2))
-        println(compilers.searchQuery.compile(query).body)
+        println(compilers.searchQuery.compile(compilers.serializer, query).body)
 
         val searchResult = index.search(query)
         println(searchResult)
@@ -75,7 +75,7 @@ class ElasticsearchClusterTests {
                 )
             )
         }
-        println(compilers.searchQuery.compile(query).body)
+        println(compilers.searchQuery.compile(compilers.serializer, query).body)
 
         val searchResult = index.search(query)
         println(searchResult)

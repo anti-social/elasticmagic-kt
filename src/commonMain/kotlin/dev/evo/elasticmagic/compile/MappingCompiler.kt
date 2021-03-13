@@ -4,20 +4,20 @@ import dev.evo.elasticmagic.*
 import dev.evo.elasticmagic.serde.Serializer
 import dev.evo.elasticmagic.serde.Serializer.ObjectCtx
 
-open class MappingCompiler<OBJ>(
+open class MappingCompiler(
     esVersion: ElasticsearchVersion,
-    private val serializer: Serializer<OBJ>
-) : BaseCompiler<Document, MappingCompiler.Compiled<OBJ>>(esVersion) {
+) : BaseCompiler<Document>(esVersion) {
 
-    data class Compiled<OBJ>(val docType: String, val body: OBJ)
+    data class Compiled<T>(val docType: String, override val body: T?) : Compiler.Compiled<T>()
 
-    override fun compile(input: Document): Compiled<OBJ> {
+    override fun <T> compile(serializer: Serializer<T>, input: Document): Compiled<T> {
+        val body = serializer.buildObj {
+            visit(this, input.meta)
+            visit(this, input as BaseDocument)
+        }
         return Compiled(
             input.docType,
-            serializer.obj {
-                visit(this, input.meta)
-                visit(this, input as BaseDocument)
-            }
+            body
         )
     }
 

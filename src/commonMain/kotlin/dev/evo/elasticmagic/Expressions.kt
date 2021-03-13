@@ -18,7 +18,7 @@ data class Term(
 
     override fun accept(
         ctx: Serializer.ObjectCtx,
-        compiler: SearchQueryCompiler<*>
+        compiler: SearchQueryCompiler
     ) {
         ctx.obj(name) {
             if (boost != null) {
@@ -40,7 +40,7 @@ data class Exists(
 
     override fun accept(
         ctx: Serializer.ObjectCtx,
-        compiler: SearchQueryCompiler<*>
+        compiler: SearchQueryCompiler
     ) {
         ctx.obj(name) {
             field("field", field.getQualifiedFieldName())
@@ -59,7 +59,7 @@ data class Range(
 
     override fun accept(
         ctx: Serializer.ObjectCtx,
-        compiler: SearchQueryCompiler<*>
+        compiler: SearchQueryCompiler
     ) {
         ctx.obj(name) {
             obj(field.getQualifiedFieldName()) {
@@ -91,7 +91,7 @@ data class Match(
 
     override fun accept(
         ctx: Serializer.ObjectCtx,
-        compiler: SearchQueryCompiler<*>
+        compiler: SearchQueryCompiler
     ) {
         val params = Params(
             params,
@@ -115,7 +115,7 @@ class MatchAll : QueryExpression {
 
     override fun accept(
         ctx: Serializer.ObjectCtx,
-        compiler: SearchQueryCompiler<*>
+        compiler: SearchQueryCompiler
     ) {
         ctx.obj(name) {}
     }
@@ -136,7 +136,7 @@ data class MultiMatch(
 
     override fun accept(
         ctx: Serializer.ObjectCtx,
-        compiler: SearchQueryCompiler<*>
+        compiler: SearchQueryCompiler
     ) {
         val params = Params(
             params,
@@ -168,7 +168,7 @@ data class Bool(
 
     override fun accept(
         ctx: Serializer.ObjectCtx,
-        compiler: SearchQueryCompiler<*>
+        compiler: SearchQueryCompiler
     ) {
         ctx.obj(name) {
             if (!filter.isNullOrEmpty()) {
@@ -216,7 +216,7 @@ data class FunctionScore(
 
         protected inline fun accept(
             ctx: Serializer.ObjectCtx,
-            compiler: SearchQueryCompiler<*>,
+            compiler: SearchQueryCompiler,
             block: Serializer.ObjectCtx.() -> Unit
         ) {
             val fn = filter
@@ -237,7 +237,7 @@ data class FunctionScore(
 
         override fun accept(
             ctx: Serializer.ObjectCtx,
-            compiler: SearchQueryCompiler<*>
+            compiler: SearchQueryCompiler
         ) {
             super.accept(ctx, compiler) {
                 field(name, weight)
@@ -255,7 +255,7 @@ data class FunctionScore(
 
         override fun accept(
             ctx: Serializer.ObjectCtx, compiler:
-            SearchQueryCompiler<*>
+            SearchQueryCompiler
         ) {
             super.accept(ctx, compiler) {
                 ctx.obj(name) {
@@ -273,7 +273,7 @@ data class FunctionScore(
 
     override fun accept(
         ctx: Serializer.ObjectCtx,
-        compiler: SearchQueryCompiler<*>
+        compiler: SearchQueryCompiler
     ) {
         ctx.obj(name) {
             if (query != null) {

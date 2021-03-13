@@ -2,13 +2,15 @@ package dev.evo.elasticmagic.serde.json
 
 import dev.evo.elasticmagic.serde.Serializer
 
-import kotlinx.serialization.json.JsonArrayBuilder
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.JsonObjectBuilder
 import kotlinx.serialization.json.add
 import kotlinx.serialization.json.addJsonArray
 import kotlinx.serialization.json.addJsonObject
 import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonArrayBuilder
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonObjectBuilder
 import kotlinx.serialization.json.put
 import kotlinx.serialization.json.putJsonArray
 import kotlinx.serialization.json.putJsonObject
@@ -90,9 +92,13 @@ object JsonSerializer : Serializer<JsonObject> {
         }
     }
 
-    override fun obj(block: Serializer.ObjectCtx.() -> Unit): JsonObject {
+    override fun buildObj(block: Serializer.ObjectCtx.() -> Unit): JsonObject {
         return buildJsonObject {
             ObjectCtx(this).block()
         }
+    }
+
+    override fun objToString(obj: JsonObject): String {
+        return Json.encodeToString(JsonElement.serializer(), obj)
     }
 }

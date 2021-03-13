@@ -165,7 +165,11 @@ object StdDeserializer : Deserializer<Map<String, Any?>> {
         }
     }
 
-    override fun obj(obj: Map<String, Any?>): Deserializer.ObjectCtx {
+    override fun wrapObj(obj: Map<String, Any?>): Deserializer.ObjectCtx {
         return ObjectCtx(obj)
+    }
+
+    override fun objFromStringOrNull(data: String): Deserializer.ObjectCtx? {
+        TODO("not implemented")
     }
 }

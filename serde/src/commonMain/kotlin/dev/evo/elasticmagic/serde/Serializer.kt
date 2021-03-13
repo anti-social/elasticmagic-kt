@@ -49,5 +49,6 @@ interface Serializer<OBJ> {
         fun obj(block: ObjectCtx.() -> Unit)
     }
 
-    fun obj(block: ObjectCtx.() -> Unit): OBJ
+    fun buildObj(block: ObjectCtx.() -> Unit): OBJ
+    fun objToString(obj: OBJ): String
 }

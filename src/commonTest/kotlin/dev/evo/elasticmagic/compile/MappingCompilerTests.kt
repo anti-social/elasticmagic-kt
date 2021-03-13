@@ -13,18 +13,18 @@ import io.kotest.matchers.maps.shouldContainExactly
 import kotlin.test.Test
 
 class MappingCompilerTests {
+    private val serializer = StdSerializer()
     private val compiler = MappingCompiler(
         ElasticsearchVersion(6, 0, 0),
-        StdSerializer()
     )
 
     @Test
     fun testEmptyMapping() {
         val emptyDoc = object : Document() {}
 
-        val res = compiler.compile(emptyDoc)
-        res.docType shouldBe "_doc"
-        res.body shouldContainExactly mapOf(
+        val compiled = compiler.compile(serializer, emptyDoc)
+        compiled.docType shouldBe "_doc"
+        compiled.body!! shouldContainExactly mapOf(
             "properties" to emptyMap<String, Any>()
         )
     }
@@ -43,9 +43,9 @@ class MappingCompilerTests {
             val keywords by text().subFields(::NameFields)
         }
 
-        val res = compiler.compile(productDoc)
-        res.docType shouldBe "product"
-        res.body shouldContainExactly mapOf(
+        val compiled = compiler.compile(serializer, productDoc)
+        compiled.docType shouldBe "product"
+        compiled.body!! shouldContainExactly mapOf(
             "properties" to mapOf(
                 "name" to mapOf(
                     "type" to "text",
@@ -96,9 +96,9 @@ class MappingCompilerTests {
             val opinion by obj(::OpinionDoc)
         }
 
-        val res = compiler.compile(userDoc)
-        res.docType shouldBe "user"
-        res.body shouldContainExactly mapOf(
+        val compiled = compiler.compile(serializer, userDoc)
+        compiled.docType shouldBe "user"
+        compiled.body!! shouldContainExactly mapOf(
             "properties" to mapOf(
                 "company" to mapOf(
                     "type" to "object",

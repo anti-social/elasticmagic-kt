@@ -1,5 +1,7 @@
 package dev.evo.elasticmagic.serde
 
+class DeserializationException(message: String, cause: Exception) : Exception(message, cause)
+
 interface Deserializer<OBJ> {
     interface ObjectCtx {
         fun iterator(): ObjectIterator
@@ -95,7 +97,11 @@ interface Deserializer<OBJ> {
         fun array(): ArrayCtx = arrayOrNull() ?: error("not an array")
     }
 
-    fun obj(obj: OBJ): ObjectCtx
+    fun wrapObj(obj: OBJ): ObjectCtx
+    fun objFromStringOrNull(data: String): ObjectCtx?
+    fun objFromString(data: String): ObjectCtx {
+        return objFromStringOrNull(data) ?: error("not an object")
+    }
 }
 
 fun Deserializer.ObjectCtx.toMap(): Map<String, Any?> {

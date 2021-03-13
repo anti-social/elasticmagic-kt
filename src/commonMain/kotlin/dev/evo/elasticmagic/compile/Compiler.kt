@@ -7,17 +7,21 @@ import dev.evo.elasticmagic.serde.Serializer
 import dev.evo.elasticmagic.serde.Serializer.ArrayCtx
 import dev.evo.elasticmagic.serde.Serializer.ObjectCtx
 
-interface Compiler<I, O> {
+interface Compiler<I> {
     val esVersion: ElasticsearchVersion
 
-    fun compile(input: I): O
+    abstract class Compiled<T> {
+        abstract val body: T?
+    }
+
+    fun <T> compile(serializer: Serializer<T>, input: I): Compiled<T>
 
     // fun processResult(input: )
 }
 
-abstract class BaseCompiler<I, O>(
+abstract class BaseCompiler<I>(
     override val esVersion: ElasticsearchVersion,
-) : Compiler<I, O> {
+) : Compiler<I> {
     open fun dispatch(ctx: ArrayCtx, value: Any?) {
         ctx.value(value)
     }
@@ -73,7 +77,7 @@ class CompilerProvider<OBJ>(
     val serializer: Serializer<OBJ>,
     val deserializer: Deserializer<OBJ>,
 ) {
-    val mapping: MappingCompiler<OBJ> = MappingCompiler(esVersion, serializer)
+    val mapping: MappingCompiler = MappingCompiler(esVersion)
 
-    val searchQuery: SearchQueryCompiler<OBJ> = SearchQueryCompiler(esVersion, serializer)
+    val searchQuery: SearchQueryCompiler = SearchQueryCompiler(esVersion)
 }

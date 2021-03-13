@@ -1,6 +1,10 @@
 package dev.evo.elasticmagic.transport
 
+import dev.evo.elasticmagic.serde.DeserializationException
+import dev.evo.elasticmagic.serde.Deserializer
+import dev.evo.elasticmagic.serde.Serializer
 import dev.evo.elasticmagic.serde.json.JsonDeserializer
+import dev.evo.elasticmagic.serde.json.JsonSerializer
 
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.HttpClientEngine
@@ -15,17 +19,11 @@ import io.ktor.http.HttpMethod
 import io.ktor.http.Parameters
 import io.ktor.http.takeFrom
 
-import kotlinx.serialization.SerializationException
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.jsonObject
-
 class ElasticsearchKtorTransport(
     baseUrl: String,
     engine: HttpClientEngine,
     configure: Config.() -> Unit = {},
-) : ElasticsearchTransport<JsonObject>(
+) : ElasticsearchTransport(
     baseUrl,
     Config().apply(configure),
 ) {
@@ -36,25 +34,21 @@ class ElasticsearchKtorTransport(
         ContentEncoding()
     }
 
-    companion object {
-        private val json = Json
-    }
-
-    override suspend fun objRequest(
-        method: Method,
-        path: String,
-        parameters: Map<String, List<String>>?,
-        body: JsonObject?
-    ): JsonObject {
-        val response = if (body != null) {
-            request(method, path, parameters) {
-                append(json.encodeToString(JsonElement.serializer(), body))
-            }
-        } else {
-            request(method, path, parameters, null)
-        }
-        return json.decodeFromString(JsonElement.serializer(), response).jsonObject
-    }
+    // override suspend fun objRequest(
+    //     method: Method,
+    //     path: String,
+    //     parameters: Map<String, List<String>>?,
+    //     body: Serializer.ObjectCtx?
+    // ): Deserializer.ObjectCtx {
+    //     val response = if (body != null) {
+    //         request(method, path, parameters) {
+    //             append(JsonSerializer.objToString(body))
+    //         }
+    //     } else {
+    //         request(method, path, parameters, null)
+    //     }
+    //     return JsonDeserializer.objFromString(response)
+    // }
 
     @Suppress("NAME_SHADOWING")
     override suspend fun request(
@@ -114,12 +108,12 @@ class ElasticsearchKtorTransport(
         val statusCode = response.status.value
         val content = response.readText()
         val jsonError = try {
-            json.decodeFromString(JsonElement.serializer(), content) as? JsonObject
-        } catch (e: SerializationException) {
+            JsonDeserializer.objFromStringOrNull(content)
+        } catch (e: DeserializationException) {
             null
         }
         val transportError = if (jsonError != null) {
-            TransportError.parse(JsonDeserializer.obj(jsonError))
+            TransportError.parse(jsonError)
         } else {
             TransportError.Simple(content)
         }

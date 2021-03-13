@@ -85,9 +85,13 @@ class StdSerializer(
         }
     }
 
-    override fun obj(block: Serializer.ObjectCtx.() -> Unit): Map<String, Any?> {
+    override fun buildObj(block: Serializer.ObjectCtx.() -> Unit): Map<String, Any?> {
         val map = mapFactory()
         ObjectCtx(map).block()
         return map
+    }
+
+    override fun objToString(obj: Map<String, Any?>): String {
+        TODO("not implemented")
     }
 }

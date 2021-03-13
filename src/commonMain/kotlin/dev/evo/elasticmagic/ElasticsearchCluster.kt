@@ -1,12 +1,13 @@
 package dev.evo.elasticmagic
 
 import dev.evo.elasticmagic.compile.CompilerProvider
+import dev.evo.elasticmagic.compile.SearchQueryCompiler
 import dev.evo.elasticmagic.serde.toMap
 import dev.evo.elasticmagic.transport.ElasticsearchTransport
 import dev.evo.elasticmagic.transport.Method
 
 class ElasticsearchCluster<OBJ>(
-    private val esTransport: ElasticsearchTransport<OBJ>,
+    private val esTransport: ElasticsearchTransport,
     private val compilerProvider: CompilerProvider<OBJ>,
 ) {
     operator fun get(indexName: String): ElasticsearchIndex<OBJ> {
@@ -16,18 +17,24 @@ class ElasticsearchCluster<OBJ>(
 
 class ElasticsearchIndex<OBJ>(
     val indexName: String,
-    private val esTransport: ElasticsearchTransport<OBJ>,
+    private val esTransport: ElasticsearchTransport,
     private val compilerProvider: CompilerProvider<OBJ>,
 ) {
     suspend fun <S : Source> search(
         searchQuery: BaseSearchQuery<S, *>
     ): SearchQueryResult<S> {
         val preparedSearchQuery = searchQuery.prepare()
-        val compiled = compilerProvider.searchQuery.compile(searchQuery)
-        val result = esTransport.objRequest(
-            Method.GET, "$indexName/_doc/_search", body = compiled.body
+        val compiled = compilerProvider.searchQuery.compile(
+            compilerProvider.serializer, searchQuery
         )
-        val rawResult = compilerProvider.deserializer.obj(result)
+        val response = esTransport.request(
+            Method.GET, "$indexName/_doc/_search"
+        ) {
+            if (compiled.body != null) {
+                append(compilerProvider.serializer.objToString(compiled.body))
+            }
+        }
+        val rawResult = compilerProvider.deserializer.objFromString(response)
         val rawHitsData = rawResult.obj("hits")
         val rawTotal = rawHitsData.objOrNull("total")
         val (totalHits, totalHitsRelation) = if (rawTotal != null) {

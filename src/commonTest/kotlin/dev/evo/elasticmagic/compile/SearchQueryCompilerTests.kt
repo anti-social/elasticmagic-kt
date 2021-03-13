@@ -8,19 +8,20 @@ import dev.evo.elasticmagic.SubDocument
 import dev.evo.elasticmagic.serde.StdSerializer
 
 import io.kotest.matchers.maps.shouldContainExactly
+import io.kotest.matchers.nulls.shouldNotBeNull
 
 import kotlin.test.Test
 
 class SearchQueryCompilerTests {
+    private val serializer = StdSerializer()
     private val compiler = SearchQueryCompiler(
         ElasticsearchVersion(6, 0, 0),
-        StdSerializer(),
     )
 
     @Test
     fun testEmpty() {
-        val res = compiler.compile(SearchQuery())
-        res.body shouldContainExactly emptyMap()
+        val compiled = compiler.compile(serializer, SearchQuery())
+        compiled.body!! shouldContainExactly emptyMap()
     }
 
     @Test
@@ -36,8 +37,8 @@ class SearchQueryCompilerTests {
             .filter(userDoc.rank.gte(90.0))
             .filter(userDoc.opinionsCount.gt(5))
 
-        val res = compiler.compile(query)
-        res.body shouldContainExactly mapOf(
+        val compiled = compiler.compile(serializer, query)
+        compiled.body!! shouldContainExactly mapOf(
             "query" to mapOf(
                 "bool" to mapOf(
                     "filter" to listOf(
@@ -98,8 +99,8 @@ class SearchQueryCompilerTests {
         }
         query.filter(productDoc.company.opinion.count.gt(4))
 
-        val res = compiler.compile(query)
-        res.body shouldContainExactly mapOf(
+        val compiled = compiler.compile(serializer, query)
+        compiled.body!! shouldContainExactly mapOf(
             "query" to mapOf(
                 "bool" to mapOf(
                     "must" to listOf(

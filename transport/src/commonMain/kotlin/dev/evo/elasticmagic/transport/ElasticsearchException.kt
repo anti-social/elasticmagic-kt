@@ -41,8 +41,6 @@ sealed class ElasticsearchException(msg: String) : Exception(msg) {
                 }
                 is TransportError.Simple -> trimText(error.error)
             }
-
-            // val reasonArg = trimRawError(error)
             return "${this::class.simpleName}(statusCode=${statusCode}, ${reason})"
         }
     }
