@@ -1,7 +1,7 @@
 package dev.evo.elasticmagic.compile
 
 import dev.evo.elasticmagic.ElasticsearchVersion
-import dev.evo.elasticmagic.FieldOperations
+import dev.evo.elasticmagic.Named
 import dev.evo.elasticmagic.serde.Deserializer
 import dev.evo.elasticmagic.serde.Serializer
 import dev.evo.elasticmagic.serde.Serializer.ArrayCtx
@@ -35,7 +35,7 @@ abstract class BaseCompiler<I>(
                 is List<*> -> ctx.array {
                     visit(this, value)
                 }
-                is FieldOperations -> {
+                is Named -> {
                     ctx.value(value.getQualifiedFieldName())
                 }
                 else -> {
@@ -61,7 +61,7 @@ abstract class BaseCompiler<I>(
                 is List<*> -> ctx.array(name) {
                     visit(this, value)
                 }
-                is FieldOperations -> {
+                is Named -> {
                     ctx.field(name, value.getQualifiedFieldName())
                 }
                 else -> {

@@ -1,13 +1,22 @@
 package dev.evo.elasticmagic
 
+data class FieldFormat(
+    val field: Named,
+    val format: String? = null,
+)
+
 abstract class BaseSearchQuery<S: Source, T: BaseSearchQuery<S, T>>(
     protected val sourceFactory: () -> S,
     protected var query: QueryExpression? = null,
 ) {
     var queryNodes: Map<NodeHandle<*>, QueryExpressionNode<*>> = collectNodes(query)
 
-    protected val filters = mutableListOf<QueryExpression>()
-    protected val postFilters = mutableListOf<QueryExpression>()
+    protected val filters: MutableList<QueryExpression> = mutableListOf()
+    protected val postFilters: MutableList<QueryExpression> = mutableListOf()
+
+    protected val docvalueFields: MutableList<FieldFormat> = mutableListOf()
+    protected val storedFields: MutableList<Named> = mutableListOf()
+    protected val scriptFields: MutableMap<String, Script> = mutableMapOf()
 
     protected var size: Long? = null
     protected var from: Long? = null
@@ -101,6 +110,22 @@ abstract class BaseSearchQuery<S: Source, T: BaseSearchQuery<S, T>>(
         this.postFilters += filters
     }
 
+    fun docvalueFields(vararg fields: Named): T = self {
+        docvalueFields += fields.map(::FieldFormat)
+    }
+
+    fun docvalueFields(vararg fields: FieldFormat): T = self {
+        docvalueFields += fields
+    }
+
+    fun storedFields(vararg fields: Named): T = self {
+        storedFields += fields
+    }
+
+    fun scriptFields(vararg fields: Pair<String, Script>): T = self {
+        scriptFields += fields
+    }
+
     fun size(size: Long): T = self {
         this.size = size
     }
@@ -116,6 +141,9 @@ abstract class BaseSearchQuery<S: Source, T: BaseSearchQuery<S, T>>(
             query = query,
             filters = filters.toList(),
             postFilters = postFilters.toList(),
+            docvalueFields = docvalueFields,
+            storedFields = storedFields,
+            scriptFields = scriptFields,
             size = size,
             from = from,
         )
@@ -160,6 +188,9 @@ data class PreparedSearchQuery<S: Source>(
     val query: QueryExpression?,
     val filters: List<QueryExpression>,
     val postFilters: List<QueryExpression>,
+    val docvalueFields: List<FieldFormat>,
+    val storedFields: List<Named>,
+    val scriptFields: Map<String, Script>,
     val size: Long?,
     val from: Long?,
 )

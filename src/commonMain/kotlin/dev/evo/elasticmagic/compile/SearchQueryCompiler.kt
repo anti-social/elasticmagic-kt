@@ -44,11 +44,31 @@ open class SearchQueryCompiler(
         }
         if (searchQuery.postFilters.isNotEmpty()) {
             ctx.array("post_filter") {
-                for (filter in searchQuery.postFilters) {
-                    obj {
-                        visit(this, filter)
+                visit(this, searchQuery.postFilters)
+            }
+        }
+        if (searchQuery.docvalueFields.isNotEmpty()) {
+            ctx.array("docvalue_fields") {
+                for (field in searchQuery.docvalueFields) {
+                    if (field.format != null) {
+                        obj {
+                            field("field", field.field.getQualifiedFieldName())
+                            field("format", field.format)
+                        }
+                    } else {
+                        value(field.field.getQualifiedFieldName())
                     }
                 }
+            }
+        }
+        if (searchQuery.storedFields.isNotEmpty()) {
+            ctx.array("stored_fields") {
+                visit(this, searchQuery.storedFields)
+            }
+        }
+        if (searchQuery.scriptFields.isNotEmpty()) {
+            ctx.obj("script_fields") {
+                visit(this, searchQuery.scriptFields)
             }
         }
         if (searchQuery.size != null) {
