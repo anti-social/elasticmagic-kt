@@ -169,6 +169,23 @@ class SearchQueryCompilerTests {
     }
 
     @Test
+    fun testPostFilters() {
+        val query = SearchQuery()
+        query.postFilter(AnyField("status").eq(0))
+
+        val compiled = compiler.compile(serializer, query)
+        compiled.body!! shouldContainExactly mapOf(
+            "post_filter" to listOf(
+                mapOf(
+                    "term" to mapOf(
+                        "status" to 0
+                    )
+                )
+            )
+        )
+    }
+
+    @Test
     fun testNodes() {
         val BOOL_HANDLE = NodeHandle<BoolNode>("bool")
         val AD_BOOST_HANDLE = NodeHandle<FunctionScoreNode>("ad_boost")

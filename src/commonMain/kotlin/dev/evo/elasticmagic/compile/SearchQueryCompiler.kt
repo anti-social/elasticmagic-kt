@@ -42,6 +42,15 @@ open class SearchQueryCompiler(
                 filteredQuery.accept(this, this@SearchQueryCompiler)
             }
         }
+        if (searchQuery.postFilters.isNotEmpty()) {
+            ctx.array("post_filter") {
+                for (filter in searchQuery.postFilters) {
+                    obj {
+                        visit(this, filter)
+                    }
+                }
+            }
+        }
     }
 
     fun visit(ctx: ObjectCtx, expression: Expression) {
