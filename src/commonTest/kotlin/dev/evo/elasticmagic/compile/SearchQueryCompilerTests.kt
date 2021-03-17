@@ -186,6 +186,20 @@ class SearchQueryCompilerTests {
     }
 
     @Test
+    fun testSizeAndFrom() {
+        val query = SearchQuery()
+        query
+            .size(100)
+            .from(200)
+
+        val compiled = compiler.compile(serializer, query)
+        compiled.body!! shouldContainExactly mapOf(
+            "size" to 100L,
+            "from" to 200L,
+        )
+    }
+
+    @Test
     fun testNodes() {
         val BOOL_HANDLE = NodeHandle<BoolNode>("bool")
         val AD_BOOST_HANDLE = NodeHandle<FunctionScoreNode>("ad_boost")

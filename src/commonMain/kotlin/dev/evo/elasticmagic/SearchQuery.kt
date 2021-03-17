@@ -9,6 +9,9 @@ abstract class BaseSearchQuery<S: Source, T: BaseSearchQuery<S, T>>(
     protected val filters = mutableListOf<QueryExpression>()
     protected val postFilters = mutableListOf<QueryExpression>()
 
+    protected var size: Long? = null
+    protected var from: Long? = null
+
     companion object {
         private fun collectNodes(expression: QueryExpression?): Map<NodeHandle<*>, QueryExpressionNode<*>> {
             val nodes = mutableMapOf<NodeHandle<*>, QueryExpressionNode<*>>()
@@ -98,6 +101,14 @@ abstract class BaseSearchQuery<S: Source, T: BaseSearchQuery<S, T>>(
         this.postFilters += filters
     }
 
+    fun size(size: Long): T = self {
+        this.size = size
+    }
+
+    fun from(from: Long): T = self {
+        this.from = from
+    }
+
     fun prepare(): PreparedSearchQuery<S> {
         return PreparedSearchQuery(
             sourceFactory,
@@ -105,6 +116,8 @@ abstract class BaseSearchQuery<S: Source, T: BaseSearchQuery<S, T>>(
             query = query,
             filters = filters.toList(),
             postFilters = postFilters.toList(),
+            size = size,
+            from = from,
         )
     }
 
@@ -143,10 +156,12 @@ open class SearchQuery<S: Source>(
 
 data class PreparedSearchQuery<S: Source>(
     val sourceFactory: () -> S,
-    val docType: String? = null,
-    val query: QueryExpression? = null,
-    val filters: List<QueryExpression> = emptyList(),
-    val postFilters: List<QueryExpression> = emptyList(),
+    val docType: String?,
+    val query: QueryExpression?,
+    val filters: List<QueryExpression>,
+    val postFilters: List<QueryExpression>,
+    val size: Long?,
+    val from: Long?,
 )
 
 data class SearchQueryResult<S: Source>(

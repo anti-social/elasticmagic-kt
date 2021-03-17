@@ -51,6 +51,12 @@ open class SearchQueryCompiler(
                 }
             }
         }
+        if (searchQuery.size != null) {
+            ctx.field("size", searchQuery.size)
+        }
+        if (searchQuery.from != null) {
+            ctx.field("from", searchQuery.from)
+        }
     }
 
     fun visit(ctx: ObjectCtx, expression: Expression) {
