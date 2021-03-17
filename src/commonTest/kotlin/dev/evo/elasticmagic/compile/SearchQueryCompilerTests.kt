@@ -4,10 +4,12 @@ import dev.evo.elasticmagic.BoolNode
 import dev.evo.elasticmagic.Document
 import dev.evo.elasticmagic.ElasticsearchVersion
 import dev.evo.elasticmagic.Field
+import dev.evo.elasticmagic.FunctionScore
 import dev.evo.elasticmagic.FunctionScoreNode
 import dev.evo.elasticmagic.MultiMatch
 import dev.evo.elasticmagic.NodeHandle
 import dev.evo.elasticmagic.Params
+import dev.evo.elasticmagic.Script
 import dev.evo.elasticmagic.SearchQuery
 import dev.evo.elasticmagic.SubDocument
 import dev.evo.elasticmagic.Type
@@ -196,6 +198,49 @@ class SearchQueryCompilerTests {
         compiled.body!! shouldContainExactly mapOf(
             "size" to 100L,
             "from" to 200L,
+        )
+    }
+
+    @Test
+    fun testFunctionScore_scriptScore() {
+        val query = SearchQuery(
+            FunctionScore(
+                query = null,
+                functions = listOf(
+                    FunctionScore.ScriptScore(
+                        Script(
+                            source = "params.a / Math.pow(params.b, doc[params.field].value)",
+                            params = Params(
+                                "a" to 5,
+                                "b" to 1.2,
+                                "field" to AnyField("rank")
+                            ),
+                        )
+                    )
+                )
+            )
+        )
+
+        val compiled = compiler.compile(serializer, query)
+        compiled.body!! shouldContainExactly mapOf(
+            "query" to mapOf(
+                "function_score" to mapOf(
+                    "functions" to listOf(
+                        mapOf(
+                            "script_score" to mapOf(
+                                "script" to mapOf(
+                                    "source" to "params.a / Math.pow(params.b, doc[params.field].value)",
+                                    "params" to mapOf(
+                                        "a" to 5,
+                                        "b" to 1.2,
+                                        "field" to "rank",
+                                    )
+                                )
+                            )
+                        )
+                    )
+                )
+            )
         )
     }
 

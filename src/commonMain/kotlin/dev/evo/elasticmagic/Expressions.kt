@@ -197,6 +197,83 @@ data class MultiMatch(
     }
 }
 
+data class Script(
+    val spec: Spec,
+    val lang: String? = null,
+    val params: Params = Params(),
+) : Expression {
+    override val name: String = "script"
+
+    constructor(
+        source: String? = null,
+        id: String? = null,
+        lang: String? = null,
+        params: Params = Params(),
+    ) : this(Spec(source, id), lang, params)
+
+    sealed class Spec : Expression {
+        class Source(val source: String) : Spec(), Expression {
+            override val name = "source"
+
+            override fun accept(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
+                ctx.field(name, source)
+            }
+        }
+
+        class Id(val id: String) : Spec(), Expression {
+            override val name = "id"
+
+            override fun accept(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
+                ctx.field(name, id)
+            }
+        }
+
+        companion object {
+            internal operator fun invoke(source: String?, id: String?): Spec {
+                return when {
+                    source == null && id == null -> {
+                        throw IllegalArgumentException(
+                            "Both source and id are missing"
+                        )
+                    }
+                    source != null && id != null -> {
+                        throw IllegalArgumentException(
+                            "Only source or id allowed, not both"
+                        )
+                    }
+                    source != null -> Source(source)
+                    id != null -> Id(id)
+                    else -> {
+                        error("Unreachable")
+                    }
+                }
+            }
+        }
+    }
+
+    companion object {
+        fun Source(source: String): Spec.Source = Spec.Source(source)
+        fun Id(id: String): Spec.Id = Spec.Id(id)
+    }
+
+    override fun accept(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
+        ctx.obj(name) {
+            when (spec) {
+                is Spec.Source -> field("source", spec.source)
+                is Spec.Id -> field("id", spec.id)
+            }
+            if (lang != null) {
+                field("lang", lang)
+            }
+            if (params.isNotEmpty()) {
+                obj("params") {
+                    compiler.visit(this, params)
+                }
+            }
+        }
+    }
+}
+
 interface BoolExpression : QueryExpression {
     val filter: List<QueryExpression>
     val should: List<QueryExpression>
@@ -416,6 +493,19 @@ data class FunctionScore(
                         field("missing", missing)
                     }
                 }
+            }
+        }
+    }
+
+    data class ScriptScore(
+        val script: Script,
+        override val filter: QueryExpression? = null,
+    ) : Function() {
+        override val name = "script_score"
+
+        override fun accept(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
+            ctx.obj(name) {
+                compiler.visit(this, script)
             }
         }
     }
