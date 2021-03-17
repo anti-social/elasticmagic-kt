@@ -61,6 +61,9 @@ open class SearchQueryCompiler(
                 }
             }
         }
+        if (searchQuery.trackScores != null) {
+            ctx.field("track_scores", searchQuery.trackScores)
+        }
         if (searchQuery.docvalueFields.isNotEmpty()) {
             ctx.array("docvalue_fields") {
                 for (field in searchQuery.docvalueFields) {
