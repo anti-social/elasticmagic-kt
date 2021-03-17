@@ -27,7 +27,7 @@ open class SearchQueryCompiler(
     }
 
     fun visit(ctx: ObjectCtx, searchQuery: PreparedSearchQuery<*>) {
-        val query = searchQuery.query
+        val query = searchQuery.query?.reduce()
         val filteredQuery: QueryExpression? = if (searchQuery.filters.isNotEmpty()) {
             if (query != null) {
                 Bool(must = listOf(query), filter = searchQuery.filters)
@@ -35,7 +35,7 @@ open class SearchQueryCompiler(
                 Bool(filter = searchQuery.filters)
             }
         } else {
-            searchQuery.query
+            query
         }
         if (filteredQuery != null) {
             ctx.obj("query") {

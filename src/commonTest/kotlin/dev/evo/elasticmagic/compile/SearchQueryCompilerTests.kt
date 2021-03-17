@@ -1,16 +1,38 @@
 package dev.evo.elasticmagic.compile
 
+import dev.evo.elasticmagic.BoolNode
 import dev.evo.elasticmagic.Document
 import dev.evo.elasticmagic.ElasticsearchVersion
+import dev.evo.elasticmagic.Field
+import dev.evo.elasticmagic.FunctionScoreNode
 import dev.evo.elasticmagic.MultiMatch
+import dev.evo.elasticmagic.NodeHandle
+import dev.evo.elasticmagic.Params
 import dev.evo.elasticmagic.SearchQuery
 import dev.evo.elasticmagic.SubDocument
+import dev.evo.elasticmagic.Type
 import dev.evo.elasticmagic.serde.StdSerializer
 
 import io.kotest.matchers.maps.shouldContainExactly
-import io.kotest.matchers.nulls.shouldNotBeNull
 
 import kotlin.test.Test
+
+class AnyField(name: String) : Field<Nothing>(
+    name,
+    object : Type<Nothing> {
+        override val name: String
+            get() = TODO("not implemented")
+        override fun deserialize(v: Any): Nothing {
+            TODO("not implemented")
+        }
+    },
+    Params()
+) {
+    init {
+        _setFieldName(name)
+        // _bindToParent()
+    }
+}
 
 class SearchQueryCompilerTests {
     private val serializer = StdSerializer()
@@ -144,5 +166,107 @@ class SearchQueryCompilerTests {
                 )
             )
         )
+    }
+
+    @Test
+    fun testNodes() {
+        val BOOL_HANDLE = NodeHandle<BoolNode>("bool")
+        val AD_BOOST_HANDLE = NodeHandle<FunctionScoreNode>("ad_boost")
+
+        val query = SearchQuery(
+            BoolNode(
+                BOOL_HANDLE,
+                should = listOf(
+                    FunctionScoreNode(
+                        AD_BOOST_HANDLE,
+                        null
+                    )
+                )
+            )
+        )
+        var compiled = compiler.compile(serializer, query)
+        compiled.body!! shouldContainExactly emptyMap()
+
+        query.queryNode(BOOL_HANDLE) { node ->
+            node.should.add(
+                AnyField("opinions_count").gt(4)
+            )
+        }
+        compiled = compiler.compile(serializer, query)
+        compiled.body!! shouldContainExactly mapOf(
+            "query" to mapOf(
+                "range" to mapOf(
+                    "opinions_count" to mapOf("gt" to 4)
+                )
+            )
+        )
+
+        query.queryNode(BOOL_HANDLE) { node ->
+            node.should.add(
+                AnyField("opinions_positive_percent").gt(90.0)
+            )
+        }
+        compiled = compiler.compile(serializer, query)
+        compiled.body!! shouldContainExactly mapOf(
+            "query" to mapOf(
+                "bool" to mapOf(
+                    "should" to listOf(
+                        mapOf(
+                            "range" to mapOf(
+                                "opinions_count" to mapOf("gt" to 4)
+                            )
+                        ),
+                        mapOf(
+                            "range" to mapOf(
+                                "opinions_positive_percent" to mapOf("gt" to 90.0)
+                            )
+                        ),
+                    )
+                )
+            )
+        )
+
+        query.queryNode(AD_BOOST_HANDLE) { node ->
+            node.functions.add(
+                weight(
+                    1.5,
+                    filter = AnyField("name").match("test")
+                )
+            )
+        }
+        compiled = compiler.compile(serializer, query)
+        compiled.body!! shouldContainExactly mapOf(
+            "query" to mapOf(
+                "bool" to mapOf(
+                    "should" to listOf(
+                        mapOf(
+                            "function_score" to mapOf(
+                                "functions" to listOf(
+                                    mapOf(
+                                        "weight" to 1.5,
+                                        "filter" to mapOf(
+                                            "match" to mapOf(
+                                                "name" to "test"
+                                            )
+                                        )
+                                    )
+                                )
+                            )
+                        ),
+                        mapOf(
+                            "range" to mapOf(
+                                "opinions_count" to mapOf("gt" to 4)
+                            )
+                        ),
+                        mapOf(
+                            "range" to mapOf(
+                                "opinions_positive_percent" to mapOf("gt" to 90.0)
+                            )
+                        ),
+                    )
+                )
+            )
+        )
+
     }
 }

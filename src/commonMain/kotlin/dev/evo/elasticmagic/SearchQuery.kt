@@ -4,7 +4,21 @@ abstract class BaseSearchQuery<S: Source, T: BaseSearchQuery<S, T>>(
     protected val sourceFactory: () -> S,
     protected var query: QueryExpression? = null,
 ) {
+    var queryNodes: Map<NodeHandle<*>, QueryExpressionNode<*>> = collectNodes(query)
+
     protected val filters = mutableListOf<QueryExpression>()
+
+    companion object {
+        private fun collectNodes(expression: QueryExpression?): Map<NodeHandle<*>, QueryExpressionNode<*>> {
+            val nodes = mutableMapOf<NodeHandle<*>, QueryExpressionNode<*>>()
+            expression?.collect { node ->
+                if (node is QueryExpressionNode<*>) {
+                    nodes[node.handle] = node
+                }
+            }
+            return nodes
+        }
+    }
 
     object QueryCtx {
         val bool = Bool
@@ -21,8 +35,9 @@ abstract class BaseSearchQuery<S: Source, T: BaseSearchQuery<S, T>>(
             boost: Double? = null,
             scoreMode: FunctionScore.ScoreMode? = null,
             boostMode: FunctionScore.BoostMode? = null,
+            minScore: Double? = null,
             functions: List<FunctionScore.Function>,
-        ) = FunctionScore(query, boost, scoreMode, boostMode, functions)
+        ) = FunctionScore(query, boost, scoreMode, boostMode, minScore, functions)
 
         fun weight(
             weight: Double,
@@ -49,6 +64,29 @@ abstract class BaseSearchQuery<S: Source, T: BaseSearchQuery<S, T>>(
 
     fun query(query: QueryExpression?): T = self {
         this.query = query
+        _updateQueryNodes()
+    }
+
+    inline fun <reified N: QueryExpressionNode<N>> queryNode(
+        handle: NodeHandle<N>,
+        block: QueryCtx.(N) -> Unit
+    ): T {
+        val node = _findNode(handle) ?: error("Node handle not found: $handle")
+        QueryCtx.block(node as N)
+        _updateQueryNodes()
+
+        @Suppress("UNCHECKED_CAST")
+        return this as T
+    }
+
+    @Suppress("FunctionName")
+    fun _findNode(handle: NodeHandle<*>): QueryExpressionNode<*>? {
+        return queryNodes[handle]
+    }
+
+    @Suppress("FunctionName")
+    fun _updateQueryNodes() {
+        this.queryNodes = collectNodes(query)
     }
 
     fun filter(vararg filters: QueryExpression): T = self {
