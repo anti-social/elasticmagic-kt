@@ -12,6 +12,7 @@ import dev.evo.elasticmagic.NodeHandle
 import dev.evo.elasticmagic.Params
 import dev.evo.elasticmagic.Script
 import dev.evo.elasticmagic.SearchQuery
+import dev.evo.elasticmagic.Sort
 import dev.evo.elasticmagic.SubDocument
 import dev.evo.elasticmagic.Type
 import dev.evo.elasticmagic.serde.StdSerializer
@@ -25,6 +26,7 @@ class AnyField(name: String) : Field<Nothing>(
     object : Type<Nothing> {
         override val name: String
             get() = TODO("not implemented")
+
         override fun deserialize(v: Any): Nothing {
             TODO("not implemented")
         }
@@ -33,7 +35,6 @@ class AnyField(name: String) : Field<Nothing>(
 ) {
     init {
         _setFieldName(name)
-        // _bindToParent()
     }
 }
 
@@ -186,6 +187,95 @@ class SearchQueryCompilerTests {
                 mapOf(
                     "term" to mapOf(
                         "status" to 0
+                    )
+                )
+            )
+        )
+    }
+
+    @Test
+    fun testSort_fieldSimplified() {
+        compile(
+            SearchQuery()
+                .sort(Sort(field = AnyField("popularity")))
+        ).body!! shouldContainExactly mapOf(
+            "sort" to listOf("popularity")
+        )
+    }
+
+    @Test
+    fun testSort_fieldOrder() {
+        compile(
+            SearchQuery()
+                .sort(Sort(field = AnyField("popularity"), order = Sort.Order.DESC))
+        ).body!! shouldContainExactly mapOf(
+            "sort" to listOf(
+                mapOf(
+                    "popularity" to mapOf(
+                        "order" to "desc",
+                    )
+                )
+            )
+        )
+    }
+
+    @Test
+    fun testSort_fieldAllParams() {
+        compile(
+            SearchQuery()
+                .sort(
+                    Sort(
+                        field = AnyField("popularity"),
+                        order = Sort.Order.DESC,
+                        mode = Sort.Mode.MEDIAN,
+                        numericType = Sort.NumericType.LONG,
+                        missing = Sort.Missing.Value(50),
+                        unmappedType = "long",
+                    )
+                )
+        ).body!! shouldContainExactly mapOf(
+            "sort" to listOf(
+                mapOf(
+                    "popularity" to mapOf(
+                        "order" to "desc",
+                        "mode" to "median",
+                        "numeric_type" to "long",
+                        "missing" to 50,
+                        "unmapped_type" to "long",
+                    )
+                )
+            )
+        )
+    }
+
+    @Test
+    fun testSort_scriptWithOrder() {
+        compile(
+            SearchQuery()
+                .sort(
+                    Sort(
+                        script = Script(
+                            source = "doc[params.field].value",
+                            params = mapOf(
+                                "field" to AnyField("popularity"),
+                            )
+                        ),
+                        scriptType = "number",
+                        order = Sort.Order.DESC
+                    )
+                )
+        ).body!! shouldContainExactly mapOf(
+            "sort" to listOf(
+                mapOf(
+                    "_script" to mapOf(
+                        "order" to "desc",
+                        "type" to "number",
+                        "script" to mapOf(
+                            "source" to "doc[params.field].value",
+                            "params" to mapOf(
+                                "field" to "popularity",
+                            )
+                        )
                     )
                 )
             )

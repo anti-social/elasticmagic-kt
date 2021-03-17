@@ -18,6 +18,9 @@ abstract class BaseSearchQuery<S: Source, T: BaseSearchQuery<S, T>>(
     protected val storedFields: MutableList<Named> = mutableListOf()
     protected val scriptFields: MutableMap<String, Script> = mutableMapOf()
 
+    protected val sorts: MutableList<Sort> = mutableListOf()
+    protected var trackScores: Boolean? = null
+
     protected var size: Long? = null
     protected var from: Long? = null
 
@@ -110,6 +113,18 @@ abstract class BaseSearchQuery<S: Source, T: BaseSearchQuery<S, T>>(
         this.postFilters += filters
     }
 
+    fun sort(vararg sorts: Sort): T = self {
+        this.sorts += sorts
+    }
+
+    fun clearSort(): T = self {
+        sorts.clear()
+    }
+
+    fun trackScores(trackScores: Boolean?): T = self {
+        this.trackScores = trackScores
+    }
+
     fun docvalueFields(vararg fields: Named): T = self {
         docvalueFields += fields.map(::FieldFormat)
     }
@@ -141,6 +156,7 @@ abstract class BaseSearchQuery<S: Source, T: BaseSearchQuery<S, T>>(
             query = query,
             filters = filters.toList(),
             postFilters = postFilters.toList(),
+            sorts = sorts.toList(),
             docvalueFields = docvalueFields,
             storedFields = storedFields,
             scriptFields = scriptFields,
@@ -188,6 +204,7 @@ data class PreparedSearchQuery<S: Source>(
     val query: QueryExpression?,
     val filters: List<QueryExpression>,
     val postFilters: List<QueryExpression>,
+    val sorts: List<Sort>,
     val docvalueFields: List<FieldFormat>,
     val storedFields: List<Named>,
     val scriptFields: Map<String, Script>,

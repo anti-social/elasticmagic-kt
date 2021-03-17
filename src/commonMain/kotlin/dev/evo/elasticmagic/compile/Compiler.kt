@@ -1,6 +1,7 @@
 package dev.evo.elasticmagic.compile
 
 import dev.evo.elasticmagic.ElasticsearchVersion
+import dev.evo.elasticmagic.ExpressionValue
 import dev.evo.elasticmagic.Named
 import dev.evo.elasticmagic.serde.Deserializer
 import dev.evo.elasticmagic.serde.Serializer

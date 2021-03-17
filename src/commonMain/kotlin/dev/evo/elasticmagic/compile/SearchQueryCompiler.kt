@@ -47,6 +47,20 @@ open class SearchQueryCompiler(
                 visit(this, searchQuery.postFilters)
             }
         }
+        if (searchQuery.sorts.isNotEmpty()) {
+            ctx.array("sort") {
+                for (sort in searchQuery.sorts) {
+                    val simpleSortName = sort.simplifiedName()
+                    if (simpleSortName != null) {
+                        value(simpleSortName)
+                    } else {
+                        obj {
+                            visit(this, sort)
+                        }
+                    }
+                }
+            }
+        }
         if (searchQuery.docvalueFields.isNotEmpty()) {
             ctx.array("docvalue_fields") {
                 for (field in searchQuery.docvalueFields) {
@@ -88,6 +102,9 @@ open class SearchQueryCompiler(
             is Expression -> ctx.obj {
                 visit(this, value)
             }
+            is ExpressionValue -> {
+                ctx.value(value.toValue())
+            }
             else -> super.dispatch(ctx, value)
         }
     }
@@ -96,6 +113,9 @@ open class SearchQueryCompiler(
         when (value) {
             is Expression -> ctx.obj(name) {
                 visit(this, value)
+            }
+            is ExpressionValue -> {
+                ctx.field(name, value.toValue())
             }
             else -> super.dispatch(ctx, name, value)
         }

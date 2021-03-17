@@ -3,6 +3,10 @@ package dev.evo.elasticmagic
 import dev.evo.elasticmagic.compile.SearchQueryCompiler
 import dev.evo.elasticmagic.serde.Serializer
 
+interface ExpressionValue {
+    fun toValue(): Any
+}
+
 interface Expression : SearchQueryCompiler.Visitable {
     val name: String
 
@@ -568,3 +572,134 @@ class FunctionScoreNode(
         )
     }
 }
+
+// TODO: nested, geo distance
+data class Sort(
+    val by: By,
+    val order: Order? = null,
+    val mode: Mode? = null,
+    val numericType: NumericType? = null,
+    val missing: Missing? = null,
+    val unmappedType: String? = null,
+) : Expression {
+    override val name = "sort"
+
+    constructor(
+        field: Named? = null,
+        scriptType: String? = null,
+        script: Script? = null,
+        order: Order? = null,
+        mode: Mode? = null,
+        numericType: NumericType? = null,
+        missing: Missing? = null,
+        unmappedType: String? = null,
+    ) : this(By(field, scriptType, script), order, mode, numericType, missing, unmappedType)
+
+    sealed class By {
+        class Field(val field: Named) : By()
+        class Script(val type: String, val script: dev.evo.elasticmagic.Script) : By()
+
+        companion object {
+            internal operator fun invoke(
+                field: Named?, scriptType: String?, script: dev.evo.elasticmagic.Script?
+            ): By {
+                return when {
+                    field != null && script != null -> throw IllegalArgumentException(
+                        "Only field or script are allowed, not both"
+                    )
+                    field == null && script == null -> throw IllegalArgumentException(
+                        "One of field or script are required"
+                    )
+                    field != null -> Field(field)
+                    script != null -> {
+                        if (scriptType != null) {
+                            Script(scriptType, script)
+                        } else {
+                            throw IllegalArgumentException(
+                                "script requires scriptType"
+                            )
+                        }
+                    }
+                    else -> error("Unreachable")
+                }
+            }
+        }
+    }
+
+    enum class Order : ExpressionValue {
+        ASC, DESC;
+
+        override fun toValue(): Any {
+            return name.toLowerCase()
+        }
+    }
+
+    enum class Mode : ExpressionValue {
+        MIN, MAX, SUM, AVG, MEDIAN;
+
+        override fun toValue(): Any {
+            return name.toLowerCase()
+        }
+    }
+
+    enum class NumericType : ExpressionValue {
+        DOUBLE, LONG, DATE, DATE_NANOS;
+
+        override fun toValue(): Any {
+            return name.toLowerCase()
+        }
+    }
+
+    sealed class Missing : ExpressionValue {
+        object Last : Missing()
+        object First : Missing()
+        data class Value(val value: Any) : Missing()
+
+        override fun toValue(): Any {
+            return when (this) {
+                Last -> "_last"
+                First -> "_first"
+                is Value -> value
+            }
+        }
+    }
+
+    internal fun simplifiedName(): String? {
+        if (
+            by is By.Field &&
+            order == null &&
+            mode == null &&
+            numericType == null &&
+            missing == null &&
+            unmappedType == null
+        ) {
+            return by.field.getQualifiedFieldName()
+        }
+        return null
+    }
+
+    override fun accept(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
+        val params = Params(
+            "order" to order,
+            "mode" to mode,
+            "numeric_type" to numericType,
+            "missing" to missing,
+            "unmapped_type" to unmappedType,
+        )
+        when (by) {
+            is By.Field -> {
+                ctx.obj(by.field.getQualifiedFieldName()) {
+                    compiler.visit(this, params)
+                }
+            }
+            is By.Script -> {
+                ctx.obj("_script") {
+                    field("type", by.type)
+                    compiler.visit(this, by.script)
+                    compiler.visit(this, params)
+                }
+            }
+        }
+    }
+}
+
