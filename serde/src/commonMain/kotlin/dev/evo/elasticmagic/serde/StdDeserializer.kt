@@ -1,6 +1,23 @@
 package dev.evo.elasticmagic.serde
 
 object StdDeserializer : Deserializer<Map<String, Any?>> {
+    private fun coerceToAny(v: Any?): Any? {
+        return when (v) {
+            null -> null
+            is Int -> v
+            is Long -> v
+            is Float -> v
+            is Double -> v
+            is Boolean -> v
+            is String -> v
+            is Map<*, *> -> ObjectCtx(v)
+            is List<*> -> ArrayCtx(v)
+            else -> throw IllegalArgumentException(
+                "Non-deserializable type: ${v::class}"
+            )
+        }
+    }
+
     private fun coerceToInt(v: Any?): Int? {
         return when (v) {
             is Int -> v
@@ -84,84 +101,93 @@ object StdDeserializer : Deserializer<Map<String, Any?>> {
     private class ObjectIterator(
         val iter: Iterator<Map.Entry<*, *>>,
     ) : Deserializer.ObjectIterator {
-        override fun hasNext(): Boolean = iter.hasNext()
+        private var currentyEntry: Map.Entry<*, *>? = null
+
+        override fun hasNext(): Boolean {
+            return iter.hasNext().also {
+                currentyEntry = if (it) iter.next() else null
+            }
+        }
 
         override fun anyOrNull(): Pair<String, Any?> {
-            TODO("not implemented")
+            val (key, value) = currentyEntry!!
+            return key as String to coerceToAny(value)
         }
 
         override fun intOrNull(): Pair<String, Int?> {
-            val (key, value) = iter.next()
+            val (key, value) = currentyEntry!!
             return key as String to coerceToInt(value)
         }
 
         override fun longOrNull(): Pair<String, Long?> {
-            val (key, value) = iter.next()
+            val (key, value) = currentyEntry!!
             return key as String to coerceToLong(value)
         }
 
         override fun floatOrNull(): Pair<String, Float?> {
-            val (key, value) = iter.next()
+            val (key, value) = currentyEntry!!
             return key as String to coerceToFloat(value)
         }
 
         override fun doubleOrNull(): Pair<String, Double?> {
-            val (key, value) = iter.next()
+            val (key, value) = currentyEntry!!
             return key as String to coerceToDouble(value)
         }
 
         override fun booleanOrNull(): Pair<String, Boolean?> {
-            val (key, value) = iter.next()
+            val (key, value) = currentyEntry!!
             return key as String to coerceToBoolean(value)
         }
 
         override fun stringOrNull(): Pair<String, String?> {
-            val (key, value) = iter.next()
+            val (key, value) = currentyEntry!!
             return key as String to coerceToString(value)
         }
 
         override fun objOrNull(): Pair<String, Deserializer.ObjectCtx?> {
-            val (key, value) = iter.next()
+            val (key, value) = currentyEntry!!
             return key as String to coerceToMap(value)?.let(StdDeserializer::ObjectCtx)
         }
 
         override fun arrayOrNull(): Pair<String, Deserializer.ArrayCtx?> {
-            val (key, value) = iter.next()
+            val (key, value) = currentyEntry!!
             return key as String to coerceToList(value)?.let(StdDeserializer::ArrayCtx)
         }
     }
 
     private class ArrayCtx(
         private val iter: Iterator<Any?>,
-    ) : Deserializer.ArrayCtx, Iterator<Any?> by iter {
+    ) : Deserializer.ArrayCtx {
+        private var currentValue: Any? = null
+
         constructor(arr: List<Any?>) : this(arr.iterator())
 
-        override fun anyOrNull(): Any? {
-            TODO("not implemented")
+        override fun hasNext(): Boolean {
+            return iter.hasNext().also {
+                currentValue = if (it) iter.next() else null
+            }
         }
 
-        override fun intOrNull(): Int? = coerceToInt(iter.next())
+        override fun anyOrNull(): Any? = coerceToAny(currentValue!!)
 
-        override fun longOrNull(): Long? = coerceToLong(iter.next())
+        override fun intOrNull(): Int? = coerceToInt(currentValue!!)
 
-        override fun floatOrNull(): Float? = coerceToFloat(iter.next())
+        override fun longOrNull(): Long? = coerceToLong(currentValue!!)
 
-        override fun doubleOrNull(): Double? = coerceToDouble(iter.next())
+        override fun floatOrNull(): Float? = coerceToFloat(currentValue!!)
 
-        override fun booleanOrNull(): Boolean? {
-            return coerceToBoolean(iter.next())
-        }
+        override fun doubleOrNull(): Double? = coerceToDouble(currentValue!!)
 
-        override fun stringOrNull(): String? {
-            return coerceToString(iter.next())
-        }
+        override fun booleanOrNull(): Boolean? = coerceToBoolean(currentValue!!)
+
+        override fun stringOrNull(): String? = coerceToString(currentValue!!)
 
         override fun objOrNull(): Deserializer.ObjectCtx? {
-            return coerceToMap(iter.next())?.let(StdDeserializer::ObjectCtx)
+            return coerceToMap(currentValue!!)?.let(StdDeserializer::ObjectCtx)
         }
 
         override fun arrayOrNull(): Deserializer.ArrayCtx? {
-            return coerceToList(iter.next())?.let(StdDeserializer::ArrayCtx)
+            return coerceToList(currentValue!!)?.let(StdDeserializer::ArrayCtx)
         }
     }
 

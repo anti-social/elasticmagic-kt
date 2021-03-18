@@ -21,6 +21,23 @@ import kotlinx.serialization.json.long
 import kotlinx.serialization.json.longOrNull
 
 object JsonDeserializer : Deserializer<JsonObject> {
+    fun coerceToAny(v: JsonElement): Any? {
+        return when (v) {
+            is JsonNull -> null
+            is JsonPrimitive -> {
+                if (v.isString) {
+                    v.content
+                } else {
+                    v.doubleOrNull
+                        ?: v.longOrNull
+                        ?: v.booleanOrNull
+                }
+            }
+            is JsonObject -> ObjectCtx(v)
+            is JsonArray -> ArrayCtx(v)
+        }
+    }
+
     private class ObjectCtx(private val obj: JsonObject) : Deserializer.ObjectCtx {
         override fun intOrNull(name: String): Int? {
             return obj[name]?.jsonPrimitive?.int
@@ -71,22 +88,8 @@ object JsonDeserializer : Deserializer<JsonObject> {
         }
 
         override fun anyOrNull(): Pair<String, Any?> {
-            val (key, jsonValue) = currentEntry!!
-            val value: Any? = when (jsonValue) {
-                is JsonNull -> null
-                is JsonPrimitive -> {
-                    if (jsonValue.isString) {
-                        jsonValue.content
-                    } else {
-                        jsonValue.doubleOrNull
-                            ?: jsonValue.longOrNull
-                            ?: jsonValue.booleanOrNull
-                    }
-                }
-                is JsonObject -> ObjectCtx(jsonValue)
-                is JsonArray -> ArrayCtx(jsonValue)
-            }
-            return key to value
+            val (key, value) = currentEntry!!
+            return key to coerceToAny(value)
         }
 
         override fun intOrNull(): Pair<String, Int?> {
@@ -153,28 +156,14 @@ object JsonDeserializer : Deserializer<JsonObject> {
             }
         }
 
-        override fun anyOrNull(): Any? {
-            val jsonValue = currentValue!!
-            return when (jsonValue) {
-                is JsonNull -> null
-                is JsonPrimitive -> {
-                    if (jsonValue.isString) {
-                        jsonValue.content
-                    } else {
-                        jsonValue.doubleOrNull
-                            ?: jsonValue.longOrNull
-                            ?: jsonValue.booleanOrNull
-                    }
-                }
-                is JsonObject -> ObjectCtx(jsonValue)
-                is JsonArray -> ArrayCtx(jsonValue)
-            }
-        }
-
         override fun hasNext(): Boolean {
             return iter.hasNext().also {
                 currentValue = if (it) iter.next() else null
             }
+        }
+
+        override fun anyOrNull(): Any? {
+            return coerceToAny(currentValue!!)
         }
 
         override fun intOrNull(): Int? {
