@@ -1,6 +1,6 @@
 package dev.evo.elasticmagic.serde
 
-class StdSerializer(
+abstract class StdSerializer(
     private val mapFactory: () -> MutableMap<String, Any?> = ::HashMap,
     private val arrayFactory: () -> MutableList<Any?> = ::ArrayList
 ) : Serializer<Map<String, Any?>> {
@@ -89,9 +89,5 @@ class StdSerializer(
         val map = mapFactory()
         ObjectCtx(map).block()
         return map
-    }
-
-    override fun objToString(obj: Map<String, Any?>): String {
-        TODO("not implemented")
     }
 }

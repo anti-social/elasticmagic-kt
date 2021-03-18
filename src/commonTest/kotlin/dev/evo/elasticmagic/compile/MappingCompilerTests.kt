@@ -13,7 +13,11 @@ import io.kotest.matchers.maps.shouldContainExactly
 import kotlin.test.Test
 
 class MappingCompilerTests {
-    private val serializer = StdSerializer()
+    private val serializer = object : StdSerializer() {
+        override fun objToString(obj: Map<String, Any?>): String {
+            TODO("not implemented")
+        }
+    }
     private val compiler = MappingCompiler(
         ElasticsearchVersion(6, 0, 0),
     )

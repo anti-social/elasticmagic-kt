@@ -1,73 +1,75 @@
 package dev.evo.elasticmagic.serde
 
-object StdDeserializer : Deserializer<Map<String, Any?>> {
-    private fun coerceToAny(v: Any?): Any? {
-        return when (v) {
-            null -> null
-            is Int -> v
-            is Long -> v
-            is Float -> v
-            is Double -> v
-            is Boolean -> v
-            is String -> v
-            is Map<*, *> -> ObjectCtx(v)
-            is List<*> -> ArrayCtx(v)
-            else -> throw IllegalArgumentException(
-                "Non-deserializable type: ${v::class}"
-            )
+abstract class StdDeserializer : Deserializer<Map<String, Any?>> {
+    companion object {
+        private fun coerceToAny(v: Any?): Any? {
+            return when (v) {
+                null -> null
+                is Int -> v
+                is Long -> v
+                is Float -> v
+                is Double -> v
+                is Boolean -> v
+                is String -> v
+                is Map<*, *> -> ObjectCtx(v)
+                is List<*> -> ArrayCtx(v)
+                else -> throw IllegalArgumentException(
+                    "Non-deserializable type: ${v::class}"
+                )
+            }
         }
-    }
 
-    private fun coerceToInt(v: Any?): Int? {
-        return when (v) {
-            is Int -> v
-            is Long -> v.toInt()
-            else -> null
+        private fun coerceToInt(v: Any?): Int? {
+            return when (v) {
+                is Int -> v
+                is Long -> v.toInt()
+                else -> null
+            }
         }
-    }
 
-    private fun coerceToLong(v: Any?): Long? {
-        return when (v) {
-            is Long -> v
-            is Int -> v.toLong()
-            else -> null
+        private fun coerceToLong(v: Any?): Long? {
+            return when (v) {
+                is Long -> v
+                is Int -> v.toLong()
+                else -> null
+            }
         }
-    }
 
-    private fun coerceToFloat(v: Any?): Float? {
-        return when (v) {
-            is Float -> v
-            is Double -> v.toFloat()
-            is Int -> v.toFloat()
-            is Long -> v.toFloat()
-            else -> null
+        private fun coerceToFloat(v: Any?): Float? {
+            return when (v) {
+                is Float -> v
+                is Double -> v.toFloat()
+                is Int -> v.toFloat()
+                is Long -> v.toFloat()
+                else -> null
+            }
         }
-    }
 
-    private fun coerceToDouble(v: Any?): Double? {
-        return when (v) {
-            is Double -> v
-            is Float -> v.toDouble()
-            is Int -> v.toDouble()
-            is Long -> v.toDouble()
-            else -> null
+        private fun coerceToDouble(v: Any?): Double? {
+            return when (v) {
+                is Double -> v
+                is Float -> v.toDouble()
+                is Int -> v.toDouble()
+                is Long -> v.toDouble()
+                else -> null
+            }
         }
-    }
 
-    private fun coerceToBoolean(v: Any?): Boolean? {
-        return v as? Boolean
-    }
+        private fun coerceToBoolean(v: Any?): Boolean? {
+            return v as? Boolean
+        }
 
-    private fun coerceToString(v: Any?): String? {
-        return v as? String
-    }
+        private fun coerceToString(v: Any?): String? {
+            return v as? String
+        }
 
-    private fun coerceToMap(v: Any?): Map<*, *>? {
-        return v as? Map<*, *>
-    }
+        private fun coerceToMap(v: Any?): Map<*, *>? {
+            return v as? Map<*, *>
+        }
 
-    private fun coerceToList(v: Any?): List<*>? {
-        return v as? List<*>
+        private fun coerceToList(v: Any?): List<*>? {
+            return v as? List<*>
+        }
     }
 
     private class ObjectCtx(
@@ -193,9 +195,5 @@ object StdDeserializer : Deserializer<Map<String, Any?>> {
 
     override fun wrapObj(obj: Map<String, Any?>): Deserializer.ObjectCtx {
         return ObjectCtx(obj)
-    }
-
-    override fun objFromStringOrNull(data: String): Deserializer.ObjectCtx? {
-        TODO("not implemented")
     }
 }

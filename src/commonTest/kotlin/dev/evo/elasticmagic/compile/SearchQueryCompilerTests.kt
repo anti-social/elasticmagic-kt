@@ -42,7 +42,11 @@ class AnyField(name: String) : Field<Nothing>(
 }
 
 class SearchQueryCompilerTests {
-    private val serializer = StdSerializer()
+    private val serializer = object : StdSerializer() {
+        override fun objToString(obj: Map<String, Any?>): String {
+            TODO("not implemented")
+        }
+    }
     private val compiler = SearchQueryCompiler(
         ElasticsearchVersion(6, 0, 0),
     )
