@@ -43,7 +43,7 @@ interface QueryExpression : Expression {
 }
 
 @Suppress("UNUSED")
-data class NodeHandle<T: QueryExpressionNode<T>>(val name: String)
+data class NodeHandle<T: QueryExpressionNode<T>>(val name: String? = null)
 
 abstract class QueryExpressionNode<T: QueryExpressionNode<T>>(
     val handle: NodeHandle<T>,
@@ -381,7 +381,7 @@ class BoolNode(
     override var must: MutableList<QueryExpression> = must.toMutableList()
     override var mustNot: MutableList<QueryExpression> = mustNot.toMutableList()
 
-    override fun toQueryExpression(): QueryExpression {
+    override fun toQueryExpression(): Bool {
         return Bool(
             filter = filter,
             should = should,
@@ -392,7 +392,58 @@ class BoolNode(
     }
 }
 
-interface FunctionScoreExpression : QueryExpression{
+interface DisMaxExpression : QueryExpression {
+    val queries: List<QueryExpression>
+
+    override fun children(): Iterator<Expression> = iterator {
+        yieldAll(queries)
+    }
+}
+
+data class DisMax(
+    override val queries: List<QueryExpression>,
+    val tieBreaker: Double? = null,
+) : DisMaxExpression {
+    override val name = "dis_max"
+
+    override fun reduce(): QueryExpression? {
+        return when {
+            queries.isEmpty() -> null
+            queries.size == 1 -> queries[0]
+            else -> this
+        }
+    }
+
+    override fun accept(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
+        ctx.obj(name) {
+            array("queries") {
+                compiler.visit(this, queries)
+            }
+            if (tieBreaker != null) {
+                field("tie_breaker", tieBreaker)
+            }
+        }
+    }
+}
+
+class DisMaxNode(
+    handle: NodeHandle<DisMaxNode>,
+    queries: List<QueryExpression> = emptyList(),
+    var tieBreaker: Double? = null,
+) : DisMaxExpression, QueryExpressionNode<DisMaxNode>(handle) {
+    override val name = "dis_max"
+
+    override var queries: MutableList<QueryExpression> = queries.toMutableList()
+
+    override fun toQueryExpression(): DisMax {
+        return DisMax(
+            queries = queries,
+            tieBreaker = tieBreaker
+        )
+    }
+}
+
+interface FunctionScoreExpression : QueryExpression {
     val functions: List<FunctionScore.Function>
 
     override fun children(): Iterator<Expression> = iterator {

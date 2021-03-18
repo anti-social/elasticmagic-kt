@@ -18,7 +18,7 @@ abstract class BaseSearchQuery<S: Source, T: BaseSearchQuery<S, T>>(
     protected var query: QueryExpression? = null,
     params: Params = Params(),
 ) {
-    var queryNodes: Map<NodeHandle<*>, QueryExpressionNode<*>> = collectNodes(query)
+    protected var queryNodes: Map<NodeHandle<*>, QueryExpressionNode<*>> = collectNodes(query)
 
     protected val filters: MutableList<QueryExpression> = mutableListOf()
     protected val postFilters: MutableList<QueryExpression> = mutableListOf()

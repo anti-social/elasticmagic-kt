@@ -1,6 +1,8 @@
 package dev.evo.elasticmagic.compile
 
 import dev.evo.elasticmagic.BoolNode
+import dev.evo.elasticmagic.DisMax
+import dev.evo.elasticmagic.DisMaxNode
 import dev.evo.elasticmagic.Document
 import dev.evo.elasticmagic.ElasticsearchVersion
 import dev.evo.elasticmagic.Field
@@ -347,6 +349,92 @@ class SearchQueryCompilerTests {
         compile(query).params shouldContainExactly mapOf(
             "search_type" to "query_then_fetch",
             "request_cache" to true,
+        )
+    }
+
+    @Test
+    fun testDisMax() {
+        val query = SearchQuery(
+            DisMax(
+                listOf(
+                    AnyField("name.en").match("Good morning"),
+                    AnyField("name.es").match("Buenos días"),
+                    AnyField("name.de").match("Guten Morgen"),
+                ),
+                tieBreaker = 0.5
+            )
+        )
+        compile(query).body shouldContainExactly mapOf(
+            "query" to mapOf(
+                "dis_max" to mapOf(
+                    "queries" to listOf(
+                        mapOf(
+                            "match" to mapOf(
+                                "name.en" to "Good morning"
+                            )
+                        ),
+                        mapOf(
+                            "match" to mapOf(
+                                "name.es" to "Buenos días"
+                            )
+                        ),
+                        mapOf(
+                            "match" to mapOf(
+                                "name.de" to "Guten Morgen"
+                            )
+                        ),
+                    ),
+                    "tie_breaker" to 0.5
+                )
+            )
+        )
+    }
+
+    @Test
+    fun testDisMaxNode() {
+        val LANG_HANDLE = NodeHandle<DisMaxNode>()
+        val query = SearchQuery(
+            DisMaxNode(LANG_HANDLE)
+        )
+        compile(query).body shouldContainExactly emptyMap()
+
+        query.queryNode(LANG_HANDLE) { node ->
+            node.queries.add(
+                AnyField("name.en").match("Good morning"),
+            )
+        }
+        compile(query).body shouldContainExactly mapOf(
+            "query" to mapOf(
+                "match" to mapOf(
+                    "name.en" to "Good morning"
+                )
+            )
+        )
+
+        query.queryNode(LANG_HANDLE) { node ->
+            node.tieBreaker = 0.7
+            node.queries.add(
+                AnyField("name.de").match("Guten Morgen"),
+            )
+        }
+        compile(query).body shouldContainExactly mapOf(
+            "query" to mapOf(
+                "dis_max" to mapOf(
+                    "queries" to listOf(
+                        mapOf(
+                            "match" to mapOf(
+                                "name.en" to "Good morning"
+                            )
+                        ),
+                        mapOf(
+                            "match" to mapOf(
+                                "name.de" to "Guten Morgen"
+                            )
+                        ),
+                    ),
+                    "tie_breaker" to 0.7
+                )
+            )
         )
     }
 
