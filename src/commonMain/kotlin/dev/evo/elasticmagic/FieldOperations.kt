@@ -1,9 +1,13 @@
 package dev.evo.elasticmagic
 
-interface Named {
+interface Named : ExpressionValue {
     fun getFieldName(): String
 
     fun getQualifiedFieldName(): String
+
+    override fun toValue(): Any {
+        return getQualifiedFieldName()
+    }
 }
 
 /**

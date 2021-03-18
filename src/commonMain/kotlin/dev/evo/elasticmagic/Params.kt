@@ -35,3 +35,11 @@ internal fun <K, V> MutableMap<K, V>.putNotNull(key: K, value: V?) {
         this[key] = value
     }
 }
+
+internal fun <K, V> MutableMap<K, V>.putNotNullOrRemove(key: K, value: V?) {
+    if (value != null) {
+        this[key] = value
+    } else {
+        remove(key)
+    }
+}

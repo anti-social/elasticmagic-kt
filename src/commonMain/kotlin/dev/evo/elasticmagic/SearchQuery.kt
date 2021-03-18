@@ -5,9 +5,18 @@ data class FieldFormat(
     val format: String? = null,
 )
 
+enum class SearchType : ExpressionValue {
+    QUERY_THEN_FETCH, DFS_QUERY_THEN_FETCH;
+
+    override fun toValue(): Any {
+        return name.toLowerCase()
+    }
+}
+
 abstract class BaseSearchQuery<S: Source, T: BaseSearchQuery<S, T>>(
     protected val sourceFactory: () -> S,
     protected var query: QueryExpression? = null,
+    params: Params = Params(),
 ) {
     var queryNodes: Map<NodeHandle<*>, QueryExpressionNode<*>> = collectNodes(query)
 
@@ -25,6 +34,9 @@ abstract class BaseSearchQuery<S: Source, T: BaseSearchQuery<S, T>>(
 
     protected var size: Long? = null
     protected var from: Long? = null
+    protected var terminateAfter: Long? = null
+
+    protected val params: MutableParams = params.toMutable()
 
     companion object {
         private fun collectNodes(expression: QueryExpression?): Map<NodeHandle<*>, QueryExpressionNode<*>> {
@@ -147,12 +159,43 @@ abstract class BaseSearchQuery<S: Source, T: BaseSearchQuery<S, T>>(
         scriptFields += fields
     }
 
-    fun size(size: Long): T = self {
+    fun size(size: Long?): T = self {
         this.size = size
     }
 
-    fun from(from: Long): T = self {
+    fun from(from: Long?): T = self {
         this.from = from
+    }
+
+    fun terminateAfter(terminateAfter: Long?): T = self {
+        this.terminateAfter = terminateAfter
+    }
+
+    fun searchParams(vararg params: Pair<String, Any?>): T = self {
+        for ((key, rawValue) in params) {
+            val value = if (rawValue is ExpressionValue) {
+                rawValue.toValue()
+            } else {
+                rawValue
+            }
+            this.params.putNotNullOrRemove(key, value)
+        }
+    }
+
+    fun searchType(searchType: SearchType?): T = self {
+        params.putNotNullOrRemove("search_type", searchType?.toValue())
+    }
+
+    fun routing(routing: String?): T = self {
+        params.putNotNullOrRemove("routing", routing)
+    }
+
+    fun routing(routing: Long?): T = self {
+        params.putNotNullOrRemove("routing", routing)
+    }
+
+    fun requestCache(requestCache: Boolean?): T = self {
+        params.putNotNullOrRemove("request_cache", requestCache)
     }
 
     fun prepare(): PreparedSearchQuery<S> {
@@ -170,6 +213,8 @@ abstract class BaseSearchQuery<S: Source, T: BaseSearchQuery<S, T>>(
             scriptFields = scriptFields,
             size = size,
             from = from,
+            terminateAfter = terminateAfter,
+            params = params,
         )
     }
 
@@ -186,11 +231,15 @@ abstract class BaseSearchQuery<S: Source, T: BaseSearchQuery<S, T>>(
 open class SearchQuery<S: Source>(
     sourceFactory: () -> S,
     query: QueryExpression? = null,
-) : BaseSearchQuery<S, SearchQuery<S>>(sourceFactory, query) {
+    params: Params = Params(),
+) : BaseSearchQuery<S, SearchQuery<S>>(sourceFactory, query, params) {
 
     companion object {
-        operator fun invoke(query: QueryExpression? = null): SearchQuery<StdSource> {
-            return SearchQuery(::StdSource, query = query)
+        operator fun invoke(
+            query: QueryExpression? = null,
+            params: Params = Params(),
+        ): SearchQuery<StdSource> {
+            return SearchQuery(::StdSource, query = query, params = params)
         }
 
         operator fun <S: Source> invoke(
@@ -220,6 +269,8 @@ data class PreparedSearchQuery<S: Source>(
     val scriptFields: Map<String, Script>,
     val size: Long?,
     val from: Long?,
+    val terminateAfter: Long?,
+    val params: Params,
 )
 
 data class SearchQueryResult<S: Source>(

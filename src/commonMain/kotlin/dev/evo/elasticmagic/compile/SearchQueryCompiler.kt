@@ -13,7 +13,11 @@ open class SearchQueryCompiler(
         fun accept(ctx: ObjectCtx, compiler: SearchQueryCompiler)
     }
 
-    data class Compiled<T>(val docType: String?, override val body: T?): Compiler.Compiled<T>()
+    data class Compiled<T>(
+        val docType: String?,
+        val params: Map<String, Any?>,
+        override val body: T,
+    ): Compiler.Compiled<T>()
 
     override fun <T> compile(serializer: Serializer<T>, input: BaseSearchQuery<*, *>): Compiled<T> {
         val preparedSearchQuery = input.prepare()
@@ -22,6 +26,7 @@ open class SearchQueryCompiler(
         }
         return Compiled(
             preparedSearchQuery.docType,
+            preparedSearchQuery.params,
             body
         )
     }
@@ -96,6 +101,9 @@ open class SearchQueryCompiler(
         }
         if (searchQuery.from != null) {
             ctx.field("from", searchQuery.from)
+        }
+        if (searchQuery.terminateAfter != null) {
+            ctx.field("terminate_after", searchQuery.terminateAfter)
         }
     }
 
