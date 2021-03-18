@@ -290,6 +290,13 @@ class SearchQueryCompilerTests {
     }
 
     @Test
+    fun testTrackTotalHits() {
+        compile(SearchQuery().trackScores(true)).body!! shouldContainExactly mapOf(
+            "track_scores" to true
+        )
+    }
+
+    @Test
     fun testSizeAndFrom() {
         val query = SearchQuery()
         query
