@@ -2,9 +2,6 @@ package dev.evo.elasticmagic.transport
 
 import dev.evo.elasticmagic.serde.DeserializationException
 import dev.evo.elasticmagic.serde.Deserializer
-import dev.evo.elasticmagic.serde.Serializer
-import dev.evo.elasticmagic.serde.json.JsonDeserializer
-import dev.evo.elasticmagic.serde.json.JsonSerializer
 
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.HttpClientEngine
@@ -22,6 +19,7 @@ import io.ktor.http.takeFrom
 class ElasticsearchKtorTransport(
     baseUrl: String,
     engine: HttpClientEngine,
+    private val deserializer: Deserializer<*>,
     configure: Config.() -> Unit = {},
 ) : ElasticsearchTransport(
     baseUrl,
@@ -34,7 +32,7 @@ class ElasticsearchKtorTransport(
         ContentEncoding()
     }
 
-    // override suspend fun objRequest(
+    // override suspend fun jsonRequest(
     //     method: Method,
     //     path: String,
     //     parameters: Map<String, List<String>>?,
@@ -108,7 +106,7 @@ class ElasticsearchKtorTransport(
         val statusCode = response.status.value
         val content = response.readText()
         val jsonError = try {
-            JsonDeserializer.objFromStringOrNull(content)
+            deserializer.objFromStringOrNull(content)
         } catch (e: DeserializationException) {
             null
         }

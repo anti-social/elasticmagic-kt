@@ -1,40 +1,44 @@
 package dev.evo.elasticmagic
 
 import dev.evo.elasticmagic.compile.CompilerProvider
-import dev.evo.elasticmagic.compile.SearchQueryCompiler
+import dev.evo.elasticmagic.serde.Serde
 import dev.evo.elasticmagic.serde.toMap
 import dev.evo.elasticmagic.transport.ElasticsearchTransport
 import dev.evo.elasticmagic.transport.Method
 
 class ElasticsearchCluster<OBJ>(
     private val esTransport: ElasticsearchTransport,
-    private val compilerProvider: CompilerProvider<OBJ>,
+    private val compilerProvider: CompilerProvider,
+    private val serde: Serde<OBJ>,
 ) {
     operator fun get(indexName: String): ElasticsearchIndex<OBJ> {
-        return ElasticsearchIndex(indexName, esTransport, compilerProvider)
+        return ElasticsearchIndex(indexName, esTransport, compilerProvider, serde)
     }
 }
 
 class ElasticsearchIndex<OBJ>(
     val indexName: String,
     private val esTransport: ElasticsearchTransport,
-    private val compilerProvider: CompilerProvider<OBJ>,
+    private val compilerProvider: CompilerProvider,
+    private val serde: Serde<OBJ>,
 ) {
     suspend fun <S : Source> search(
         searchQuery: BaseSearchQuery<S, *>
     ): SearchQueryResult<S> {
         val preparedSearchQuery = searchQuery.prepare()
         val compiled = compilerProvider.searchQuery.compile(
-            compilerProvider.serializer, searchQuery
+            serde.serializer, searchQuery
         )
         val response = esTransport.request(
-            Method.GET, "$indexName/_doc/_search"
+            Method.GET,
+            "$indexName/_doc/_search",
+            contentType = serde.contentType,
         ) {
             if (compiled.body != null) {
-                append(compilerProvider.serializer.objToString(compiled.body))
+                append(serde.serializer.objToString(compiled.body))
             }
         }
-        val rawResult = compilerProvider.deserializer.objFromString(response)
+        val rawResult = serde.deserializer.objFromString(response)
         val rawHitsData = rawResult.obj("hits")
         val rawTotal = rawHitsData.objOrNull("total")
         val (totalHits, totalHitsRelation) = if (rawTotal != null) {

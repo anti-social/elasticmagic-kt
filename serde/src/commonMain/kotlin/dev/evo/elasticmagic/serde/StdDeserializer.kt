@@ -72,7 +72,7 @@ abstract class StdDeserializer : Deserializer<Map<String, Any?>> {
         }
     }
 
-    private class ObjectCtx(
+    protected class ObjectCtx(
         private val map: Map<*, *>,
     ) : Deserializer.ObjectCtx {
         override fun iterator(): ObjectIterator {
@@ -100,7 +100,7 @@ abstract class StdDeserializer : Deserializer<Map<String, Any?>> {
         }
     }
 
-    private class ObjectIterator(
+    protected class ObjectIterator(
         val iter: Iterator<Map.Entry<*, *>>,
     ) : Deserializer.ObjectIterator {
         private var currentyEntry: Map.Entry<*, *>? = null
@@ -157,7 +157,7 @@ abstract class StdDeserializer : Deserializer<Map<String, Any?>> {
         }
     }
 
-    private class ArrayCtx(
+    protected class ArrayCtx(
         private val iter: Iterator<Any?>,
     ) : Deserializer.ArrayCtx {
         private var currentValue: Any? = null

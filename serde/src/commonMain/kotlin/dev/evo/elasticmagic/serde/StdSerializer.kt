@@ -5,7 +5,7 @@ abstract class StdSerializer(
     private val arrayFactory: () -> MutableList<Any?> = ::ArrayList
 ) : Serializer<Map<String, Any?>> {
 
-    private inner class ObjectCtx(
+    protected inner class ObjectCtx(
         private val map: MutableMap<String, Any?>
     ) : Serializer.ObjectCtx {
         override fun field(name: String, value: Int?) {
@@ -45,7 +45,7 @@ abstract class StdSerializer(
         }
     }
 
-    inner class ArrayCtx(
+    protected inner class ArrayCtx(
         private val array: MutableList<Any?>
     ) : Serializer.ArrayCtx {
         override fun value(value: Int?) {

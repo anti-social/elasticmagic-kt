@@ -3,7 +3,8 @@ rootProject.name = "elasticmagic"
 
 include(
     "serde",
-    "serde-json",
+    "serde-serialization-json",
+    "serde-jackson-json",
     "transport",
     "transport-ktor",
     "tests"
@@ -11,6 +12,7 @@ include(
 )
 
 project(":serde").name = "elasticmagic-serde"
-project(":serde-json").name = "elasticmagic-serde-json"
+project(":serde-serialization-json").name = "elasticmagic-serde-serialization-json"
+project(":serde-jackson-json").name = "elasticmagic-serde-jackson-json"
 project(":transport").name = "elasticmagic-transport"
 project(":transport-ktor").name = "elasticmagic-transport-ktor"

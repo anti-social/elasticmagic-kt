@@ -1,4 +1,4 @@
-package dev.evo.elasticmagic.serde.json
+package dev.evo.elasticmagic.serde.serialization
 
 import dev.evo.elasticmagic.serde.DeserializationException
 import dev.evo.elasticmagic.serde.Deserializer
@@ -20,21 +20,23 @@ import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.long
 import kotlinx.serialization.json.longOrNull
 
-object JsonDeserializer : Deserializer<JsonObject> {
-    fun coerceToAny(v: JsonElement): Any? {
-        return when (v) {
-            is JsonNull -> null
-            is JsonPrimitive -> {
-                if (v.isString) {
-                    v.content
-                } else {
-                    v.doubleOrNull
-                        ?: v.longOrNull
-                        ?: v.booleanOrNull
+sealed class JsonDeserializer : Deserializer<JsonObject> {
+    companion object : JsonDeserializer() {
+        private fun coerceToAny(v: JsonElement): Any? {
+            return when (v) {
+                is JsonNull -> null
+                is JsonPrimitive -> {
+                    if (v.isString) {
+                        v.content
+                    } else {
+                        v.doubleOrNull
+                            ?: v.longOrNull
+                            ?: v.booleanOrNull
+                    }
                 }
+                is JsonObject -> ObjectCtx(v)
+                is JsonArray -> ArrayCtx(v)
             }
-            is JsonObject -> ObjectCtx(v)
-            is JsonArray -> ArrayCtx(v)
         }
     }
 

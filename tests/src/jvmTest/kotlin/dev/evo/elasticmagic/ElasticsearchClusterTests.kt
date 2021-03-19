@@ -1,8 +1,7 @@
 package dev.evo.elasticmagic
 
 import dev.evo.elasticmagic.compile.CompilerProvider
-import dev.evo.elasticmagic.serde.json.JsonDeserializer
-import dev.evo.elasticmagic.serde.json.JsonSerializer
+import dev.evo.elasticmagic.serde.serialization.JsonSerde
 import dev.evo.elasticmagic.transport.ElasticsearchKtorTransport
 
 import io.kotest.matchers.shouldBe
@@ -24,16 +23,15 @@ class ElasticsearchClusterTests {
         val rank by float()
     }
 
-    val esTransport = ElasticsearchKtorTransport(
+    private val esTransport = ElasticsearchKtorTransport(
         "http://es6-stg-prom-lb.prom.dev-cloud.evo.:9200",
-        CIO.create {}
+        deserializer = JsonSerde.deserializer,
+        engine = CIO.create {}
     )
-    val compilers = CompilerProvider(
+    private val compilers = CompilerProvider(
         ElasticsearchVersion(6, 0, 0),
-        JsonSerializer,
-        JsonDeserializer
     )
-    val cluster = ElasticsearchCluster(esTransport, compilers)
+    private val cluster = ElasticsearchCluster(esTransport, compilers, JsonSerde)
 
     @Test
     fun test() = runBlocking {
@@ -53,7 +51,7 @@ class ElasticsearchClusterTests {
         }
             .filter(FactorsDoc.partition.eq(17))
             .filter(FactorsDoc.clickPrice.gt(2.2))
-        println(compilers.searchQuery.compile(compilers.serializer, query).body)
+        println(compilers.searchQuery.compile(JsonSerde.serializer, query).body)
 
         val searchResult = index.search(query)
         println(searchResult)
@@ -75,7 +73,7 @@ class ElasticsearchClusterTests {
                 )
             )
         }
-        println(compilers.searchQuery.compile(compilers.serializer, query).body)
+        println(compilers.searchQuery.compile(JsonSerde.serializer, query).body)
 
         val searchResult = index.search(query)
         println(searchResult)

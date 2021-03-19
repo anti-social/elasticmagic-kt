@@ -1,9 +1,9 @@
 package dev.evo.elasticmagic.compile
 
 import dev.evo.elasticmagic.ElasticsearchVersion
-import dev.evo.elasticmagic.ExpressionValue
 import dev.evo.elasticmagic.Named
 import dev.evo.elasticmagic.serde.Deserializer
+import dev.evo.elasticmagic.serde.Serde
 import dev.evo.elasticmagic.serde.Serializer
 import dev.evo.elasticmagic.serde.Serializer.ArrayCtx
 import dev.evo.elasticmagic.serde.Serializer.ObjectCtx
@@ -73,11 +73,7 @@ abstract class BaseCompiler<I>(
     }
 }
 
-class CompilerProvider<OBJ>(
-    esVersion: ElasticsearchVersion,
-    val serializer: Serializer<OBJ>,
-    val deserializer: Deserializer<OBJ>,
-) {
+class CompilerProvider(esVersion: ElasticsearchVersion) {
     val mapping: MappingCompiler = MappingCompiler(esVersion)
 
     val searchQuery: SearchQueryCompiler = SearchQueryCompiler(esVersion)

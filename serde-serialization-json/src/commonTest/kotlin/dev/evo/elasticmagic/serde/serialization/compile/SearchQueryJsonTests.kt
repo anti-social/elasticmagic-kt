@@ -1,24 +1,19 @@
-package dev.evo.elasticmagic.serde.json.compile
+package dev.evo.elasticmagic.serde.serialization.compile
 
 import dev.evo.elasticmagic.Document
 import dev.evo.elasticmagic.ElasticsearchVersion
 import dev.evo.elasticmagic.SearchQuery
 import dev.evo.elasticmagic.compile.SearchQueryCompiler
-import dev.evo.elasticmagic.serde.json.JsonSerializer
+import dev.evo.elasticmagic.serde.serialization.JsonSerializer
 
 import io.kotest.matchers.shouldBe
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.Json
 
 // import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.addJsonObject
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import kotlinx.serialization.json.putJsonArray
 import kotlinx.serialization.json.putJsonObject
-import kotlinx.serialization.serializer
-import kotlin.reflect.typeOf
 
 import kotlin.test.Test
 

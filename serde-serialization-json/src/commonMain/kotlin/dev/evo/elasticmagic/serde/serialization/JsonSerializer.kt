@@ -1,4 +1,4 @@
-package dev.evo.elasticmagic.serde.json
+package dev.evo.elasticmagic.serde.serialization
 
 import dev.evo.elasticmagic.serde.Serializer
 
@@ -15,7 +15,10 @@ import kotlinx.serialization.json.put
 import kotlinx.serialization.json.putJsonArray
 import kotlinx.serialization.json.putJsonObject
 
-object JsonSerializer : Serializer<JsonObject> {
+sealed class JsonSerializer : Serializer<JsonObject> {
+
+    companion object : JsonSerializer()
+
     private class ObjectCtx(private val objBuilder: JsonObjectBuilder) : Serializer.ObjectCtx {
         override fun field(name: String, value: Int?) {
             objBuilder.put(name, value)
