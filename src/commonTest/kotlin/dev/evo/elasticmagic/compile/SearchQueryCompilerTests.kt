@@ -17,7 +17,7 @@ import dev.evo.elasticmagic.SearchQuery
 import dev.evo.elasticmagic.SearchType
 import dev.evo.elasticmagic.Sort
 import dev.evo.elasticmagic.SubDocument
-import dev.evo.elasticmagic.Type
+import dev.evo.elasticmagic.FieldType
 import dev.evo.elasticmagic.serde.StdSerializer
 
 import io.kotest.matchers.maps.shouldContainExactly
@@ -26,7 +26,7 @@ import kotlin.test.Test
 
 class AnyField(name: String) : Field<Nothing>(
     name,
-    object : Type<Nothing> {
+    object : FieldType<Nothing> {
         override val name: String
             get() = TODO("not implemented")
 

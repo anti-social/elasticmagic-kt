@@ -47,11 +47,11 @@ open class BaseField : FieldOperations {
  * Represents field in an Elasticsearch document.
  */
 open class Field<T>(
-    protected val name: String? = null,
-    protected val type: Type<T>,
+    internal val name: String? = null,
+    protected val type: FieldType<T>,
     protected val params: Params,
 ) : BaseField() {
-    fun getFieldType(): Type<T> = type
+    fun getFieldType(): FieldType<T> = type
 
     fun getMappingParams(): Params = params
 
@@ -63,22 +63,30 @@ open class Field<T>(
         return SubFields.SubFieldsProperty(name, type, params, factory)
     }
 
-    open operator fun provideDelegate(
-        thisRef: FieldSet, prop: KProperty<*>
-    ): ReadOnlyProperty<FieldSet, Field<T>> = FieldProperty(this, thisRef, prop)
+    // operator fun provideDelegate(
+    //     thisRef: FieldSet, prop: KProperty<*>
+    // ): ReadOnlyProperty<FieldSet, Field<T>> = FieldProperty(this, thisRef, prop)
+    //
+    // class FieldProperty<F: Field<T>, T>(
+    //     private val field: F, fieldSet: FieldSet, prop: KProperty<*>
+    // ) : ReadOnlyProperty<FieldSet, F> {
+    //     init {
+    //         field._setFieldName(field.name ?: prop.name)
+    //         fieldSet._fields.add(field)
+    //     }
+    //
+    //     override fun getValue(thisRef: FieldSet, property: KProperty<*>): F {
+    //         return field
+    //     }
+    // }
 
-    class FieldProperty<F: Field<T>, T>(
-        private val field: F, fieldSet: FieldSet, prop: KProperty<*>
-    ) : ReadOnlyProperty<FieldSet, F> {
-        init {
-            field._setFieldName(field.name ?: prop.name)
-            fieldSet._fields.add(field)
-        }
+    // operator fun getValue(thisRef: Source, property: KProperty<*>): T {
+    //     TODO()
+    // }
 
-        override fun getValue(thisRef: FieldSet, property: KProperty<*>): F {
-            return field
-        }
-    }
+    // operator fun provideDelegate(thisRef: Source, property: KProperty<*>): ReadWriteProperty<Source, T> {
+    //     TODO()
+    // }
 }
 
 /**
@@ -91,7 +99,7 @@ abstract class FieldSet {
 
     fun <T> field(
         name: String?,
-        type: Type<T>,
+        type: FieldType<T>,
         docValues: Boolean? = null,
         index: Boolean? = null,
         store: Boolean? = null,
@@ -107,7 +115,7 @@ abstract class FieldSet {
         return Field(name, type, params)
     }
     fun <T> field(
-        type: Type<T>,
+        type: FieldType<T>,
         docValues: Boolean? = null,
         index: Boolean? = null,
         store: Boolean? = null,
@@ -245,6 +253,23 @@ abstract class FieldSet {
             params = params,
         )
     }
+
+    operator fun <T> Field<T>.provideDelegate(
+        thisRef: FieldSet, prop: KProperty<*>
+    ): ReadOnlyProperty<FieldSet, Field<T>> = FieldProperty(this, thisRef, prop)
+
+    class FieldProperty<F: Field<T>, T>(
+        private val field: F, fieldSet: FieldSet, prop: KProperty<*>
+    ) : ReadOnlyProperty<FieldSet, F> {
+        init {
+            field._setFieldName(field.name ?: prop.name)
+            fieldSet._fields.add(field)
+        }
+
+        override fun getValue(thisRef: FieldSet, property: KProperty<*>): F {
+            return field
+        }
+    }
 }
 
 /**
@@ -253,9 +278,9 @@ abstract class FieldSet {
  */
 abstract class SubFields<T> : FieldSet(), FieldOperations {
     private val field = BaseField()
-    private lateinit var type: Type<T>
+    private lateinit var type: FieldType<T>
 
-    fun getFieldType(): Type<T> = type
+    fun getFieldType(): FieldType<T> = type
 
     override fun getFieldName(): String = field.getFieldName()
 
@@ -274,7 +299,7 @@ abstract class SubFields<T> : FieldSet(), FieldOperations {
 
     class SubFieldsProperty<T, V: SubFields<T>>(
         private val name: String?,
-        private val type: Type<T>,
+        private val type: FieldType<T>,
         private val params: Params,
         private val subFieldsFactory: () -> V,
     ) {
@@ -300,7 +325,7 @@ abstract class SubFields<T> : FieldSet(), FieldOperations {
 
     internal class FieldWrapper<T>(
         private val subFields: SubFields<*>,
-        type: Type<T>,
+        type: FieldType<T>,
         params: Params,
     ) : Field<T>(subFields.getFieldName(), type, params) {
         override fun getFieldName(): String = subFields.getFieldName()
@@ -375,7 +400,7 @@ abstract class SubDocument : BaseDocument(), FieldOperations {
 
     class SubDocumentProperty<V: SubDocument>(
         private val name: String?,
-        private val type: Type<V>,
+        private val type: FieldType<V>,
         private val params: Params,
         private val subDocumentFactory: () -> V,
     ) {
@@ -400,14 +425,14 @@ abstract class SubDocument : BaseDocument(), FieldOperations {
 
     internal class FieldWrapper<T: SubDocument>(
         private val subDocument: SubDocument,
-        type: Type<T>,
+        type: FieldType<T>,
         params: Params,
     ) : Field<T>(subDocument.getFieldName(), type, params) {
         override fun getFieldName(): String = subDocument.getFieldName()
 
         override fun getQualifiedFieldName(): String = subDocument.getQualifiedFieldName()
 
-        override fun getSubDocument(): SubDocument? = subDocument
+        override fun getSubDocument(): SubDocument = subDocument
 
         override fun _setFieldName(fieldName: String) {
             subDocument.setFieldName(fieldName)
@@ -444,11 +469,11 @@ open class MetaFields : FieldSet() {
     // TODO: Could we get rid of overriding provideDelegate operator?
 
     open class MetaField<T>(
-        name: String, type: Type<T>, params: Params = Params()
+        name: String, type: FieldType<T>, params: Params = Params()
     ) : Field<T>(
         name, type, params
     ) {
-        override operator fun provideDelegate(
+        open operator fun provideDelegate(
             thisRef: FieldSet, prop: KProperty<*>
         ): ReadOnlyProperty<FieldSet, MetaField<T>> = FieldProperty(this, thisRef, prop)
     }

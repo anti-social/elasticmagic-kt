@@ -14,9 +14,15 @@ import kotlin.test.Test
 
 class ElasticsearchClusterTests {
     object FactorsDoc : Document() {
-        val partition by int()
+        val partition by float()
         val companyId by keyword("company_id")
         val clickPrice by float("click_price")
+    }
+
+    class FactorsSource : Source() {
+        val partition by FactorsDoc.partition
+        val companyId by FactorsDoc.companyId.required()
+        val clickPrice by FactorsDoc.clickPrice
     }
 
     object ProductDoc : Document() {
@@ -38,7 +44,7 @@ class ElasticsearchClusterTests {
         // val index = cluster["ua_trunk_catalog"]
         val index = cluster["adv_ua_weight_factors"]
 
-        val query = SearchQuery {
+        val query = SearchQuery(::FactorsSource) {
             functionScore(
                 query = null,
                 functions = listOf(

@@ -22,7 +22,7 @@ class ElasticsearchIndex<OBJ>(
     private val compilerProvider: CompilerProvider,
     private val serde: Serde<OBJ>,
 ) {
-    suspend fun <S : Source> search(
+    suspend fun <S : BaseSource> search(
         searchQuery: BaseSearchQuery<S, *>
     ): SearchQueryResult<S> {
         val preparedSearchQuery = searchQuery.prepare()
@@ -52,11 +52,9 @@ class ElasticsearchIndex<OBJ>(
             while (rawHits.hasNext()) {
                 val rawHit = rawHits.obj()
                 val source = rawHit.objOrNull("_source")?.let { rawSource ->
-                    val source = preparedSearchQuery.sourceFactory()
-                    for ((fieldName, fieldValue) in rawSource.toMap()) {
-                        source.setField(fieldName, fieldValue)
+                    preparedSearchQuery.sourceFactory().apply {
+                        setSource(rawSource.toMap())
                     }
-                    source
                 }
                 hits.add(
                     SearchHit(
@@ -87,5 +85,5 @@ interface ElasticsearchSyncCluster<OBJ> {
 }
 
 interface ElasticsearchSyncIndex<OBJ> {
-    fun <S: Source> search(searchQuery: BaseSearchQuery<S, *>): SearchQueryResult<S>
+    fun <S: BaseSource> search(searchQuery: BaseSearchQuery<S, *>): SearchQueryResult<S>
 }

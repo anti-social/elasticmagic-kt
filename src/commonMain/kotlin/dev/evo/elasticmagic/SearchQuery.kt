@@ -13,7 +13,7 @@ enum class SearchType : ExpressionValue {
     }
 }
 
-abstract class BaseSearchQuery<S: Source, T: BaseSearchQuery<S, T>>(
+abstract class BaseSearchQuery<S: BaseSource, T: BaseSearchQuery<S, T>>(
     protected val sourceFactory: () -> S,
     protected var query: QueryExpression? = null,
     params: Params = Params(),
@@ -228,7 +228,7 @@ abstract class BaseSearchQuery<S: Source, T: BaseSearchQuery<S, T>>(
     // }
 }
 
-open class SearchQuery<S: Source>(
+open class SearchQuery<S: BaseSource>(
     sourceFactory: () -> S,
     query: QueryExpression? = null,
     params: Params = Params(),
@@ -255,7 +255,7 @@ open class SearchQuery<S: Source>(
     }
 }
 
-data class PreparedSearchQuery<S: Source>(
+data class PreparedSearchQuery<S: BaseSource>(
     val sourceFactory: () -> S,
     val docType: String?,
     val query: QueryExpression?,
@@ -273,7 +273,7 @@ data class PreparedSearchQuery<S: Source>(
     val params: Params,
 )
 
-data class SearchQueryResult<S: Source>(
+data class SearchQueryResult<S: BaseSource>(
     val rawResult: Map<String, Any?>?,
     val took: Long,
     val timedOut: Boolean,
@@ -283,7 +283,7 @@ data class SearchQueryResult<S: Source>(
     val hits: List<SearchHit<S>>,
 )
 
-data class SearchHit<S: Source>(
+data class SearchHit<S: BaseSource>(
     val index: String,
     val type: String,
     val id: String,
