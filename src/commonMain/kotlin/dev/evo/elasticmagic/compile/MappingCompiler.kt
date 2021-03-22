@@ -47,7 +47,7 @@ open class MappingCompiler(
         }
     }
 
-    protected fun visit(ctx: ObjectCtx, field: Field<*>) {
+    protected fun visit(ctx: ObjectCtx, field: Field<*, *>) {
         ctx.field("type", field.getFieldType().name)
         visit(ctx, field.getMappingParams())
         val subFields = field.getSubFields()

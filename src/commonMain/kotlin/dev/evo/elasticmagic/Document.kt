@@ -46,12 +46,12 @@ open class BaseField : FieldOperations {
 /**
  * Represents field in an Elasticsearch document.
  */
-open class Field<T>(
+open class Field<T, V>(
     internal val name: String? = null,
-    protected val type: FieldType<T>,
-    protected val params: Params,
+    val type: FieldType<T, V>,
+    val params: Params,
 ) : BaseField() {
-    fun getFieldType(): FieldType<T> = type
+    fun getFieldType(): FieldType<T, V> = type
 
     fun getMappingParams(): Params = params
 
@@ -59,34 +59,9 @@ open class Field<T>(
 
     open fun getSubDocument(): SubDocument? = null
 
-    fun <V: SubFields<T>> subFields(factory: () -> V): SubFields.SubFieldsProperty<T, V> {
-        return SubFields.SubFieldsProperty(name, type, params, factory)
+    fun <F: SubFields<V>> subFields(factory: () -> F): SubFields.SubFieldsDelegate<T, V, F> {
+        return SubFields.SubFieldsDelegate(this, factory)
     }
-
-    // operator fun provideDelegate(
-    //     thisRef: FieldSet, prop: KProperty<*>
-    // ): ReadOnlyProperty<FieldSet, Field<T>> = FieldProperty(this, thisRef, prop)
-    //
-    // class FieldProperty<F: Field<T>, T>(
-    //     private val field: F, fieldSet: FieldSet, prop: KProperty<*>
-    // ) : ReadOnlyProperty<FieldSet, F> {
-    //     init {
-    //         field._setFieldName(field.name ?: prop.name)
-    //         fieldSet._fields.add(field)
-    //     }
-    //
-    //     override fun getValue(thisRef: FieldSet, property: KProperty<*>): F {
-    //         return field
-    //     }
-    // }
-
-    // operator fun getValue(thisRef: Source, property: KProperty<*>): T {
-    //     TODO()
-    // }
-
-    // operator fun provideDelegate(thisRef: Source, property: KProperty<*>): ReadWriteProperty<Source, T> {
-    //     TODO()
-    // }
 }
 
 /**
@@ -95,16 +70,16 @@ open class Field<T>(
  */
 abstract class FieldSet {
     @Suppress("PropertyName")
-    internal val _fields: ArrayList<Field<*>> = ArrayList()
+    internal val _fields: ArrayList<Field<*, *>> = ArrayList()
 
     fun <T> field(
         name: String?,
-        type: FieldType<T>,
+        type: FieldType<Nothing, T>,
         docValues: Boolean? = null,
         index: Boolean? = null,
         store: Boolean? = null,
         params: Params? = null,
-    ): Field<T> {
+    ): Field<Nothing, T> {
         @Suppress("NAME_SHADOWING")
         val params = Params(
             params,
@@ -115,12 +90,12 @@ abstract class FieldSet {
         return Field(name, type, params)
     }
     fun <T> field(
-        type: FieldType<T>,
+        type: FieldType<Nothing, T>,
         docValues: Boolean? = null,
         index: Boolean? = null,
         store: Boolean? = null,
         params: Params? = null,
-    ): Field<T> {
+    ): Field<Nothing, T> {
         return field(
             null, type,
             docValues = docValues,
@@ -135,7 +110,7 @@ abstract class FieldSet {
         index: Boolean? = null,
         store: Boolean? = null,
         params: Params? = null,
-    ): Field<Boolean> {
+    ): Field<Nothing, Boolean> {
         return field(
             name, BooleanType,
             docValues = docValues,
@@ -150,7 +125,7 @@ abstract class FieldSet {
         index: Boolean? = null,
         store: Boolean? = null,
         params: Params? = null,
-    ): Field<Int> {
+    ): Field<Nothing, Int> {
         return field(
             name, IntType,
             docValues = docValues,
@@ -165,7 +140,7 @@ abstract class FieldSet {
         index: Boolean? = null,
         store: Boolean? = null,
         params: Params? = null,
-    ): Field<Long> {
+    ): Field<Nothing, Long> {
         return field(
             name, LongType,
             docValues = docValues,
@@ -180,7 +155,7 @@ abstract class FieldSet {
         index: Boolean? = null,
         store: Boolean? = null,
         params: Params? = null,
-    ): Field<Float> {
+    ): Field<Nothing, Float> {
         return field(
             name, FloatType,
             docValues = docValues,
@@ -195,7 +170,7 @@ abstract class FieldSet {
         index: Boolean? = null,
         store: Boolean? = null,
         params: Params? = null,
-    ): Field<Double> {
+    ): Field<Nothing, Double> {
         return field(
             name, DoubleType,
             docValues = docValues,
@@ -211,7 +186,7 @@ abstract class FieldSet {
         index: Boolean? = null,
         store: Boolean? = null,
         params: Params? = null,
-    ): Field<String> {
+    ): Field<Nothing, String> {
         @Suppress("NAME_SHADOWING")
         val params = Params(
             params,
@@ -236,7 +211,7 @@ abstract class FieldSet {
         analyzer: String? = null,
         searchAnalyzer: String? = null,
         params: Params? = null,
-    ): Field<String> {
+    ): Field<Nothing, String> {
         @Suppress("NAME_SHADOWING")
         val params = Params(
             params,
@@ -254,11 +229,11 @@ abstract class FieldSet {
         )
     }
 
-    operator fun <T> Field<T>.provideDelegate(
+    operator fun <T> Field<Nothing, T>.provideDelegate(
         thisRef: FieldSet, prop: KProperty<*>
-    ): ReadOnlyProperty<FieldSet, Field<T>> = FieldProperty(this, thisRef, prop)
+    ): ReadOnlyProperty<FieldSet, Field<Nothing, T>> = FieldProperty(this, thisRef, prop)
 
-    class FieldProperty<F: Field<T>, T>(
+    class FieldProperty<F: Field<Nothing, T>, T>(
         private val field: F, fieldSet: FieldSet, prop: KProperty<*>
     ) : ReadOnlyProperty<FieldSet, F> {
         init {
@@ -276,11 +251,11 @@ abstract class FieldSet {
  * Represents Elasticsearch multi-fields:
  * https://www.elastic.co/guide/en/elasticsearch/reference/7.10/multi-fields.html
  */
-abstract class SubFields<T> : FieldSet(), FieldOperations {
+abstract class SubFields<V> : FieldSet(), FieldOperations {
     private val field = BaseField()
-    private lateinit var type: FieldType<T>
+    private lateinit var type: FieldType<*, V>
 
-    fun getFieldType(): FieldType<T> = type
+    fun getFieldType(): FieldType<*, V> = type
 
     override fun getFieldName(): String = field.getFieldName()
 
@@ -297,18 +272,22 @@ abstract class SubFields<T> : FieldSet(), FieldOperations {
         }
     }
 
-    class SubFieldsProperty<T, V: SubFields<T>>(
-        private val name: String?,
-        private val type: FieldType<T>,
-        private val params: Params,
-        private val subFieldsFactory: () -> V,
+    class SubFieldsDelegate<T, V, F: SubFields<V>>(
+        val field: Field<T, V>,
+        private val subFieldsFactory: () -> F,
     ) {
+        private val subFieldsType = SubFieldsType(field.getFieldType())
+
         operator fun provideDelegate(
             thisRef: BaseDocument, prop: KProperty<*>
-        ): ReadOnlyProperty<BaseDocument, V> {
-            val fieldName = name ?: prop.name
+        ): ReadOnlyProperty<BaseDocument, F> {
+            // val name: String?,
+            // private val type: SubFieldsType<T, V, F>,
+            // private val params: Params,
+
+            val fieldName = field.name ?: prop.name
             val subFields = subFieldsFactory()
-            subFields.type = type
+            subFields.type = subFieldsType.type
             subFields.setFieldName(fieldName)
             if (thisRef is Document) {
                 subFields.bindToParent(object : Named {
@@ -317,17 +296,17 @@ abstract class SubFields<T> : FieldSet(), FieldOperations {
                 })
             }
 
-            thisRef._fields.add(FieldWrapper(subFields, type, params))
+            thisRef._fields.add(FieldWrapper(subFields, subFieldsType, field.params))
 
             return ReadOnlyProperty { _, _ -> subFields }
         }
     }
 
-    internal class FieldWrapper<T>(
+    internal class FieldWrapper<T, V>(
         private val subFields: SubFields<*>,
-        type: FieldType<T>,
+        type: FieldType<T, V>,
         params: Params,
-    ) : Field<T>(subFields.getFieldName(), type, params) {
+    ) : Field<T, V>(subFields.getFieldName(), type, params) {
         override fun getFieldName(): String = subFields.getFieldName()
         override fun getQualifiedFieldName(): String = subFields.getQualifiedFieldName()
 
@@ -344,35 +323,35 @@ abstract class SubFields<T> : FieldSet(), FieldOperations {
 }
 
 abstract class BaseDocument : FieldSet() {
-    fun <V: SubDocument> `object`(
-        name: String?, factory: () -> V, params: Params = Params()
-    ): SubDocument.SubDocumentProperty<V> {
+    fun <T: SubDocument> `object`(
+        name: String?, factory: () -> T, params: Params = Params()
+    ): SubDocument.SubDocumentProperty<T> {
         return SubDocument.SubDocumentProperty(name, ObjectType(), params, factory)
     }
-    fun <V: SubDocument> `object`(
-        factory: () -> V, params: Params = Params()
-    ): SubDocument.SubDocumentProperty<V> {
+    fun <T: SubDocument> `object`(
+        factory: () -> T, params: Params = Params()
+    ): SubDocument.SubDocumentProperty<T> {
         return `object`(null, factory, params)
     }
-    fun <V: SubDocument> obj(
-        name: String?, factory: () -> V, params: Params = Params(),
-    ): SubDocument.SubDocumentProperty<V> {
+    fun <T: SubDocument> obj(
+        name: String?, factory: () -> T, params: Params = Params(),
+    ): SubDocument.SubDocumentProperty<T> {
         return `object`(name, factory, params)
     }
-    fun <V: SubDocument> obj(
-        factory: () -> V, params: Params = Params()
-    ): SubDocument.SubDocumentProperty<V> {
+    fun <T: SubDocument> obj(
+        factory: () -> T, params: Params = Params()
+    ): SubDocument.SubDocumentProperty<T> {
         return `object`(factory, params)
     }
 
-    fun <V: SubDocument> nested(
-        name: String?, factory: () -> V, params: Params = Params()
-    ): SubDocument.SubDocumentProperty<V> {
+    fun <T: SubDocument> nested(
+        name: String?, factory: () -> T, params: Params = Params()
+    ): SubDocument.SubDocumentProperty<T> {
         return SubDocument.SubDocumentProperty(name, NestedType(), params, factory)
     }
-    fun <V: SubDocument> nested(
-        factory: () -> V, params: Params = Params()
-    ): SubDocument.SubDocumentProperty<V> {
+    fun <T: SubDocument> nested(
+        factory: () -> T, params: Params = Params()
+    ): SubDocument.SubDocumentProperty<T> {
         return nested(null, factory, params)
     }
 }
@@ -382,6 +361,9 @@ abstract class BaseDocument : FieldSet() {
  */
 abstract class SubDocument : BaseDocument(), FieldOperations {
     private val field = BaseField()
+    private lateinit var type: FieldType<*, BaseSource>
+
+    fun getFieldType(): FieldType<*, BaseSource> = type
 
     override fun getFieldName(): String = field.getFieldName()
 
@@ -398,15 +380,15 @@ abstract class SubDocument : BaseDocument(), FieldOperations {
         }
     }
 
-    class SubDocumentProperty<V: SubDocument>(
+    class SubDocumentProperty<T: SubDocument>(
         private val name: String?,
-        private val type: FieldType<V>,
+        private val type: FieldType<T, BaseSource>,
         private val params: Params,
-        private val subDocumentFactory: () -> V,
+        private val subDocumentFactory: () -> T,
     ) {
         operator fun provideDelegate(
             thisRef: BaseDocument, prop: KProperty<*>
-        ): ReadOnlyProperty<BaseDocument, V> {
+        ): ReadOnlyProperty<BaseDocument, T> {
             val fieldName = name ?: prop.name
             val subDocument = subDocumentFactory()
             subDocument.setFieldName(fieldName)
@@ -423,11 +405,11 @@ abstract class SubDocument : BaseDocument(), FieldOperations {
         }
     }
 
-    internal class FieldWrapper<T: SubDocument>(
+    internal class FieldWrapper<T: SubDocument, V: BaseSource>(
         private val subDocument: SubDocument,
-        type: FieldType<T>,
+        type: FieldType<T, V>,
         params: Params,
-    ) : Field<T>(subDocument.getFieldName(), type, params) {
+    ) : Field<T, V>(subDocument.getFieldName(), type, params) {
         override fun getFieldName(): String = subDocument.getFieldName()
 
         override fun getQualifiedFieldName(): String = subDocument.getQualifiedFieldName()
@@ -468,14 +450,14 @@ open class MetaFields : FieldSet() {
 
     // TODO: Could we get rid of overriding provideDelegate operator?
 
-    open class MetaField<T>(
-        name: String, type: FieldType<T>, params: Params = Params()
-    ) : Field<T>(
+    open class MetaField<V>(
+        name: String, type: FieldType<Nothing, V>, params: Params = Params()
+    ) : Field<Nothing, V>(
         name, type, params
     ) {
         open operator fun provideDelegate(
             thisRef: FieldSet, prop: KProperty<*>
-        ): ReadOnlyProperty<FieldSet, MetaField<T>> = FieldProperty(this, thisRef, prop)
+        ): ReadOnlyProperty<FieldSet, MetaField<V>> = FieldProperty(this, thisRef, prop)
     }
 
     class RoutingField(

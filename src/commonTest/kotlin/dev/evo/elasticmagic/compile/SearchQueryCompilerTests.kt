@@ -24,13 +24,13 @@ import io.kotest.matchers.maps.shouldContainExactly
 
 import kotlin.test.Test
 
-class AnyField(name: String) : Field<Nothing>(
+class AnyField(name: String) : Field<Nothing, Nothing>(
     name,
-    object : FieldType<Nothing> {
+    object : FieldType<Nothing, Nothing> {
         override val name: String
             get() = TODO("not implemented")
 
-        override fun deserialize(v: Any): Nothing {
+        override fun deserialize(v: Any, valueFactory: (() -> Nothing)?): Nothing {
             TODO("not implemented")
         }
     },

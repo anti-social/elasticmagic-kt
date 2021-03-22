@@ -1,14 +1,17 @@
 package dev.evo.elasticmagic
 
-interface FieldType<T> {
+interface FieldType<out T, out V> {
     val name: String
 
-    fun deserialize(v: Any, valueFactory: (() -> T)? = null): T
+    fun deserialize(
+        v: Any,
+        valueFactory: (() -> @UnsafeVariance V)? = null
+    ): V
 }
 
-abstract class NumberType<T: Number> : FieldType<T>
+abstract class NumberType<T, V: Number> : FieldType<T, V>
 
-object IntType : NumberType<Int>() {
+object IntType : NumberType<Nothing, Int>() {
     override val name = "integer"
 
     override fun deserialize(v: Any, valueFactory: (() -> Int)?) = when(v) {
@@ -19,7 +22,7 @@ object IntType : NumberType<Int>() {
     }
 }
 
-object LongType : NumberType<Long>() {
+object LongType : NumberType<Nothing, Long>() {
     override val name = "long"
 
     override fun deserialize(v: Any, valueFactory: (() -> Long)?) = when(v) {
@@ -30,7 +33,7 @@ object LongType : NumberType<Long>() {
     }
 }
 
-object FloatType : NumberType<Float>() {
+object FloatType : NumberType<Nothing, Float>() {
     override val name = "float"
 
     override fun deserialize(v: Any, valueFactory: (() -> Float)?) = when(v) {
@@ -43,7 +46,7 @@ object FloatType : NumberType<Float>() {
     }
 }
 
-object DoubleType : NumberType<Double>() {
+object DoubleType : NumberType<Nothing, Double>() {
     override val name = "double"
 
     override fun deserialize(v: Any, valueFactory: (() -> Double)?) = when(v) {
@@ -56,7 +59,7 @@ object DoubleType : NumberType<Double>() {
     }
 }
 
-object BooleanType : FieldType<Boolean> {
+object BooleanType : FieldType<Nothing, Boolean> {
     override val name = "boolean"
 
     override fun deserialize(v: Any, valueFactory: (() -> Boolean)?) = when(v) {
@@ -66,7 +69,7 @@ object BooleanType : FieldType<Boolean> {
     }
 }
 
-abstract class StringType : FieldType<String> {
+abstract class StringType : FieldType<Nothing, String> {
     override fun deserialize(v: Any, valueFactory: (() -> String)?): String {
         return v.toString()
     }
@@ -80,10 +83,10 @@ object TextType : StringType() {
     override val name = "text"
 }
 
-open class ObjectType<T: BaseSource> : FieldType<T> {
+open class ObjectType<T: SubDocument> : FieldType<T, BaseSource> {
     override val name = "object"
 
-    override fun deserialize(v: Any, valueFactory: (() -> T)?): T {
+    override fun deserialize(v: Any, valueFactory: (() -> BaseSource)?): BaseSource {
         requireNotNull(valueFactory) {
             "valueFactory argument must be passed"
         }
@@ -98,6 +101,44 @@ open class ObjectType<T: BaseSource> : FieldType<T> {
     }
 }
 
-class NestedType<T: BaseSource> : ObjectType<T>() {
+class NestedType<T: SubDocument> : ObjectType<T>() {
     override val name = "nested"
+}
+
+internal class SubFieldsType<T, V, F: SubFields<V>>(val type: FieldType<T, V>) : FieldType<F, V> {
+    override val name = type.name
+
+    override fun deserialize(v: Any, valueFactory: (() -> V)?): V {
+        return type.deserialize(v, valueFactory)
+    }
+}
+
+internal fun <V> deserializeListOptional(deserialize: (Any) -> V, v: Any): List<V?> {
+    return when (v) {
+        is List<*> -> {
+            v.map {
+                if (it != null) {
+                    deserialize(it)
+                } else {
+                    null
+                }
+            }
+        }
+        else -> listOf(deserialize(v))
+    }
+}
+
+internal fun <V> deserializeListRequired(deserialize: (Any) -> V, v: Any): List<V> {
+    return when (v) {
+        is List<*> -> {
+            v.map {
+                if (it != null) {
+                    deserialize(it)
+                } else {
+                    throw IllegalArgumentException("null is not allowed")
+                }
+            }
+        }
+        else -> listOf(deserialize(v))
+    }
 }
