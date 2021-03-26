@@ -96,7 +96,9 @@ open class ObjectType<T: SubDocument> : FieldType<T, BaseSource> {
                     setSource(v)
                 }
             }
-            else -> throw IllegalArgumentException()
+            else -> throw IllegalArgumentException(
+                "Expected Map class but was: ${v::class}"
+            )
         }
     }
 }
@@ -113,7 +115,7 @@ internal class SubFieldsType<T, V, F: SubFields<V>>(val type: FieldType<T, V>) :
     }
 }
 
-internal fun <V> deserializeListOptional(deserialize: (Any) -> V, v: Any): List<V?> {
+internal fun <V> deserializeListOfOptional(deserialize: (Any) -> V, v: Any): List<V?> {
     return when (v) {
         is List<*> -> {
             v.map {
@@ -128,7 +130,7 @@ internal fun <V> deserializeListOptional(deserialize: (Any) -> V, v: Any): List<
     }
 }
 
-internal fun <V> deserializeListRequired(deserialize: (Any) -> V, v: Any): List<V> {
+internal fun <V> deserializeListOfRequired(deserialize: (Any) -> V, v: Any): List<V> {
     return when (v) {
         is List<*> -> {
             v.map {

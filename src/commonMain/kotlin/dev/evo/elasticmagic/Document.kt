@@ -391,6 +391,7 @@ abstract class SubDocument : BaseDocument(), FieldOperations {
         ): ReadOnlyProperty<BaseDocument, T> {
             val fieldName = name ?: prop.name
             val subDocument = subDocumentFactory()
+            subDocument.type = type
             subDocument.setFieldName(fieldName)
             if (thisRef is Document) {
                 subDocument.bindToParent(object : Named {

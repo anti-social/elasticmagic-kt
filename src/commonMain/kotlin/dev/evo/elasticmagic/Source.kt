@@ -3,13 +3,17 @@ package dev.evo.elasticmagic
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
-abstract class BaseSource {
+typealias RawSource = Map<*, *>
+
+fun emptySource(): Map<Nothing, Nothing> = emptyMap()
+
+abstract class BaseSource() {
     abstract fun getField(name: String): Any?
 
     abstract fun setField(name: String, value: Any?)
 
-    fun setSource(data: Map<*, *>) {
-        for ((fieldName, fieldValue) in data) {
+    open fun setSource(source: RawSource) {
+        for ((fieldName, fieldValue) in source) {
             setField(fieldName as String, fieldValue)
         }
     }
@@ -25,13 +29,47 @@ open class Source : BaseSource() {
         fieldProperties[fieldValue.name] = fieldProperty
     }
 
+    override fun setSource(source: RawSource) {
+        super.setSource(source)
+        for (fieldValue in fieldValues) {
+            if (fieldValue.isRequired && !fieldValue.isInitialized) {
+                throw IllegalArgumentException("Field ${fieldValue.name} is required")
+            }
+        }
+    }
+
     override fun getField(name: String): Any? {
         return fieldProperties[name]?.fieldValue?.value
     }
 
     override fun setField(name: String, value: Any?) {
-        val fieldProperty = fieldProperties[name] ?: return
+        val fieldProperty = fieldProperties[name]
+            ?: throw IllegalArgumentException("Unknown field name: $name")
         fieldProperty.set(value)
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (other == null) {
+            return false
+        }
+        if (other !is Source) {
+            return false
+        }
+        if (other::class != this::class) {
+            return false
+        }
+        for ((fieldValue, otherFieldValue) in fieldValues.zip(other.fieldValues)) {
+            if (fieldValue.name != otherFieldValue.name) {
+                return false
+            }
+            if (fieldValue.isInitialized != otherFieldValue.isInitialized) {
+                return false
+            }
+            if (fieldValue.value != otherFieldValue.value) {
+                return false
+            }
+        }
+        return true
     }
 
     override fun toString(): String {
@@ -47,8 +85,8 @@ open class Source : BaseSource() {
     operator fun <T, V> Field<T, V>.provideDelegate(
         thisRef: Source, property: KProperty<*>
     ): ReadWriteProperty<Source, V?> {
-        return OptionalFieldValueProperty(
-            FieldValue(getFieldName()),
+        return OptionalValueProperty(
+            getFieldName(),
             getFieldType()::deserialize
         )
             .also {
@@ -56,24 +94,24 @@ open class Source : BaseSource() {
             }
     }
 
-    fun <T, V> Field<T, V>.required(): RequiredFieldValueDelegate<V> {
-        return RequiredFieldValueDelegate(
+    fun <T, V> Field<T, V>.required(): RequiredListableValueDelegate<V> {
+        return RequiredListableValueDelegate(
             getFieldName(),
             getFieldType()::deserialize
         )
     }
 
-    fun <T, V> Field<T, V>.list(): ListFieldValueDelegate<V> {
-        return ListFieldValueDelegate(getFieldName()) { v ->
-            deserializeListOptional(getFieldType()::deserialize, v)
+    fun <T, V> Field<T, V>.list(): OptionalValueDelegate<List<V?>> {
+        return OptionalValueDelegate(getFieldName()) { v ->
+            deserializeListOfOptional(getFieldType()::deserialize, v)
         }
     }
 
     operator fun <V> SubFields<V>.provideDelegate(
         thisRef: Source, property: KProperty<*>
     ): ReadWriteProperty<Source, V?> {
-        return OptionalFieldValueProperty(
-            FieldValue(getFieldName()),
+        return OptionalValueProperty(
+            getFieldName(),
             getFieldType()::deserialize
         )
             .also {
@@ -81,9 +119,9 @@ open class Source : BaseSource() {
             }
     }
 
-    fun <V: BaseSource> SubDocument.source(sourceFactory: () -> V): OptionalFieldValueDelegate<V> {
+    fun <V: BaseSource> SubDocument.source(sourceFactory: () -> V): OptionalListableValueDelegate<V> {
         val fieldType = getFieldType()
-        return OptionalFieldValueDelegate(
+        return OptionalListableValueDelegate(
             getFieldName()
         ) { v ->
             fieldType.deserialize(v, sourceFactory) as V
@@ -92,6 +130,7 @@ open class Source : BaseSource() {
 
     class FieldValue<T>(
         val name: String,
+        val isRequired: Boolean,
     ) {
         var isInitialized: Boolean = false
             private set
@@ -110,34 +149,46 @@ open class Source : BaseSource() {
         abstract fun set(value: Any?)
     }
 
-    class OptionalFieldValueDelegate<T>(
-        private val fieldName: String,
-        private val deserialize: (Any) -> T,
+    open class OptionalValueDelegate<T>(
+        protected val fieldName: String,
+        protected val deserialize: (Any) -> T,
     ) {
         operator fun provideDelegate(
             thisRef: Source, property: KProperty<*>
         ): ReadWriteProperty<Source, T?> {
-            return OptionalFieldValueProperty(
-                FieldValue(fieldName), deserialize
+            return OptionalValueProperty(
+                fieldName, deserialize
             )
                 .also { thisRef.bindProperty(it) }
         }
 
-        fun required(): RequiredFieldValueDelegate<T> {
-            return RequiredFieldValueDelegate(fieldName, deserialize)
+        open fun required(): RequiredValueDelegate<T> {
+            return RequiredValueDelegate(fieldName, deserialize)
+        }
+    }
+
+    class OptionalListableValueDelegate<T>(
+        fieldName: String,
+        deserialize: (Any) -> T,
+    ) : OptionalValueDelegate<T>(fieldName, deserialize) {
+        override fun required(): RequiredListableValueDelegate<T> {
+            return RequiredListableValueDelegate(fieldName, deserialize)
         }
 
-        fun list(): ListFieldValueDelegate<T> {
-            return ListFieldValueDelegate(fieldName) { v ->
-                deserializeListOptional(deserialize, v)
+        fun list(): OptionalValueDelegate<List<T?>> {
+            return OptionalValueDelegate(fieldName) { v ->
+                deserializeListOfOptional(deserialize, v)
             }
         }
     }
 
-    protected class OptionalFieldValueProperty<T>(
-        fieldValue: FieldValue<T>,
+    protected class OptionalValueProperty<T>(
+        fieldName: String,
         deserialize: (Any) -> T,
-    ) : FieldValueProperty<T>(fieldValue, deserialize), ReadWriteProperty<Source, T?> {
+    ) :
+        FieldValueProperty<T>(FieldValue(fieldName, false), deserialize),
+        ReadWriteProperty<Source, T?>
+    {
 
         override fun set(value: Any?) {
             fieldValue.value = if (value != null) {
@@ -152,34 +203,43 @@ open class Source : BaseSource() {
         }
 
         override fun setValue(thisRef: Source, property: KProperty<*>, value: T?) {
-            set(value)
+            fieldValue.value = value
         }
     }
 
-    class RequiredFieldValueDelegate<T>(
-        private val fieldName: String,
-        private val deserialize: (Any) -> T,
+    open class RequiredValueDelegate<T>(
+        protected val fieldName: String,
+        protected val deserialize: (Any) -> T,
     ) {
         operator fun provideDelegate(
             thisRef: Source, property: KProperty<*>
         ): ReadWriteProperty<Source, T> {
-            return RequiredFieldValueProperty(
-                FieldValue(fieldName), deserialize
+            return RequiredValueProperty(
+                fieldName, deserialize
             )
                 .also { thisRef.bindProperty(it) }
         }
 
-        fun list(): RequiredListFieldValueDelegate<T> {
-            return RequiredListFieldValueDelegate(fieldName) { v ->
-                deserializeListRequired(deserialize, v)
+    }
+
+    class RequiredListableValueDelegate<T>(
+        fieldName: String,
+        deserialize: (Any) -> T,
+    ) : RequiredValueDelegate<T>(fieldName, deserialize) {
+        fun list(): OptionalValueDelegate<List<T>> {
+            return OptionalValueDelegate(fieldName) { v ->
+                deserializeListOfRequired(deserialize, v)
             }
         }
     }
 
-    protected class RequiredFieldValueProperty<T>(
-        fieldValue: FieldValue<T>,
+    protected class RequiredValueProperty<T>(
+        fieldName: String,
         deserialize: (Any) -> T,
-    ) : FieldValueProperty<T>(fieldValue, deserialize), ReadWriteProperty<Source, T> {
+    ) :
+        FieldValueProperty<T>(FieldValue(fieldName, true), deserialize),
+        ReadWriteProperty<Source, T>
+    {
 
         override fun set(value: Any?) {
             fieldValue.value = if (value != null) {
@@ -194,77 +254,7 @@ open class Source : BaseSource() {
         }
 
         override fun setValue(thisRef: Source, property: KProperty<*>, value: T) {
-            set(value)
-        }
-    }
-
-    class ListFieldValueDelegate<T>(
-        private val fieldName: String,
-        private val deserialize: (Any) -> List<T?>,
-    ) {
-        operator fun provideDelegate(
-            thisRef: Source, property: KProperty<*>
-        ): ReadWriteProperty<Source, List<T?>> {
-            return ListFieldValueProperty(
-                FieldValue(fieldName), deserialize
-            )
-                .also { thisRef.bindProperty(it) }
-        }
-    }
-
-    protected class ListFieldValueProperty<T>(
-        fieldValue: FieldValue<List<T?>>,
-        deserialize: (Any) -> List<T?>,
-    ) : FieldValueProperty<List<T?>>(fieldValue, deserialize), ReadWriteProperty<Source, List<T?>> {
-        override fun set(value: Any?) {
-            fieldValue.value = if (value != null) {
-                deserialize(value)
-            } else {
-                throw IllegalArgumentException("Value cannot be null for list field")
-            }
-        }
-
-        override fun getValue(thisRef: Source, property: KProperty<*>): List<T?> {
-            return fieldValue.value ?: emptyList()
-        }
-
-        override fun setValue(thisRef: Source, property: KProperty<*>, value: List<T?>) {
-            set(value)
-        }
-    }
-
-    class RequiredListFieldValueDelegate<T>(
-        private val fieldName: String,
-        private val deserialize: (Any) -> List<T>,
-    ) {
-        operator fun provideDelegate(
-            thisRef: Source, property: KProperty<*>
-        ): ReadWriteProperty<Source, List<T>> {
-            return RequiredListFieldValueProperty(
-                FieldValue(fieldName), deserialize
-            )
-                .also { thisRef.bindProperty(it) }
-        }
-    }
-
-    protected class RequiredListFieldValueProperty<T>(
-        fieldValue: FieldValue<List<T>>,
-        deserialize: (Any) -> List<T>,
-    ) : FieldValueProperty<List<T>>(fieldValue, deserialize), ReadWriteProperty<Source, List<T>> {
-        override fun set(value: Any?) {
-            fieldValue.value = if (value != null) {
-                deserialize(value)
-            } else {
-                throw IllegalArgumentException("Value cannot be null for list field")
-            }
-        }
-
-        override fun getValue(thisRef: Source, property: KProperty<*>): List<T> {
-            return fieldValue.value ?: emptyList()
-        }
-
-        override fun setValue(thisRef: Source, property: KProperty<*>, value: List<T>) {
-            set(value)
+            fieldValue.value = value
         }
     }
 }
@@ -284,56 +274,3 @@ class StdSource : BaseSource() {
         return "StdSource(source = $data)"
     }
 }
-
-
-object MyDoc : Document() {
-    class MySubDoc : SubDocument() {
-        val rank by float()
-    }
-
-    class NameFields<T> : SubFields<T>() {
-        val sort by keyword()
-    }
-
-    val name by text().subFields(::NameFields)
-    val status by int()
-    // FIXME:
-    // val state by status
-    val categories by int()
-    val tags by int()
-    val subDoc by obj(::MySubDoc)
-}
-
-class MySource : Source() {
-    class MySubSource : Source() {
-        private val subDoc = MyDoc.subDoc
-
-        val rank by subDoc.rank
-    }
-
-    val name by MyDoc.name
-    val status by MyDoc.status.required()
-    val categories by MyDoc.categories.list()
-    val tags by MyDoc.tags.required().list()
-    val subDoc by MyDoc.subDoc.source(::MySubSource).required().list()
-}
-
-// fun test() {
-//     class MySubDoc : SubDocument() {
-//         val rank by float()
-//     }
-//
-//     class NameFields<T> : SubFields<T>() {
-//         val sort by keyword()
-//     }
-//
-//     val myDoc = object : Document() {
-//         val name = text().subFields(::NameFields)
-//         // FIXME:
-//         val keywords by name
-//         val status by int()
-//         val categories by int()
-//         val subDoc by obj(::MySubDoc)
-//     }
-//
-// }
