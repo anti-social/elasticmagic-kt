@@ -111,7 +111,7 @@ open class ObjectType<T: SubDocument> : FieldType<T, BaseSource> {
     }
 }
 
-internal class SourceType<V: BaseSource>(
+class SourceType<V: BaseSource>(
     val type: FieldType<*, BaseSource>,
     private val sourceFactory: () -> V
 ) : FieldType<Nothing, V> {
