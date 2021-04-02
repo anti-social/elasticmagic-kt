@@ -139,7 +139,7 @@ internal class SubFieldsType<T, V, F: SubFields<V>>(val type: FieldType<T, V>) :
     }
 }
 
-internal class OptionalListType<V>(val type: FieldType<*, V>) : FieldType<Nothing, List<V?>> {
+class OptionalListType<V>(val type: FieldType<*, V>) : FieldType<Nothing, List<V?>> {
     override val name = type.name
 
     override fun serialize(v: List<V?>): Any {
@@ -168,7 +168,7 @@ internal class OptionalListType<V>(val type: FieldType<*, V>) : FieldType<Nothin
     }
 }
 
-internal class RequiredListType<V>(val type: FieldType<*, V>) : FieldType<Nothing, List<V>> {
+class RequiredListType<V>(val type: FieldType<*, V>) : FieldType<Nothing, List<V>> {
     override val name = type.name
 
     override fun serialize(v: List<V>): Any {

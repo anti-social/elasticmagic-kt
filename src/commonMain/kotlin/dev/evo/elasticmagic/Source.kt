@@ -8,20 +8,9 @@ typealias RawSource = Map<*, *>
 fun emptySource(): Map<Nothing, Nothing> = emptyMap()
 
 abstract class BaseSource {
-    abstract fun getField(name: String): Any?
+    abstract fun getSource(): Map<String, Any?>
 
-    abstract fun setField(name: String, value: Any?)
-
-    abstract fun getSource(): RawSource
-
-    open fun setSource(source: RawSource) {
-        clearSource()
-        for ((fieldName, fieldValue) in source) {
-            setField(fieldName as String, fieldValue)
-        }
-    }
-
-    protected abstract fun clearSource()
+    abstract fun setSource(source: RawSource)
 }
 
 open class Source : BaseSource() {
@@ -48,7 +37,10 @@ open class Source : BaseSource() {
     }
 
     override fun setSource(source: RawSource) {
-        super.setSource(source)
+        clearSource()
+        for ((fieldName, fieldValue) in source) {
+            setField(fieldName as String, fieldValue)
+        }
         for (fieldValue in fieldValues) {
             if (fieldValue.isRequired && !fieldValue.isInitialized) {
                 throw IllegalArgumentException("Field ${fieldValue.name} is required")
@@ -56,15 +48,15 @@ open class Source : BaseSource() {
         }
     }
 
-    override fun clearSource() {
+    fun clearSource() {
         fieldValues.map(FieldValue<*>::clear)
     }
 
-    override fun getField(name: String): Any? {
+    fun getField(name: String): Any? {
         return fieldProperties[name]?.fieldValue?.value
     }
 
-    override fun setField(name: String, value: Any?) {
+    fun setField(name: String, value: Any?) {
         val fieldProperty = fieldProperties[name]
             ?: throw IllegalArgumentException("Unknown field name: $name")
         fieldProperty.set(value)
@@ -289,20 +281,27 @@ open class Source : BaseSource() {
 class StdSource : BaseSource() {
     private var rawSource =  mutableMapOf<String, Any?>()
 
-    override fun setField(name: String, value: Any?) {
-        rawSource[name] = value
-    }
-
-    override fun getField(name: String): Any? {
-        return rawSource[name]
-    }
-
-    override fun getSource(): RawSource {
+    override fun getSource(): Map<String, Any?> {
         return rawSource.toMap()
     }
 
-    override fun clearSource() {
+    override fun setSource(source: RawSource) {
+        clearSource()
+        for ((fieldName, fieldValue) in source) {
+            setField(fieldName as String, fieldValue)
+        }
+    }
+
+    fun clearSource() {
         rawSource.clear()
+    }
+
+    fun setField(name: String, value: Any?) {
+        rawSource[name] = value
+    }
+
+    fun getField(name: String): Any? {
+        return rawSource[name]
     }
 
     override fun toString(): String {

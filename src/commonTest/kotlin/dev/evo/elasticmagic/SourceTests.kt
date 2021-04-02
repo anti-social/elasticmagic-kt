@@ -1,11 +1,9 @@
 package dev.evo.elasticmagic
 
 import io.kotest.assertions.throwables.shouldThrow
-import io.kotest.matchers.maps.containExactly
 import io.kotest.matchers.maps.shouldContainExactly
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.nulls.shouldNotBeNull
-import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
 
 import kotlin.test.Test
@@ -23,14 +21,74 @@ class SourceTests {
     }
 
     @Test
+    fun fastSource() {
+        class User : BaseSource() {
+            var id: Int? = null
+
+            override fun getSource(): Map<String, Any?> {
+                return mapOf(
+                    "id" to id,
+                )
+            }
+
+            override fun setSource(source: RawSource) {
+                id = source["id"] as Int
+            }
+        }
+
+        class Order(
+            var id: Long? = null,
+            var statuses: List<Int>? = null,
+            var total: Float? = null,
+            var user: User? = null,
+        ) : BaseSource() {
+            override fun getSource(): Map<String, Any?> {
+                return mapOf(
+                    "id" to id,
+                    "status" to statuses,
+                    "total" to total,
+                    "user" to user?.getSource(),
+                )
+            }
+
+            override fun setSource(source: RawSource) {
+                id = source["id"]
+                    ?.let(OrderDoc.id.type::deserialize)
+                statuses = source["status"]
+                    ?.let(RequiredListType(OrderDoc.status.type)::deserialize)
+                total = source["total"]
+                    ?.let(OrderDoc.total.type::deserialize)
+                user = source["user"]
+                    ?.let(SourceType(OrderDoc.user.getFieldType(), ::User)::deserialize)
+            }
+        }
+
+        val order = Order()
+        order.setSource(
+            mapOf(
+                "id" to 1,
+                "status" to 0,
+                "total" to 10,
+                "user" to mapOf(
+                    "id" to 2
+                )
+            )
+        )
+        order.id shouldBe 1
+        order.statuses shouldBe listOf(0)
+        order.total shouldBe 10.0F
+        order.user?.id shouldBe 2
+    }
+
+    @Test
     fun sourceInheritance() {
         open class IdOrderSource : Source() {
-            var id by OrderDoc.id.required()
+            var id by SourceTests.OrderDoc.id.required()
         }
 
         class FullOrderSource : IdOrderSource() {
-            var status by OrderDoc.status
-            var total by OrderDoc.total
+            var status by SourceTests.OrderDoc.status
+            var total by SourceTests.OrderDoc.total
         }
 
         val minOrder = IdOrderSource()
@@ -69,7 +127,7 @@ class SourceTests {
     @Test
     fun optionalValue() {
         class OrderSource : Source() {
-            var status by OrderDoc.status
+            var status by SourceTests.OrderDoc.status
         }
 
         val order = OrderSource()
@@ -124,7 +182,7 @@ class SourceTests {
     @Test
     fun optionalListOfOptionalValues() {
         class OrderSource : Source() {
-            var status by OrderDoc.status.list()
+            var status by SourceTests.OrderDoc.status.list()
         }
 
         val order = OrderSource()
