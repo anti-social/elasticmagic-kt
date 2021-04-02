@@ -32,20 +32,24 @@ class SourceTests {
 
         val fullOrder = FullOrderSource()
 
+        shouldThrow<IllegalArgumentException> {
+            fullOrder.setSource(emptySource())
+        }
+
         fullOrder.setSource(mapOf("id" to 1))
         fullOrder.id shouldBe 1
         fullOrder.status.shouldBeNull()
         fullOrder.total.shouldBeNull()
 
-        fullOrder.setSource(mapOf("status" to 0))
-        fullOrder.id shouldBe 1
+        fullOrder.setSource(mapOf("id" to 2, "status" to 0))
+        fullOrder.id shouldBe 2
         fullOrder.status shouldBe 0
         fullOrder.total.shouldBeNull()
 
-        fullOrder.setSource(mapOf("total" to 9.99))
-        fullOrder.id shouldBe 1
+        fullOrder.setSource(mapOf("id" to 3, "total" to 9.99))
+        fullOrder.id shouldBe 3
         fullOrder.status.shouldBeNull()
-        fullOrder.total shouldBe 9.99
+        fullOrder.total shouldBe 9.99F
     }
 
     @Test
@@ -154,8 +158,9 @@ class SourceTests {
         shouldThrow<IllegalArgumentException> {
             order.setSource(mapOf("status" to listOf(null)))
         }
-        order.status shouldBe listOf(1, 2)
-        order.toString() shouldBe "OrderSource(status=[1, 2])"
+        order.status shouldBe null
+        // TODO: Consider to restore old state when exception happened inside setSource
+        // order.status shouldBe listOf(1, 2)
     }
 
     @Test

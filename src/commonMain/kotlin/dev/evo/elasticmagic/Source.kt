@@ -7,16 +7,19 @@ typealias RawSource = Map<*, *>
 
 fun emptySource(): Map<Nothing, Nothing> = emptyMap()
 
-abstract class BaseSource() {
+abstract class BaseSource {
     abstract fun getField(name: String): Any?
 
     abstract fun setField(name: String, value: Any?)
 
     open fun setSource(source: RawSource) {
+        clearSource()
         for ((fieldName, fieldValue) in source) {
             setField(fieldName as String, fieldValue)
         }
     }
+
+    protected abstract fun clearSource()
 }
 
 open class Source : BaseSource() {
@@ -36,6 +39,10 @@ open class Source : BaseSource() {
                 throw IllegalArgumentException("Field ${fieldValue.name} is required")
             }
         }
+    }
+
+    override fun clearSource() {
+        fieldValues.map(FieldValue<*>::clear)
     }
 
     override fun getField(name: String): Any? {
@@ -134,12 +141,19 @@ open class Source : BaseSource() {
     ) {
         var isInitialized: Boolean = false
             private set
-        
-        var value: T? = null
+
+        private var _value: T? = null
+        var value: T?
+            get() = _value
             set(value) {
                 isInitialized = true
-                field = value
+                _value = value
             }
+
+        fun clear() {
+            isInitialized = false
+            _value = null
+        }
     } 
 
     abstract class FieldValueProperty<T>(
@@ -260,17 +274,21 @@ open class Source : BaseSource() {
 }
 
 class StdSource : BaseSource() {
-    private var data =  mutableMapOf<String, Any?>()
+    private var rawSource =  mutableMapOf<String, Any?>()
 
     override fun setField(name: String, value: Any?) {
-        data[name] = value
+        rawSource[name] = value
     }
 
     override fun getField(name: String): Any? {
-        return data[name]
+        return rawSource[name]
+    }
+
+    override fun clearSource() {
+        rawSource.clear()
     }
 
     override fun toString(): String {
-        return "StdSource(source = $data)"
+        return "StdSource($rawSource)"
     }
 }
