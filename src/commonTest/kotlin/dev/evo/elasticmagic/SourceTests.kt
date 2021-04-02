@@ -1,8 +1,11 @@
 package dev.evo.elasticmagic
 
 import io.kotest.assertions.throwables.shouldThrow
+import io.kotest.matchers.maps.containExactly
+import io.kotest.matchers.maps.shouldContainExactly
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.nulls.shouldNotBeNull
+import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
 
 import kotlin.test.Test
@@ -30,7 +33,15 @@ class SourceTests {
             var total by OrderDoc.total
         }
 
+        val minOrder = IdOrderSource()
+        shouldThrow<IllegalStateException> {
+            minOrder.getSource()
+        }
+
         val fullOrder = FullOrderSource()
+        shouldThrow<IllegalStateException> {
+            fullOrder.getSource() shouldContainExactly emptyMap()
+        }
 
         shouldThrow<IllegalArgumentException> {
             fullOrder.setSource(emptySource())
@@ -40,16 +51,19 @@ class SourceTests {
         fullOrder.id shouldBe 1
         fullOrder.status.shouldBeNull()
         fullOrder.total.shouldBeNull()
+        fullOrder.getSource() shouldContainExactly mapOf("id" to 1L)
 
         fullOrder.setSource(mapOf("id" to 2, "status" to 0))
         fullOrder.id shouldBe 2
         fullOrder.status shouldBe 0
         fullOrder.total.shouldBeNull()
+        fullOrder.getSource() shouldContainExactly mapOf<String, Any?>("id" to 2L, "status" to 0)
 
         fullOrder.setSource(mapOf("id" to 3, "total" to 9.99))
         fullOrder.id shouldBe 3
         fullOrder.status.shouldBeNull()
         fullOrder.total shouldBe 9.99F
+        fullOrder.getSource() shouldContainExactly mapOf("id" to 3L, "total" to 9.99F)
     }
 
     @Test
@@ -60,23 +74,23 @@ class SourceTests {
 
         val order = OrderSource()
         order.status.shouldBeNull()
-        order.toString() shouldBe "OrderSource()"
+        order.getSource() shouldContainExactly emptyMap()
 
         order.setSource(mapOf("status" to null))
         order.status.shouldBeNull()
-        order.toString() shouldBe "OrderSource(status=null)"
+        order.getSource() shouldContainExactly mapOf("status"  to null)
 
         order.setSource(mapOf("status" to 0))
         order.status shouldBe 0
-        order.toString() shouldBe "OrderSource(status=0)"
+        order.getSource() shouldContainExactly mapOf("status" to 0)
 
         order.status = 1
         order.status shouldBe 1
-        order.toString() shouldBe "OrderSource(status=1)"
+        order.getSource() shouldContainExactly mapOf("status" to 1)
 
         order.status = null
         order.status.shouldBeNull()
-        order.toString() shouldBe "OrderSource(status=null)"
+        order.getSource() shouldContainExactly mapOf("status" to null)
     }
 
     @Test
@@ -94,13 +108,17 @@ class SourceTests {
         }
 
         val order = OrderSource()
+        shouldThrow<IllegalStateException> {
+            order.getSource()
+        }
+
         order.setSource(mapOf("status" to 0))
         order.status shouldBe 0
-        order.toString() shouldBe "OrderSource(status=0)"
+        order.getSource() shouldContainExactly mapOf("status" to 0)
 
         order.status = 1
         order.status shouldBe 1
-        order.toString() shouldBe "OrderSource(status=1)"
+        order.getSource() shouldContainExactly mapOf("status" to 1)
     }
 
     @Test
@@ -111,26 +129,27 @@ class SourceTests {
 
         val order = OrderSource()
         order.status.shouldBeNull()
-        order.toString() shouldBe "OrderSource()"
+        order.getSource() shouldContainExactly emptyMap()
 
         order.setSource(mapOf("status" to null))
         order.status.shouldBeNull()
-        order.toString() shouldBe "OrderSource(status=null)"
+        order.getSource() shouldContainExactly mapOf("status" to null)
 
         order.setSource(mapOf("status" to 1))
         order.status shouldBe listOf(1)
+        order.getSource() shouldContainExactly mapOf("status" to listOf(1))
 
         order.status = emptyList()
         order.status shouldBe emptyList()
-        order.toString() shouldBe "OrderSource(status=[])"
+        order.getSource() shouldContainExactly mapOf("status" to emptyList<Nothing>())
 
         order.status = listOf(1, 2, null)
         order.status shouldBe listOf(1, 2, null)
-        order.toString() shouldBe "OrderSource(status=[1, 2, null])"
+        order.getSource() shouldContainExactly mapOf("status" to listOf(1, 2, null))
 
         order.setSource(mapOf("status" to listOf(null)))
         order.status shouldBe listOf(null)
-        order.toString() shouldBe "OrderSource(status=[null])"
+        order.getSource() shouldContainExactly mapOf("status" to listOf(null))
     }
 
     @Test
@@ -141,26 +160,25 @@ class SourceTests {
 
         val order = OrderSource()
         order.status.shouldBeNull()
-        order.toString() shouldBe "OrderSource()"
+        order.getSource() shouldContainExactly emptyMap()
 
         order.setSource(mapOf("status" to null))
         order.status.shouldBeNull()
-        order.toString() shouldBe "OrderSource(status=null)"
+        order.getSource() shouldContainExactly mapOf("status" to null)
 
         order.status = emptyList()
         order.status shouldBe emptyList()
-        order.toString() shouldBe "OrderSource(status=[])"
+        order.getSource() shouldContainExactly mapOf("status" to emptyList<Nothing>())
 
         order.status = listOf(1, 2)
         order.status shouldBe listOf(1, 2)
-        order.toString() shouldBe "OrderSource(status=[1, 2])"
+        order.getSource() shouldContainExactly mapOf("status" to listOf(1, 2))
 
         shouldThrow<IllegalArgumentException> {
             order.setSource(mapOf("status" to listOf(null)))
         }
         order.status shouldBe null
-        // TODO: Consider to restore old state when exception happened inside setSource
-        // order.status shouldBe listOf(1, 2)
+        order.getSource() shouldContainExactly emptyMap()
     }
 
     @Test
@@ -171,26 +189,31 @@ class SourceTests {
 
         val order = OrderSource()
         shouldThrow<IllegalStateException> {
+            order.getSource()
+        }
+
+        shouldThrow<IllegalStateException> {
             order.status
         }
-        order.toString() shouldBe "OrderSource()"
 
         shouldThrow<IllegalArgumentException> {
             order.setSource(mapOf("status" to null))
         }
-        order.toString() shouldBe "OrderSource()"
+        shouldThrow<IllegalStateException> {
+            order.getSource()
+        }
 
         order.status = emptyList()
         order.status shouldBe emptyList()
-        order.toString() shouldBe "OrderSource(status=[])"
+        order.getSource() shouldBe mapOf("status" to emptyList<Nothing>())
 
         order.status = listOf(1, 2, null)
         order.status shouldBe listOf(1, 2, null)
-        order.toString() shouldBe "OrderSource(status=[1, 2, null])"
+        order.getSource() shouldBe mapOf("status" to listOf(1, 2, null))
 
         order.setSource(mapOf("status" to listOf(null)))
         order.status shouldBe listOf(null)
-        order.toString() shouldBe "OrderSource(status=[null])"
+        order.getSource() shouldBe mapOf("status" to listOf(null))
     }
 
     @Test
@@ -201,30 +224,38 @@ class SourceTests {
 
         val order = OrderSource()
         shouldThrow<IllegalStateException> {
+            order.getSource()
+        }
+
+        shouldThrow<IllegalStateException> {
             order.status
         }
-        order.toString() shouldBe "OrderSource()"
 
         shouldThrow<IllegalArgumentException> {
             order.setSource(mapOf("status" to null))
         }
-        order.toString() shouldBe "OrderSource()"
+        shouldThrow<IllegalStateException> {
+            order.getSource()
+        }
 
         order.status = emptyList()
         order.status shouldBe emptyList()
-        order.toString() shouldBe "OrderSource(status=[])"
+        order.getSource() shouldBe mapOf("status" to emptyList<Nothing>())
 
         order.status = listOf(1, 2)
         order.status shouldBe listOf(1, 2)
-        order.toString() shouldBe "OrderSource(status=[1, 2])"
+        order.getSource() shouldBe mapOf("status" to listOf(1, 2))
 
         shouldThrow<IllegalArgumentException> {
             order.setSource(mapOf("status" to listOf(null)))
         }
+        shouldThrow<IllegalStateException> {
+            order.getSource()
+        }
 
         order.setSource(mapOf("status" to listOf(2, 1)))
         order.status shouldBe listOf(2, 1)
-        order.toString() shouldBe "OrderSource(status=[2, 1])"
+        order.getSource() shouldBe mapOf("status" to listOf(2, 1))
     }
 
     @Test
@@ -239,27 +270,33 @@ class SourceTests {
 
         val order = OrderSource()
         order.user.shouldBeNull()
+        order.getSource() shouldBe emptyMap()
 
         order.setSource(mapOf("user" to null))
         order.user.shouldBeNull()
+        order.getSource() shouldBe mapOf("user" to null)
 
         order.setSource(mapOf("user" to emptyMap<Nothing, Nothing>()))
         order.user.shouldNotBeNull().let { user ->
             user.id.shouldBeNull()
         }
+        order.getSource() shouldBe mapOf("user" to emptyMap<Nothing, Nothing>())
 
         order.setSource(mapOf("user" to mapOf("id" to 1)))
         order.user.shouldNotBeNull().let { user ->
             user.id shouldBe 1
         }
+        order.getSource() shouldBe mapOf("user" to mapOf("id" to 1))
 
         order.user = null
         order.user.shouldBeNull()
+        order.getSource() shouldBe mapOf("user" to null)
 
         order.user = UserSource().apply {
             id = 19
         }
         order.user?.id shouldBe 19
+        order.getSource() shouldBe mapOf("user" to mapOf("id" to 19))
     }
 
     @Test
@@ -276,6 +313,9 @@ class SourceTests {
         shouldThrow<IllegalStateException> {
             order.user
         }
+        shouldThrow<IllegalStateException> {
+            order.getSource()
+        }
 
         shouldThrow<IllegalArgumentException> {
             order.setSource(mapOf("user" to null))
@@ -285,16 +325,19 @@ class SourceTests {
         order.user.shouldNotBeNull().let { user ->
             user.id.shouldBeNull()
         }
+        order.getSource() shouldBe mapOf("user" to emptyMap<Nothing, Nothing>())
 
         order.setSource(mapOf("user" to mapOf("id" to 1)))
         order.user.shouldNotBeNull().let { user ->
             user.id shouldBe 1
         }
+        order.getSource() shouldContainExactly mapOf("user" to mapOf("id" to 1))
 
         order.user = UserSource().apply {
             id = 19
         }
         order.user.id shouldBe 19
+        order.getSource() shouldContainExactly mapOf("user" to mapOf("id" to 19))
     }
 
     @Test
@@ -313,29 +356,37 @@ class SourceTests {
 
         val order = OrderSource()
         order.users.shouldBeNull()
+        order.getSource() shouldContainExactly emptyMap()
 
         order.setSource(mapOf("user" to null))
         order.users.shouldBeNull()
+        order.getSource() shouldContainExactly mapOf("user" to null)
 
         order.setSource(mapOf("user" to emptyList<Nothing>()))
         order.users shouldBe emptyList()
+        order.getSource() shouldContainExactly mapOf("user" to emptyList<Nothing>())
 
         order.setSource(mapOf("user" to listOf(null)))
         order.users shouldBe listOf(null)
+        order.getSource() shouldContainExactly mapOf("user" to listOf(null))
 
         order.setSource(mapOf("user" to listOf(mapOf("id" to null))))
         order.users shouldBe listOf(UserSource(null))
+        order.getSource() shouldContainExactly mapOf("user" to listOf(mapOf("id" to null)))
 
         order.setSource(mapOf("user" to listOf(mapOf("id" to 1))))
         order.users shouldBe listOf(UserSource(1))
+        order.getSource() shouldContainExactly mapOf("user" to listOf(mapOf("id" to 1)))
 
         order.setSource(mapOf("user" to mapOf("id" to 2)))
         order.users shouldBe listOf(UserSource(2))
+        order.getSource() shouldContainExactly mapOf("user" to listOf(mapOf("id" to 2)))
 
         order.users = listOf(UserSource(id = 19))
         order.users.let { users ->
             users?.get(0)?.id shouldBe 19
         }
+        order.getSource() shouldContainExactly mapOf("user" to listOf(mapOf("id" to 19)))
     }
 
     @Test
@@ -354,30 +405,38 @@ class SourceTests {
 
         val order = OrderSource()
         order.users.shouldBeNull()
+        order.getSource() shouldContainExactly emptyMap()
 
         order.setSource(mapOf("user" to null))
         order.users.shouldBeNull()
+        order.getSource() shouldContainExactly mapOf("user" to null)
 
         order.setSource(mapOf("user" to emptyList<Nothing>()))
         order.users shouldBe emptyList()
+        order.getSource() shouldContainExactly mapOf("user" to emptyList<Nothing>())
 
         shouldThrow<IllegalArgumentException> {
             order.setSource(mapOf("user" to listOf(null)))
         }
+        order.getSource() shouldContainExactly emptyMap()
 
         order.setSource(mapOf("user" to listOf(mapOf("id" to null))))
         order.users shouldBe listOf(UserSource(null))
+        order.getSource() shouldContainExactly mapOf("user" to listOf(mapOf("id" to null)))
 
         order.setSource(mapOf("user" to listOf(mapOf("id" to 1))))
         order.users shouldBe listOf(UserSource(1))
+        order.getSource() shouldContainExactly mapOf("user" to listOf(mapOf("id" to 1)))
 
         order.setSource(mapOf("user" to mapOf("id" to 2)))
         order.users shouldBe listOf(UserSource(2))
+        order.getSource() shouldContainExactly mapOf("user" to listOf(mapOf("id" to 2)))
 
         order.users = listOf(UserSource(id = 19))
         order.users.let { users ->
             users?.get(0)?.id shouldBe 19
         }
+        order.getSource() shouldBe mapOf("user" to listOf(mapOf("id" to 19)))
     }
 
     @Test
@@ -398,6 +457,9 @@ class SourceTests {
         shouldThrow<IllegalStateException> {
             order.users
         }
+        shouldThrow<IllegalStateException> {
+            order.getSource()
+        }
 
         shouldThrow<IllegalArgumentException> {
             order.setSource(mapOf("user" to null))
@@ -405,23 +467,29 @@ class SourceTests {
 
         order.setSource(mapOf("user" to emptyList<Nothing>()))
         order.users shouldBe emptyList()
+        order.getSource() shouldContainExactly mapOf("user" to emptyList<Nothing>())
 
         order.setSource(mapOf("user" to listOf(null)))
         order.users shouldBe listOf(null)
+        order.getSource() shouldContainExactly mapOf("user" to listOf(null))
 
         order.setSource(mapOf("user" to listOf(mapOf("id" to null))))
         order.users shouldBe listOf(UserSource(null))
+        order.getSource() shouldContainExactly mapOf("user" to listOf(mapOf("id" to null)))
 
         order.setSource(mapOf("user" to listOf(mapOf("id" to 1))))
         order.users shouldBe listOf(UserSource(1))
+        order.getSource() shouldContainExactly mapOf("user" to listOf(mapOf("id" to 1)))
 
         order.setSource(mapOf("user" to mapOf("id" to 2)))
         order.users shouldBe listOf(UserSource(2))
+        order.getSource() shouldContainExactly mapOf("user" to listOf(mapOf("id" to 2)))
 
         order.users = listOf(UserSource(id = 19))
         order.users.let { users ->
             users[0]?.id shouldBe 19
         }
+        order.getSource() shouldContainExactly  mapOf("user" to listOf(mapOf("id" to 19)))
     }
 
     @Test
@@ -442,6 +510,9 @@ class SourceTests {
         shouldThrow<IllegalStateException> {
             order.users
         }
+        shouldThrow<IllegalStateException> {
+            order.getSource()
+        }
 
         shouldThrow<IllegalArgumentException> {
             order.setSource(mapOf("user" to null))
@@ -449,23 +520,31 @@ class SourceTests {
 
         order.setSource(mapOf("user" to emptyList<Nothing>()))
         order.users shouldBe emptyList()
+        order.getSource() shouldContainExactly mapOf("user" to emptyList<Nothing>())
 
         shouldThrow<IllegalArgumentException> {
             order.setSource(mapOf("user" to listOf(null)))
         }
+        shouldThrow<IllegalStateException> {
+            order.getSource()
+        }
 
         order.setSource(mapOf("user" to listOf(mapOf("id" to null))))
         order.users shouldBe listOf(UserSource(null))
+        order.getSource() shouldContainExactly mapOf("user" to listOf(mapOf("id" to null)))
 
         order.setSource(mapOf("user" to listOf(mapOf("id" to 1))))
         order.users shouldBe listOf(UserSource(1))
+        order.getSource() shouldContainExactly mapOf("user" to listOf(mapOf("id" to 1)))
 
         order.setSource(mapOf("user" to mapOf("id" to 2)))
         order.users shouldBe listOf(UserSource(2))
+        order.getSource() shouldContainExactly mapOf("user" to listOf(mapOf("id" to 2)))
 
         order.users = listOf(UserSource(id = 19))
         order.users.let { users ->
-            users[0]?.id shouldBe 19
+            users[0].id shouldBe 19
         }
+        order.getSource() shouldContainExactly mapOf("user" to listOf(mapOf("id" to 19)))
     }
 }

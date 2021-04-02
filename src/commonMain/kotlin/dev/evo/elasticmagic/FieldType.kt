@@ -1,11 +1,15 @@
 package dev.evo.elasticmagic
 
-interface FieldType<out T, out V> {
+interface FieldType<out T, V> {
     val name: String
+
+    fun serialize(v: V): Any {
+        return v as Any
+    }
 
     fun deserialize(
         v: Any,
-        valueFactory: (() -> @UnsafeVariance V)? = null
+        valueFactory: (() -> V)? = null
     ): V
 }
 
@@ -86,6 +90,10 @@ object TextType : StringType() {
 open class ObjectType<T: SubDocument> : FieldType<T, BaseSource> {
     override val name = "object"
 
+    override fun serialize(v: BaseSource): Any {
+        return v.getSource()
+    }
+
     override fun deserialize(v: Any, valueFactory: (() -> BaseSource)?): BaseSource {
         requireNotNull(valueFactory) {
             "valueFactory argument must be passed"
@@ -103,6 +111,22 @@ open class ObjectType<T: SubDocument> : FieldType<T, BaseSource> {
     }
 }
 
+internal class SourceType<V: BaseSource>(
+    val type: FieldType<*, BaseSource>,
+    private val sourceFactory: () -> V
+) : FieldType<Nothing, V> {
+    override val name = type.name
+
+    override fun serialize(v: V): Any {
+        return type.serialize(v)
+    }
+
+    override fun deserialize(v: Any, valueFactory: (() -> V)?): V {
+        @Suppress("UNCHECKED_CAST")
+        return type.deserialize(v, sourceFactory) as V
+    }
+}
+
 class NestedType<T: SubDocument> : ObjectType<T>() {
     override val name = "nested"
 }
@@ -115,32 +139,54 @@ internal class SubFieldsType<T, V, F: SubFields<V>>(val type: FieldType<T, V>) :
     }
 }
 
-internal fun <V> deserializeListOfOptional(deserialize: (Any) -> V, v: Any): List<V?> {
-    return when (v) {
-        is List<*> -> {
-            v.map {
-                if (it != null) {
-                    deserialize(it)
-                } else {
-                    null
-                }
+internal class OptionalListType<V>(val type: FieldType<*, V>) : FieldType<Nothing, List<V?>> {
+    override val name = type.name
+
+    override fun serialize(v: List<V?>): Any {
+        return v.map { w ->
+            if (w != null) {
+                type.serialize(w)
+            } else {
+                null
             }
         }
-        else -> listOf(deserialize(v))
+    }
+
+    override fun deserialize(v: Any, valueFactory: (() -> List<V?>)?): List<V?> {
+        return when (v) {
+            is List<*> -> {
+                v.map {
+                    if (it != null) {
+                        type.deserialize(it)
+                    } else {
+                        null
+                    }
+                }
+            }
+            else -> listOf(type.deserialize(v))
+        }
     }
 }
 
-internal fun <V> deserializeListOfRequired(deserialize: (Any) -> V, v: Any): List<V> {
-    return when (v) {
-        is List<*> -> {
-            v.map {
-                if (it != null) {
-                    deserialize(it)
-                } else {
-                    throw IllegalArgumentException("null is not allowed")
+internal class RequiredListType<V>(val type: FieldType<*, V>) : FieldType<Nothing, List<V>> {
+    override val name = type.name
+
+    override fun serialize(v: List<V>): Any {
+        return v.map(type::serialize)
+    }
+
+    override fun deserialize(v: Any, valueFactory: (() -> List<V>)?): List<V> {
+        return when (v) {
+            is List<*> -> {
+                v.map {
+                    if (it != null) {
+                        type.deserialize(it)
+                    } else {
+                        throw IllegalArgumentException("null is not allowed")
+                    }
                 }
             }
+            else -> listOf(type.deserialize(v))
         }
-        else -> listOf(deserialize(v))
     }
 }
