@@ -79,6 +79,8 @@ abstract class StdDeserializer : Deserializer<Map<String, Any?>> {
             return ObjectIterator(map.iterator())
         }
 
+        override fun anyOrNull(name: String): Any? = coerceToAny(map[name])
+
         override fun intOrNull(name: String): Int? = coerceToInt(map[name])
 
         override fun longOrNull(name: String): Long? = coerceToLong(map[name])

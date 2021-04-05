@@ -3,11 +3,41 @@ package dev.evo.elasticmagic.serde
 interface Serializer<OBJ> {
     interface ObjectCtx {
         fun field(name: String, value: Int?)
+        fun fieldIfNotNull(name: String, value: Int?) {
+            if (value != null) {
+                field(name, value)
+            }
+        }
         fun field(name: String, value: Long?)
+        fun fieldIfNotNull(name: String, value: Long?) {
+            if (value != null) {
+                field(name, value)
+            }
+        }
         fun field(name: String, value: Float?)
+        fun fieldIfNotNull(name: String, value: Float?) {
+            if (value != null) {
+                field(name, value)
+            }
+        }
         fun field(name: String, value: Double?)
+        fun fieldIfNotNull(name: String, value: Double?) {
+            if (value != null) {
+                field(name, value)
+            }
+        }
         fun field(name: String, value: Boolean?)
+        fun fieldIfNotNull(name: String, value: Boolean?) {
+            if (value != null) {
+                field(name, value)
+            }
+        }
         fun field(name: String, value: String?)
+        fun fieldIfNotNull(name: String, value: String?) {
+            if (value != null) {
+                field(name, value)
+            }
+        }
         fun field(name: String, value: Any?) {
             when (value) {
                 is Int? -> field(name, value)
@@ -21,28 +51,68 @@ interface Serializer<OBJ> {
                 )
             }
         }
+        fun fieldIfNotNull(name: String, value: Any?) {
+            if (value != null) {
+                field(name, value)
+            }
+        }
         fun array(name: String, block: ArrayCtx.() -> Unit)
         fun obj(name: String, block: ObjectCtx.() -> Unit)
     }
 
     interface ArrayCtx {
-        fun value(value: Int?)
-        fun value(value: Long?)
-        fun value(value: Float?)
-        fun value(value: Double?)
-        fun value(value: Boolean?)
+        fun value(v: Int?)
+        fun valueIfNotNull(v: Int?) {
+            if (v != null) {
+                value(v)
+            }
+        }
+        fun value(v: Long?)
+        fun valueIfNotNull(v: Long?) {
+            if (v != null) {
+                value(v)
+            }
+        }
+        fun value(v: Float?)
+        fun valueIfNotNull(v: Float?) {
+            if (v != null) {
+                value(v)
+            }
+        }
+        fun value(v: Double?)
+        fun valueIfNotNull(v: Double?) {
+            if (v != null) {
+                value(v)
+            }
+        }
+        fun value(v: Boolean?)
+        fun valueIfNotNull(v: Boolean?) {
+            if (v != null) {
+                value(v)
+            }
+        }
         fun value(value: String?)
-        fun value(value: Any?) {
-            when (value) {
-                is Int? -> value(value)
-                is Long? -> value(value)
-                is Float? -> value(value)
-                is Double? -> value(value)
-                is Boolean? -> value(value)
-                is String? -> value(value)
+        fun valueIfNotNull(v: String?) {
+            if (v != null) {
+                value(v)
+            }
+        }
+        fun value(v: Any?) {
+            when (v) {
+                is Int? -> value(v)
+                is Long? -> value(v)
+                is Float? -> value(v)
+                is Double? -> value(v)
+                is Boolean? -> value(v)
+                is String? -> value(v)
                 else -> error(
-                    "Unsupported value type: ${if (value != null) value::class else null}"
+                    "Unsupported value type: ${if (v != null) v::class else null}"
                 )
+            }
+        }
+        fun valueIfNotNull(v: Any?) {
+            if (v != null) {
+                value(v)
             }
         }
         fun array(block: ArrayCtx.() -> Unit)

@@ -67,6 +67,14 @@ class ElasticsearchIndex<OBJ>(
                 )
             }
         }
+        val rawAggs = rawResult.objOrNull("aggregations")
+        val aggResults = mutableMapOf<String, AggregationResult>()
+        if (rawAggs != null) {
+            println(rawAggs.toMap())
+            for ((aggName, agg) in preparedSearchQuery.aggregations) {
+                aggResults[aggName] = agg.processResult(rawAggs.obj(aggName))
+            }
+        }
         return SearchQueryResult(
             // TODO: Flag to add raw result
             null,
@@ -76,6 +84,7 @@ class ElasticsearchIndex<OBJ>(
             totalHitsRelation = totalHitsRelation,
             maxScore = rawHitsData.doubleOrNull("max_score"),
             hits = hits,
+            aggs = aggResults,
         )
     }
 }

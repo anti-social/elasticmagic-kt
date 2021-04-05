@@ -8,8 +8,6 @@ interface ExpressionValue {
 }
 
 interface Expression : SearchQueryCompiler.Visitable {
-    val name: String
-
     fun children(): Iterator<Expression>? {
         return null
     }
@@ -36,7 +34,19 @@ internal inline fun Expression.collect(process: (Expression) -> Unit) {
     }
 }
 
-interface QueryExpression : Expression {
+interface NamedExpression : Expression {
+    val name: String
+
+    override fun accept(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
+        ctx.obj(name) {
+            visit(this, compiler)
+        }
+    }
+
+    fun visit(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler)
+}
+
+interface QueryExpression : NamedExpression {
     override fun reduce(): QueryExpression? {
         return this
     }
@@ -48,8 +58,8 @@ data class NodeHandle<T: QueryExpressionNode<T>>(val name: String? = null)
 abstract class QueryExpressionNode<T: QueryExpressionNode<T>>(
     val handle: NodeHandle<T>,
 ) : QueryExpression {
-    override fun accept(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
-        toQueryExpression().accept(ctx, compiler)
+    override fun visit(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
+        toQueryExpression().visit(ctx, compiler)
     }
 
     override fun reduce(): QueryExpression? {
@@ -60,46 +70,42 @@ abstract class QueryExpressionNode<T: QueryExpressionNode<T>>(
 }
 
 data class Term(
-    val field: FieldOperations,
+    val field: Named,
     val term: Any,
     val boost: Double? = null,
 ) : QueryExpression {
     override val name = "term"
 
-    override fun accept(
+    override fun visit(
         ctx: Serializer.ObjectCtx,
         compiler: SearchQueryCompiler
     ) {
-        ctx.obj(name) {
-            if (boost != null) {
-                obj(field.getQualifiedFieldName()) {
-                    field("value", term)
-                    field("boost", boost)
-                }
-            } else {
-                field(field.getQualifiedFieldName(), term)
+        if (boost != null) {
+            ctx.obj(field.getQualifiedFieldName()) {
+                field("value", term)
+                field("boost", boost)
             }
+        } else {
+            ctx.field(field.getQualifiedFieldName(), term)
         }
     }
 }
 
 data class Exists(
-    val field: FieldOperations,
+    val field: Named,
 ) : QueryExpression {
     override val name = "exists"
 
-    override fun accept(
+    override fun visit(
         ctx: Serializer.ObjectCtx,
         compiler: SearchQueryCompiler
     ) {
-        ctx.obj(name) {
-            field("field", field.getQualifiedFieldName())
-        }
+        ctx.field("field", field.getQualifiedFieldName())
     }
 }
 
 data class Range(
-    val field: FieldOperations,
+    val field: Named,
     val gt: Any? = null,
     val gte: Any? = null,
     val lt: Any? = null,
@@ -107,31 +113,29 @@ data class Range(
 ) : QueryExpression {
     override val name = "range"
 
-    override fun accept(
+    override fun visit(
         ctx: Serializer.ObjectCtx,
         compiler: SearchQueryCompiler
     ) {
-        ctx.obj(name) {
-            obj(field.getQualifiedFieldName()) {
-                if (gt != null) {
-                    field("gt", gt)
-                }
-                if (gte != null) {
-                    field("gte", gte)
-                }
-                if (lt != null) {
-                    field("lt", lt)
-                }
-                if (lte != null) {
-                    field("lte", lte)
-                }
+        ctx.obj(field.getQualifiedFieldName()) {
+            if (gt != null) {
+                field("gt", gt)
+            }
+            if (gte != null) {
+                field("gte", gte)
+            }
+            if (lt != null) {
+                field("lt", lt)
+            }
+            if (lte != null) {
+                field("lte", lte)
             }
         }
     }
 }
 
 data class Match(
-    val field: FieldOperations,
+    val field: Named,
     val query: String,
     val analyzer: String? = null,
     val minimumShouldMatch: Any? = null,
@@ -139,7 +143,7 @@ data class Match(
 ) : QueryExpression {
     override val name = "match"
 
-    override fun accept(
+    override fun visit(
         ctx: Serializer.ObjectCtx,
         compiler: SearchQueryCompiler
     ) {
@@ -148,13 +152,11 @@ data class Match(
             "analyzer" to analyzer,
             "minimum_should_match" to minimumShouldMatch,
         )
-        ctx.obj(name) {
-            if (params.isEmpty()) {
-                field(field.getQualifiedFieldName(), query)
-            } else {
-                obj(field.getQualifiedFieldName()) {
-                    compiler.visit(this, params)
-                }
+        if (params.isEmpty()) {
+            ctx.field(field.getQualifiedFieldName(), query)
+        } else {
+            ctx.obj(field.getQualifiedFieldName()) {
+                compiler.visit(this, params)
             }
         }
     }
@@ -163,40 +165,41 @@ data class Match(
 class MatchAll : QueryExpression {
     override val name = "match_all"
 
-    override fun accept(
+    override fun visit(
         ctx: Serializer.ObjectCtx,
         compiler: SearchQueryCompiler
-    ) {
-        ctx.obj(name) {}
-    }
+    ) {}
 }
 
 data class MultiMatch(
     val query: String,
-    val fields: List<FieldOperations>,
+    val fields: List<Named>,
     val type: Type? = null,
     val boost: Double? = null,
     val params: Params? = null,
 ) : QueryExpression {
-    enum class Type {
-        BEST_FIELDS, MOST_FIELDS, CROSS_FIELDS, PHRASE, PHRASE_PREFIX;
-    }
-
     override val name = "multi_match"
 
-    override fun accept(
+    enum class Type : ExpressionValue {
+        BEST_FIELDS, MOST_FIELDS, CROSS_FIELDS, PHRASE, PHRASE_PREFIX;
+
+        override fun toValue(): Any {
+            return name.toLowerCase()
+        }
+    }
+
+    override fun visit(
         ctx: Serializer.ObjectCtx,
         compiler: SearchQueryCompiler
     ) {
-        val params = Params(
-            params,
-            "query" to query,
-            "fields" to fields.map { field -> field.getQualifiedFieldName() },
-            "type" to type?.name?.toLowerCase(),
-            "boost" to boost,
-        )
-        ctx.obj(name) {
-            compiler.visit(this, params)
+        ctx.field("query", query)
+        ctx.array("fields") {
+            compiler.visit(this, fields.map(Named::getQualifiedFieldName))
+        }
+        ctx.fieldIfNotNull("type", type?.toValue())
+        ctx.fieldIfNotNull("boost", boost)
+        if (!params.isNullOrEmpty()) {
+            compiler.visit(ctx, params)
         }
     }
 }
@@ -205,7 +208,7 @@ data class Script(
     val spec: Spec,
     val lang: String? = null,
     val params: Params = Params(),
-) : Expression {
+) : NamedExpression {
     override val name: String = "script"
 
     constructor(
@@ -217,18 +220,14 @@ data class Script(
 
     sealed class Spec : Expression {
         class Source(val source: String) : Spec(), Expression {
-            override val name = "source"
-
             override fun accept(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
-                ctx.field(name, source)
+                ctx.field("source", source)
             }
         }
 
         class Id(val id: String) : Spec(), Expression {
-            override val name = "id"
-
             override fun accept(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
-                ctx.field(name, id)
+                ctx.field("id", id)
             }
         }
 
@@ -260,19 +259,17 @@ data class Script(
         fun Id(id: String): Spec.Id = Spec.Id(id)
     }
 
-    override fun accept(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
-        ctx.obj(name) {
-            when (spec) {
-                is Spec.Source -> field("source", spec.source)
-                is Spec.Id -> field("id", spec.id)
-            }
-            if (lang != null) {
-                field("lang", lang)
-            }
-            if (params.isNotEmpty()) {
-                obj("params") {
-                    compiler.visit(this, params)
-                }
+    override fun visit(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
+        when (spec) {
+            is Spec.Source -> ctx.field("source", spec.source)
+            is Spec.Id -> ctx.field("id", spec.id)
+        }
+        if (lang != null) {
+            ctx.field("lang", lang)
+        }
+        if (params.isNotEmpty()) {
+            ctx.obj("params") {
+                compiler.visit(this, params)
             }
         }
     }
@@ -334,33 +331,29 @@ data class Bool(
         }
     }
 
-    override fun accept(
+    override fun visit(
         ctx: Serializer.ObjectCtx,
         compiler: SearchQueryCompiler
     ) {
-        ctx.obj(name) {
-            if (minimumShouldMatch != null) {
-                field("minimum_should_match", minimumShouldMatch)
+        ctx.fieldIfNotNull("minimum_should_match", minimumShouldMatch)
+        if (!filter.isNullOrEmpty()) {
+            ctx.array("filter") {
+                compiler.visit(this, filter)
             }
-            if (!filter.isNullOrEmpty()) {
-                array("filter") {
-                    compiler.visit(this, filter)
-                }
+        }
+        if (!should.isNullOrEmpty()) {
+            ctx.array("should") {
+                compiler.visit(this, should)
             }
-            if (!should.isNullOrEmpty()) {
-                array("should") {
-                    compiler.visit(this, should)
-                }
+        }
+        if (!must.isNullOrEmpty()) {
+            ctx.array("must") {
+                compiler.visit(this, must)
             }
-            if (!must.isNullOrEmpty()) {
-                array("must") {
-                    compiler.visit(this, must)
-                }
-            }
-            if (!mustNot.isNullOrEmpty()) {
-                array("must_not") {
-                    compiler.visit(this, mustNot)
-                }
+        }
+        if (!mustNot.isNullOrEmpty()) {
+            ctx.array("must_not") {
+                compiler.visit(this, mustNot)
             }
         }
     }
@@ -414,15 +407,11 @@ data class DisMax(
         }
     }
 
-    override fun accept(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
-        ctx.obj(name) {
-            array("queries") {
-                compiler.visit(this, queries)
-            }
-            if (tieBreaker != null) {
-                field("tie_breaker", tieBreaker)
-            }
+    override fun visit(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
+        ctx.array("queries") {
+            compiler.visit(this, queries)
         }
+        ctx.fieldIfNotNull("tie_breaker", tieBreaker)
     }
 }
 
@@ -459,11 +448,15 @@ data class FunctionScore(
     val minScore: Double? = null,
     override val functions: List<Function>,
 ) : FunctionScoreExpression {
-    enum class ScoreMode {
-        MULTIPLY, SUM, AVG, FIRST, MAX, MIN
+    enum class ScoreMode : ExpressionValue {
+        MULTIPLY, SUM, AVG, FIRST, MAX, MIN;
+
+        override fun toValue(): Any = name.toLowerCase()
     }
-    enum class BoostMode {
-        MULTIPLY, REPLACE, SUM, AVG, MAX, MIN
+    enum class BoostMode : ExpressionValue {
+        MULTIPLY, REPLACE, SUM, AVG, MAX, MIN;
+
+        override fun toValue(): Any = name.toLowerCase()
     }
 
     override val name = "function_score"
@@ -502,8 +495,6 @@ data class FunctionScore(
         val weight: Double,
         override val filter: QueryExpression?,
     ) : Function() {
-        override val name = "weight"
-
         override fun reduce(): Expression? {
             return copy(
                 filter = reduceFilter()
@@ -515,19 +506,17 @@ data class FunctionScore(
             compiler: SearchQueryCompiler
         ) {
             super.accept(ctx, compiler) {
-                field(name, weight)
+                field("weight", weight)
             }
         }
     }
 
     data class FieldValueFactor(
-        val field: FieldOperations,
+        val field: Named,
         val factor: Double? = null,
         val missing: Double? = null,
         override val filter: QueryExpression? = null,
     ) : Function() {
-        override val name = "field_value_factor"
-
         override fun reduce(): Expression? {
             return copy(
                 filter = reduceFilter()
@@ -539,7 +528,7 @@ data class FunctionScore(
             SearchQueryCompiler
         ) {
             super.accept(ctx, compiler) {
-                ctx.obj(name) {
+                ctx.obj("field_value_factor") {
                     field("field", field.getQualifiedFieldName())
                     if (factor != null) {
                         field("factor", factor)
@@ -556,10 +545,8 @@ data class FunctionScore(
         val script: Script,
         override val filter: QueryExpression? = null,
     ) : Function() {
-        override val name = "script_score"
-
         override fun accept(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
-            ctx.obj(name) {
+            ctx.obj("script_score") {
                 compiler.visit(this, script)
             }
         }
@@ -573,28 +560,20 @@ data class FunctionScore(
         return this
     }
 
-    override fun accept(
+    override fun visit(
         ctx: Serializer.ObjectCtx,
         compiler: SearchQueryCompiler
     ) {
-        ctx.obj(name) {
-            if (query != null) {
-                obj("query") {
-                    compiler.visit(this, query)
-                }
+        if (query != null) {
+            ctx.obj("query") {
+                compiler.visit(this, query)
             }
-            if (boost != null) {
-                field("boost", boost)
-            }
-            if (scoreMode != null) {
-                field("score_mode", scoreMode.name.toLowerCase())
-            }
-            if (boostMode != null) {
-                field("boost_mode", boostMode.name.toLowerCase())
-            }
-            array("functions") {
-                compiler.visit(this, functions)
-            }
+        }
+        ctx.fieldIfNotNull("boost", boost)
+        ctx.fieldIfNotNull("score_mode", scoreMode?.toValue())
+        ctx.fieldIfNotNull("boost_mode", boostMode?.toValue())
+        ctx.array("functions") {
+            compiler.visit(this, functions)
         }
     }
 }
@@ -633,8 +612,6 @@ data class Sort(
     val missing: Missing? = null,
     val unmappedType: String? = null,
 ) : Expression {
-    override val name = "sort"
-
     constructor(
         field: Named? = null,
         scriptType: String? = null,

@@ -23,6 +23,8 @@ abstract class BaseSearchQuery<S: BaseSource, T: BaseSearchQuery<S, T>>(
     protected val filters: MutableList<QueryExpression> = mutableListOf()
     protected val postFilters: MutableList<QueryExpression> = mutableListOf()
 
+    protected val aggregations: MutableMap<String, Aggregation> = mutableMapOf()
+
     protected val docvalueFields: MutableList<FieldFormat> = mutableListOf()
     protected val storedFields: MutableList<Named> = mutableListOf()
     protected val scriptFields: MutableMap<String, Script> = mutableMapOf()
@@ -127,6 +129,14 @@ abstract class BaseSearchQuery<S: BaseSource, T: BaseSearchQuery<S, T>>(
         this.postFilters += filters
     }
 
+    fun aggs(vararg aggregations: Pair<String, Aggregation>): T = self {
+        this.aggregations.putAll(aggregations)
+    }
+
+    fun clearAggs(): T = self {
+        aggregations.clear()
+    }
+
     fun sort(vararg sorts: Sort): T = self {
         this.sorts += sorts
     }
@@ -205,6 +215,7 @@ abstract class BaseSearchQuery<S: BaseSource, T: BaseSearchQuery<S, T>>(
             query = query,
             filters = filters.toList(),
             postFilters = postFilters.toList(),
+            aggregations = aggregations.toMap(),
             sorts = sorts.toList(),
             trackScores = trackScores,
             trackTotalHits = trackTotalHits,
@@ -261,6 +272,7 @@ data class PreparedSearchQuery<S: BaseSource>(
     val query: QueryExpression?,
     val filters: List<QueryExpression>,
     val postFilters: List<QueryExpression>,
+    val aggregations: Map<String, Aggregation>,
     val sorts: List<Sort>,
     val trackScores: Boolean?,
     val trackTotalHits: Boolean?,
@@ -271,22 +283,4 @@ data class PreparedSearchQuery<S: BaseSource>(
     val from: Long?,
     val terminateAfter: Long?,
     val params: Params,
-)
-
-data class SearchQueryResult<S: BaseSource>(
-    val rawResult: Map<String, Any?>?,
-    val took: Long,
-    val timedOut: Boolean,
-    val totalHits: Long?,
-    val totalHitsRelation: String?,
-    val maxScore: Double?,
-    val hits: List<SearchHit<S>>,
-)
-
-data class SearchHit<S: BaseSource>(
-    val index: String,
-    val type: String,
-    val id: String,
-    val score: Double?,
-    val source: S?,
 )

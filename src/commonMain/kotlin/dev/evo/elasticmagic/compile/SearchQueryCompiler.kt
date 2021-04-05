@@ -52,6 +52,11 @@ open class SearchQueryCompiler(
                 visit(this, searchQuery.postFilters)
             }
         }
+        if (searchQuery.aggregations.isNotEmpty()) {
+            ctx.obj("aggs") {
+                visit(this, searchQuery.aggregations)
+            }
+        }
         if (searchQuery.sorts.isNotEmpty()) {
             ctx.array("sort") {
                 for (sort in searchQuery.sorts) {

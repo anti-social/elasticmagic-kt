@@ -6,16 +6,19 @@ import dev.evo.elasticmagic.serde.Deserializer
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.boolean
+import kotlinx.serialization.json.booleanOrNull
+import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.double
+import kotlinx.serialization.json.doubleOrNull
 import kotlinx.serialization.json.float
+import kotlinx.serialization.json.floatOrNull
 import kotlinx.serialization.json.int
+import kotlinx.serialization.json.intOrNull
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
-import kotlinx.serialization.json.booleanOrNull
-import kotlinx.serialization.json.doubleOrNull
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.long
 import kotlinx.serialization.json.longOrNull
@@ -29,8 +32,8 @@ sealed class JsonDeserializer : Deserializer<JsonObject> {
                     if (v.isString) {
                         v.content
                     } else {
-                        v.doubleOrNull
-                            ?: v.longOrNull
+                        v.longOrNull
+                            ?: v.doubleOrNull
                             ?: v.booleanOrNull
                     }
                 }
@@ -41,28 +44,32 @@ sealed class JsonDeserializer : Deserializer<JsonObject> {
     }
 
     private class ObjectCtx(private val obj: JsonObject) : Deserializer.ObjectCtx {
+        override fun anyOrNull(name: String): Any? {
+            return obj[name]?.let(::coerceToAny)
+        }
+
         override fun intOrNull(name: String): Int? {
-            return obj[name]?.jsonPrimitive?.int
+            return obj[name]?.jsonPrimitive?.intOrNull
         }
 
         override fun longOrNull(name: String): Long? {
-            return obj[name]?.jsonPrimitive?.long
+            return obj[name]?.jsonPrimitive?.longOrNull
         }
 
         override fun floatOrNull(name: String): Float? {
-            return obj[name]?.jsonPrimitive?.float
+            return obj[name]?.jsonPrimitive?.floatOrNull
         }
 
         override fun doubleOrNull(name: String): Double? {
-            return obj[name]?.jsonPrimitive?.double
+            return obj[name]?.jsonPrimitive?.doubleOrNull
         }
 
         override fun booleanOrNull(name: String): Boolean? {
-            return obj[name]?.jsonPrimitive?.boolean
+            return obj[name]?.jsonPrimitive?.booleanOrNull
         }
 
         override fun stringOrNull(name: String): String? {
-            return obj[name]?.jsonPrimitive?.content
+            return obj[name]?.jsonPrimitive?.contentOrNull
         }
 
         override fun objOrNull(name: String): Deserializer.ObjectCtx? {
@@ -97,42 +104,42 @@ sealed class JsonDeserializer : Deserializer<JsonObject> {
         override fun intOrNull(): Pair<String, Int?> {
             val (key, jsonValue) = currentEntry!!
             return jsonValue.jsonPrimitiveOrNull.let { value ->
-                key to value?.int
+                key to value?.intOrNull
             }
         }
 
         override fun longOrNull(): Pair<String, Long?> {
             val (key, jsonValue) = currentEntry!!
             return jsonValue.jsonPrimitiveOrNull.let { value ->
-                key to value?.long
+                key to value?.longOrNull
             }
         }
 
         override fun floatOrNull(): Pair<String, Float?> {
             val (key, jsonValue) = currentEntry!!
             return jsonValue.jsonPrimitiveOrNull.let { value ->
-                key to value?.float
+                key to value?.floatOrNull
             }
         }
 
         override fun doubleOrNull(): Pair<String, Double?> {
             val (key, jsonValue) = currentEntry!!
             return jsonValue.jsonPrimitiveOrNull.let { value ->
-                key to value?.double
+                key to value?.doubleOrNull
             }
         }
 
         override fun booleanOrNull(): Pair<String, Boolean?> {
             val (key, jsonValue) = currentEntry!!
             return jsonValue.jsonPrimitiveOrNull.let { value ->
-                key to value?.boolean
+                key to value?.booleanOrNull
             }
         }
 
         override fun stringOrNull(): Pair<String, String?> {
             val (key, jsonValue) = currentEntry!!
             return jsonValue.jsonPrimitiveOrNull.let { value ->
-                key to value?.content
+                key to value?.contentOrNull
             }
         }
 
@@ -169,27 +176,27 @@ sealed class JsonDeserializer : Deserializer<JsonObject> {
         }
 
         override fun intOrNull(): Int? {
-            return nextPrimitive()?.int
+            return nextPrimitive()?.intOrNull
         }
 
         override fun longOrNull(): Long? {
-            return nextPrimitive()?.long
+            return nextPrimitive()?.longOrNull
         }
 
         override fun floatOrNull(): Float? {
-            return nextPrimitive()?.float
+            return nextPrimitive()?.floatOrNull
         }
 
         override fun doubleOrNull(): Double? {
-            return nextPrimitive()?.double
+            return nextPrimitive()?.doubleOrNull
         }
 
         override fun booleanOrNull(): Boolean? {
-            return nextPrimitive()?.boolean
+            return nextPrimitive()?.booleanOrNull
         }
 
         override fun stringOrNull(): String? {
-            return nextPrimitive()?.content
+            return nextPrimitive()?.contentOrNull
         }
 
         override fun objOrNull(): Deserializer.ObjectCtx? {

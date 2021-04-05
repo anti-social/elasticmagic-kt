@@ -5,6 +5,8 @@ class DeserializationException(message: String, cause: Exception) : Exception(me
 interface Deserializer<OBJ> {
     interface ObjectCtx {
         fun iterator(): ObjectIterator
+        fun anyOrNull(name: String): Any?
+        fun any(name: String): Any = anyOrNull(name) ?: error("no such key")
         fun intOrNull(name: String): Int?
         fun int(name: String): Int = intOrNull(name) ?: error("not an integer")
         fun longOrNull(name: String): Long?
