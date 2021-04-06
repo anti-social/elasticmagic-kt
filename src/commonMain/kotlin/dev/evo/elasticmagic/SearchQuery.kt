@@ -208,6 +208,10 @@ abstract class BaseSearchQuery<S: BaseSource, T: BaseSearchQuery<S, T>>(
         params.putNotNullOrRemove("request_cache", requestCache)
     }
 
+    fun stats(stats: String?): T = self {
+        params.putNotNullOrRemove("stats", stats)
+    }
+
     fun prepare(): PreparedSearchQuery<S> {
         return PreparedSearchQuery(
             sourceFactory,
