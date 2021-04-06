@@ -441,7 +441,7 @@ interface FunctionScoreExpression : QueryExpression {
 }
 
 data class FunctionScore(
-    val query: QueryExpression?,
+    val query: QueryExpression? = null,
     val boost: Double? = null,
     val scoreMode: ScoreMode? = null,
     val boostMode: BoostMode? = null,
@@ -731,3 +731,36 @@ data class Sort(
     }
 }
 
+abstract class Rescore(
+    val windowSize: Int? = null,
+) : NamedExpression {
+    override fun accept(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
+        super.accept(ctx, compiler)
+        ctx.fieldIfNotNull("window_size", windowSize)
+    }
+}
+
+class QueryRescore(
+    val query: QueryExpression,
+    val queryWeight: Double? = null,
+    val rescoreQueryWeight: Double? = null,
+    val scoreMode: ScoreMode? = null,
+    windowSize: Int? = null,
+) : Rescore(windowSize) {
+    override val name = "query"
+
+    enum class ScoreMode : ExpressionValue {
+        TOTAL, MULTIPLY, AVG, MAX, MIN;
+
+        override fun toValue() = name.toLowerCase()
+    }
+
+    override fun visit(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
+        ctx.obj("rescore_query") {
+            compiler.visit(this, query)
+        }
+        ctx.fieldIfNotNull("query_weight", queryWeight)
+        ctx.fieldIfNotNull("rescore_query_weight", rescoreQueryWeight)
+        ctx.fieldIfNotNull("score_mode", scoreMode?.toValue())
+    }
+}

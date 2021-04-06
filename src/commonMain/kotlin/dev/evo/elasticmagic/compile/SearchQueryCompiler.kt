@@ -57,6 +57,11 @@ open class SearchQueryCompiler(
                 visit(this, searchQuery.aggregations)
             }
         }
+        if (searchQuery.rescores.isNotEmpty()) {
+            ctx.array("rescore") {
+                visit(this, searchQuery.rescores)
+            }
+        }
         if (searchQuery.sorts.isNotEmpty()) {
             ctx.array("sort") {
                 for (sort in searchQuery.sorts) {

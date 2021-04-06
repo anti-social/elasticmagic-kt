@@ -57,6 +57,13 @@ class ElasticsearchClusterTests {
             )
         }
             .filter(FactorsDoc.clickPrice.gt(2.2))
+            .rescore(
+                QueryRescore(
+                    FactorsDoc.companyId.eq(222),
+                    rescoreQueryWeight = 10.0,
+                    windowSize = 1000,
+                )
+            )
             .aggs(
                 "qf" to FilterAgg(
                     filter = MatchAll(),

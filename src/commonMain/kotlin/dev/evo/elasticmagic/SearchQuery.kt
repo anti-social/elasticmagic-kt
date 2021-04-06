@@ -29,6 +29,7 @@ abstract class BaseSearchQuery<S: BaseSource, T: BaseSearchQuery<S, T>>(
     protected val storedFields: MutableList<Named> = mutableListOf()
     protected val scriptFields: MutableMap<String, Script> = mutableMapOf()
 
+    protected val rescores: MutableList<Rescore> = mutableListOf()
     protected val sorts: MutableList<Sort> = mutableListOf()
 
     protected var trackScores: Boolean? = null
@@ -137,6 +138,14 @@ abstract class BaseSearchQuery<S: BaseSource, T: BaseSearchQuery<S, T>>(
         aggregations.clear()
     }
 
+    fun rescore(vararg rescores: Rescore): T = self {
+        this.rescores += rescores
+    }
+
+    fun clearRescore(): T = self {
+        rescores.clear()
+    }
+
     fun sort(vararg sorts: Sort): T = self {
         this.sorts += sorts
     }
@@ -220,6 +229,7 @@ abstract class BaseSearchQuery<S: BaseSource, T: BaseSearchQuery<S, T>>(
             filters = filters.toList(),
             postFilters = postFilters.toList(),
             aggregations = aggregations.toMap(),
+            rescores = rescores.toList(),
             sorts = sorts.toList(),
             trackScores = trackScores,
             trackTotalHits = trackTotalHits,
@@ -277,6 +287,7 @@ data class PreparedSearchQuery<S: BaseSource>(
     val filters: List<QueryExpression>,
     val postFilters: List<QueryExpression>,
     val aggregations: Map<String, Aggregation>,
+    val rescores: List<Rescore>,
     val sorts: List<Sort>,
     val trackScores: Boolean?,
     val trackTotalHits: Boolean?,

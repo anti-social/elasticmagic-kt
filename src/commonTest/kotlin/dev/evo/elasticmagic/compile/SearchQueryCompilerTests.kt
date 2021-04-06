@@ -18,6 +18,7 @@ import dev.evo.elasticmagic.SearchType
 import dev.evo.elasticmagic.Sort
 import dev.evo.elasticmagic.SubDocument
 import dev.evo.elasticmagic.FieldType
+import dev.evo.elasticmagic.QueryRescore
 import dev.evo.elasticmagic.serde.StdSerializer
 
 import io.kotest.matchers.maps.shouldContainExactly
@@ -198,6 +199,92 @@ class SearchQueryCompilerTests {
                 )
             )
         )
+    }
+
+    @Test
+    fun testRescore() {
+        val query = SearchQuery()
+
+        query.rescore(
+            QueryRescore(
+                AnyField("rank").gte(4),
+                windowSize = 100,
+            )
+        )
+        compile(query).body shouldContainExactly mapOf(
+            "rescore" to listOf(
+                mapOf(
+                    "window_size" to 100,
+                    "query" to mapOf(
+                        "rescore_query" to mapOf(
+                            "range" to mapOf(
+                                "rank" to mapOf(
+                                    "gte" to 4
+                                )
+                            )
+                        ),
+                    ),
+                )
+            )
+        )
+
+        query.rescore(
+            QueryRescore(
+                FunctionScore(
+                    functions = listOf(
+                        FunctionScore.ScriptScore(
+                            script = Script(
+                                source = "Math.log10(doc[params.field].value + 2)",
+                                params = mapOf(
+                                    "field" to AnyField("likes")
+                                )
+                            )
+                        )
+                    )
+                ),
+                scoreMode = QueryRescore.ScoreMode.MULTIPLY,
+            )
+        )
+        compile(query).body shouldContainExactly mapOf(
+            "rescore" to listOf(
+                mapOf(
+                    "window_size" to 100,
+                    "query" to mapOf(
+                        "rescore_query" to mapOf(
+                            "range" to mapOf(
+                                "rank" to mapOf(
+                                    "gte" to 4
+                                )
+                            )
+                        ),
+                    ),
+                ),
+                mapOf(
+                    "query" to mapOf(
+                        "score_mode" to "multiply",
+                        "rescore_query" to mapOf(
+                            "function_score" to mapOf(
+                                "functions" to listOf(
+                                    mapOf(
+                                        "script_score" to mapOf(
+                                            "script" to mapOf(
+                                                "source" to "Math.log10(doc[params.field].value + 2)",
+                                                "params" to mapOf(
+                                                    "field" to "likes"
+                                                )
+                                            )
+                                        )
+                                    )
+                                )
+                            )
+                        )
+                    )
+                )
+            )
+        )
+
+        query.clearRescore()
+        compile(query).body shouldContainExactly emptyMap()
     }
 
     @Test
