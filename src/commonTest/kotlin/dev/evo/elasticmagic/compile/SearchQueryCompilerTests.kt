@@ -122,19 +122,19 @@ class SearchQueryCompilerTests {
             val company by obj(::CompanyDoc)
         }
 
-        val query = SearchQuery {
-            functionScore(
-                multiMatch(
+        val query = SearchQuery(
+            FunctionScore(
+                MultiMatch(
                     "Test term",
                     listOf(productDoc.name, productDoc.company.name),
                     type = MultiMatch.Type.CROSS_FIELDS
                 ),
                 functions = listOf(
-                    weight(2.0, productDoc.company.opinion.count.eq(5)),
-                    fieldValueFactor(productDoc.rank, 5.0)
+                    FunctionScore.Weight(2.0, productDoc.company.opinion.count.eq(5)),
+                    FunctionScore.FieldValueFactor(productDoc.rank, 5.0)
                 )
             )
-        }
+        )
         query.filter(productDoc.company.opinion.count.gt(4))
 
         val compiled = compile(query)
@@ -701,7 +701,7 @@ class SearchQueryCompilerTests {
 
         query.queryNode(AD_BOOST_HANDLE) { node ->
             node.functions.add(
-                weight(
+                FunctionScore.Weight(
                     1.5,
                     filter = AnyField("name").match("test")
                 )

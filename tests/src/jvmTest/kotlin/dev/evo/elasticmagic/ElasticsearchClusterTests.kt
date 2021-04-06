@@ -45,17 +45,18 @@ class ElasticsearchClusterTests {
         // val index = cluster["ua_trunk_catalog"]
         val index = cluster["adv_ua_weight_factors"]
 
-        val query = SearchQuery(::FactorsSource) {
-            functionScore(
+        val query = SearchQuery(
+            ::FactorsSource,
+            FunctionScore(
                 query = null,
                 functions = listOf(
-                    fieldValueFactor(
+                    FunctionScore.FieldValueFactor(
                         FactorsDoc.clickPrice,
                         missing = 0.0
                     )
                 )
             )
-        }
+        )
             .filter(FactorsDoc.clickPrice.gt(2.2))
             .rescore(
                 QueryRescore(

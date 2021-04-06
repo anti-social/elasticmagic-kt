@@ -53,38 +53,6 @@ abstract class BaseSearchQuery<S: BaseSource, T: BaseSearchQuery<S, T>>(
         }
     }
 
-    object QueryCtx {
-        val bool = Bool
-
-        fun multiMatch(
-            query: String,
-            fields: List<FieldOperations>,
-            type: MultiMatch.Type? = null,
-            boost: Double? = null,
-        ) = MultiMatch(query, fields, type, boost)
-
-        fun functionScore(
-            query: QueryExpression?,
-            boost: Double? = null,
-            scoreMode: FunctionScore.ScoreMode? = null,
-            boostMode: FunctionScore.BoostMode? = null,
-            minScore: Double? = null,
-            functions: List<FunctionScore.Function>,
-        ) = FunctionScore(query, boost, scoreMode, boostMode, minScore, functions)
-
-        fun weight(
-            weight: Double,
-            filter: QueryExpression? = null,
-        ) = FunctionScore.Weight(weight, filter)
-
-        fun fieldValueFactor(
-            field: FieldOperations,
-            factor: Double? = null,
-            missing: Double? = null,
-            filter: QueryExpression? = null
-        ) = FunctionScore.FieldValueFactor(field, factor, missing, filter)
-    }
-
     @Suppress("UNCHECKED_CAST")
     protected fun self(): T = this as T
 
@@ -93,8 +61,6 @@ abstract class BaseSearchQuery<S: BaseSource, T: BaseSearchQuery<S, T>>(
         return self()
     }
 
-    fun query(block: QueryCtx.() -> QueryExpression?): T = query(QueryCtx.block())
-
     fun query(query: QueryExpression?): T = self {
         this.query = query
         _updateQueryNodes()
@@ -102,10 +68,10 @@ abstract class BaseSearchQuery<S: BaseSource, T: BaseSearchQuery<S, T>>(
 
     inline fun <reified N: QueryExpressionNode<N>> queryNode(
         handle: NodeHandle<N>,
-        block: QueryCtx.(N) -> Unit
+        block: (N) -> Unit
     ): T {
         val node = _findNode(handle) ?: error("Node handle not found: $handle")
-        QueryCtx.block(node as N)
+        block(node as N)
         _updateQueryNodes()
 
         @Suppress("UNCHECKED_CAST")
@@ -265,17 +231,6 @@ open class SearchQuery<S: BaseSource>(
             params: Params = Params(),
         ): SearchQuery<StdSource> {
             return SearchQuery(::StdSource, query = query, params = params)
-        }
-
-        operator fun <S: Source> invoke(
-            sourceFactory: () -> S,
-            block: QueryCtx.() -> QueryExpression?
-        ): SearchQuery<S> {
-            return SearchQuery(sourceFactory, query = QueryCtx.block())
-        }
-
-        operator fun invoke(block: QueryCtx.() -> QueryExpression?): SearchQuery<StdSource> {
-            return SearchQuery(::StdSource, query = QueryCtx.block())
         }
     }
 }
