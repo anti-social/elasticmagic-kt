@@ -69,7 +69,7 @@ abstract class QueryExpressionNode<T: QueryExpressionNode<T>>(
     abstract fun toQueryExpression(): QueryExpression
 }
 
-data class Term(
+class Term(
     val field: Named,
     val term: Any,
     val boost: Double? = null,
@@ -91,7 +91,7 @@ data class Term(
     }
 }
 
-data class Exists(
+class Exists(
     val field: Named,
 ) : QueryExpression {
     override val name = "exists"
@@ -104,7 +104,7 @@ data class Exists(
     }
 }
 
-data class Range(
+class Range(
     val field: Named,
     val gt: Any? = null,
     val gte: Any? = null,
@@ -134,7 +134,7 @@ data class Range(
     }
 }
 
-data class Match(
+class Match(
     val field: Named,
     val query: String,
     val analyzer: String? = null,
@@ -171,7 +171,7 @@ class MatchAll : QueryExpression {
     ) {}
 }
 
-data class MultiMatch(
+class MultiMatch(
     val query: String,
     val fields: List<Named>,
     val type: Type? = null,
@@ -204,7 +204,7 @@ data class MultiMatch(
     }
 }
 
-data class Script(
+class Script(
     val spec: Spec,
     val lang: String? = null,
     val params: Params = Params(),
@@ -289,7 +289,7 @@ interface BoolExpression : QueryExpression {
     }
 }
 
-data class Bool(
+class Bool(
     override val filter: List<QueryExpression> = emptyList(),
     override val should: List<QueryExpression> = emptyList(),
     override val must: List<QueryExpression> = emptyList(),
@@ -321,11 +321,12 @@ data class Bool(
                 must[0]
             }
             else -> {
-                copy(
+                Bool(
                     filter = filter,
                     should = should,
                     must = must,
                     mustNot = mustNot,
+                    minimumShouldMatch = minimumShouldMatch,
                 )
             }
         }
@@ -393,7 +394,7 @@ interface DisMaxExpression : QueryExpression {
     }
 }
 
-data class DisMax(
+class DisMax(
     override val queries: List<QueryExpression>,
     val tieBreaker: Double? = null,
 ) : DisMaxExpression {
@@ -440,7 +441,7 @@ interface FunctionScoreExpression : QueryExpression {
     }
 }
 
-data class FunctionScore(
+class FunctionScore(
     val query: QueryExpression? = null,
     val boost: Double? = null,
     val scoreMode: ScoreMode? = null,
@@ -541,7 +542,7 @@ data class FunctionScore(
         }
     }
 
-    data class ScriptScore(
+    class ScriptScore(
         val script: Script,
         override val filter: QueryExpression? = null,
     ) : Function() {
@@ -604,7 +605,7 @@ class FunctionScoreNode(
 }
 
 // TODO: nested, geo distance
-data class Sort(
+class Sort(
     val by: By,
     val order: Order? = null,
     val mode: Mode? = null,
@@ -681,7 +682,7 @@ data class Sort(
     sealed class Missing : ExpressionValue {
         object Last : Missing()
         object First : Missing()
-        data class Value(val value: Any) : Missing()
+        class Value(val value: Any) : Missing()
 
         override fun toValue(): Any {
             return when (this) {
