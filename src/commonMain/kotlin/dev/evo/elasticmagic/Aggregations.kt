@@ -872,3 +872,42 @@ class FilterAgg(
         compiler.visit(ctx, filter)
     }
 }
+
+class FiltersAgg(
+    val filters: Map<String, QueryExpression>,
+    aggs: Map<String, Aggregation>,
+) : BucketAggregation(aggs) {
+    override val name = "filters"
+
+    override fun visit(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
+        ctx.obj("filters") {
+            compiler.visit(this, filters)
+        }
+    }
+
+    override fun processResult(obj: Deserializer.ObjectCtx): FiltersAggResult {
+        val bucketsIter = obj.obj("buckets").iterator()
+        val buckets = mutableListOf<FiltersBucket>()
+        while (bucketsIter.hasNext()) {
+            val (bucketKey, bucketObj) = bucketsIter.obj()
+            buckets.add(
+                FiltersBucket(
+                    key = bucketKey,
+                    docCount = bucketObj.long("doc_count"),
+                    aggs = processSubAggs(bucketObj),
+                )
+            )
+        }
+        return FiltersAggResult(buckets)
+    }
+}
+
+data class FiltersAggResult(
+    override val buckets: List<FiltersBucket>,
+) : BucketAggResult<FiltersBucket>()
+
+data class FiltersBucket(
+    override val key: String,
+    override val docCount: Long,
+    override val aggs: Map<String, AggregationResult>,
+) : KeyedBucket<String>()
