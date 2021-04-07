@@ -10,8 +10,8 @@ data class SearchQueryResult<S: BaseSource>(
     val hits: List<SearchHit<S>>,
     val aggs: Map<String, AggregationResult>,
 ) {
-    inline fun <reified A: AggregationResult> getAggregation(name: String): A {
-        TODO()
+    inline fun <reified A: AggregationResult> agg(name: String): A {
+        return aggs[name] as A
     }
 }
 
@@ -21,4 +21,14 @@ data class SearchHit<S: BaseSource>(
     val id: String,
     val score: Double?,
     val source: S?,
+)
+
+data class CreateIndexResult(
+    val acknowledged: Boolean,
+    val shardsAcknowledged: Boolean,
+    val index: String,
+)
+
+data class DeleteIndexResult(
+    val acknowledged: Boolean,
 )

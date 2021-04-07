@@ -1,98 +1,148 @@
 package dev.evo.elasticmagic
 
+import dev.evo.elasticmagic.compile.Compiled
 import dev.evo.elasticmagic.compile.CompilerProvider
+import dev.evo.elasticmagic.compile.CreateIndex
+import dev.evo.elasticmagic.compile.usingIndex
 import dev.evo.elasticmagic.serde.Serde
-import dev.evo.elasticmagic.serde.toMap
 import dev.evo.elasticmagic.transport.ElasticsearchTransport
 import dev.evo.elasticmagic.transport.Method
 
-class ElasticsearchCluster<OBJ>(
-    private val esTransport: ElasticsearchTransport,
-    private val compilerProvider: CompilerProvider,
-    private val serde: Serde<OBJ>,
+internal typealias Parameters = Map<String, List<String>>
+
+internal fun Parameters(vararg params: Pair<String, Any?>): Parameters {
+    val parameters = mutableMapOf<String, List<String>>()
+    for ((k, v) in params) {
+        val w = when (v) {
+            null -> continue
+            is List<*> -> v.mapNotNull(::parameterToString)
+            else -> parameterToString(v)?.let { listOf(it) }
+        } ?: continue
+        parameters[k] = w
+    }
+    return parameters
+}
+
+internal fun parameterToString(v: Any?): String? {
+    return when (v) {
+        null -> null
+        is Number -> v.toString()
+        is Boolean -> v.toString()
+        is CharSequence -> v.toString()
+        else -> throw IllegalArgumentException(
+            "Request parameter must be one of [Number, Boolean, String] but was ${v::class}"
+        )
+    }
+}
+
+internal fun Params.toRequestParameters(): Parameters {
+    return Parameters(*this.toList().toTypedArray())
+}
+
+abstract class SerializableTransport<OBJ>(
+    protected val esTransport: ElasticsearchTransport,
+    protected val serde: Serde<OBJ>,
 ) {
+    protected suspend fun <R> request(compiled: Compiled<OBJ, R>): R {
+        val response = esTransport.request(
+            compiled.method,
+            compiled.path,
+            contentType = serde.contentType,
+        ) {
+            val body = compiled.body
+            if (compiled.body != null) {
+                append(serde.serializer.objToString(compiled.body))
+            }
+        }
+        val result = serde.deserializer.objFromString(response)
+        return compiled.processResult(result)
+    }
+}
+
+class ElasticsearchCluster<OBJ>(
+    esTransport: ElasticsearchTransport,
+    serde: Serde<OBJ>,
+    private val compilers: CompilerProvider,
+) : SerializableTransport<OBJ>(esTransport, serde) {
+
     operator fun get(indexName: String): ElasticsearchIndex<OBJ> {
-        return ElasticsearchIndex(indexName, esTransport, compilerProvider, serde)
+        return ElasticsearchIndex(indexName, esTransport, serde, compilers)
+    }
+
+    suspend fun createIndex(
+        indexName: String,
+        mapping: Document,
+        settings: Params = Params(),
+        aliases: Params = Params(),
+        waitForActiveShards: Boolean? = null,
+        masterTimeout: String? = null,
+        timeout: String? = null
+    ): CreateIndexResult {
+        val createIndex = CreateIndex(
+            indexName = indexName,
+            settings = settings,
+            mapping = mapping,
+            aliases = aliases,
+            waitForActiveShards = waitForActiveShards,
+            masterTimeout = masterTimeout,
+            timeout = timeout,
+        )
+        return request(
+            compilers.createIndex.compile(serde.serializer, createIndex)
+        )
+    }
+
+    // TODO: Merge multiple mappings
+    // suspend fun createIndex(
+    //     indexName: String,
+    //     settings: Params,
+    //     mappings: List<Document>,
+    //     aliases: Params = Params(),
+    //     waitForActiveShards: Boolean? = null,
+    //     masterTimeout: String? = null,
+    //     timeout: String? = null,
+    // ): CreateIndexResult {
+    //
+    // }
+
+    suspend fun deleteIndex(
+        indexName: String,
+        allowNoIndices: Boolean? = null,
+        masterTimeout: String? = null,
+        timeout: String? = null,
+    ): DeleteIndexResult {
+        val compiled = Compiled<OBJ, DeleteIndexResult>(
+            method = Method.DELETE,
+            path = indexName,
+            parameters = Parameters(
+                "allow_no_indices" to allowNoIndices?.toString(),
+                "master_timeout" to masterTimeout,
+                "timeout" to timeout,
+            ),
+            body = null,
+            processResult = { ctx ->
+                DeleteIndexResult(
+                    acknowledged = ctx.boolean("acknowledged"),
+                )
+            }
+        )
+        return request(compiled)
     }
 }
 
 class ElasticsearchIndex<OBJ>(
     val indexName: String,
-    private val esTransport: ElasticsearchTransport,
-    private val compilerProvider: CompilerProvider,
-    private val serde: Serde<OBJ>,
-) {
+    esTransport: ElasticsearchTransport,
+    serde: Serde<OBJ>,
+    private val compilers: CompilerProvider,
+) : SerializableTransport<OBJ>(esTransport, serde) {
+
     suspend fun <S : BaseSource> search(
         searchQuery: BaseSearchQuery<S, *>
     ): SearchQueryResult<S> {
-        val preparedSearchQuery = searchQuery.prepare()
-        val compiled = compilerProvider.searchQuery.compile(
-            serde.serializer, searchQuery
+        val compiled = compilers.searchQuery.compile(
+            serde.serializer, searchQuery.usingIndex(indexName)
         )
-        val response = esTransport.request(
-            Method.GET,
-            "$indexName/_doc/_search",
-            contentType = serde.contentType,
-        ) {
-            if (compiled.body != null) {
-                append(serde.serializer.objToString(compiled.body))
-            }
-        }
-        val rawResult = serde.deserializer.objFromString(response)
-        val rawHitsData = rawResult.obj("hits")
-        val rawTotal = rawHitsData.objOrNull("total")
-        val (totalHits, totalHitsRelation) = if (rawTotal != null) {
-            rawTotal.long("value") to rawTotal.string("relation")
-        } else {
-            rawHitsData.long("total") to null
-        }
-        val hits = mutableListOf<SearchHit<S>>()
-        val rawHits = rawHitsData.arrayOrNull("hits")
-        if (rawHits != null) {
-            while (rawHits.hasNext()) {
-                val rawHit = rawHits.obj()
-                val source = rawHit.objOrNull("_source")?.let { rawSource ->
-                    preparedSearchQuery.sourceFactory().apply {
-                        setSource(rawSource.toMap())
-                    }
-                }
-                hits.add(
-                    SearchHit(
-                        index = rawHit.string("_index"),
-                        type = rawHit.stringOrNull("_type") ?: "_doc",
-                        id = rawHit.string("_id"),
-                        score = rawHit.doubleOrNull("_score"),
-                        source = source,
-                    )
-                )
-            }
-        }
-        val rawAggs = rawResult.objOrNull("aggregations")
-        val aggResults = mutableMapOf<String, AggregationResult>()
-        if (rawAggs != null) {
-            println(rawAggs.toMap())
-            for ((aggName, agg) in preparedSearchQuery.aggregations) {
-                aggResults[aggName] = agg.processResult(rawAggs.obj(aggName))
-            }
-        }
-        return SearchQueryResult(
-            // TODO: Flag to add raw result
-            null,
-            took = rawResult.long("took"),
-            timedOut = rawResult.boolean("timed_out"),
-            totalHits = totalHits,
-            totalHitsRelation = totalHitsRelation,
-            maxScore = rawHitsData.doubleOrNull("max_score"),
-            hits = hits,
-            aggs = aggResults,
-        )
+        return request(compiled)
     }
-}
-
-interface ElasticsearchSyncCluster<OBJ> {
-    operator fun get(indexName: String): ElasticsearchSyncIndex<OBJ>
-}
-
-interface ElasticsearchSyncIndex<OBJ> {
-    fun <S: BaseSource> search(searchQuery: BaseSearchQuery<S, *>): SearchQueryResult<S>
 }

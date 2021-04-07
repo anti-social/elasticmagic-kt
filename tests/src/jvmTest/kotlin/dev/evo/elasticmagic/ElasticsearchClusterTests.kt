@@ -1,6 +1,7 @@
 package dev.evo.elasticmagic
 
 import dev.evo.elasticmagic.compile.CompilerProvider
+import dev.evo.elasticmagic.compile.usingIndex
 import dev.evo.elasticmagic.serde.serialization.JsonSerde
 import dev.evo.elasticmagic.transport.ElasticsearchKtorTransport
 
@@ -38,10 +39,23 @@ class ElasticsearchClusterTests {
     private val compilers = CompilerProvider(
         ElasticsearchVersion(6, 0, 0),
     )
-    private val cluster = ElasticsearchCluster(esTransport, compilers, JsonSerde)
+    private val cluster = ElasticsearchCluster(esTransport, JsonSerde, compilers)
 
     @Test
-    fun test() = runBlocking {
+    fun testCreateIndex() = runBlocking {
+        val result = cluster.createIndex(
+            indexName = "factors",
+            mapping = FactorsDoc,
+            settings = Params(
+                "index.number_of_replicas" to 0,
+            )
+        )
+        println(result)
+        1 shouldBe 2
+    }
+
+    @Test
+    fun testSearchQuery() = runBlocking {
         // val index = cluster["ua_trunk_catalog"]
         val index = cluster["adv_ua_weight_factors"]
 
@@ -84,7 +98,7 @@ class ElasticsearchClusterTests {
                     )
                 )
             )
-        println(compilers.searchQuery.compile(JsonSerde.serializer, query).body)
+        println(compilers.searchQuery.compile(JsonSerde.serializer, query.usingIndex(index.indexName)).body)
 
         val searchResult = index.search(query)
         println(searchResult)

@@ -1,33 +1,53 @@
 package dev.evo.elasticmagic.compile
 
 import dev.evo.elasticmagic.*
+import dev.evo.elasticmagic.serde.Deserializer
 import dev.evo.elasticmagic.serde.Serializer
 import dev.evo.elasticmagic.serde.Serializer.ArrayCtx
 import dev.evo.elasticmagic.serde.Serializer.ObjectCtx
+import dev.evo.elasticmagic.serde.toMap
+import dev.evo.elasticmagic.transport.Method
+
+class SearchQueryWithIndex<S: BaseSource>(
+    val searchQuery: BaseSearchQuery<S, *>,
+    val indexName: String,
+)
+
+fun <S: BaseSource> BaseSearchQuery<S, *>.usingIndex(
+    indexName: String
+): SearchQueryWithIndex<S> {
+    return SearchQueryWithIndex(this, indexName)
+}
 
 open class SearchQueryCompiler(
     esVersion: ElasticsearchVersion,
-) : BaseCompiler<BaseSearchQuery<*, *>>(esVersion) {
+) : BaseCompiler(esVersion) {
 
     interface Visitable {
         fun accept(ctx: ObjectCtx, compiler: SearchQueryCompiler)
     }
 
-    data class Compiled<T>(
-        val docType: String?,
-        val params: Map<String, Any?>,
-        override val body: T,
-    ): Compiler.Compiled<T>()
+    // data class Compiled<T>(
+    //     val docType: String?,
+    //     val params: Map<String, Any?>,
+    //     override val body: T,
+    // ): Compiler.Compiled<T>()
 
-    override fun <T> compile(serializer: Serializer<T>, input: BaseSearchQuery<*, *>): Compiled<T> {
-        val preparedSearchQuery = input.prepare()
+    fun <OBJ, S: BaseSource> compile(
+        serializer: Serializer<OBJ>, input: SearchQueryWithIndex<S>
+    ): Compiled<OBJ, SearchQueryResult<S>> {
+        val searchQuery = input.searchQuery.prepare()
         val body = serializer.buildObj {
-            visit(this, preparedSearchQuery)
+            visit(this, searchQuery)
         }
         return Compiled(
-            preparedSearchQuery.docType,
-            preparedSearchQuery.params,
-            body
+            method = Method.POST,
+            path = "${input.indexName}/_search",
+            parameters = searchQuery.params.toRequestParameters(),
+            body = body,
+            processResult = { ctx ->
+                processResult(ctx, searchQuery)
+            }
         )
     }
 
@@ -143,5 +163,57 @@ open class SearchQueryCompiler(
             }
             else -> super.dispatch(ctx, name, value)
         }
+    }
+
+    fun <S: BaseSource> processResult(
+        ctx: Deserializer.ObjectCtx,
+        preparedSearchQuery: PreparedSearchQuery<S>,
+    ): SearchQueryResult<S> {
+        val rawHitsData = ctx.obj("hits")
+        val rawTotal = rawHitsData.objOrNull("total")
+        val (totalHits, totalHitsRelation) = if (rawTotal != null) {
+            rawTotal.long("value") to rawTotal.string("relation")
+        } else {
+            rawHitsData.long("total") to null
+        }
+        val hits = mutableListOf<SearchHit<S>>()
+        val rawHits = rawHitsData.arrayOrNull("hits")
+        if (rawHits != null) {
+            while (rawHits.hasNext()) {
+                val rawHit = rawHits.obj()
+                val source = rawHit.objOrNull("_source")?.let { rawSource ->
+                    preparedSearchQuery.sourceFactory().apply {
+                        setSource(rawSource.toMap())
+                    }
+                }
+                hits.add(
+                    SearchHit(
+                        index = rawHit.string("_index"),
+                        type = rawHit.stringOrNull("_type") ?: "_doc",
+                        id = rawHit.string("_id"),
+                        score = rawHit.doubleOrNull("_score"),
+                        source = source,
+                    )
+                )
+            }
+        }
+        val rawAggs = ctx.objOrNull("aggregations")
+        val aggResults = mutableMapOf<String, AggregationResult>()
+        if (rawAggs != null) {
+            for ((aggName, agg) in preparedSearchQuery.aggregations) {
+                aggResults[aggName] = agg.processResult(rawAggs.obj(aggName))
+            }
+        }
+        return SearchQueryResult(
+            // TODO: Flag to add raw result
+            null,
+            took = ctx.long("took"),
+            timedOut = ctx.boolean("timed_out"),
+            totalHits = totalHits,
+            totalHitsRelation = totalHitsRelation,
+            maxScore = rawHitsData.doubleOrNull("max_score"),
+            hits = hits,
+            aggs = aggResults,
+        )
     }
 }

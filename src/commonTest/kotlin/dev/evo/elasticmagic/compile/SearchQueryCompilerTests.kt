@@ -22,6 +22,7 @@ import dev.evo.elasticmagic.QueryRescore
 import dev.evo.elasticmagic.serde.StdSerializer
 
 import io.kotest.matchers.maps.shouldContainExactly
+import io.kotest.matchers.nulls.shouldNotBeNull
 
 import kotlin.test.Test
 
@@ -52,9 +53,18 @@ class SearchQueryCompilerTests {
         ElasticsearchVersion(6, 0, 0),
     )
 
-    private fun compile(query: SearchQuery<*>): SearchQueryCompiler.Compiled<Map<String, Any?>> {
-        return compiler.compile(serializer, query)
+    private fun compile(query: SearchQuery<*>): CompiledSearchQuery {
+        val compiled = compiler.compile(serializer, query.usingIndex("test"))
+        return CompiledSearchQuery(
+            params = compiled.parameters,
+            body = compiled.body.shouldNotBeNull(),
+        )
     }
+
+    class CompiledSearchQuery(
+        val params: Params,
+        val body: Map<String, Any?>,
+    )
 
     @Test
     fun testEmpty() {
@@ -418,7 +428,7 @@ class SearchQueryCompilerTests {
         val query = SearchQuery(params = Params("routing" to "111"))
 
         compile(query).params shouldContainExactly mapOf(
-            "routing" to "111",
+            "routing" to listOf("111"),
         )
 
         query
@@ -427,9 +437,9 @@ class SearchQueryCompilerTests {
             .requestCache(true)
 
         compile(query).params shouldContainExactly mapOf(
-            "search_type" to "dfs_query_then_fetch",
-            "routing" to 1234L,
-            "request_cache" to true,
+            "search_type" to listOf("dfs_query_then_fetch"),
+            "routing" to listOf("1234"),
+            "request_cache" to listOf("true"),
         )
 
         query.searchParams(
@@ -438,8 +448,8 @@ class SearchQueryCompilerTests {
         )
 
         compile(query).params shouldContainExactly mapOf(
-            "search_type" to "query_then_fetch",
-            "request_cache" to true,
+            "search_type" to listOf("query_then_fetch"),
+            "request_cache" to listOf("true"),
         )
     }
 

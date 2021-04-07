@@ -4,11 +4,11 @@ import dev.evo.elasticmagic.Document
 import dev.evo.elasticmagic.ElasticsearchVersion
 import dev.evo.elasticmagic.SearchQuery
 import dev.evo.elasticmagic.compile.SearchQueryCompiler
+import dev.evo.elasticmagic.compile.usingIndex
 import dev.evo.elasticmagic.serde.serialization.JsonSerializer
 
 import io.kotest.matchers.shouldBe
 
-// import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.addJsonObject
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
@@ -24,7 +24,9 @@ class SearchQueryCompilerJsonTests {
 
     @Test
     fun testEmpty() {
-        val compiled = compiler.compile(JsonSerializer, SearchQuery())
+        val compiled = compiler.compile(
+            JsonSerializer, SearchQuery().usingIndex("test")
+        )
         compiled.body shouldBe buildJsonObject {}
     }
 
@@ -41,7 +43,7 @@ class SearchQueryCompilerJsonTests {
             .filter(userDoc.rank.gte(90.0))
             .filter(userDoc.opinionsCount.gt(5))
 
-        val res = compiler.compile(JsonSerializer, query)
+        val res = compiler.compile(JsonSerializer, query.usingIndex("test"))
         res.body shouldBe buildJsonObject {
             putJsonObject("query") {
                 putJsonObject("bool") {

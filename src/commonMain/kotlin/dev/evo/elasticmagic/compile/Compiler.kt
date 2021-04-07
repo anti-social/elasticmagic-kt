@@ -2,27 +2,23 @@ package dev.evo.elasticmagic.compile
 
 import dev.evo.elasticmagic.ElasticsearchVersion
 import dev.evo.elasticmagic.Named
+import dev.evo.elasticmagic.Parameters
 import dev.evo.elasticmagic.serde.Deserializer
-import dev.evo.elasticmagic.serde.Serde
-import dev.evo.elasticmagic.serde.Serializer
 import dev.evo.elasticmagic.serde.Serializer.ArrayCtx
 import dev.evo.elasticmagic.serde.Serializer.ObjectCtx
+import dev.evo.elasticmagic.transport.Method
 
-interface Compiler<I> {
-    val esVersion: ElasticsearchVersion
+class Compiled<B, R>(
+    val method: Method,
+    val path: String,
+    val parameters: Parameters,
+    val body: B?,
+    val processResult: (Deserializer.ObjectCtx) -> R,
+)
 
-    abstract class Compiled<T> {
-        abstract val body: T?
-    }
-
-    fun <T> compile(serializer: Serializer<T>, input: I): Compiled<T>
-
-    // fun processResult(input: )
-}
-
-abstract class BaseCompiler<I>(
-    override val esVersion: ElasticsearchVersion,
-) : Compiler<I> {
+abstract class BaseCompiler(
+    val esVersion: ElasticsearchVersion,
+) {
     open fun dispatch(ctx: ArrayCtx, value: Any?) {
         ctx.value(value)
     }
@@ -75,6 +71,7 @@ abstract class BaseCompiler<I>(
 
 class CompilerProvider(esVersion: ElasticsearchVersion) {
     val mapping: MappingCompiler = MappingCompiler(esVersion)
+    val createIndex: CreateIndexCompiler = CreateIndexCompiler(esVersion, mapping)
 
     val searchQuery: SearchQueryCompiler = SearchQueryCompiler(esVersion)
 }

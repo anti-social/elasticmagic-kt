@@ -3,17 +3,17 @@ package dev.evo.elasticmagic
 typealias Params = Map<String, Any>
 typealias MutableParams = MutableMap<String, Any>
 
-internal fun Params(): Params {
+fun Params(): Params {
     return emptyMap()
 }
 
-internal fun Params(vararg entries: Pair<String, Any?>): Params {
+fun Params(vararg entries: Pair<String, Any?>): Params {
     return entries
         .mapNotNull { (k, v) -> if (v != null) k to v else null }
         .toMap()
 }
 
-internal fun Params(
+fun Params(
     params: Params?,
     vararg entries: Pair<String, Any?>
 ): Params {

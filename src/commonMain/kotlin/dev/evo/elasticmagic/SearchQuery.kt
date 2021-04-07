@@ -209,12 +209,8 @@ abstract class BaseSearchQuery<S: BaseSource, T: BaseSearchQuery<S, T>>(
         )
     }
 
-    // suspend fun <R> execute(index: ElasticsearchIndex<R>): SearchQueryResult<R, S> {
-    //     return index.search(this)
-    // }
-    //
-    //
-    // fun <R> execute(index: ElasticsearchSyncIndex<R>): SearchQueryResult<R, S> {
+    // TODO: Do we neet it?
+    // suspend fun execute(index: ElasticsearchIndex<*>): SearchQueryResult<S> {
     //     return index.search(this)
     // }
 }
