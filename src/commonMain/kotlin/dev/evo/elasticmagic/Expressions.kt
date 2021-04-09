@@ -3,7 +3,7 @@ package dev.evo.elasticmagic
 import dev.evo.elasticmagic.compile.SearchQueryCompiler
 import dev.evo.elasticmagic.serde.Serializer
 
-interface ExpressionValue {
+interface ToValue {
     fun toValue(): Any
 }
 
@@ -180,7 +180,7 @@ class MultiMatch(
 ) : QueryExpression {
     override val name = "multi_match"
 
-    enum class Type : ExpressionValue {
+    enum class Type : ToValue {
         BEST_FIELDS, MOST_FIELDS, CROSS_FIELDS, PHRASE, PHRASE_PREFIX;
 
         override fun toValue(): Any {
@@ -449,12 +449,12 @@ class FunctionScore(
     val minScore: Double? = null,
     override val functions: List<Function>,
 ) : FunctionScoreExpression {
-    enum class ScoreMode : ExpressionValue {
+    enum class ScoreMode : ToValue {
         MULTIPLY, SUM, AVG, FIRST, MAX, MIN;
 
         override fun toValue(): Any = name.toLowerCase()
     }
-    enum class BoostMode : ExpressionValue {
+    enum class BoostMode : ToValue {
         MULTIPLY, REPLACE, SUM, AVG, MAX, MIN;
 
         override fun toValue(): Any = name.toLowerCase()
@@ -655,7 +655,7 @@ class Sort(
         }
     }
 
-    enum class Order : ExpressionValue {
+    enum class Order : ToValue {
         ASC, DESC;
 
         override fun toValue(): Any {
@@ -663,7 +663,7 @@ class Sort(
         }
     }
 
-    enum class Mode : ExpressionValue {
+    enum class Mode : ToValue {
         MIN, MAX, SUM, AVG, MEDIAN;
 
         override fun toValue(): Any {
@@ -671,7 +671,7 @@ class Sort(
         }
     }
 
-    enum class NumericType : ExpressionValue {
+    enum class NumericType : ToValue {
         DOUBLE, LONG, DATE, DATE_NANOS;
 
         override fun toValue(): Any {
@@ -679,7 +679,7 @@ class Sort(
         }
     }
 
-    sealed class Missing : ExpressionValue {
+    sealed class Missing : ToValue {
         object Last : Missing()
         object First : Missing()
         class Value(val value: Any) : Missing()
@@ -750,7 +750,7 @@ class QueryRescore(
 ) : Rescore(windowSize) {
     override val name = "query"
 
-    enum class ScoreMode : ExpressionValue {
+    enum class ScoreMode : ToValue {
         TOTAL, MULTIPLY, AVG, MAX, MIN;
 
         override fun toValue() = name.toLowerCase()

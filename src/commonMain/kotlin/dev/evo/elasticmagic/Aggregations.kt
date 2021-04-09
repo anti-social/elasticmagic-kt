@@ -297,13 +297,13 @@ abstract class BaseTermsAgg(
         class Partition(val partition: Int, val numPartitions: Int) : Include()
     }
 
-    enum class CollectMode : ExpressionValue {
+    enum class CollectMode : ToValue {
         BREADTH_FIRST, DEPTH_FIRST;
 
         override fun toValue(): Any = name.toLowerCase()
     }
 
-    enum class ExecutionHint : ExpressionValue {
+    enum class ExecutionHint : ToValue {
         MAP, GLOBAL_ORDINALS;
 
         override fun toValue(): Any = name.toLowerCase()

@@ -1,6 +1,6 @@
 package dev.evo.elasticmagic
 
-interface Named : ExpressionValue {
+interface Named : ToValue {
     fun getFieldName(): String
 
     fun getQualifiedFieldName(): String

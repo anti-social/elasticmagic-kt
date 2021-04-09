@@ -1,5 +1,7 @@
 package dev.evo.elasticmagic
 
+// import dev.evo.elasticmagic.compile.DocSourceCompiler
+import dev.evo.elasticmagic.serde.Serializer
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
@@ -51,6 +53,17 @@ open class Source : BaseSource() {
     fun clearSource() {
         fieldValues.map(FieldValue<*>::clear)
     }
+
+    // override fun serialize(ctx: Serializer.ObjectCtx, compiler: DocSourceCompiler) {
+    //     for (fieldValue in fieldValues) {
+    //         if (fieldValue.isRequired && !fieldValue.isInitialized) {
+    //             throw IllegalStateException("Field ${fieldValue.name} is required")
+    //         }
+    //         if (fieldValue.isInitialized) {
+    //             ctx.field(fieldValue.name, fieldValue.serialize())
+    //         }
+    //     }
+    // }
 
     fun getField(name: String): Any? {
         return fieldProperties[name]?.fieldValue?.value

@@ -1,5 +1,6 @@
 package dev.evo.elasticmagic
 
+import dev.evo.elasticmagic.compile.Bulk
 import dev.evo.elasticmagic.compile.Compiled
 import dev.evo.elasticmagic.compile.CompilerProvider
 import dev.evo.elasticmagic.compile.CreateIndex
@@ -49,7 +50,6 @@ abstract class SerializableTransport<OBJ>(
             compiled.path,
             contentType = serde.contentType,
         ) {
-            val body = compiled.body
             if (compiled.body != null) {
                 append(serde.serializer.objToString(compiled.body))
             }
@@ -144,5 +144,40 @@ class ElasticsearchIndex<OBJ>(
             serde.serializer, searchQuery.usingIndex(indexName)
         )
         return request(compiled)
+    }
+
+    suspend fun bulk(
+        actions: List<Action>,
+        refresh: Action.Refresh? = null,
+        timeout: String? = null,
+        params: Params = Params(),
+    ): BulkResult {
+        val bulk = Bulk(
+            indexName,
+            actions,
+            refresh = refresh,
+            timeout = timeout,
+            params = params,
+        )
+        val compiled = compilers.bulk.compile(serde.serializer, bulk)
+        val response = esTransport.request(
+            compiled.method,
+            compiled.path,
+            contentType = "application/x-ndjson",
+        ) {
+            if (compiled.body != null) {
+                for ((header, source) in compiled.body) {
+                    append(serde.serializer.objToString(header))
+                    append("\n")
+                    if (source != null) {
+                        append(serde.serializer.objToString(source))
+                        append("\n")
+                    }
+                }
+            }
+            println(this.toByteArray().decodeToString())
+        }
+        val result = serde.deserializer.objFromString(response)
+        return compiled.processResult(result)
     }
 }

@@ -32,3 +32,7 @@ data class CreateIndexResult(
 data class DeleteIndexResult(
     val acknowledged: Boolean,
 )
+
+data class BulkResult(
+    val errors: Boolean,
+)

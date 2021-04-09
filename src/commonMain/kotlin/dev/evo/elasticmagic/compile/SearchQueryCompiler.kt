@@ -146,7 +146,7 @@ open class SearchQueryCompiler(
             is Expression -> ctx.obj {
                 visit(this, value)
             }
-            is ExpressionValue -> {
+            is ToValue -> {
                 ctx.value(value.toValue())
             }
             else -> super.dispatch(ctx, value)
@@ -158,7 +158,7 @@ open class SearchQueryCompiler(
             is Expression -> ctx.obj(name) {
                 visit(this, value)
             }
-            is ExpressionValue -> {
+            is ToValue -> {
                 ctx.field(name, value.toValue())
             }
             else -> super.dispatch(ctx, name, value)

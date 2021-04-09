@@ -5,7 +5,7 @@ data class FieldFormat(
     val format: String? = null,
 )
 
-enum class SearchType : ExpressionValue {
+enum class SearchType : ToValue {
     QUERY_THEN_FETCH, DFS_QUERY_THEN_FETCH;
 
     override fun toValue(): Any {
@@ -158,7 +158,7 @@ abstract class BaseSearchQuery<S: BaseSource, T: BaseSearchQuery<S, T>>(
 
     fun searchParams(vararg params: Pair<String, Any?>): T = self {
         for ((key, rawValue) in params) {
-            val value = if (rawValue is ExpressionValue) {
+            val value = if (rawValue is ToValue) {
                 rawValue.toValue()
             } else {
                 rawValue

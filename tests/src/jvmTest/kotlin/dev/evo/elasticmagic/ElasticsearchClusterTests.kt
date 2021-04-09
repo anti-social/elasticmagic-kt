@@ -15,15 +15,15 @@ import kotlin.test.Test
 
 class ElasticsearchClusterTests {
     object FactorsDoc : Document() {
-        val partition by float()
+        val partition by int()
         val companyId by keyword("company_id")
         val clickPrice by float("click_price")
     }
 
     class FactorsSource : Source() {
-        val partition by FactorsDoc.partition
-        val companyId by FactorsDoc.companyId.required()
-        val clickPrice by FactorsDoc.clickPrice
+        var partition by FactorsDoc.partition
+        var companyId by FactorsDoc.companyId.required()
+        var clickPrice by FactorsDoc.clickPrice
     }
 
     object ProductDoc : Document() {
@@ -43,14 +43,33 @@ class ElasticsearchClusterTests {
 
     @Test
     fun testCreateIndex() = runBlocking {
-        val result = cluster.createIndex(
-            indexName = "factors",
-            mapping = FactorsDoc,
-            settings = Params(
-                "index.number_of_replicas" to 0,
-            )
+        // val result = cluster.createIndex(
+        //     indexName = "factors",
+        //     mapping = FactorsDoc,
+        //     settings = Params(
+        //         "index.number_of_replicas" to 0,
+        //     )
+        // )
+        // println(result)
+
+        val index = cluster["factors"]
+        val doc = FactorsSource()
+        doc.partition = 1
+        doc.companyId = "124"
+        doc.clickPrice = 0.3F
+        val result = index.bulk(
+            listOf(
+                IndexAction(
+                    source = IndexSource(
+                        meta = ActionMeta("2"),
+                        source = doc
+                    )
+                ),
+            ),
+            refresh = Action.Refresh.TRUE,
         )
         println(result)
+
         1 shouldBe 2
     }
 
