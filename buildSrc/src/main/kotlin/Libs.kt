@@ -1,6 +1,7 @@
 object Versions {
     const val kotlin = "1.4.30"
     const val kotlinxSerialization = "1.1.0"
+    const val kotlinxCoroutines = "1.4.3-native-mt"
     const val ktor = "1.5.2"
 
     const val jackson = "2.12.2"
@@ -15,6 +16,10 @@ object Libs {
 
     fun kotlinSerialization(flavor: String): String {
         return "org.jetbrains.kotlinx:kotlinx-serialization-$flavor:${Versions.kotlinxSerialization}"
+    }
+
+    fun kotlinCoroutines(flavor: String): String {
+        return "org.jetbrains.kotlinx:kotlinx-coroutines-$flavor:${Versions.kotlinxCoroutines}"
     }
 
     fun ktorClient(flavor: String): String {

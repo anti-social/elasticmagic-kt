@@ -81,6 +81,7 @@ interface Deserializer<OBJ> {
     interface ArrayCtx {
         fun hasNext(): Boolean
         fun anyOrNull(): Any?
+        fun any(): Any = anyOrNull() ?: error("missing value")
         fun intOrNull(): Int?
         fun int(): Int = intOrNull() ?: error("not a boolean")
         fun longOrNull(): Long?

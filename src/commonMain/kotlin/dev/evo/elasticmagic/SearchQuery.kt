@@ -13,7 +13,7 @@ enum class SearchType : ToValue {
     }
 }
 
-abstract class BaseSearchQuery<S: BaseSource, T: BaseSearchQuery<S, T>>(
+abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
     protected val sourceFactory: () -> S,
     protected var query: QueryExpression? = null,
     params: Params = Params(),
@@ -187,6 +187,14 @@ abstract class BaseSearchQuery<S: BaseSource, T: BaseSearchQuery<S, T>>(
         params.putNotNullOrRemove("stats", stats)
     }
 
+    fun version(version: Boolean?): T = self {
+        params.putNotNullOrRemove("version", version)
+    }
+
+    fun seqNoPrimaryTerm(seqNoPrimaryTerm: Boolean?): T = self {
+        params.putNotNullOrRemove("seq_no_primary_term", seqNoPrimaryTerm)
+    }
+
     fun prepare(): PreparedSearchQuery<S> {
         return PreparedSearchQuery(
             sourceFactory,
@@ -208,14 +216,9 @@ abstract class BaseSearchQuery<S: BaseSource, T: BaseSearchQuery<S, T>>(
             params = params,
         )
     }
-
-    // TODO: Do we neet it?
-    // suspend fun execute(index: ElasticsearchIndex<*>): SearchQueryResult<S> {
-    //     return index.search(this)
-    // }
 }
 
-open class SearchQuery<S: BaseSource>(
+open class SearchQuery<S: BaseDocSource>(
     sourceFactory: () -> S,
     query: QueryExpression? = null,
     params: Params = Params(),
@@ -225,13 +228,17 @@ open class SearchQuery<S: BaseSource>(
         operator fun invoke(
             query: QueryExpression? = null,
             params: Params = Params(),
-        ): SearchQuery<StdSource> {
-            return SearchQuery(::StdSource, query = query, params = params)
+        ): SearchQuery<StdDocSource> {
+            return SearchQuery(::StdDocSource, query = query, params = params)
         }
+    }
+
+    suspend fun execute(index: ElasticsearchIndex<*>): SearchQueryResult<S> {
+        return index.search(this)
     }
 }
 
-data class PreparedSearchQuery<S: BaseSource>(
+data class PreparedSearchQuery<S: BaseDocSource>(
     val sourceFactory: () -> S,
     val docType: String?,
     val query: QueryExpression?,

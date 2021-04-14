@@ -1,7 +1,7 @@
 package dev.evo.elasticmagic.transport
 
 enum class Method {
-    GET, PUT, POST, DELETE
+    GET, PUT, POST, DELETE, HEAD
 }
 
 interface RequestEncoderFactory {

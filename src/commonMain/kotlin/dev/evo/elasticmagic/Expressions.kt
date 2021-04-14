@@ -204,6 +204,30 @@ class MultiMatch(
     }
 }
 
+class Nested(
+    val path: Named,
+    val query: QueryExpression,
+    val scoreMode: ScoreMode? = null,
+    val ignoreUnmapped: Boolean? = null,
+) : QueryExpression {
+    override val name = "nested"
+
+    enum class ScoreMode : ToValue {
+        AVG, MAX, MIN, NONE, SUM;
+
+        override fun toValue() = name.toLowerCase()
+    }
+
+    override fun visit(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
+        ctx.field("path", path.getQualifiedFieldName())
+        ctx.obj("query") {
+            compiler.visit(this, query)
+        }
+        ctx.fieldIfNotNull("score_mode", scoreMode?.toValue())
+        ctx.fieldIfNotNull("ignore_unmapped", ignoreUnmapped)
+    }
+}
+
 class Script(
     val spec: Spec,
     val lang: String? = null,
@@ -604,7 +628,7 @@ class FunctionScoreNode(
     }
 }
 
-// TODO: nested, geo distance
+// TODO: geo distance
 class Sort(
     val by: By,
     val order: Order? = null,
@@ -612,6 +636,7 @@ class Sort(
     val numericType: NumericType? = null,
     val missing: Missing? = null,
     val unmappedType: String? = null,
+    val nested: Nested? = null,
 ) : Expression {
     constructor(
         field: Named? = null,
@@ -622,7 +647,16 @@ class Sort(
         numericType: NumericType? = null,
         missing: Missing? = null,
         unmappedType: String? = null,
-    ) : this(By(field, scriptType, script), order, mode, numericType, missing, unmappedType)
+        nested: Nested? = null,
+    ) : this(
+        by = By(field, scriptType, script),
+        order = order,
+        mode = mode,
+        numericType = numericType,
+        missing = missing,
+        unmappedType = unmappedType,
+        nested = nested,
+    )
 
     sealed class By {
         class Field(val field: Named) : By()
@@ -693,6 +727,28 @@ class Sort(
         }
     }
 
+    class Nested(
+        val path: Named,
+        val filter: QueryExpression? = null,
+        val maxChildren: Int? = null,
+        val nested: Nested? = null,
+    ) : Expression {
+        override fun accept(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
+            ctx.field("path", path.getQualifiedFieldName())
+            if (filter != null) {
+                ctx.obj("filter") {
+                    compiler.visit(this, filter)
+                }
+            }
+            ctx.fieldIfNotNull("max_children", maxChildren)
+            if (nested != null) {
+                ctx.obj("nested") {
+                    compiler.visit(this, nested)
+                }
+            }
+        }
+    }
+
     internal fun simplifiedName(): String? {
         if (
             by is By.Field &&
@@ -714,6 +770,7 @@ class Sort(
             "numeric_type" to numericType,
             "missing" to missing,
             "unmapped_type" to unmappedType,
+            "nested" to nested,
         )
         when (by) {
             is By.Field -> {

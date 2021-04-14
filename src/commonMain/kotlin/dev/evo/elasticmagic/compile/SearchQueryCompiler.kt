@@ -8,12 +8,12 @@ import dev.evo.elasticmagic.serde.Serializer.ObjectCtx
 import dev.evo.elasticmagic.serde.toMap
 import dev.evo.elasticmagic.transport.Method
 
-class SearchQueryWithIndex<S: BaseSource>(
+class SearchQueryWithIndex<S: BaseDocSource>(
     val searchQuery: BaseSearchQuery<S, *>,
     val indexName: String,
 )
 
-fun <S: BaseSource> BaseSearchQuery<S, *>.usingIndex(
+fun <S: BaseDocSource> BaseSearchQuery<S, *>.usingIndex(
     indexName: String
 ): SearchQueryWithIndex<S> {
     return SearchQueryWithIndex(this, indexName)
@@ -27,13 +27,7 @@ open class SearchQueryCompiler(
         fun accept(ctx: ObjectCtx, compiler: SearchQueryCompiler)
     }
 
-    // data class Compiled<T>(
-    //     val docType: String?,
-    //     val params: Map<String, Any?>,
-    //     override val body: T,
-    // ): Compiler.Compiled<T>()
-
-    fun <OBJ, S: BaseSource> compile(
+    fun <OBJ, S: BaseDocSource> compile(
         serializer: Serializer<OBJ>, input: SearchQueryWithIndex<S>
     ): Compiled<OBJ, SearchQueryResult<S>> {
         val searchQuery = input.searchQuery.prepare()
@@ -53,7 +47,7 @@ open class SearchQueryCompiler(
 
     fun visit(ctx: ObjectCtx, searchQuery: PreparedSearchQuery<*>) {
         val query = searchQuery.query?.reduce()
-        val filteredQuery: QueryExpression? = if (searchQuery.filters.isNotEmpty()) {
+        val filteredQuery = if (searchQuery.filters.isNotEmpty()) {
             if (query != null) {
                 Bool(must = listOf(query), filter = searchQuery.filters)
             } else {
@@ -165,7 +159,7 @@ open class SearchQueryCompiler(
         }
     }
 
-    fun <S: BaseSource> processResult(
+    fun <S: BaseDocSource> processResult(
         ctx: Deserializer.ObjectCtx,
         preparedSearchQuery: PreparedSearchQuery<S>,
     ): SearchQueryResult<S> {
@@ -186,12 +180,24 @@ open class SearchQueryCompiler(
                         setSource(rawSource.toMap())
                     }
                 }
+                val rawSort = rawHit.arrayOrNull("sort")
+                val sort = mutableListOf<Any>()
+                if (rawSort != null) {
+                    while (rawSort.hasNext()) {
+                        sort.add(rawSort.any())
+                    }
+                }
                 hits.add(
                     SearchHit(
                         index = rawHit.string("_index"),
                         type = rawHit.stringOrNull("_type") ?: "_doc",
                         id = rawHit.string("_id"),
+                        routing = rawHit.stringOrNull("_routing"),
+                        version = rawHit.longOrNull("_version"),
+                        seqNo = rawHit.longOrNull("_seq_no"),
+                        primaryTerm = rawHit.longOrNull("_primary_term"),
                         score = rawHit.doubleOrNull("_score"),
+                        sort = sort.ifEmpty { null },
                         source = source,
                     )
                 )

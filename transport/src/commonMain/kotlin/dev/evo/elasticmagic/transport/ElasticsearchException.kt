@@ -1,6 +1,6 @@
 package dev.evo.elasticmagic.transport
 
-sealed class ElasticsearchException(msg: String) : Exception(msg) {
+open class ElasticsearchException(msg: String) : Exception(msg) {
     open class Transport(
         val statusCode: Int,
         val error: TransportError,

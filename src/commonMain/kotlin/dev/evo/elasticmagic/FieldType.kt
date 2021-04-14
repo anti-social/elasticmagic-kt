@@ -87,14 +87,14 @@ object TextType : StringType() {
     override val name = "text"
 }
 
-open class ObjectType<T: SubDocument> : FieldType<T, BaseSource> {
+open class ObjectType<T: SubDocument> : FieldType<T, BaseDocSource> {
     override val name = "object"
 
-    override fun serialize(v: BaseSource): Any {
+    override fun serialize(v: BaseDocSource): Any {
         return v.getSource()
     }
 
-    override fun deserialize(v: Any, valueFactory: (() -> BaseSource)?): BaseSource {
+    override fun deserialize(v: Any, valueFactory: (() -> BaseDocSource)?): BaseDocSource {
         requireNotNull(valueFactory) {
             "valueFactory argument must be passed"
         }
@@ -111,8 +111,8 @@ open class ObjectType<T: SubDocument> : FieldType<T, BaseSource> {
     }
 }
 
-class SourceType<V: BaseSource>(
-    val type: FieldType<*, BaseSource>,
+class SourceType<V: BaseDocSource>(
+    val type: FieldType<*, BaseDocSource>,
     private val sourceFactory: () -> V
 ) : FieldType<Nothing, V> {
     override val name = type.name

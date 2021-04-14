@@ -1,6 +1,6 @@
 package dev.evo.elasticmagic
 
-data class SearchQueryResult<S: BaseSource>(
+data class SearchQueryResult<S: BaseDocSource>(
     val rawResult: Map<String, Any?>?,
     val took: Long,
     val timedOut: Boolean,
@@ -15,18 +15,27 @@ data class SearchQueryResult<S: BaseSource>(
     }
 }
 
-data class SearchHit<S: BaseSource>(
+data class SearchHit<S: BaseDocSource>(
     val index: String,
     val type: String,
-    val id: String,
+    override val id: String,
+    override val routing: String?,
+    override val version: Long?,
+    override val seqNo: Long?,
+    override val primaryTerm: Long?,
     val score: Double?,
+    val sort: List<Any>?,
     val source: S?,
-)
+) : ActionMeta
 
 data class CreateIndexResult(
     val acknowledged: Boolean,
     val shardsAcknowledged: Boolean,
     val index: String,
+)
+
+data class UpdateMappingResult(
+    val acknowledged: Boolean,
 )
 
 data class DeleteIndexResult(
@@ -35,4 +44,54 @@ data class DeleteIndexResult(
 
 data class BulkResult(
     val errors: Boolean,
+    val took: Long,
+    val items: List<BulkItem>,
+)
+
+sealed class BulkItem {
+    abstract val opType: BulkOpType
+    abstract val index: String
+    abstract val type: String
+    abstract val id: String
+    abstract val routing: String?
+    abstract val status: Int
+
+    data class Ok(
+        override val opType: BulkOpType,
+        override val index: String,
+        override val type: String,
+        override val id: String,
+        override val routing: String?,
+        override val status: Int,
+
+        override val version: Long,
+        override val seqNo: Long,
+        override val primaryTerm: Long,
+
+        val result: String,
+        // TODO:
+        // val shards: List<ShardsInfo>
+    ) : BulkItem(), ActionMeta
+
+    data class Error(
+        override val opType: BulkOpType,
+        override val index: String,
+        override val type: String,
+        override val id: String,
+        override val routing: String?,
+        override val status: Int,
+        val error: BulkError,
+    ) : BulkItem()
+}
+
+enum class BulkOpType {
+    INDEX, CREATE, DELETE, UPDATE
+}
+
+data class BulkError(
+    val type: String,
+    val reason: String,
+    val index: String,
+    val indexUuid: String,
+    val shard: Int,
 )

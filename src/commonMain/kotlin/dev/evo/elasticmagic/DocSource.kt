@@ -1,7 +1,7 @@
 package dev.evo.elasticmagic
 
 // import dev.evo.elasticmagic.compile.DocSourceCompiler
-import dev.evo.elasticmagic.serde.Serializer
+// import dev.evo.elasticmagic.serde.Serializer
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
@@ -9,13 +9,32 @@ typealias RawSource = Map<*, *>
 
 fun emptySource(): Map<Nothing, Nothing> = emptyMap()
 
-abstract class BaseSource {
+abstract class BaseDocSource {
     abstract fun getSource(): Map<String, Any?>
 
     abstract fun setSource(source: RawSource)
+
+    fun withActionMeta(
+        id: String? = null,
+        routing: String? = null,
+        version: Long? = null,
+        seqNo: Long? = null,
+        primaryTerm: Long? = null,
+    ): DocSourceWithMeta {
+        return DocSourceWithMeta(
+            meta = object : ActionMeta {
+                override val id: String? = id
+                override val routing: String? = routing
+                override val version: Long? = version
+                override val seqNo: Long? = seqNo
+                override val primaryTerm: Long? = primaryTerm
+            },
+            doc = this,
+        )
+    }
 }
 
-open class Source : BaseSource() {
+open class DocSource : BaseDocSource() {
     private val fieldValues: MutableList<FieldValue<*>> = mutableListOf()
     private val fieldProperties: MutableMap<String, FieldValueProperty<*>> = mutableMapOf()
 
@@ -79,7 +98,7 @@ open class Source : BaseSource() {
         if (other == null) {
             return false
         }
-        if (other !is Source) {
+        if (other !is DocSource) {
             return false
         }
         if (other::class != this::class) {
@@ -110,8 +129,8 @@ open class Source : BaseSource() {
     }
 
     operator fun <V> Field<*, V>.provideDelegate(
-        thisRef: Source, property: KProperty<*>
-    ): ReadWriteProperty<Source, V?> {
+        thisRef: DocSource, property: KProperty<*>
+    ): ReadWriteProperty<DocSource, V?> {
         return OptionalValueProperty(
             getFieldName(), getFieldType()
         )
@@ -133,8 +152,8 @@ open class Source : BaseSource() {
     }
 
     operator fun <V> SubFields<V>.provideDelegate(
-        thisRef: Source, property: KProperty<*>
-    ): ReadWriteProperty<Source, V?> {
+        thisRef: DocSource, property: KProperty<*>
+    ): ReadWriteProperty<DocSource, V?> {
         return OptionalValueProperty(
             getFieldName(), getFieldType()
         )
@@ -143,7 +162,7 @@ open class Source : BaseSource() {
             }
     }
 
-    fun <V: BaseSource> SubDocument.source(sourceFactory: () -> V): OptionalListableValueDelegate<V> {
+    fun <V: BaseDocSource> SubDocument.source(sourceFactory: () -> V): OptionalListableValueDelegate<V> {
         val fieldType = getFieldType()
         return OptionalListableValueDelegate(
             getFieldName(), SourceType(fieldType, sourceFactory)
@@ -188,8 +207,8 @@ open class Source : BaseSource() {
         protected val fieldType: FieldType<*, V>,
     ) {
         operator fun provideDelegate(
-            thisRef: Source, property: KProperty<*>
-        ): ReadWriteProperty<Source, V?> {
+            thisRef: DocSource, property: KProperty<*>
+        ): ReadWriteProperty<DocSource, V?> {
             return OptionalValueProperty(fieldName, fieldType)
                 .also { thisRef.bindProperty(it) }
         }
@@ -219,7 +238,7 @@ open class Source : BaseSource() {
         fieldType: FieldType<*, V>,
     ) :
         FieldValueProperty<V>(FieldValue(fieldName, fieldType, false), fieldType),
-        ReadWriteProperty<Source, V?>
+        ReadWriteProperty<DocSource, V?>
     {
 
         override fun set(value: Any?) {
@@ -230,11 +249,11 @@ open class Source : BaseSource() {
             }
         }
 
-        override fun getValue(thisRef: Source, property: KProperty<*>): V? {
+        override fun getValue(thisRef: DocSource, property: KProperty<*>): V? {
             return fieldValue.value
         }
 
-        override fun setValue(thisRef: Source, property: KProperty<*>, value: V?) {
+        override fun setValue(thisRef: DocSource, property: KProperty<*>, value: V?) {
             fieldValue.value = value
         }
     }
@@ -244,8 +263,8 @@ open class Source : BaseSource() {
         protected val fieldType: FieldType<*, V>,
     ) {
         operator fun provideDelegate(
-            thisRef: Source, property: KProperty<*>
-        ): ReadWriteProperty<Source, V> {
+            thisRef: DocSource, property: KProperty<*>
+        ): ReadWriteProperty<DocSource, V> {
             return RequiredValueProperty(
                 fieldName, fieldType
             )
@@ -270,7 +289,7 @@ open class Source : BaseSource() {
         fieldType: FieldType<*, V>,
     ) :
         FieldValueProperty<V>(FieldValue(fieldName, fieldType, true), fieldType),
-        ReadWriteProperty<Source, V>
+        ReadWriteProperty<DocSource, V>
     {
 
         override fun set(value: Any?) {
@@ -281,17 +300,17 @@ open class Source : BaseSource() {
             }
         }
 
-        override fun getValue(thisRef: Source, property: KProperty<*>): V {
+        override fun getValue(thisRef: DocSource, property: KProperty<*>): V {
             return fieldValue.value ?: error("Field is not initialized")
         }
 
-        override fun setValue(thisRef: Source, property: KProperty<*>, value: V) {
+        override fun setValue(thisRef: DocSource, property: KProperty<*>, value: V) {
             fieldValue.value = value
         }
     }
 }
 
-class StdSource : BaseSource() {
+class StdDocSource : BaseDocSource() {
     private var rawSource =  mutableMapOf<String, Any?>()
 
     override fun getSource(): Map<String, Any?> {

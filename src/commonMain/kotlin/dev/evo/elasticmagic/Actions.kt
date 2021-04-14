@@ -1,139 +1,110 @@
 package dev.evo.elasticmagic
 
-sealed class Action {
-    abstract val name: String
-    abstract val concurrencyControl: ConcurrencyControl?
+enum class Refresh : ToValue {
+    TRUE, FALSE, WAIT_FOR;
 
-    enum class Refresh : ToValue {
-        TRUE, FALSE, WAIT_FOR;
-
-        override fun toValue(): Any = name.toLowerCase()
-    }
-
-    enum class ConcurrencyControl(val value: String) : ToValue {
-        VERSION("external"), VERSION_GTE("external_gte"), SEQ_NO("seq_no");
-
-        override fun toValue(): Any = value.toLowerCase()
-    }
-
-    abstract fun getActionMeta(): ActionMeta
-    abstract fun getActionSource(): ActionSource?
+    override fun toValue(): Any = name.toLowerCase()
 }
 
-class ActionMeta(
-    val id: String? = null,
-    val routing: String? = null,
-    val version: Long? = null,
-    val seqNo: Long? = null,
-    val primaryTerm: Long? = null,
+enum class ConcurrencyControl(val value: String) : ToValue {
+    VERSION("external"), VERSION_GTE("external_gte"), SEQ_NO("seq_no");
+
+    override fun toValue(): Any = value
+}
+
+sealed class Action<S> {
+    abstract val name: String
+    abstract val meta: ActionMeta
+    abstract val source: S?
+    abstract val concurrencyControl: ConcurrencyControl?
+}
+
+data class DocSourceWithMeta(
+    val meta: ActionMeta,
+    val doc: BaseDocSource,
 )
+
+interface ActionMeta {
+    val id: String?
+    val routing: String?
+    val version: Long?
+    val seqNo: Long?
+    val primaryTerm: Long?
+}
 
 sealed class ActionSource
 
-class IndexSource<S: BaseSource>(
-    val meta: ActionMeta,
-    val source: S,
-) : ActionSource()
+// class IndexSource<S: BaseDocSource>(
+//     doc: S,
+// ) : ActionSource()
 
-class IndexAction(
-    val source: IndexSource<*>,
-    val opType: OpType? = null,
-    val pipeline: String? = null,
+open class IndexAction<S: BaseDocSource>(
+    override val meta: ActionMeta,
+    override val source: S,
     override val concurrencyControl: ConcurrencyControl? = null,
-) : Action() {
+    val pipeline: String? = null,
+) : Action<S>() {
     override val name = "index"
 
-    enum class OpType {
-        INDEX, CREATE
-    }
-
-    override fun getActionMeta(): ActionMeta {
-        return source.meta
-    }
-
-    override fun getActionSource(): IndexSource<*> {
-        return source
-    }
+    // override val source: S?
+    //     get() =
 }
 
-class CreateAction(
-    val source: IndexSource<*>,
-    val opType: OpType? = null,
-    val pipeline: String? = null,
-    override val concurrencyControl: ConcurrencyControl? = null,
-) : Action() {
+class CreateAction<S: BaseDocSource>(
+    meta: ActionMeta,
+    source: S,
+    pipeline: String? = null,
+    concurrencyControl: ConcurrencyControl? = null,
+) : IndexAction<S>(
+    meta = meta,
+    source = source,
+    pipeline = pipeline,
+    concurrencyControl = concurrencyControl,
+) {
     override val name = "create"
-
-    enum class OpType {
-        INDEX, CREATE
-    }
-
-    override fun getActionMeta(): ActionMeta {
-        return source.meta
-    }
-
-    override fun getActionSource(): IndexSource<*> {
-        return source
-    }
 }
 
 class DeleteAction(
-    val meta: ActionMeta,
+    override val meta: ActionMeta,
     override val concurrencyControl: ConcurrencyControl? = null,
-) : Action() {
+) : Action<Nothing>() {
     override val name = "delete"
-
-    override fun getActionMeta(): ActionMeta {
-        return meta
-    }
-
-    override fun getActionSource(): ActionSource? {
-        return null
-    }
+    override val source: Nothing? = null
 }
 
-sealed class UpdateSource<S: BaseSource>(
-    val meta: ActionMeta,
+sealed class UpdateSource<S: BaseDocSource>(
     val upsert: S?,
     val detectNoop: Boolean?,
 ) : ActionSource() {
-    class WithScript<S: BaseSource>(
-        meta: ActionMeta,
+    class WithDoc<S: BaseDocSource>(
+        val doc: S,
+        val docAsUpsert: Boolean? = null,
+        upsert: S? = null,
+        detectNoop: Boolean? = null,
+    ) : UpdateSource<S>(
+        upsert = upsert,
+        detectNoop = detectNoop,
+    )
+
+    class WithScript<S: BaseDocSource>(
         val script: Script,
         val scriptedUpsert: Boolean? = null,
         upsert: S? = null,
         detectNoop: Boolean? = null,
     ) : UpdateSource<S>(
-        meta,
-        upsert = upsert,
-        detectNoop = detectNoop,
-    )
-
-    class WithDoc<S: BaseSource>(
-        meta: ActionMeta,
-        val doc: IndexSource<S>,
-        val docAsUpsert: Boolean? = null,
-        upsert: S? = null,
-        detectNoop: Boolean? = null,
-    ) : UpdateSource<S>(
-        meta,
         upsert = upsert,
         detectNoop = detectNoop,
     )
 }
 
-class UpdateAction(
-    val source: UpdateSource<*>,
+class UpdateAction<S: BaseDocSource>(
+    override val meta: ActionMeta,
+    override val source: UpdateSource<S>,
     val retryOnConflict: Int? = null,
     override val concurrencyControl: ConcurrencyControl? = null,
-) : Action() {
+) : Action<UpdateSource<S>>() {
     override val name = "update"
 
-    override fun getActionMeta(): ActionMeta {
-        return source.meta
-    }
-
-    override fun getActionSource(): UpdateSource<*> {
-        return source
-    }
+    // override val source: UpdateSource<S>
+    //     get() = source
 }

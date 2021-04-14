@@ -4,8 +4,11 @@ import dev.evo.elasticmagic.compile.Bulk
 import dev.evo.elasticmagic.compile.Compiled
 import dev.evo.elasticmagic.compile.CompilerProvider
 import dev.evo.elasticmagic.compile.CreateIndex
+import dev.evo.elasticmagic.compile.UpdateMappingRequest
 import dev.evo.elasticmagic.compile.usingIndex
 import dev.evo.elasticmagic.serde.Serde
+import dev.evo.elasticmagic.serde.toMap
+import dev.evo.elasticmagic.transport.ElasticsearchException
 import dev.evo.elasticmagic.transport.ElasticsearchTransport
 import dev.evo.elasticmagic.transport.Method
 
@@ -48,13 +51,18 @@ abstract class SerializableTransport<OBJ>(
         val response = esTransport.request(
             compiled.method,
             compiled.path,
+            compiled.parameters,
             contentType = serde.contentType,
         ) {
+            println("${compiled.method} ${compiled.path} ${compiled.parameters}")
             if (compiled.body != null) {
-                append(serde.serializer.objToString(compiled.body))
+                append(serde.serializer.objToString(compiled.body).also(::println))
             }
         }
-        val result = serde.deserializer.objFromString(response)
+        val result = serde.deserializer.objFromString(
+            response.ifBlank { "{}" }
+        )
+        println("<<< ${result.toMap()}")
         return compiled.processResult(result)
     }
 }
@@ -93,6 +101,8 @@ class ElasticsearchCluster<OBJ>(
     }
 
     // TODO: Merge multiple mappings
+    // Possibly it's worth explicitly merge multiple documents:
+    // mergeDocuments(ProductDoc, CompanyDoc)
     // suspend fun createIndex(
     //     indexName: String,
     //     settings: Params,
@@ -128,6 +138,46 @@ class ElasticsearchCluster<OBJ>(
         )
         return request(compiled)
     }
+
+    suspend fun indexExists(
+        indexName: String,
+        allowNoIndices: Boolean? = null,
+        ignoreUnavailable: Boolean? = null,
+    ): Boolean {
+        val compiled = Compiled<OBJ, Boolean>(
+            method = Method.HEAD,
+            path = indexName,
+            parameters = Parameters(
+                "allow_no_indices" to allowNoIndices?.toString(),
+                "ignore_unavailable" to ignoreUnavailable?.toString(),
+            ),
+            body = null,
+            processResult = { true }
+        )
+        return try {
+            request(compiled)
+        } catch (e: ElasticsearchException.NotFound) {
+            false
+        }
+    }
+
+    suspend fun updateMapping(
+        indexName: String,
+        mapping: Document,
+        allowNoIndices: Boolean? = null,
+        ignoreUnavailable: Boolean? = null,
+        writeIndexOnly: Boolean? = null,
+        masterTimeout: String? = null,
+        timeout: String? = null,
+    ): UpdateMappingResult {
+        val updateMapping = UpdateMappingRequest(
+            indexName = indexName,
+            mapping = mapping,
+        )
+        return request(
+            compilers.updateMapping.compile(serde.serializer, updateMapping)
+        )
+    }
 }
 
 class ElasticsearchIndex<OBJ>(
@@ -137,7 +187,7 @@ class ElasticsearchIndex<OBJ>(
     private val compilers: CompilerProvider,
 ) : SerializableTransport<OBJ>(esTransport, serde) {
 
-    suspend fun <S : BaseSource> search(
+    suspend fun <S : BaseDocSource> search(
         searchQuery: BaseSearchQuery<S, *>
     ): SearchQueryResult<S> {
         val compiled = compilers.searchQuery.compile(
@@ -147,8 +197,8 @@ class ElasticsearchIndex<OBJ>(
     }
 
     suspend fun bulk(
-        actions: List<Action>,
-        refresh: Action.Refresh? = null,
+        actions: List<Action<*>>,
+        refresh: Refresh? = null,
         timeout: String? = null,
         params: Params = Params(),
     ): BulkResult {
@@ -163,8 +213,10 @@ class ElasticsearchIndex<OBJ>(
         val response = esTransport.request(
             compiled.method,
             compiled.path,
+            compiled.parameters,
             contentType = "application/x-ndjson",
         ) {
+            println("${compiled.method} ${compiled.path}")
             if (compiled.body != null) {
                 for ((header, source) in compiled.body) {
                     append(serde.serializer.objToString(header))
@@ -178,6 +230,7 @@ class ElasticsearchIndex<OBJ>(
             println(this.toByteArray().decodeToString())
         }
         val result = serde.deserializer.objFromString(response)
+        println("<<< ${result.toMap()}")
         return compiled.processResult(result)
     }
 }

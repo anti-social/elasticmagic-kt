@@ -22,7 +22,7 @@ class SourceTests {
 
     @Test
     fun fastSource() {
-        class User : BaseSource() {
+        class User : BaseDocSource() {
             var id: Int? = null
 
             override fun getSource(): Map<String, Any?> {
@@ -41,7 +41,7 @@ class SourceTests {
             var statuses: List<Int>? = null,
             var total: Float? = null,
             var user: User? = null,
-        ) : BaseSource() {
+        ) : BaseDocSource() {
             override fun getSource(): Map<String, Any?> {
                 return mapOf(
                     "id" to id,
@@ -82,21 +82,21 @@ class SourceTests {
 
     @Test
     fun sourceInheritance() {
-        open class IdOrderSource : Source() {
+        open class IdOrderDocSource : DocSource() {
             var id by SourceTests.OrderDoc.id.required()
         }
 
-        class FullOrderSource : IdOrderSource() {
+        class FullOrderDocSource : IdOrderDocSource() {
             var status by SourceTests.OrderDoc.status
             var total by SourceTests.OrderDoc.total
         }
 
-        val minOrder = IdOrderSource()
+        val minOrder = IdOrderDocSource()
         shouldThrow<IllegalStateException> {
             minOrder.getSource()
         }
 
-        val fullOrder = FullOrderSource()
+        val fullOrder = FullOrderDocSource()
         shouldThrow<IllegalStateException> {
             fullOrder.getSource() shouldContainExactly emptyMap()
         }
@@ -126,11 +126,11 @@ class SourceTests {
 
     @Test
     fun optionalValue() {
-        class OrderSource : Source() {
+        class OrderDocSource : DocSource() {
             var status by SourceTests.OrderDoc.status
         }
 
-        val order = OrderSource()
+        val order = OrderDocSource()
         order.status.shouldBeNull()
         order.getSource() shouldContainExactly emptyMap()
 
@@ -153,19 +153,19 @@ class SourceTests {
 
     @Test
     fun requiredValue() {
-        class OrderSource : Source() {
+        class OrderDocSource : DocSource() {
             var status by SourceTests.OrderDoc.status.required()
         }
 
         shouldThrow<IllegalArgumentException> {
-            OrderSource().setSource(emptySource())
+            OrderDocSource().setSource(emptySource())
         }
 
         shouldThrow<IllegalArgumentException> {
-            OrderSource().setSource(mapOf("status" to null))
+            OrderDocSource().setSource(mapOf("status" to null))
         }
 
-        val order = OrderSource()
+        val order = OrderDocSource()
         shouldThrow<IllegalStateException> {
             order.getSource()
         }
@@ -181,11 +181,11 @@ class SourceTests {
 
     @Test
     fun optionalListOfOptionalValues() {
-        class OrderSource : Source() {
+        class OrderDocSource : DocSource() {
             var status by SourceTests.OrderDoc.status.list()
         }
 
-        val order = OrderSource()
+        val order = OrderDocSource()
         order.status.shouldBeNull()
         order.getSource() shouldContainExactly emptyMap()
 
@@ -212,11 +212,11 @@ class SourceTests {
 
     @Test
     fun optionalListOfRequiredValues() {
-        class OrderSource : Source() {
+        class OrderDocSource : DocSource() {
             var status by OrderDoc.status.required().list()
         }
 
-        val order = OrderSource()
+        val order = OrderDocSource()
         order.status.shouldBeNull()
         order.getSource() shouldContainExactly emptyMap()
 
@@ -241,11 +241,11 @@ class SourceTests {
 
     @Test
     fun requiredListOfOptionalValues() {
-        class OrderSource : Source() {
+        class OrderDocSource : DocSource() {
             var status by OrderDoc.status.list().required()
         }
 
-        val order = OrderSource()
+        val order = OrderDocSource()
         shouldThrow<IllegalStateException> {
             order.getSource()
         }
@@ -276,11 +276,11 @@ class SourceTests {
 
     @Test
     fun requiredListOfRequiredValues() {
-        class OrderSource : Source() {
+        class OrderDocSource : DocSource() {
             var status by OrderDoc.status.required().list().required()
         }
 
-        val order = OrderSource()
+        val order = OrderDocSource()
         shouldThrow<IllegalStateException> {
             order.getSource()
         }
@@ -318,15 +318,15 @@ class SourceTests {
 
     @Test
     fun optionalSource() {
-        class UserSource : Source() {
+        class UserDocSource : DocSource() {
             var id by OrderDoc.user.id
         }
 
-        class OrderSource : Source() {
-            var user by OrderDoc.user.source(::UserSource)
+        class OrderDocSource : DocSource() {
+            var user by OrderDoc.user.source(::UserDocSource)
         }
 
-        val order = OrderSource()
+        val order = OrderDocSource()
         order.user.shouldBeNull()
         order.getSource() shouldBe emptyMap()
 
@@ -350,7 +350,7 @@ class SourceTests {
         order.user.shouldBeNull()
         order.getSource() shouldBe mapOf("user" to null)
 
-        order.user = UserSource().apply {
+        order.user = UserDocSource().apply {
             id = 19
         }
         order.user?.id shouldBe 19
@@ -359,15 +359,15 @@ class SourceTests {
 
     @Test
     fun requiredSource() {
-        class UserSource : Source() {
+        class UserDocSource : DocSource() {
             var id by OrderDoc.user.id
         }
 
-        class OrderSource : Source() {
-            var user by OrderDoc.user.source(::UserSource).required()
+        class OrderDocSource : DocSource() {
+            var user by OrderDoc.user.source(::UserDocSource).required()
         }
 
-        val order = OrderSource()
+        val order = OrderDocSource()
         shouldThrow<IllegalStateException> {
             order.user
         }
@@ -391,7 +391,7 @@ class SourceTests {
         }
         order.getSource() shouldContainExactly mapOf("user" to mapOf("id" to 1))
 
-        order.user = UserSource().apply {
+        order.user = UserDocSource().apply {
             id = 19
         }
         order.user.id shouldBe 19
@@ -400,7 +400,7 @@ class SourceTests {
 
     @Test
     fun optionalListOfOptionalSources() {
-        class UserSource() : Source() {
+        class UserDocSource() : DocSource() {
             var id by OrderDoc.user.id
 
             constructor(id: Int?) : this() {
@@ -408,11 +408,11 @@ class SourceTests {
             }
         }
 
-        class OrderSource : Source() {
-            var users by OrderDoc.user.source(::UserSource).list()
+        class OrderDocSource : DocSource() {
+            var users by OrderDoc.user.source(::UserDocSource).list()
         }
 
-        val order = OrderSource()
+        val order = OrderDocSource()
         order.users.shouldBeNull()
         order.getSource() shouldContainExactly emptyMap()
 
@@ -429,18 +429,18 @@ class SourceTests {
         order.getSource() shouldContainExactly mapOf("user" to listOf(null))
 
         order.setSource(mapOf("user" to listOf(mapOf("id" to null))))
-        order.users shouldBe listOf(UserSource(null))
+        order.users shouldBe listOf(UserDocSource(null))
         order.getSource() shouldContainExactly mapOf("user" to listOf(mapOf("id" to null)))
 
         order.setSource(mapOf("user" to listOf(mapOf("id" to 1))))
-        order.users shouldBe listOf(UserSource(1))
+        order.users shouldBe listOf(UserDocSource(1))
         order.getSource() shouldContainExactly mapOf("user" to listOf(mapOf("id" to 1)))
 
         order.setSource(mapOf("user" to mapOf("id" to 2)))
-        order.users shouldBe listOf(UserSource(2))
+        order.users shouldBe listOf(UserDocSource(2))
         order.getSource() shouldContainExactly mapOf("user" to listOf(mapOf("id" to 2)))
 
-        order.users = listOf(UserSource(id = 19))
+        order.users = listOf(UserDocSource(id = 19))
         order.users.let { users ->
             users?.get(0)?.id shouldBe 19
         }
@@ -449,7 +449,7 @@ class SourceTests {
 
     @Test
     fun optionalListOfRequiredSources() {
-        class UserSource() : Source() {
+        class UserDocSource() : DocSource() {
             var id by OrderDoc.user.id
 
             constructor(id: Int?) : this() {
@@ -457,11 +457,11 @@ class SourceTests {
             }
         }
 
-        class OrderSource : Source() {
-            var users by OrderDoc.user.source(::UserSource).required().list()
+        class OrderDocSource : DocSource() {
+            var users by OrderDoc.user.source(::UserDocSource).required().list()
         }
 
-        val order = OrderSource()
+        val order = OrderDocSource()
         order.users.shouldBeNull()
         order.getSource() shouldContainExactly emptyMap()
 
@@ -479,18 +479,18 @@ class SourceTests {
         order.getSource() shouldContainExactly emptyMap()
 
         order.setSource(mapOf("user" to listOf(mapOf("id" to null))))
-        order.users shouldBe listOf(UserSource(null))
+        order.users shouldBe listOf(UserDocSource(null))
         order.getSource() shouldContainExactly mapOf("user" to listOf(mapOf("id" to null)))
 
         order.setSource(mapOf("user" to listOf(mapOf("id" to 1))))
-        order.users shouldBe listOf(UserSource(1))
+        order.users shouldBe listOf(UserDocSource(1))
         order.getSource() shouldContainExactly mapOf("user" to listOf(mapOf("id" to 1)))
 
         order.setSource(mapOf("user" to mapOf("id" to 2)))
-        order.users shouldBe listOf(UserSource(2))
+        order.users shouldBe listOf(UserDocSource(2))
         order.getSource() shouldContainExactly mapOf("user" to listOf(mapOf("id" to 2)))
 
-        order.users = listOf(UserSource(id = 19))
+        order.users = listOf(UserDocSource(id = 19))
         order.users.let { users ->
             users?.get(0)?.id shouldBe 19
         }
@@ -499,7 +499,7 @@ class SourceTests {
 
     @Test
     fun requiredListOfOptionalSources() {
-        class UserSource() : Source() {
+        class UserDocSource() : DocSource() {
             var id by OrderDoc.user.id
 
             constructor(id: Int?) : this() {
@@ -507,11 +507,11 @@ class SourceTests {
             }
         }
 
-        class OrderSource : Source() {
-            var users by OrderDoc.user.source(::UserSource).list().required()
+        class OrderDocSource : DocSource() {
+            var users by OrderDoc.user.source(::UserDocSource).list().required()
         }
 
-        val order = OrderSource()
+        val order = OrderDocSource()
         shouldThrow<IllegalStateException> {
             order.users
         }
@@ -532,18 +532,18 @@ class SourceTests {
         order.getSource() shouldContainExactly mapOf("user" to listOf(null))
 
         order.setSource(mapOf("user" to listOf(mapOf("id" to null))))
-        order.users shouldBe listOf(UserSource(null))
+        order.users shouldBe listOf(UserDocSource(null))
         order.getSource() shouldContainExactly mapOf("user" to listOf(mapOf("id" to null)))
 
         order.setSource(mapOf("user" to listOf(mapOf("id" to 1))))
-        order.users shouldBe listOf(UserSource(1))
+        order.users shouldBe listOf(UserDocSource(1))
         order.getSource() shouldContainExactly mapOf("user" to listOf(mapOf("id" to 1)))
 
         order.setSource(mapOf("user" to mapOf("id" to 2)))
-        order.users shouldBe listOf(UserSource(2))
+        order.users shouldBe listOf(UserDocSource(2))
         order.getSource() shouldContainExactly mapOf("user" to listOf(mapOf("id" to 2)))
 
-        order.users = listOf(UserSource(id = 19))
+        order.users = listOf(UserDocSource(id = 19))
         order.users.let { users ->
             users[0]?.id shouldBe 19
         }
@@ -552,7 +552,7 @@ class SourceTests {
 
     @Test
     fun requiredListOfRequiredSources() {
-        class UserSource() : Source() {
+        class UserDocSource() : DocSource() {
             var id by OrderDoc.user.id
 
             constructor(id: Int?) : this() {
@@ -560,11 +560,11 @@ class SourceTests {
             }
         }
 
-        class OrderSource : Source() {
-            var users by OrderDoc.user.source(::UserSource).required().list().required()
+        class OrderDocSource : DocSource() {
+            var users by OrderDoc.user.source(::UserDocSource).required().list().required()
         }
 
-        val order = OrderSource()
+        val order = OrderDocSource()
         shouldThrow<IllegalStateException> {
             order.users
         }
@@ -588,18 +588,18 @@ class SourceTests {
         }
 
         order.setSource(mapOf("user" to listOf(mapOf("id" to null))))
-        order.users shouldBe listOf(UserSource(null))
+        order.users shouldBe listOf(UserDocSource(null))
         order.getSource() shouldContainExactly mapOf("user" to listOf(mapOf("id" to null)))
 
         order.setSource(mapOf("user" to listOf(mapOf("id" to 1))))
-        order.users shouldBe listOf(UserSource(1))
+        order.users shouldBe listOf(UserDocSource(1))
         order.getSource() shouldContainExactly mapOf("user" to listOf(mapOf("id" to 1)))
 
         order.setSource(mapOf("user" to mapOf("id" to 2)))
-        order.users shouldBe listOf(UserSource(2))
+        order.users shouldBe listOf(UserDocSource(2))
         order.getSource() shouldContainExactly mapOf("user" to listOf(mapOf("id" to 2)))
 
-        order.users = listOf(UserSource(id = 19))
+        order.users = listOf(UserDocSource(id = 19))
         order.users.let { users ->
             users[0].id shouldBe 19
         }

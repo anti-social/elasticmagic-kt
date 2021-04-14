@@ -3,6 +3,7 @@ package dev.evo.elasticmagic
 import dev.evo.elasticmagic.compile.SearchQueryCompiler
 import dev.evo.elasticmagic.serde.Deserializer
 import dev.evo.elasticmagic.serde.Serializer
+import dev.evo.elasticmagic.serde.toMap
 
 interface Aggregation : NamedExpression {
     fun processResult(obj: Deserializer.ObjectCtx): AggregationResult
@@ -384,7 +385,7 @@ class TermsAgg(
 ) {
     override val name = "terms"
 
-    override fun processResult(obj: Deserializer.ObjectCtx): TermAggResult {
+    override fun processResult(obj: Deserializer.ObjectCtx): TermsAggResult {
         val buckets = mutableListOf<TermBucket>()
         val rawBuckets = obj.array("buckets")
         while (rawBuckets.hasNext()) {
@@ -399,11 +400,11 @@ class TermsAgg(
             )
 
         }
-        return TermAggResult(buckets)
+        return TermsAggResult(buckets)
     }
 }
 
-data class TermAggResult(
+data class TermsAggResult(
     override val buckets: List<TermBucket>
 ) : BucketAggResult<TermBucket>()
 
@@ -697,10 +698,9 @@ data class HistogramBounds<T>(
     }
 }
 
-abstract class BaseHistogramAgg<T>(
+abstract class BaseHistogramAgg<T, R: AggregationResult, B>(
     val field: Named? = null,
     val script: Script? = null,
-    val interval: T,
     val offset: T? = null,
     val minDocCount: Long? = null,
     val missing: T? = null,
@@ -723,7 +723,6 @@ abstract class BaseHistogramAgg<T>(
         if (script != null) {
             compiler.visit(ctx, script)
         }
-        ctx.field("interval", interval)
         ctx.fieldIfNotNull("offset", offset)
         ctx.fieldIfNotNull("min_doc_count", minDocCount)
         ctx.fieldIfNotNull("missing", missing)
@@ -749,20 +748,20 @@ abstract class BaseHistogramAgg<T>(
         }
     }
 
-    override fun processResult(obj: Deserializer.ObjectCtx): HistogramAggResult {
+    override fun processResult(obj: Deserializer.ObjectCtx): R {
         val bucketsArray = obj.arrayOrNull("buckets")
         if (bucketsArray != null) {
-            val buckets = mutableListOf<HistogramBucket>()
+            val buckets = mutableListOf<B>()
             while (bucketsArray.hasNext()) {
                 buckets.add(
                     processBucketResult(bucketsArray.obj())
                 )
             }
-            return HistogramAggResult(buckets)
+            return makeHistogramResult(buckets)
         }
 
         val bucketsObj = obj.obj("buckets")
-        val buckets = mutableListOf<HistogramBucket>()
+        val buckets = mutableListOf<B>()
         val bucketsIter = bucketsObj.iterator()
         while (bucketsIter.hasNext()) {
             val (_, bucketObj) = bucketsIter.obj()
@@ -770,34 +769,18 @@ abstract class BaseHistogramAgg<T>(
                 processBucketResult(bucketObj)
             )
         }
-        return HistogramAggResult(buckets)
+        return makeHistogramResult(buckets)
     }
 
-    private fun processBucketResult(bucketObj: Deserializer.ObjectCtx): HistogramBucket {
-        return HistogramBucket(
-            key = bucketObj.long("key"),
-            docCount = bucketObj.long("doc_count"),
-            keyAsString = bucketObj.string("key_as_string"),
-            aggs = processSubAggs(bucketObj)
-        )
-    }
+    protected abstract fun processBucketResult(bucketObj: Deserializer.ObjectCtx): B
+
+    protected abstract val makeHistogramResult: (List<B>) -> R
 }
-
-data class HistogramAggResult(
-    override val buckets: List<HistogramBucket>,
-) : BucketAggResult<HistogramBucket>()
-
-data class HistogramBucket(
-    override val key: Long,
-    override val docCount: Long,
-    override val aggs: Map<String, AggregationResult>,
-    val keyAsString: String,
-) : KeyedBucket<Long>()
 
 class HistogramAgg(
     field: Named? = null,
     script: Script? = null,
-    interval: Double,
+    val interval: Double,
     offset: Double? = null,
     minDocCount: Long? = null,
     missing: Double? = null,
@@ -807,10 +790,9 @@ class HistogramAgg(
     hardBounds: HistogramBounds<Double>? = null,
     params: Params = Params(),
     aggs: Map<String, Aggregation> = emptyMap(),
-) : BaseHistogramAgg<Double>(
+) : BaseHistogramAgg<Double, HistogramAggResult, HistogramBucket>(
     field = field,
     script = script,
-    interval = interval,
     offset = offset,
     minDocCount = minDocCount,
     missing = missing,
@@ -821,13 +803,43 @@ class HistogramAgg(
     params = params,
     aggs = aggs,
 ) {
-    override val name = "date_histogram"
+    override val name = "histogram"
+
+    override fun visit(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
+        ctx.field("interval", interval)
+
+        super.visit(ctx, compiler)
+    }
+
+    override fun processBucketResult(bucketObj: Deserializer.ObjectCtx): HistogramBucket {
+        return HistogramBucket(
+            key = bucketObj.double("key"),
+            docCount = bucketObj.long("doc_count"),
+            keyAsString = bucketObj.stringOrNull("key_as_string"),
+            aggs = processSubAggs(bucketObj)
+        )
+    }
+
+    override val makeHistogramResult = ::HistogramAggResult
 }
+
+data class HistogramAggResult(
+    override val buckets: List<HistogramBucket>,
+) : BucketAggResult<HistogramBucket>()
+
+data class HistogramBucket(
+    override val key: Double,
+    override val docCount: Long,
+    override val aggs: Map<String, AggregationResult>,
+    val keyAsString: String?,
+) : KeyedBucket<Double>()
 
 class DateHistogramAgg(
     field: Named? = null,
     script: Script? = null,
-    interval: String,
+    val calendarInterval: String? = null,
+    val fixedInterval: String? = null,
+    val interval: String? = null,
     offset: String? = null,
     minDocCount: Long? = null,
     missing: String? = null,
@@ -837,10 +849,9 @@ class DateHistogramAgg(
     hardBounds: HistogramBounds<String>? = null,
     params: Params = Params(),
     aggs: Map<String, Aggregation> = emptyMap(),
-) : BaseHistogramAgg<String>(
+) : BaseHistogramAgg<String, DateHistogramAggResult, DateHistogramBucket>(
     field = field,
     script = script,
-    interval = interval,
     offset = offset,
     minDocCount = minDocCount,
     missing = missing,
@@ -852,7 +863,43 @@ class DateHistogramAgg(
     aggs = aggs,
 ) {
     override val name = "date_histogram"
+
+    init {
+        require(calendarInterval != null || fixedInterval != null || interval != null) {
+            "One of interval argument is required: calendarInterval, fixedInterval or interval"
+        }
+    }
+
+    override fun visit(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
+        ctx.field("calendar_interval", calendarInterval)
+        ctx.field("fixed_interval", fixedInterval)
+        ctx.field("interval", interval)
+
+        super.visit(ctx, compiler)
+    }
+
+    override fun processBucketResult(bucketObj: Deserializer.ObjectCtx): DateHistogramBucket {
+        return DateHistogramBucket(
+            key = bucketObj.long("key"),
+            docCount = bucketObj.long("doc_count"),
+            keyAsString = bucketObj.stringOrNull("key_as_string"),
+            aggs = processSubAggs(bucketObj)
+        )
+    }
+
+    override val makeHistogramResult = ::DateHistogramAggResult
 }
+
+data class DateHistogramAggResult(
+    override val buckets: List<DateHistogramBucket>,
+) : BucketAggResult<DateHistogramBucket>()
+
+data class DateHistogramBucket(
+    override val key: Long,
+    override val docCount: Long,
+    override val aggs: Map<String, AggregationResult>,
+    val keyAsString: String?,
+) : KeyedBucket<Long>()
 
 class GlobalAgg(
     aggs: Map<String, Aggregation> = emptyMap(),
@@ -911,3 +958,14 @@ data class FiltersBucket(
     override val docCount: Long,
     override val aggs: Map<String, AggregationResult>,
 ) : KeyedBucket<String>()
+
+class NestedAgg(
+    val path: Named,
+    aggs: Map<String, Aggregation>,
+) : SingleBucketAggregation(aggs) {
+    override val name = "nested"
+
+    override fun visit(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
+        ctx.field("path", path.getQualifiedFieldName())
+    }
+}

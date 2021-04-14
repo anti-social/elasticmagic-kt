@@ -72,13 +72,15 @@ abstract class BaseCompiler(
 class CompilerProvider(esVersion: ElasticsearchVersion) {
     val mapping: MappingCompiler = MappingCompiler(esVersion)
     val createIndex: CreateIndexCompiler = CreateIndexCompiler(esVersion, mapping)
+    val updateMapping: UpdateMappingCompiler = UpdateMappingCompiler(esVersion, mapping)
+
+    val searchQuery: SearchQueryCompiler = SearchQueryCompiler(esVersion)
 
     val actionMetaCompiler: ActionMetaCompiler = ActionMetaCompiler(esVersion)
-    val actionSourceCompiler: ActionSourceCompiler = ActionSourceCompiler(esVersion)
+    val actionSourceCompiler: ActionSourceCompiler = ActionSourceCompiler(esVersion, searchQuery)
     val actionCompiler: ActionCompiler = ActionCompiler(
         esVersion, actionMetaCompiler, actionSourceCompiler
     )
     val bulk: BulkCompiler = BulkCompiler(esVersion, actionCompiler)
 
-    val searchQuery: SearchQueryCompiler = SearchQueryCompiler(esVersion)
 }

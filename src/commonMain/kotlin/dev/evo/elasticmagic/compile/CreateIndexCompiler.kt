@@ -24,7 +24,10 @@ class CreateIndexCompiler(
     val mappingCompiler: MappingCompiler,
 ) : BaseCompiler(esVersion) {
 
-    fun <OBJ> compile(serializer: Serializer<OBJ>, input: CreateIndex): Compiled<OBJ, CreateIndexResult> {
+    fun <OBJ> compile(
+        serializer: Serializer<OBJ>,
+        input: CreateIndex
+    ): Compiled<OBJ, CreateIndexResult> {
         return Compiled(
             method = Method.PUT,
             path = input.indexName,

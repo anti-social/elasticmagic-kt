@@ -361,9 +361,9 @@ abstract class BaseDocument : FieldSet() {
  */
 abstract class SubDocument : BaseDocument(), FieldOperations {
     private val field = BaseField()
-    private lateinit var type: FieldType<*, BaseSource>
+    private lateinit var type: FieldType<*, BaseDocSource>
 
-    fun getFieldType(): FieldType<*, BaseSource> = type
+    fun getFieldType(): FieldType<*, BaseDocSource> = type
 
     override fun getFieldName(): String = field.getFieldName()
 
@@ -382,7 +382,7 @@ abstract class SubDocument : BaseDocument(), FieldOperations {
 
     class SubDocumentProperty<T: SubDocument>(
         private val name: String?,
-        private val type: FieldType<T, BaseSource>,
+        private val type: FieldType<T, BaseDocSource>,
         private val params: Params,
         private val subDocumentFactory: () -> T,
     ) {
@@ -406,7 +406,7 @@ abstract class SubDocument : BaseDocument(), FieldOperations {
         }
     }
 
-    internal class FieldWrapper<T: SubDocument, V: BaseSource>(
+    internal class FieldWrapper<T: SubDocument, V: BaseDocSource>(
         private val subDocument: SubDocument,
         type: FieldType<T, V>,
         params: Params,

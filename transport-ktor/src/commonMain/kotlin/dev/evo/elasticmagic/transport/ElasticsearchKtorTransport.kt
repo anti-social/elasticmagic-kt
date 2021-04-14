@@ -61,6 +61,7 @@ class ElasticsearchKtorTransport(
             Method.PUT -> HttpMethod.Put
             Method.POST -> HttpMethod.Post
             Method.DELETE -> HttpMethod.Delete
+            Method.HEAD -> HttpMethod.Head
         }
         val ktorParameters = if (parameters != null) {
             Parameters.build {
@@ -105,21 +106,23 @@ class ElasticsearchKtorTransport(
     private suspend fun processResponse(response: HttpResponse): String {
         val statusCode = response.status.value
         val content = response.readText()
-        val jsonError = try {
-            deserializer.objFromStringOrNull(content)
-        } catch (e: DeserializationException) {
-            null
-        }
-        val transportError = if (jsonError != null) {
-            TransportError.parse(jsonError)
-        } else {
-            TransportError.Simple(content)
-        }
         return when (statusCode) {
             in 200..299 -> content
-            else -> throw ElasticsearchException.Transport.fromStatusCode(
-                statusCode, transportError
-            )
+            else -> {
+                val jsonError = try {
+                    deserializer.objFromStringOrNull(content)
+                } catch (e: DeserializationException) {
+                    null
+                }
+                val transportError = if (jsonError != null) {
+                    TransportError.parse(jsonError)
+                } else {
+                    TransportError.Simple(content)
+                }
+                throw ElasticsearchException.Transport.fromStatusCode(
+                    statusCode, transportError
+                )
+            }
         }
     }
 }
