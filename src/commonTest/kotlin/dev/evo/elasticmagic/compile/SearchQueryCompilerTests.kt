@@ -18,6 +18,7 @@ import dev.evo.elasticmagic.SearchType
 import dev.evo.elasticmagic.Sort
 import dev.evo.elasticmagic.SubDocument
 import dev.evo.elasticmagic.FieldType
+import dev.evo.elasticmagic.Ids
 import dev.evo.elasticmagic.QueryRescore
 import dev.evo.elasticmagic.serde.StdSerializer
 
@@ -450,6 +451,24 @@ class SearchQueryCompilerTests {
         compile(query).params shouldContainExactly mapOf(
             "search_type" to listOf("query_then_fetch"),
             "request_cache" to listOf("true"),
+        )
+    }
+
+    @Test
+    fun testIds() {
+        val query = SearchQuery(
+            Ids(listOf(
+                "order~3",
+                "order~2",
+                "order~1",
+            ))
+        )
+        compile(query).body shouldContainExactly mapOf(
+            "query" to mapOf(
+                "ids" to mapOf(
+                    "values" to listOf("order~3", "order~2", "order~1")
+                )
+            )
         )
     }
 

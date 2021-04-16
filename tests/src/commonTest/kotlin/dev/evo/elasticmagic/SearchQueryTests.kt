@@ -274,6 +274,22 @@ class SearchQueryTests : ElasticsearchTestBase("test-search-query") {
     }
 
     @Test
+    fun idsFiltering() = runTest {
+        withFixtures(listOf(
+            karlssonsJam, karlssonsBestDonuts, karlssonsJustDonuts, littleBrotherDogStuff
+        )) {
+            val searchResult = SearchQuery(::OrderDocSource)
+                .filter(Ids(listOf("104", "102")))
+                .execute(index)
+
+            searchResult.totalHits shouldBe 2
+            searchResult.maxScore shouldBe 0.0
+
+            checkOrderHits(searchResult.hits, setOf("102", "104"))
+        }
+    }
+
+    @Test
     fun sortNested() = runTest {
         withFixtures(listOf(
             karlssonsJam, karlssonsBestDonuts, karlssonsJustDonuts, littleBrotherDogStuff

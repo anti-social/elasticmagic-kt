@@ -204,6 +204,18 @@ class MultiMatch(
     }
 }
 
+class Ids(
+    val values: List<String>,
+) : QueryExpression {
+    override val name = "ids"
+
+    override fun visit(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
+        ctx.array("values") {
+            compiler.visit(this, values)
+        }
+    }
+}
+
 class Nested(
     val path: Named,
     val query: QueryExpression,
