@@ -71,7 +71,7 @@ sealed class BulkItem {
         val result: String,
         // TODO:
         // val shards: List<ShardsInfo>
-    ) : BulkItem(), ActionMeta
+    ) : BulkItem(), IdentActionMeta
 
     data class Error(
         override val opType: BulkOpType,

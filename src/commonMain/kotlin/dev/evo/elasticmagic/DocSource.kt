@@ -1,7 +1,5 @@
 package dev.evo.elasticmagic
 
-// import dev.evo.elasticmagic.compile.DocSourceCompiler
-// import dev.evo.elasticmagic.serde.Serializer
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
@@ -13,6 +11,25 @@ abstract class BaseDocSource {
     abstract fun getSource(): Map<String, Any?>
 
     abstract fun setSource(source: RawSource)
+
+    fun withActionMeta(
+        id: String,
+        routing: String? = null,
+        version: Long? = null,
+        seqNo: Long? = null,
+        primaryTerm: Long? = null,
+    ): IdentDocSourceWithMeta {
+        return IdentDocSourceWithMeta(
+            meta = object : IdentActionMeta {
+                override val id: String = id
+                override val routing: String? = routing
+                override val version: Long? = version
+                override val seqNo: Long? = seqNo
+                override val primaryTerm: Long? = primaryTerm
+            },
+            doc = this,
+        )
+    }
 
     fun withActionMeta(
         id: String? = null,

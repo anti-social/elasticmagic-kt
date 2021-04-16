@@ -1,9 +1,9 @@
 package dev.evo.elasticmagic
 
-import dev.evo.elasticmagic.compile.Bulk
+import dev.evo.elasticmagic.compile.BulkRequest
 import dev.evo.elasticmagic.compile.Compiled
 import dev.evo.elasticmagic.compile.CompilerProvider
-import dev.evo.elasticmagic.compile.CreateIndex
+import dev.evo.elasticmagic.compile.CreateIndexRequest
 import dev.evo.elasticmagic.compile.UpdateMappingRequest
 import dev.evo.elasticmagic.compile.usingIndex
 import dev.evo.elasticmagic.serde.Serde
@@ -60,6 +60,7 @@ abstract class SerializableTransport<OBJ>(
             }
         }
         val result = serde.deserializer.objFromString(
+            // Index exists API returns empty response
             response.ifBlank { "{}" }
         )
         println("<<< ${result.toMap()}")
@@ -67,14 +68,43 @@ abstract class SerializableTransport<OBJ>(
     }
 }
 
+internal expect class CompilersHolder(
+    compilers: CompilerProvider?,
+    fetch: suspend () -> CompilerProvider
+) {
+    suspend fun get(): CompilerProvider
+}
+
 class ElasticsearchCluster<OBJ>(
     esTransport: ElasticsearchTransport,
     serde: Serde<OBJ>,
-    private val compilers: CompilerProvider,
+    compilers: CompilerProvider? = null,
 ) : SerializableTransport<OBJ>(esTransport, serde) {
 
+    private var _compilers = CompilersHolder(compilers) {
+        CompilerProvider(fetchVersion())
+    }
+
     operator fun get(indexName: String): ElasticsearchIndex<OBJ> {
-        return ElasticsearchIndex(indexName, esTransport, serde, compilers)
+        return ElasticsearchIndex(indexName, esTransport, serde, ::getCompilers)
+    }
+
+    suspend fun fetchVersion(): ElasticsearchVersion {
+        val response = esTransport.request(
+            Method.GET,"",
+            contentType = serde.contentType
+        )
+        val result = serde.deserializer.objFromString(response)
+        val versionObj = result.obj("version")
+        val rawEsVersion = versionObj.string("number")
+        val (major, minor, patch) = rawEsVersion.split('.')
+        return ElasticsearchVersion(
+            major.toInt(), minor.toInt(), patch.toInt()
+        )
+    }
+
+    private suspend fun getCompilers(): CompilerProvider {
+        return _compilers.get()
     }
 
     suspend fun createIndex(
@@ -86,7 +116,7 @@ class ElasticsearchCluster<OBJ>(
         masterTimeout: String? = null,
         timeout: String? = null
     ): CreateIndexResult {
-        val createIndex = CreateIndex(
+        val createIndex = CreateIndexRequest(
             indexName = indexName,
             settings = settings,
             mapping = mapping,
@@ -96,7 +126,7 @@ class ElasticsearchCluster<OBJ>(
             timeout = timeout,
         )
         return request(
-            compilers.createIndex.compile(serde.serializer, createIndex)
+            getCompilers().createIndex.compile(serde.serializer, createIndex)
         )
     }
 
@@ -173,9 +203,14 @@ class ElasticsearchCluster<OBJ>(
         val updateMapping = UpdateMappingRequest(
             indexName = indexName,
             mapping = mapping,
+            allowNoIndices = allowNoIndices,
+            ignoreUnavailable = ignoreUnavailable,
+            writeIndexOnly = writeIndexOnly,
+            masterTimeout = masterTimeout,
+            timeout = timeout,
         )
         return request(
-            compilers.updateMapping.compile(serde.serializer, updateMapping)
+            getCompilers().updateMapping.compile(serde.serializer, updateMapping)
         )
     }
 }
@@ -184,13 +219,13 @@ class ElasticsearchIndex<OBJ>(
     val indexName: String,
     esTransport: ElasticsearchTransport,
     serde: Serde<OBJ>,
-    private val compilers: CompilerProvider,
+    private val getCompilers: suspend () -> CompilerProvider
 ) : SerializableTransport<OBJ>(esTransport, serde) {
 
     suspend fun <S : BaseDocSource> search(
         searchQuery: BaseSearchQuery<S, *>
     ): SearchQueryResult<S> {
-        val compiled = compilers.searchQuery.compile(
+        val compiled = getCompilers().searchQuery.compile(
             serde.serializer, searchQuery.usingIndex(indexName)
         )
         return request(compiled)
@@ -202,21 +237,21 @@ class ElasticsearchIndex<OBJ>(
         timeout: String? = null,
         params: Params = Params(),
     ): BulkResult {
-        val bulk = Bulk(
+        val bulk = BulkRequest(
             indexName,
             actions,
             refresh = refresh,
             timeout = timeout,
             params = params,
         )
-        val compiled = compilers.bulk.compile(serde.serializer, bulk)
+        val compiled = getCompilers().bulk.compile(serde.serializer, bulk)
         val response = esTransport.request(
             compiled.method,
             compiled.path,
             compiled.parameters,
             contentType = "application/x-ndjson",
         ) {
-            println("${compiled.method} ${compiled.path}")
+            println("${compiled.method} ${compiled.path} ${compiled.parameters}")
             if (compiled.body != null) {
                 for ((header, source) in compiled.body) {
                     append(serde.serializer.objToString(header))

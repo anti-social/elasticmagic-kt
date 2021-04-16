@@ -22,10 +22,13 @@ open class MappingCompiler(
 
     fun visit(ctx: ObjectCtx, document: Document) {
         visit(ctx, document.meta)
+        document.dynamic?.let { dynamic ->
+            ctx.field("dynamic", dynamic.toValue())
+        }
         visit(ctx, document as BaseDocument)
     }
 
-    protected fun visit(ctx: ObjectCtx, meta: MetaFields) {
+    private fun visit(ctx: ObjectCtx, meta: MetaFields) {
         for (metaField in meta._fields) {
             val mappingParams = metaField.getMappingParams()
             if (mappingParams.isEmpty()) {
@@ -37,13 +40,13 @@ open class MappingCompiler(
         }
     }
 
-    protected fun visit(ctx: ObjectCtx, doc: BaseDocument) {
+    private fun visit(ctx: ObjectCtx, doc: BaseDocument) {
         ctx.obj("properties") {
             visit(this, doc as FieldSet)
         }
     }
 
-    protected fun visit(ctx: ObjectCtx, fieldSet: FieldSet) {
+    private fun visit(ctx: ObjectCtx, fieldSet: FieldSet) {
         for (field in fieldSet._fields) {
             ctx.obj(field.getFieldName()) {
                 visit(this, field)
@@ -51,7 +54,7 @@ open class MappingCompiler(
         }
     }
 
-    protected fun visit(ctx: ObjectCtx, field: Field<*, *>) {
+    private fun visit(ctx: ObjectCtx, field: Field<*, *>) {
         ctx.field("type", field.getFieldType().name)
         visit(ctx, field.getMappingParams())
         val subFields = field.getSubFields()

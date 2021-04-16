@@ -3,6 +3,12 @@ package dev.evo.elasticmagic
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 
+enum class Dynamic : ToValue {
+    TRUE, FALSE, STRICT, RUNTIME;
+
+    override fun toValue(): String = name.toLowerCase()
+}
+
 open class BaseField : FieldOperations {
     private lateinit var name: String
     private lateinit var qualifiedName: String
@@ -524,4 +530,7 @@ abstract class Document : BaseDocument() {
     open val meta = MetaFields()
 
     open val docType: String = "_doc"
+
+    // TODO: consider to pass it via a constructor
+    open val dynamic: Dynamic? = null
 }

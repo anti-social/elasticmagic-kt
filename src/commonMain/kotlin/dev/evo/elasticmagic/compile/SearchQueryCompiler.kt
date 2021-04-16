@@ -1,11 +1,21 @@
 package dev.evo.elasticmagic.compile
 
-import dev.evo.elasticmagic.*
+import dev.evo.elasticmagic.AggregationResult
+import dev.evo.elasticmagic.BaseDocSource
+import dev.evo.elasticmagic.BaseSearchQuery
+import dev.evo.elasticmagic.Bool
+import dev.evo.elasticmagic.ElasticsearchVersion
+import dev.evo.elasticmagic.Expression
+import dev.evo.elasticmagic.PreparedSearchQuery
+import dev.evo.elasticmagic.SearchHit
+import dev.evo.elasticmagic.SearchQueryResult
+import dev.evo.elasticmagic.ToValue
 import dev.evo.elasticmagic.serde.Deserializer
 import dev.evo.elasticmagic.serde.Serializer
 import dev.evo.elasticmagic.serde.Serializer.ArrayCtx
 import dev.evo.elasticmagic.serde.Serializer.ObjectCtx
 import dev.evo.elasticmagic.serde.toMap
+import dev.evo.elasticmagic.toRequestParameters
 import dev.evo.elasticmagic.transport.Method
 
 class SearchQueryWithIndex<S: BaseDocSource>(

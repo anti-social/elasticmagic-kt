@@ -1,9 +1,7 @@
 package dev.evo.elasticmagic
 
-import dev.evo.elasticmagic.compile.CompilerProvider
-import dev.evo.elasticmagic.serde.serialization.JsonSerde
 import dev.evo.elasticmagic.transport.ElasticsearchException
-import dev.evo.elasticmagic.transport.ElasticsearchKtorTransport
+
 import io.kotest.matchers.doubles.shouldBeLessThan
 import io.kotest.matchers.nulls.shouldNotBeNull
 
@@ -53,17 +51,9 @@ class OrderDocSource : DocSource() {
     var comment by OrderDoc.comment
 }
 
-class SearchQueryTests : TestBase() {
-    private val esTransport = ElasticsearchKtorTransport(
-        "http://localhost:9200",
-        deserializer = JsonSerde.deserializer,
-        engine = httpEngine
-    )
-    private val compilers = CompilerProvider(
-        ElasticsearchVersion(6, 0, 0),
-    )
-    private val cluster = ElasticsearchCluster(esTransport, JsonSerde, compilers)
-    private val index = cluster["test-search-index"]
+class SearchQueryTests : ElasticsearchTestBase("test-search-query") {
+
+    private val docSources = mutableMapOf<String, IdentDocSourceWithMeta>()
 
     private val karlsson = OrderDocSource.User().apply {
         id = 1
@@ -81,7 +71,9 @@ class SearchQueryTests : TestBase() {
             }
         )
         status = 0
-    }.withActionMeta(id = "101")
+    }
+        .withActionMeta(id = "101")
+        .also { docSources[it.meta.id] = it }
     private val karlssonsBestDonuts = OrderDocSource().apply {
         user = karlsson
         items = listOf(
@@ -93,7 +85,9 @@ class SearchQueryTests : TestBase() {
             }
         )
         status = 0
-    }.withActionMeta(id = "102")
+    }
+        .withActionMeta(id = "102")
+        .also { docSources[it.meta.id] = it }
     private val karlssonsJustDonuts = OrderDocSource().apply {
         user = karlsson
         items = listOf(
@@ -105,7 +99,9 @@ class SearchQueryTests : TestBase() {
             }
         )
         status = 1
-    }.withActionMeta(id = "103")
+    }
+        .withActionMeta(id = "103")
+        .also { docSources[it.meta.id] = it }
     private val littleBrother = OrderDocSource.User().apply {
         id = 2
         name = "Svante"
@@ -128,7 +124,9 @@ class SearchQueryTests : TestBase() {
             },
         )
         status = 0
-    }.withActionMeta(id = "104")
+    }
+        .withActionMeta(id = "104")
+        .also { docSources[it.meta.id] = it }
 
     private suspend fun ensureIndex() {
         if (!cluster.indexExists(index.indexName)) {
@@ -144,7 +142,7 @@ class SearchQueryTests : TestBase() {
         }
     }
 
-    private suspend fun withFixtures(docs: List<DocSourceWithMeta>, block: suspend () -> Unit) {
+    private suspend fun withFixtures(docs: List<DocSourceAndMeta>, block: suspend () -> Unit) {
         ensureIndex()
 
         val indexActions = docs.map { docAndMeta ->
@@ -176,11 +174,25 @@ class SearchQueryTests : TestBase() {
         try {
             block()
         } finally {
-            index.bulk(deleteActions)
+            index.bulk(deleteActions, refresh = Refresh.TRUE)
         }
     }
 
-    private fun checkOrderHits(hits: List<SearchHit<OrderDocSource>>, expectedIds: List<String>) {
+    private fun checkOrderHits(hits: List<SearchHit<OrderDocSource>>, expectedIds: Set<String>) {
+        hits.size shouldBe expectedIds.size
+        for (hit in hits) {
+            val orderId = hit.id
+            hit.index shouldBe index.indexName
+            hit.type shouldBe "_doc"
+            hit.version shouldBe null
+            hit.seqNo shouldBe null
+            hit.primaryTerm shouldBe null
+            val doc = hit.source.shouldNotBeNull()
+            doc shouldBe docSources[hit.id]?.doc
+        }
+    }
+
+    private fun checkOrderHitsSorted(hits: List<SearchHit<OrderDocSource>>, expectedIds: List<String>) {
         hits.size shouldBe expectedIds.size
         for ((hit, orderId) in hits.zip(expectedIds)) {
             hit.index shouldBe index.indexName
@@ -190,12 +202,7 @@ class SearchQueryTests : TestBase() {
             hit.seqNo shouldBe null
             hit.primaryTerm shouldBe null
             val doc = hit.source.shouldNotBeNull()
-            when (hit.id) {
-                "101" -> doc shouldBe karlssonsJam.doc
-                "102" -> doc shouldBe karlssonsBestDonuts.doc
-                "103" -> doc shouldBe karlssonsJustDonuts.doc
-                else -> IllegalStateException("Unexpected hit id: ${hit.id}")
-            }
+            doc shouldBe docSources[hit.id]?.doc
         }
     }
 
@@ -210,7 +217,7 @@ class SearchQueryTests : TestBase() {
             searchResult.totalHits shouldBe 4
             searchResult.maxScore shouldBe 1.0F
 
-            checkOrderHits(searchResult.hits, listOf("101", "102", "103", "104"))
+            checkOrderHits(searchResult.hits, setOf("101", "102", "103", "104"))
         }
     }
 
@@ -226,7 +233,7 @@ class SearchQueryTests : TestBase() {
             searchResult.totalHits shouldBe 1
             searchResult.maxScore shouldBe 1.0F
 
-            checkOrderHits(searchResult.hits, listOf("101"))
+            checkOrderHits(searchResult.hits, setOf("101"))
         }
     }
 
@@ -246,7 +253,7 @@ class SearchQueryTests : TestBase() {
             searchResult.totalHits shouldBe 2
             searchResult.maxScore.shouldNotBeNull() shouldBeLessThan 1.0
 
-            checkOrderHits(searchResult.hits, listOf("103", "102"))
+            checkOrderHits(searchResult.hits, setOf("103", "102"))
         }
     }
 
@@ -262,7 +269,7 @@ class SearchQueryTests : TestBase() {
             searchResult.totalHits shouldBe 3
             searchResult.maxScore.shouldNotBeNull() shouldBeLessThan 1.0
 
-            checkOrderHits(searchResult.hits, listOf("101", "102", "104"))
+            checkOrderHits(searchResult.hits, setOf("101", "102", "104"))
         }
     }
 
@@ -284,7 +291,7 @@ class SearchQueryTests : TestBase() {
             searchResult.maxScore shouldBe null
 
             val hits = searchResult.hits
-            checkOrderHits(hits, listOf("102", "104", "103", "101"))
+            checkOrderHitsSorted(hits, listOf("102", "104", "103", "101"))
             hits[0].sort shouldBe listOf(100)
             hits[1].sort shouldBe listOf(11)
             hits[2].sort shouldBe listOf(10)
@@ -307,7 +314,7 @@ class SearchQueryTests : TestBase() {
                 .execute(index)
 
             searchResult.totalHits shouldBe 4
-            searchResult.maxScore shouldBe null
+            searchResult.maxScore ?: 0.0 shouldBe 0.0
             searchResult.hits.size shouldBe 0
 
             val statusesAgg = searchResult.agg<TermsAggResult>("statuses")
@@ -341,7 +348,7 @@ class SearchQueryTests : TestBase() {
                 .execute(index)
 
             searchResult.totalHits shouldBe 4
-            searchResult.maxScore shouldBe null
+            searchResult.maxScore ?: 0.0 shouldBe 0.0
             searchResult.hits.size shouldBe 0
 
             val cartItemsAgg = searchResult.agg<SingleBucketAggResult>("cart_items")

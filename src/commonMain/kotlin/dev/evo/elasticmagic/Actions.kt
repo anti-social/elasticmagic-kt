@@ -19,10 +19,20 @@ sealed class Action<S> {
     abstract val concurrencyControl: ConcurrencyControl?
 }
 
+interface DocSourceAndMeta {
+    val meta: ActionMeta
+    val doc: BaseDocSource
+}
+
 data class DocSourceWithMeta(
-    val meta: ActionMeta,
-    val doc: BaseDocSource,
-)
+    override val meta: ActionMeta,
+    override val doc: BaseDocSource,
+) : DocSourceAndMeta
+
+data class IdentDocSourceWithMeta(
+    override val meta: IdentActionMeta,
+    override val doc: BaseDocSource,
+) : DocSourceAndMeta
 
 interface ActionMeta {
     val id: String?
@@ -32,11 +42,43 @@ interface ActionMeta {
     val primaryTerm: Long?
 }
 
-sealed class ActionSource
+fun ActionMeta(
+    id: String? = null,
+    routing: String? = null,
+    version: Long? = null,
+    seqNo: Long? = null,
+    primaryTerm: Long? = null,
+): ActionMeta {
+    return object : ActionMeta {
+        override val id: String? = id
+        override val routing: String? = routing
+        override val version: Long? = version
+        override val seqNo: Long? = seqNo
+        override val primaryTerm: Long? = primaryTerm
+    }
+}
 
-// class IndexSource<S: BaseDocSource>(
-//     doc: S,
-// ) : ActionSource()
+interface IdentActionMeta : ActionMeta {
+    override val id: String
+}
+
+fun IdentActionMeta(
+    id: String,
+    routing: String? = null,
+    version: Long? = null,
+    seqNo: Long? = null,
+    primaryTerm: Long? = null,
+): IdentActionMeta {
+    return object : IdentActionMeta {
+        override val id: String = id
+        override val routing: String? = routing
+        override val version: Long? = version
+        override val seqNo: Long? = seqNo
+        override val primaryTerm: Long? = primaryTerm
+    }
+}
+
+sealed class ActionSource
 
 open class IndexAction<S: BaseDocSource>(
     override val meta: ActionMeta,
@@ -45,9 +87,6 @@ open class IndexAction<S: BaseDocSource>(
     val pipeline: String? = null,
 ) : Action<S>() {
     override val name = "index"
-
-    // override val source: S?
-    //     get() =
 }
 
 class CreateAction<S: BaseDocSource>(
@@ -65,7 +104,7 @@ class CreateAction<S: BaseDocSource>(
 }
 
 class DeleteAction(
-    override val meta: ActionMeta,
+    override val meta: IdentActionMeta,
     override val concurrencyControl: ConcurrencyControl? = null,
 ) : Action<Nothing>() {
     override val name = "delete"
@@ -98,7 +137,7 @@ sealed class UpdateSource<S: BaseDocSource>(
 }
 
 class UpdateAction<S: BaseDocSource>(
-    override val meta: ActionMeta,
+    override val meta: IdentActionMeta,
     override val source: UpdateSource<S>,
     val retryOnConflict: Int? = null,
     override val concurrencyControl: ConcurrencyControl? = null,

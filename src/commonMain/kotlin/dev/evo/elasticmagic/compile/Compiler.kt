@@ -69,14 +69,34 @@ abstract class BaseCompiler(
     }
 }
 
+abstract class ElasticsearchFeatures {
+    abstract val requiresMappingTypeName: Boolean
+}
+
+object ElasticsearchFeatures_6_0 : ElasticsearchFeatures() {
+    override val requiresMappingTypeName = true
+}
+
+object ElasticsearchFeatures_7_0 : ElasticsearchFeatures() {
+    override val requiresMappingTypeName = false
+}
+
 class CompilerProvider(esVersion: ElasticsearchVersion) {
+    val features = when {
+        esVersion.major == 7 -> ElasticsearchFeatures_7_0
+        esVersion.major == 6 -> ElasticsearchFeatures_6_0
+        else -> throw IllegalArgumentException(
+            "Elasticsearch version is not supported: $esVersion"
+        )
+    }
+
     val mapping: MappingCompiler = MappingCompiler(esVersion)
-    val createIndex: CreateIndexCompiler = CreateIndexCompiler(esVersion, mapping)
-    val updateMapping: UpdateMappingCompiler = UpdateMappingCompiler(esVersion, mapping)
+    val createIndex: CreateIndexCompiler = CreateIndexCompiler(esVersion, features, mapping)
+    val updateMapping: UpdateMappingCompiler = UpdateMappingCompiler(esVersion, features, mapping)
 
     val searchQuery: SearchQueryCompiler = SearchQueryCompiler(esVersion)
 
-    val actionMetaCompiler: ActionMetaCompiler = ActionMetaCompiler(esVersion)
+    val actionMetaCompiler: ActionMetaCompiler = ActionMetaCompiler(esVersion, features)
     val actionSourceCompiler: ActionSourceCompiler = ActionSourceCompiler(esVersion, searchQuery)
     val actionCompiler: ActionCompiler = ActionCompiler(
         esVersion, actionMetaCompiler, actionSourceCompiler

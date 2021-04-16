@@ -9,7 +9,7 @@ import dev.evo.elasticmagic.serde.Deserializer
 import dev.evo.elasticmagic.serde.Serializer
 import dev.evo.elasticmagic.transport.Method
 
-class CreateIndex(
+class CreateIndexRequest(
     val indexName: String,
     val settings: Params,
     val mapping: Document? = null,
@@ -21,12 +21,13 @@ class CreateIndex(
 
 class CreateIndexCompiler(
     esVersion: ElasticsearchVersion,
+    val features: ElasticsearchFeatures,
     val mappingCompiler: MappingCompiler,
 ) : BaseCompiler(esVersion) {
 
     fun <OBJ> compile(
         serializer: Serializer<OBJ>,
-        input: CreateIndex
+        input: CreateIndexRequest
     ): Compiled<OBJ, CreateIndexResult> {
         return Compiled(
             method = Method.PUT,
@@ -44,7 +45,13 @@ class CreateIndexCompiler(
                 }
                 if (input.mapping != null) {
                     obj("mappings") {
-                        mappingCompiler.visit(this, input.mapping)
+                        if (features.requiresMappingTypeName) {
+                            obj("_doc") {
+                                mappingCompiler.visit(this, input.mapping)
+                            }
+                        } else {
+                            mappingCompiler.visit(this, input.mapping)
+                        }
                     }
                 }
                 if (input.aliases.isNotEmpty()) {
