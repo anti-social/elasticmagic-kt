@@ -70,6 +70,12 @@ open class Field<T, V>(
     }
 }
 
+open class SimpleField<V>(
+    name: String? = null,
+    type: FieldType<Nothing, V>,
+    params: Params,
+) : Field<Nothing, V>(name, type, params)
+
 /**
  * Base class for any types which hold set of fields:
  * https://www.elastic.co/guide/en/elasticsearch/reference/7.10/mapping.html
@@ -85,7 +91,7 @@ abstract class FieldSet {
         index: Boolean? = null,
         store: Boolean? = null,
         params: Params? = null,
-    ): Field<Nothing, T> {
+    ): SimpleField<T> {
         @Suppress("NAME_SHADOWING")
         val params = Params(
             params,
@@ -93,7 +99,7 @@ abstract class FieldSet {
             "index" to index,
             "store" to store,
         )
-        return Field(name, type, params)
+        return SimpleField(name, type, params)
     }
     fun <T> field(
         type: FieldType<Nothing, T>,
@@ -101,7 +107,7 @@ abstract class FieldSet {
         index: Boolean? = null,
         store: Boolean? = null,
         params: Params? = null,
-    ): Field<Nothing, T> {
+    ): SimpleField<T> {
         return field(
             null, type,
             docValues = docValues,
@@ -116,7 +122,7 @@ abstract class FieldSet {
         index: Boolean? = null,
         store: Boolean? = null,
         params: Params? = null,
-    ): Field<Nothing, Boolean> {
+    ): SimpleField<Boolean> {
         return field(
             name, BooleanType,
             docValues = docValues,
@@ -131,7 +137,7 @@ abstract class FieldSet {
         index: Boolean? = null,
         store: Boolean? = null,
         params: Params? = null,
-    ): Field<Nothing, Int> {
+    ): SimpleField<Int> {
         return field(
             name, IntType,
             docValues = docValues,
@@ -146,7 +152,7 @@ abstract class FieldSet {
         index: Boolean? = null,
         store: Boolean? = null,
         params: Params? = null,
-    ): Field<Nothing, Long> {
+    ): SimpleField<Long> {
         return field(
             name, LongType,
             docValues = docValues,
@@ -161,7 +167,7 @@ abstract class FieldSet {
         index: Boolean? = null,
         store: Boolean? = null,
         params: Params? = null,
-    ): Field<Nothing, Float> {
+    ): SimpleField<Float> {
         return field(
             name, FloatType,
             docValues = docValues,
@@ -176,7 +182,7 @@ abstract class FieldSet {
         index: Boolean? = null,
         store: Boolean? = null,
         params: Params? = null,
-    ): Field<Nothing, Double> {
+    ): SimpleField<Double> {
         return field(
             name, DoubleType,
             docValues = docValues,
@@ -192,7 +198,7 @@ abstract class FieldSet {
         index: Boolean? = null,
         store: Boolean? = null,
         params: Params? = null,
-    ): Field<Nothing, String> {
+    ): SimpleField<String> {
         @Suppress("NAME_SHADOWING")
         val params = Params(
             params,
@@ -217,7 +223,7 @@ abstract class FieldSet {
         analyzer: String? = null,
         searchAnalyzer: String? = null,
         params: Params? = null,
-    ): Field<Nothing, String> {
+    ): SimpleField<String> {
         @Suppress("NAME_SHADOWING")
         val params = Params(
             params,
@@ -235,11 +241,11 @@ abstract class FieldSet {
         )
     }
 
-    operator fun <T> Field<Nothing, T>.provideDelegate(
+    operator fun <T> SimpleField<T>.provideDelegate(
         thisRef: FieldSet, prop: KProperty<*>
-    ): ReadOnlyProperty<FieldSet, Field<Nothing, T>> = FieldProperty(this, thisRef, prop)
+    ): ReadOnlyProperty<FieldSet, SimpleField<T>> = FieldProperty(this, thisRef, prop)
 
-    class FieldProperty<F: Field<Nothing, T>, T>(
+    class FieldProperty<F: SimpleField<T>, T>(
         private val field: F, fieldSet: FieldSet, prop: KProperty<*>
     ) : ReadOnlyProperty<FieldSet, F> {
         init {
@@ -458,8 +464,8 @@ open class MetaFields : FieldSet() {
     // TODO: Could we get rid of overriding provideDelegate operator?
 
     open class MetaField<V>(
-        name: String, type: FieldType<Nothing, V>, params: Params = Params()
-    ) : Field<Nothing, V>(
+        name: String, type: SimpleFieldType<V>, params: Params = Params()
+    ) : SimpleField<V>(
         name, type, params
     ) {
         open operator fun provideDelegate(

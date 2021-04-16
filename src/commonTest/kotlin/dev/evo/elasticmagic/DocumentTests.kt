@@ -70,7 +70,7 @@ class DocumentTests {
 
     @Test
     fun testCustomFieldType() {
-        val myType = object : FieldType<Nothing, String> {
+        val myType = object : SimpleFieldType<String>() {
             override val name = "mine"
             override fun deserialize(v: Any, valueFactory: (() -> String)?): String {
                 return v.toString()

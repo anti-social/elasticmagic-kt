@@ -13,9 +13,11 @@ interface FieldType<out T, V> {
     ): V
 }
 
-abstract class NumberType<T, V: Number> : FieldType<T, V>
+abstract class SimpleFieldType<V> : FieldType<Nothing, V>
 
-object IntType : NumberType<Nothing, Int>() {
+abstract class NumberType<V: Number> : SimpleFieldType<V>()
+
+object IntType : NumberType<Int>() {
     override val name = "integer"
 
     override fun deserialize(v: Any, valueFactory: (() -> Int)?) = when(v) {
@@ -26,7 +28,7 @@ object IntType : NumberType<Nothing, Int>() {
     }
 }
 
-object LongType : NumberType<Nothing, Long>() {
+object LongType : NumberType<Long>() {
     override val name = "long"
 
     override fun deserialize(v: Any, valueFactory: (() -> Long)?) = when(v) {
@@ -37,7 +39,7 @@ object LongType : NumberType<Nothing, Long>() {
     }
 }
 
-object FloatType : NumberType<Nothing, Float>() {
+object FloatType : NumberType<Float>() {
     override val name = "float"
 
     override fun deserialize(v: Any, valueFactory: (() -> Float)?) = when(v) {
@@ -50,7 +52,7 @@ object FloatType : NumberType<Nothing, Float>() {
     }
 }
 
-object DoubleType : NumberType<Nothing, Double>() {
+object DoubleType : NumberType<Double>() {
     override val name = "double"
 
     override fun deserialize(v: Any, valueFactory: (() -> Double)?) = when(v) {
@@ -63,7 +65,7 @@ object DoubleType : NumberType<Nothing, Double>() {
     }
 }
 
-object BooleanType : FieldType<Nothing, Boolean> {
+object BooleanType : SimpleFieldType<Boolean>() {
     override val name = "boolean"
 
     override fun deserialize(v: Any, valueFactory: (() -> Boolean)?) = when(v) {
@@ -73,7 +75,7 @@ object BooleanType : FieldType<Nothing, Boolean> {
     }
 }
 
-abstract class StringType : FieldType<Nothing, String> {
+abstract class StringType : SimpleFieldType<String>() {
     override fun deserialize(v: Any, valueFactory: (() -> String)?): String {
         return v.toString()
     }
@@ -114,7 +116,7 @@ open class ObjectType<T: SubDocument> : FieldType<T, BaseDocSource> {
 class SourceType<V: BaseDocSource>(
     val type: FieldType<*, BaseDocSource>,
     private val sourceFactory: () -> V
-) : FieldType<Nothing, V> {
+) : SimpleFieldType<V>() {
     override val name = type.name
 
     override fun serialize(v: V): Any {
@@ -139,7 +141,7 @@ internal class SubFieldsType<T, V, F: SubFields<V>>(val type: FieldType<T, V>) :
     }
 }
 
-class OptionalListType<V>(val type: FieldType<*, V>) : FieldType<Nothing, List<V?>> {
+class OptionalListType<V>(val type: FieldType<*, V>) : SimpleFieldType<List<V?>>() {
     override val name = type.name
 
     override fun serialize(v: List<V?>): Any {
@@ -168,7 +170,7 @@ class OptionalListType<V>(val type: FieldType<*, V>) : FieldType<Nothing, List<V
     }
 }
 
-class RequiredListType<V>(val type: FieldType<*, V>) : FieldType<Nothing, List<V>> {
+class RequiredListType<V>(val type: FieldType<*, V>) : SimpleFieldType<List<V>>() {
     override val name = type.name
 
     override fun serialize(v: List<V>): Any {
