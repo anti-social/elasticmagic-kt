@@ -56,7 +56,7 @@ open class BaseField : FieldOperations {
 /**
  * Represents field in an Elasticsearch document.
  */
-open class Field<T, V>(
+open class Field<out T, V>(
     internal val name: String? = null,
     val type: FieldType<T, V>,
     val params: Params,
@@ -64,10 +64,6 @@ open class Field<T, V>(
     open fun getFieldType(): FieldType<*, V> = type
 
     fun getMappingParams(): Params = params
-
-    open fun getSubFields(): SubFields<*>? = null
-
-    open fun getSubDocument(): SubDocument? = null
 
     fun <F: SubFields<V>> subFields(factory: () -> F): SubFields.SubFieldsDelegate<T, V, F> {
         return SubFields.SubFieldsDelegate(this, factory)
@@ -316,98 +312,107 @@ abstract class FieldSet {
  * https://www.elastic.co/guide/en/elasticsearch/reference/7.10/multi-fields.html
  */
 abstract class SubFields<V> : FieldSet(), FieldOperations {
-    private val field = BaseField()
-    private lateinit var type: FieldType<*, V>
+    private lateinit var _field: FieldWrapper<V>
 
-    fun getFieldType(): FieldType<*, V> = type
+    fun getFieldType(): FieldType<*, V> = _field.getFieldType()
 
-    override fun getFieldName(): String = field.getFieldName()
+    override fun getFieldName(): String = _field.getFieldName()
 
-    override fun getQualifiedFieldName(): String = field.getQualifiedFieldName()
+    override fun getQualifiedFieldName(): String = _field.getQualifiedFieldName()
 
-    private fun setFieldName(fieldName: String) {
-        field._setFieldName(fieldName)
-    }
-
-    private fun bindToParent(parent: Named) {
-        field._bindToParent(parent)
+    private fun bindFields() {
         for (subField in _fields) {
             subField._bindToParent(this)
         }
     }
 
-    class SubFieldsDelegate<T, V, F: SubFields<V>>(
+    class SubFieldsDelegate<out T, V, F: SubFields<V>>(
         val field: Field<T, V>,
         private val subFieldsFactory: () -> F,
     ) {
-        private val subFieldsType = SubFieldsType(field.getFieldType())
-
         operator fun provideDelegate(
             thisRef: BaseDocument, prop: KProperty<*>
         ): ReadOnlyProperty<BaseDocument, F> {
-            // val name: String?,
-            // private val type: SubFieldsType<T, V, F>,
-            // private val params: Params,
-
             val fieldName = field.name ?: prop.name
             val subFields = subFieldsFactory()
-            subFields.type = subFieldsType.type
-            subFields.setFieldName(fieldName)
+            if (subFields::_field.isInitialized) {
+                throw IllegalStateException(
+                    "Field [$fieldName] has already been initialized as [${subFields._field.getFieldName()}]"
+                )
+            }
+
+            val subFieldsType = SubFieldsType(field.getFieldType())
+            val field = FieldWrapper(fieldName, subFields, subFieldsType, field.params)
+            subFields._field = field
             if (thisRef is Document) {
-                subFields.bindToParent(object : Named {
+                field._bindToParent(object : Named {
                     override fun getFieldName(): String = ""
                     override fun getQualifiedFieldName(): String = ""
                 })
             }
 
-            thisRef._fields.add(FieldWrapper(subFields, subFieldsType, field.params))
+            thisRef._fields.add(field)
 
             return ReadOnlyProperty { _, _ -> subFields }
         }
     }
 
-    internal class FieldWrapper<T, V>(
-        private val subFields: SubFields<V>,
-        type: FieldType<T, V>,
+    internal class FieldWrapper<V>(
+        name: String,
+        val subFields: SubFields<*>,
+        internal val subFieldsType: SubFieldsType<V>,
         params: Params,
-    ) : Field<T, V>(subFields.getFieldName(), type, params) {
-        override fun getFieldName(): String = subFields.getFieldName()
-        override fun getQualifiedFieldName(): String = subFields.getQualifiedFieldName()
+    ) : SimpleField<V>(name, subFieldsType, params) {
+        init {
+            _setFieldName(name)
+        }
 
-        override fun getFieldType(): FieldType<*, V> = subFields.getFieldType()
-
-        override fun getSubFields(): SubFields<*> = subFields
-
-        override fun _setFieldName(fieldName: String) {
-            subFields.setFieldName(fieldName)
+        override fun getFieldType(): FieldType<*, V> {
+            return subFieldsType.type
         }
 
         override fun _bindToParent(parent: Named) {
-            subFields.bindToParent(parent)
+            super._bindToParent(parent)
+            subFields.bindFields()
         }
     }
 }
 
 abstract class BaseDocument : FieldSet() {
     fun <T: SubDocument> `object`(
-        name: String?, factory: () -> T, params: Params = Params()
+        name: String?,
+        factory: () -> T,
+        enabled: Boolean? = null,
+        params: Params = Params(),
     ): SubDocument.SubDocumentProperty<T> {
+        @Suppress("NAME_SHADOWING")
+        val params = Params(
+            params,
+            "enabled" to enabled,
+        )
         return SubDocument.SubDocumentProperty(name, ObjectType(), params, factory)
     }
     fun <T: SubDocument> `object`(
-        factory: () -> T, params: Params = Params()
+        factory: () -> T,
+        enabled: Boolean? = null,
+        params: Params = Params(),
     ): SubDocument.SubDocumentProperty<T> {
-        return `object`(null, factory, params)
+        return `object`(null, factory, enabled, params)
     }
     fun <T: SubDocument> obj(
-        name: String?, factory: () -> T, params: Params = Params(),
+        name: String?,
+        factory: () -> T,
+        enabled: Boolean? = null,
+        params: Params = Params(),
     ): SubDocument.SubDocumentProperty<T> {
-        return `object`(name, factory, params)
+        return `object`(name, factory, enabled, params)
     }
     fun <T: SubDocument> obj(
-        factory: () -> T, params: Params = Params()
+        factory: () -> T,
+        enabled: Boolean? = null,
+        params: Params = Params(),
     ): SubDocument.SubDocumentProperty<T> {
-        return `object`(factory, params)
+        return `object`(factory, enabled, params)
     }
 
     fun <T: SubDocument> nested(
@@ -426,21 +431,15 @@ abstract class BaseDocument : FieldSet() {
  * Represents Elasticsearch sub-document.
  */
 abstract class SubDocument : BaseDocument(), FieldOperations {
-    private val field = BaseField()
-    private lateinit var type: FieldType<*, BaseDocSource>
+    private lateinit var _field: FieldWrapper
 
-    fun getFieldType(): FieldType<*, BaseDocSource> = type
+    fun getFieldType(): FieldType<*, BaseDocSource> = _field.type
 
-    override fun getFieldName(): String = field.getFieldName()
+    override fun getFieldName(): String = _field.getFieldName()
 
-    override fun getQualifiedFieldName(): String = field.getQualifiedFieldName()
+    override fun getQualifiedFieldName(): String = _field.getQualifiedFieldName()
 
-    private fun setFieldName(fieldName: String) {
-        field._setFieldName(fieldName)
-    }
-
-    private fun bindToParent(parent: Named) {
-        field._bindToParent(parent)
+    private fun bindFields() {
         for (subField in _fields) {
             subField._bindToParent(this)
         }
@@ -448,7 +447,7 @@ abstract class SubDocument : BaseDocument(), FieldOperations {
 
     class SubDocumentProperty<T: SubDocument>(
         private val name: String?,
-        private val type: FieldType<T, BaseDocSource>,
+        private val type: ObjectType<T>,
         private val params: Params,
         private val subDocumentFactory: () -> T,
     ) {
@@ -457,38 +456,40 @@ abstract class SubDocument : BaseDocument(), FieldOperations {
         ): ReadOnlyProperty<BaseDocument, T> {
             val fieldName = name ?: prop.name
             val subDocument = subDocumentFactory()
-            subDocument.type = type
-            subDocument.setFieldName(fieldName)
+            if (subDocument::_field.isInitialized) {
+                throw IllegalStateException(
+                    "Field [$fieldName] has already been initialized as [${subDocument._field.getFieldName()}]"
+                )
+            }
+
+            val field = FieldWrapper(fieldName, subDocument, type, params)
+            subDocument._field = field
             if (thisRef is Document) {
-                subDocument.bindToParent(object : Named {
+                field._bindToParent(object : Named {
                     override fun getFieldName(): String = ""
                     override fun getQualifiedFieldName(): String = ""
                 })
             }
 
-            thisRef._fields.add(FieldWrapper(subDocument, type, params))
+            thisRef._fields.add(field)
 
             return ReadOnlyProperty { _, _ -> subDocument }
         }
     }
 
-    internal class FieldWrapper<T: SubDocument, V: BaseDocSource>(
-        private val subDocument: SubDocument,
-        type: FieldType<T, V>,
+    internal class FieldWrapper(
+        name: String,
+        val subDocument: SubDocument,
+        type: ObjectType<*>,
         params: Params,
-    ) : Field<T, V>(subDocument.getFieldName(), type, params) {
-        override fun getFieldName(): String = subDocument.getFieldName()
-
-        override fun getQualifiedFieldName(): String = subDocument.getQualifiedFieldName()
-
-        override fun getSubDocument(): SubDocument = subDocument
-
-        override fun _setFieldName(fieldName: String) {
-            subDocument.setFieldName(fieldName)
+    ) : Field<SubDocument, BaseDocSource>(name, type, params) {
+        init {
+            _setFieldName(name)
         }
 
         override fun _bindToParent(parent: Named) {
-            subDocument.bindToParent(parent)
+            super._bindToParent(parent)
+            subDocument.bindFields()
         }
     }
 }
@@ -584,8 +585,6 @@ fun mergeDocuments(vararg docs: Document): Document {
         checkMetaFields(doc::class.simpleName, metaFields, expectedDocName, expectedMetaFieldsByName)
     }
 
-    // val fieldSets = docs.map(Document::_fields)
-
     return object : Document() {
         override val meta = expectedMeta
 
@@ -601,22 +600,21 @@ private fun mergeFieldSets(fieldSets: List<FieldSet>): List<Field<*, *>> {
     for (fields in fieldSets) {
         for (field in fields._fields) {
             val fieldName = field.getFieldName()
-                .also(::println)
             val mergedFieldIx = mergedFieldsByName[fieldName]
             if (mergedFieldIx == null) {
                 mergedFieldsByName[fieldName] = mergedFields.size
                 mergedFields.add(field)
-                println(" > Added new")
                 continue
             }
             val expectedField = mergedFields[mergedFieldIx]
-            println(expectedField)
 
             // Merge sub fields
-            val subFields = field.getSubFields()
-            val expectedSubFields = expectedField.getSubFields()
+            // One document can have sub fields but another does not
+            val subFields = (field as? SubFields.FieldWrapper)?.subFields
+            val expectedSubFields = (expectedField as? SubFields.FieldWrapper)?.subFields
             if (subFields != null || expectedSubFields != null) {
                 checkFieldsIdentical(field, expectedField)
+
                 val templateField = if (subFields != null) {
                     field
                 } else {
@@ -628,11 +626,12 @@ private fun mergeFieldSets(fieldSets: List<FieldSet>): List<Field<*, *>> {
                         _fields.addAll(mergeFieldSets(listOfNotNull(expectedSubFields, subFields)))
                     }
 
-                    override fun getFieldName(): String = expectedSubFields!!.getFieldName()
+                    override fun getFieldName(): String = expectedField.getFieldName()
                 }
                 mergedFields[mergedFieldIx] = SubFields.FieldWrapper(
+                    templateField.getFieldName(),
                     mergedSubFields,
-                    templateField.type as SubFieldsType<*, *, *>,
+                    templateField.type as SubFieldsType<*>,
                     templateField.getMappingParams()
                 )
 
@@ -640,9 +639,11 @@ private fun mergeFieldSets(fieldSets: List<FieldSet>): List<Field<*, *>> {
             }
 
             // Merge sub documents
-            val subDocument = field.getSubDocument()
+            val subDocument = (field as? SubDocument.FieldWrapper)?.subDocument
             if (subDocument != null) {
-                val expectedSubDocument = expectedField.getSubDocument()
+                checkFieldsIdentical(field, expectedField)
+
+                val expectedSubDocument = (expectedField as? SubDocument.FieldWrapper)?.subDocument
                 requireNotNull(expectedSubDocument) {
                     "$fieldName are differ by sub document presence"
                 }
@@ -651,15 +652,15 @@ private fun mergeFieldSets(fieldSets: List<FieldSet>): List<Field<*, *>> {
                         _fields.addAll(mergeFieldSets(listOf(expectedSubDocument, subDocument)))
                     }
 
-                    override fun getFieldName(): String = expectedSubDocument.getFieldName()
+                    override fun getFieldName(): String = expectedField.getFieldName()
                 }
-                val t = expectedField.getFieldType()
                 mergedFields[mergedFieldIx] = SubDocument.FieldWrapper(
+                    expectedField.getFieldName(),
                     mergedSubDocument,
                     expectedField.getFieldType() as ObjectType<*>,
                     expectedField.getMappingParams()
                 )
-                println(" > Merged sub documents")
+
                 continue
             }
 
@@ -690,7 +691,9 @@ private fun checkMetaFields(
     }
 }
 
-private fun checkFieldsIdentical(field: Field<*, *>, expected: Field<*, *>) {
+private fun checkFieldsIdentical(
+    field: Field<*, *>, expected: Field<*, *>,
+) {
     val fieldName = field.getFieldName()
     val expectedName = expected.getFieldName()
     require(fieldName == expectedName) {
@@ -699,7 +702,7 @@ private fun checkFieldsIdentical(field: Field<*, *>, expected: Field<*, *>) {
 
     val fieldType = field.getFieldType()
     val expectedType = expected.getFieldType()
-    require(fieldType == expectedType) {
+    require(fieldType::class == expectedType::class) {
         "$fieldName has different field types: $fieldType != $expectedType"
     }
 

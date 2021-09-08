@@ -89,6 +89,14 @@ object TextType : StringType() {
     override val name = "text"
 }
 
+internal class SubFieldsType<V>(val type: FieldType<*, V>) : SimpleFieldType<V>() {
+    override val name = type.name
+
+    override fun deserialize(v: Any, valueFactory: (() -> V)?): V {
+        return type.deserialize(v, valueFactory)
+    }
+}
+
 data class Join(
     val name: String,
     val parent: String? = null,
@@ -122,8 +130,7 @@ object JoinType : SimpleFieldType<Join>() {
     }
 }
 
-
-open class ObjectType<T: SubDocument> : FieldType<T, BaseDocSource> {
+open class ObjectType<out T: SubDocument> : FieldType<T, BaseDocSource> {
     override val name = "object"
 
     override fun serialize(v: BaseDocSource): Any {
@@ -147,6 +154,10 @@ open class ObjectType<T: SubDocument> : FieldType<T, BaseDocSource> {
     }
 }
 
+class NestedType<out T: SubDocument> : ObjectType<T>() {
+    override val name = "nested"
+}
+
 class SourceType<V: BaseDocSource>(
     val type: FieldType<*, BaseDocSource>,
     private val sourceFactory: () -> V
@@ -160,18 +171,6 @@ class SourceType<V: BaseDocSource>(
     override fun deserialize(v: Any, valueFactory: (() -> V)?): V {
         @Suppress("UNCHECKED_CAST")
         return type.deserialize(v, sourceFactory) as V
-    }
-}
-
-class NestedType<T: SubDocument> : ObjectType<T>() {
-    override val name = "nested"
-}
-
-internal class SubFieldsType<T, V, F: SubFields<V>>(val type: FieldType<T, V>) : FieldType<F, V> {
-    override val name = type.name
-
-    override fun deserialize(v: Any, valueFactory: (() -> V)?): V {
-        return type.deserialize(v, valueFactory)
     }
 }
 

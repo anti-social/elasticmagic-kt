@@ -2,8 +2,10 @@ package dev.evo.elasticmagic
 
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.maps.shouldContainExactly
+import io.kotest.matchers.maps.shouldNotContainKey
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.types.shouldBeInstanceOf
 import io.kotest.matchers.types.shouldBeSameInstanceAs
 import io.kotest.matchers.types.shouldNotBeSameInstanceAs
 
@@ -165,6 +167,7 @@ class DocumentTests {
         }
 
         val userDoc = UserDoc()
+        userDoc.company.getFieldType().shouldBeInstanceOf<ObjectType<*>>()
         userDoc.company.getFieldName() shouldBe "company"
         userDoc.company.getQualifiedFieldName() shouldBe "company"
         userDoc.company.name.getFieldName() shouldBe "name"
@@ -234,14 +237,167 @@ class DocumentTests {
 
         val mergedDoc = mergeDocuments(opinionDoc, answerDoc)
         mergedDoc.fields["text"] shouldBeSameInstanceAs opinionDoc.text
-        val mergedUserDoc = mergedDoc.fields["user"].shouldNotBeNull()
-            .getSubDocument().shouldNotBeNull()
-        val opinionTitleSubFields = mergedUserDoc.fields["title"].shouldNotBeNull()
-            .getSubFields().shouldNotBeNull()
-        opinionTitleSubFields.fields["sort"] shouldBeSameInstanceAs opinionDoc.user.title.sort
-        opinionTitleSubFields.fields["autocomplete"] shouldBeSameInstanceAs answerDoc.user.title.autocomplete
+        mergedDoc.fields["opinionId"] shouldBeSameInstanceAs answerDoc.opinionId
+
+        val mergedUserDoc = mergedDoc
+            .fields["user"].shouldBeInstanceOf<SubDocument.FieldWrapper>()
+            .subDocument
         mergedUserDoc.fields["phone"] shouldBeSameInstanceAs opinionDoc.user.phone
         mergedUserDoc.fields["companyId"] shouldBeSameInstanceAs answerDoc.user.companyId
-        mergedDoc.fields["opinionId"] shouldBeSameInstanceAs answerDoc.opinionId
+
+        val opinionTitleSubFields = mergedUserDoc
+            .fields["title"].shouldBeInstanceOf<SubFields.FieldWrapper<*>>()
+            .subFields
+        opinionTitleSubFields.fields["sort"] shouldBeSameInstanceAs opinionDoc.user.title.sort
+        opinionTitleSubFields.fields["autocomplete"] shouldBeSameInstanceAs answerDoc.user.title.autocomplete
+    }
+
+    @Test
+    fun testMergeDocuments_subFields() {
+        class UserNameFields<T> : SubFields<T>() {
+            val sort by keyword()
+        }
+
+        class UserDoc : Document() {
+            val firstName by text("first_name").subFields(::UserNameFields)
+            val lastName by text("last_name")
+        }
+        val userDoc = UserDoc()
+
+        class CompanyNameFields<T> : SubFields<T>() {
+            val autocomplete by keyword()
+        }
+
+        class CompanyDoc : Document() {
+            val firstName by text("first_name")
+            val lastName by text("last_name").subFields(::CompanyNameFields)
+        }
+        val companyDoc = CompanyDoc()
+
+        val mergedDoc = mergeDocuments(userDoc, companyDoc)
+        val firstNameSubFields = mergedDoc
+            .fields["first_name"].shouldBeInstanceOf<SubFields.FieldWrapper<*>>()
+            .subFields
+        firstNameSubFields.fields["sort"] shouldBeSameInstanceAs userDoc.firstName.sort
+        firstNameSubFields.fields shouldNotContainKey "autocomplete"
+        val lastNameSubFields = mergedDoc
+            .fields["last_name"].shouldBeInstanceOf<SubFields.FieldWrapper<*>>()
+            .subFields
+        lastNameSubFields.fields shouldNotContainKey "sort"
+        lastNameSubFields.fields["autocomplete"] shouldBeSameInstanceAs companyDoc.lastName.autocomplete
+    }
+
+    @Test
+    fun testMergeDocuments_subFieldsWithDifferentTypes() {
+        class NameFields<T> : SubFields<T>() {
+            val sort by keyword()
+        }
+
+        class UserDoc : Document() {
+            val name by text().subFields(::NameFields)
+        }
+        val userDoc = UserDoc()
+
+        class CompanyDoc : Document() {
+            val name by keyword().subFields(::NameFields)
+        }
+        val companyDoc = CompanyDoc()
+
+        shouldThrow<IllegalArgumentException> {
+            mergeDocuments(userDoc, companyDoc)
+        }
+    }
+
+    @Test
+    fun testMergeDocuments_samePropertyDifferentNames() {
+        class UserDoc : Document() {
+            val name by text()
+        }
+        val userDoc = UserDoc()
+
+        class CompanyDoc : Document() {
+            val name by text("company_name")
+        }
+        val companyDoc = CompanyDoc()
+
+        val mergedDoc = mergeDocuments(userDoc, companyDoc)
+        mergedDoc.fields["name"] shouldBeSameInstanceAs userDoc.name
+        mergedDoc.fields["company_name"] shouldBeSameInstanceAs companyDoc.name
+    }
+
+    @Test
+    fun testMergeDocuments_differentTypes() {
+        class UserDoc : Document() {
+            val name by text()
+        }
+        val userDoc = UserDoc()
+
+        class CompanyDoc : Document() {
+            val name by keyword()
+        }
+        val companyDoc = CompanyDoc()
+
+        shouldThrow<IllegalArgumentException> {
+            mergeDocuments(userDoc, companyDoc)
+        }
+    }
+
+    @Test
+    fun testMergeDocuments_mergeObjectWithNested() {
+        class OpinionDoc : SubDocument() {
+            val stars by float()
+        }
+
+        class UserDoc : Document() {
+            val opinion by obj(::OpinionDoc)
+        }
+        val userDoc = UserDoc()
+
+        class CompanyDoc : Document() {
+            val opinion by nested(::OpinionDoc)
+        }
+        val companyDoc = CompanyDoc()
+
+        shouldThrow<IllegalArgumentException> {
+            mergeDocuments(userDoc, companyDoc)
+        }
+    }
+
+    @Test
+    fun testMergeDocuments_differentMappingParams() {
+        class UserDoc : Document() {
+            val name by text(analyzer = "uk")
+        }
+        val userDoc = UserDoc()
+
+        class CompanyDoc : Document() {
+            val name by text(analyzer = "us")
+        }
+        val companyDoc = CompanyDoc()
+
+        shouldThrow<IllegalArgumentException> {
+            mergeDocuments(userDoc, companyDoc)
+        }
+    }
+
+    @Test
+    fun testMergeDocuments_subDocumentsWithDifferentMappingParams() {
+        class OpinionDoc : SubDocument() {
+            val stars by float()
+        }
+
+        class UserDoc : Document() {
+            val opinion by obj(::OpinionDoc)
+        }
+        val userDoc = UserDoc()
+
+        class CompanyDoc : Document() {
+            val opinion by obj(::OpinionDoc, enabled = false)
+        }
+        val companyDoc = CompanyDoc()
+
+        shouldThrow<IllegalArgumentException> {
+            mergeDocuments(userDoc, companyDoc)
+        }
     }
 }

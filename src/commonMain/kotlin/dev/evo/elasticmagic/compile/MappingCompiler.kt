@@ -54,15 +54,16 @@ open class MappingCompiler(
     private fun visit(ctx: ObjectCtx, field: Field<*, *>) {
         ctx.field("type", field.getFieldType().name)
         visit(ctx, field.getMappingParams())
-        val subFields = field.getSubFields()
-        if (subFields != null) {
-            ctx.obj("fields") {
-                visit(this, subFields as FieldSet)
+
+        when (field) {
+            is SubFields.FieldWrapper -> {
+                ctx.obj("fields") {
+                    visit(this, field.subFields)
+                }
             }
-        }
-        val subDocument = field.getSubDocument()
-        if (subDocument != null) {
-            visit(ctx, subDocument)
+            is SubDocument.FieldWrapper -> {
+                visit(ctx, field.subDocument)
+            }
         }
     }
 }
