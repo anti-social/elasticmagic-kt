@@ -2,7 +2,9 @@ package dev.evo.elasticmagic
 
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.maps.shouldContainExactly
+import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.types.shouldBeSameInstanceAs
 import io.kotest.matchers.types.shouldNotBeSameInstanceAs
 
 import kotlin.test.Test
@@ -13,7 +15,6 @@ class DocumentTests {
     fun testMetaFields() {
         val emptyDoc = object : Document() {}
 
-        emptyDoc.docType shouldBe "_doc"
         emptyDoc.meta.id.getFieldType() shouldBe KeywordType
         emptyDoc.meta.id.getFieldName() shouldBe "_id"
         emptyDoc.meta.id.getQualifiedFieldName() shouldBe "_id"
@@ -32,13 +33,6 @@ class DocumentTests {
         emptyDoc.meta.size.getFieldType() shouldBe LongType
         emptyDoc.meta.size.getFieldName() shouldBe "_size"
         emptyDoc.meta.size.getQualifiedFieldName() shouldBe "_size"
-
-        emptyDoc.meta.uid.getFieldName() shouldBe "_uid"
-        emptyDoc.meta.uid.getQualifiedFieldName() shouldBe "_uid"
-        emptyDoc.meta.parent.getFieldName() shouldBe "_parent"
-        emptyDoc.meta.parent.getQualifiedFieldName() shouldBe "_parent"
-        emptyDoc.meta.all.getFieldName() shouldBe "_all"
-        emptyDoc.meta.all.getQualifiedFieldName() shouldBe "_all"
     }
 
     @Test
@@ -202,5 +196,52 @@ class DocumentTests {
             UserDoc()
         }
         ex.message shouldBe "Field [company2] has already been initialized as [company1]"
+    }
+
+    @Test
+    fun testMergeDocuments() {
+        class OpinionNameFields<T> : SubFields<T>() {
+            val sort by keyword()
+        }
+
+        class OpinionUserDoc : SubDocument() {
+            val title by text().subFields(::OpinionNameFields)
+            val phone by text()
+        }
+
+        class OpinionDoc : Document() {
+            val text by text()
+            val user by obj(::OpinionUserDoc)
+
+        }
+        val opinionDoc = OpinionDoc()
+
+        class AnswerNameFields<T> : SubFields<T>() {
+            val autocomplete by text()
+        }
+
+        class AnswerUserDoc : SubDocument() {
+            val title by text().subFields(::AnswerNameFields)
+            val companyId by int()
+        }
+
+        class AnswerDoc : Document() {
+            val opinionId by int()
+            val text by text()
+            val user by obj(::AnswerUserDoc)
+        }
+        val answerDoc = AnswerDoc()
+
+        val mergedDoc = mergeDocuments(opinionDoc, answerDoc)
+        mergedDoc.fields["text"] shouldBeSameInstanceAs opinionDoc.text
+        val mergedUserDoc = mergedDoc.fields["user"].shouldNotBeNull()
+            .getSubDocument().shouldNotBeNull()
+        val opinionTitleSubFields = mergedUserDoc.fields["title"].shouldNotBeNull()
+            .getSubFields().shouldNotBeNull()
+        opinionTitleSubFields.fields["sort"] shouldBeSameInstanceAs opinionDoc.user.title.sort
+        opinionTitleSubFields.fields["autocomplete"] shouldBeSameInstanceAs answerDoc.user.title.autocomplete
+        mergedUserDoc.fields["phone"] shouldBeSameInstanceAs opinionDoc.user.phone
+        mergedUserDoc.fields["companyId"] shouldBeSameInstanceAs answerDoc.user.companyId
+        mergedDoc.fields["opinionId"] shouldBeSameInstanceAs answerDoc.opinionId
     }
 }

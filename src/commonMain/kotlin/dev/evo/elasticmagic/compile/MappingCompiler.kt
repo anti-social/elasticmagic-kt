@@ -8,16 +8,13 @@ open class MappingCompiler(
     esVersion: ElasticsearchVersion,
 ) : BaseCompiler(esVersion) {
 
-    data class Compiled<OBJ>(val docType: String, val body: OBJ?)
+    data class Compiled<OBJ>(val body: OBJ?)
 
     fun <OBJ> compile(serializer: Serializer<OBJ>, input: Document): Compiled<OBJ> {
         val body = serializer.buildObj {
             visit(this, input)
         }
-        return Compiled(
-            input.docType,
-            body
-        )
+        return Compiled(body)
     }
 
     fun visit(ctx: ObjectCtx, document: Document) {

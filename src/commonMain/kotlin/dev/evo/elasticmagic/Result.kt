@@ -19,13 +19,13 @@ data class SearchHit<S: BaseDocSource>(
     val index: String,
     val type: String,
     override val id: String,
-    override val routing: String?,
-    override val version: Long?,
-    override val seqNo: Long?,
-    override val primaryTerm: Long?,
-    val score: Double?,
-    val sort: List<Any>?,
-    val source: S?,
+    override val routing: String? = null,
+    override val version: Long? = null,
+    override val seqNo: Long? = null,
+    override val primaryTerm: Long? = null,
+    val score: Double? = null,
+    val sort: List<Any>? = null,
+    val source: S? = null,
 ) : ActionMeta
 
 data class CreateIndexResult(
@@ -93,5 +93,5 @@ data class BulkError(
     val reason: String,
     val index: String,
     val indexUuid: String,
-    val shard: Int,
+    val shard: Int?,
 )

@@ -1,5 +1,6 @@
 package dev.evo.elasticmagic
 
+import dev.evo.elasticmagic.serde.Deserializer
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
@@ -51,14 +52,64 @@ abstract class BaseDocSource {
     }
 }
 
+object DocSourceFactory {
+    fun byJoin(
+        vararg sourceFactories: Pair<String, () -> DocSource>
+    ): (Deserializer.ObjectCtx) -> DocSource {
+        val sourceFactoriesMap = sourceFactories.toMap()
+        val joinField = sourceFactories
+            .map { (_, sourceFactory) -> sourceFactory() }
+            .fold(null) { curJoinField: DocSource.FieldValue<*>?, docSource ->
+                if (curJoinField == null) {
+                    docSource.getJoinField()
+                } else {
+                    val joinField = docSource.getJoinField()
+                        ?: throw IllegalArgumentException(
+                            "Missing join field"
+                        )
+                    if (curJoinField.name != joinField.name) {
+                        throw IllegalArgumentException(
+                            "Document sources have different join fields: '${curJoinField.name}' and '${joinField.name}'"
+                        )
+                    }
+                    curJoinField
+                }
+            }
+        require(joinField != null) {
+            "Missing join field"
+        }
+
+        return { obj ->
+            val sourceObj = obj.obj("_source")
+            val joinName = sourceObj.objOrNull(joinField.name)?.string("name")
+                ?: sourceObj.string(joinField.name)
+            sourceFactoriesMap[joinName]?.invoke()
+                ?: throw IllegalStateException("No source factory for '$joinName' type")
+        }
+    }
+}
+
 open class DocSource : BaseDocSource() {
     private val fieldValues: MutableList<FieldValue<*>> = mutableListOf()
     private val fieldProperties: MutableMap<String, FieldValueProperty<*>> = mutableMapOf()
+    private var joinField: FieldValue<*>? = null
+
+    fun getJoinField(): FieldValue<*>? {
+        return joinField
+    }
 
     private fun bindProperty(fieldProperty: FieldValueProperty<*>) {
         val fieldValue = fieldProperty.fieldValue
         fieldValues.add(fieldValue)
         fieldProperties[fieldValue.name] = fieldProperty
+        if (fieldProperty.fieldType is JoinType) {
+            if (joinField != null) {
+                throw IllegalStateException(
+                    "Join field already bound to this document source: ${joinField?.name}"
+                )
+            }
+            joinField = fieldValue
+        }
     }
 
     override fun getSource(): Map<String, Any?> {
@@ -214,7 +265,7 @@ open class DocSource : BaseDocSource() {
 
     abstract class FieldValueProperty<V>(
         val fieldValue: FieldValue<V>,
-        protected val fieldType: FieldType<*, V>,
+        val fieldType: FieldType<*, V>,
     ) {
         abstract fun set(value: Any?)
     }

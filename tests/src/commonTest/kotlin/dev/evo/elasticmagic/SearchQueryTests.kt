@@ -129,16 +129,16 @@ class SearchQueryTests : ElasticsearchTestBase("test-search-query") {
         .also { docSources[it.meta.id] = it }
 
     private suspend fun ensureIndex() {
-        if (!cluster.indexExists(index.indexName)) {
+        if (!cluster.indexExists(index.name)) {
             cluster.createIndex(
-                index.indexName,
+                index.name,
                 mapping = OrderDoc,
                 settings = Params(
                     "index.number_of_replicas" to 0,
                 ),
             )
         } else {
-            cluster.updateMapping(index.indexName, mapping = OrderDoc)
+            cluster.updateMapping(index.name, mapping = OrderDoc)
         }
     }
 
@@ -182,7 +182,7 @@ class SearchQueryTests : ElasticsearchTestBase("test-search-query") {
         hits.size shouldBe expectedIds.size
         for (hit in hits) {
             val orderId = hit.id
-            hit.index shouldBe index.indexName
+            hit.index shouldBe index.name
             hit.type shouldBe "_doc"
             hit.version shouldBe null
             hit.seqNo shouldBe null
@@ -195,7 +195,7 @@ class SearchQueryTests : ElasticsearchTestBase("test-search-query") {
     private fun checkOrderHitsSorted(hits: List<SearchHit<OrderDocSource>>, expectedIds: List<String>) {
         hits.size shouldBe expectedIds.size
         for ((hit, orderId) in hits.zip(expectedIds)) {
-            hit.index shouldBe index.indexName
+            hit.index shouldBe index.name
             hit.type shouldBe "_doc"
             hit.id shouldBe orderId
             hit.version shouldBe null

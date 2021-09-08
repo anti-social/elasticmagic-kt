@@ -357,12 +357,12 @@ class TermsAgg(
     shardSize: Int? = null,
     minDocCount: Int? = null,
     shardMinDocCount: Int? = null,
-    include: BaseTermsAgg.Include? = null,
-    exclude: BaseTermsAgg.Exclude? = null,
+    include: Include? = null,
+    exclude: Exclude? = null,
     missing: Any? = null,
     order: Map<String, String> = emptyMap(),
-    collectMode: BaseTermsAgg.CollectMode? = null,
-    executionHint: BaseTermsAgg.ExecutionHint? = null,
+    collectMode: CollectMode? = null,
+    executionHint: ExecutionHint? = null,
     showTermDocCountError: Boolean? = null,
     params: Params = Params(),
     aggs: Map<String, Aggregation> = emptyMap(),
@@ -411,7 +411,7 @@ data class TermsAggResult(
 data class TermBucket(
     override val key: Any,
     override val docCount: Long,
-    override val aggs: Map<String, AggregationResult>,
+    override val aggs: Map<String, AggregationResult> = emptyMap(),
     val docCountErrorUpperBound: Long? = null,
 ) : KeyedBucket<Any>()
 

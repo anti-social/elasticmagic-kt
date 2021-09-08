@@ -89,7 +89,7 @@ class BulkCompiler(
                             reason = errorObj.string("reason"),
                             index = errorObj.string("index"),
                             indexUuid = errorObj.string("index_uuid"),
-                            shard = errorObj.int("shard"),
+                            shard = errorObj.intOrNull("shard"),
                         )
                     )
                 }

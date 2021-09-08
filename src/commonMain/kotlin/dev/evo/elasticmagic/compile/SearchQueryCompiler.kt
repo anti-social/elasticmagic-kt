@@ -186,7 +186,7 @@ open class SearchQueryCompiler(
             while (rawHits.hasNext()) {
                 val rawHit = rawHits.obj()
                 val source = rawHit.objOrNull("_source")?.let { rawSource ->
-                    preparedSearchQuery.sourceFactory().apply {
+                    preparedSearchQuery.sourceFactory(rawHit).apply {
                         setSource(rawSource.toMap())
                     }
                 }

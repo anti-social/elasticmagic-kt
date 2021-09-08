@@ -1,5 +1,7 @@
 package dev.evo.elasticmagic
 
+import dev.evo.elasticmagic.serde.Deserializer
+
 data class FieldFormat(
     val field: Named,
     val format: String? = null,
@@ -14,7 +16,7 @@ enum class SearchType : ToValue {
 }
 
 abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
-    protected val sourceFactory: () -> S,
+    protected val sourceFactory: (obj: Deserializer.ObjectCtx) -> S,
     protected var query: QueryExpression? = null,
     params: Params = Params(),
 ) {
@@ -198,7 +200,6 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
     fun prepare(): PreparedSearchQuery<S> {
         return PreparedSearchQuery(
             sourceFactory,
-            docType = "_doc",
             query = query,
             filters = filters.toList(),
             postFilters = postFilters.toList(),
@@ -219,12 +220,24 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
 }
 
 open class SearchQuery<S: BaseDocSource>(
-    sourceFactory: () -> S,
+    sourceFactory: (obj: Deserializer.ObjectCtx) -> S,
     query: QueryExpression? = null,
     params: Params = Params(),
 ) : BaseSearchQuery<S, SearchQuery<S>>(sourceFactory, query, params) {
 
     companion object {
+        operator fun <S: BaseDocSource> invoke(
+            sourceFactory: () -> S,
+            query: QueryExpression? = null,
+            params: Params = Params(),
+        ): SearchQuery<S> {
+            return SearchQuery(
+                { _ -> sourceFactory() },
+                query = query,
+                params = params
+            )
+        }
+
         operator fun invoke(
             query: QueryExpression? = null,
             params: Params = Params(),
@@ -239,8 +252,7 @@ open class SearchQuery<S: BaseDocSource>(
 }
 
 data class PreparedSearchQuery<S: BaseDocSource>(
-    val sourceFactory: () -> S,
-    val docType: String?,
+    val sourceFactory: (obj: Deserializer.ObjectCtx) -> S,
     val query: QueryExpression?,
     val filters: List<QueryExpression>,
     val postFilters: List<QueryExpression>,

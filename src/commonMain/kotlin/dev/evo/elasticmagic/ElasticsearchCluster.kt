@@ -63,7 +63,6 @@ abstract class SerializableTransport<OBJ>(
             // Index exists API returns empty response
             response.ifBlank { "{}" }
         )
-        println("<<< ${result.toMap()}")
         return compiled.processResult(result)
     }
 }
@@ -216,7 +215,7 @@ class ElasticsearchCluster<OBJ>(
 }
 
 class ElasticsearchIndex<OBJ>(
-    val indexName: String,
+    val name: String,
     esTransport: ElasticsearchTransport,
     serde: Serde<OBJ>,
     private val getCompilers: suspend () -> CompilerProvider
@@ -226,7 +225,7 @@ class ElasticsearchIndex<OBJ>(
         searchQuery: BaseSearchQuery<S, *>
     ): SearchQueryResult<S> {
         val compiled = getCompilers().searchQuery.compile(
-            serde.serializer, searchQuery.usingIndex(indexName)
+            serde.serializer, searchQuery.usingIndex(name)
         )
         return request(compiled)
     }
@@ -238,7 +237,7 @@ class ElasticsearchIndex<OBJ>(
         params: Params = Params(),
     ): BulkResult {
         val bulk = BulkRequest(
-            indexName,
+            name,
             actions,
             refresh = refresh,
             timeout = timeout,
@@ -265,7 +264,6 @@ class ElasticsearchIndex<OBJ>(
             println(this.toByteArray().decodeToString())
         }
         val result = serde.deserializer.objFromString(response)
-        println("<<< ${result.toMap()}")
         return compiled.processResult(result)
     }
 }

@@ -3,6 +3,10 @@ package dev.evo.elasticmagic
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 
+/**
+ * Controls dynamic field mapping setting.
+ * See: https://www.elastic.co/guide/en/elasticsearch/reference/current/dynamic-field-mapping.html
+ */
 enum class Dynamic : ToValue {
     TRUE, FALSE, STRICT, RUNTIME;
 
@@ -57,7 +61,7 @@ open class Field<T, V>(
     val type: FieldType<T, V>,
     val params: Params,
 ) : BaseField() {
-    fun getFieldType(): FieldType<T, V> = type
+    open fun getFieldType(): FieldType<*, V> = type
 
     fun getMappingParams(): Params = params
 
@@ -72,9 +76,38 @@ open class Field<T, V>(
 
 open class SimpleField<V>(
     name: String? = null,
-    type: FieldType<Nothing, V>,
+    type: SimpleFieldType<V>,
     params: Params,
 ) : Field<Nothing, V>(name, type, params)
+
+class JoinField(
+    name: String? = null,
+    type: JoinType,
+    relations: Map<String, List<String>>,
+    params: Params,
+) : SimpleField<Join>(name, type, Params(params, "relations" to relations)) {
+
+    inner class Parent(private val name: String) : FieldOperations {
+        override fun getFieldName(): String {
+            return name
+        }
+
+        override fun getQualifiedFieldName(): String {
+            return "${this@JoinField.getQualifiedFieldName()}#$name"
+        }
+    }
+
+    private val parentFields = relations.keys.associateWith { parentFieldName ->
+        Parent(parentFieldName)
+    }
+    
+    fun parent(name: String): FieldOperations {
+        return parentFields[name]
+            ?: throw IllegalArgumentException(
+                "Unknown parent relation: $name, possible relations: ${parentFields.keys}"
+            )
+    }
+}
 
 /**
  * Base class for any types which hold set of fields:
@@ -84,9 +117,13 @@ abstract class FieldSet {
     @Suppress("PropertyName")
     internal val _fields: ArrayList<Field<*, *>> = ArrayList()
 
+    val fields: Map<String, Field<*, *>> by lazy {
+        _fields.associateBy(Field<*, *>::getFieldName)
+    }
+
     fun <T> field(
         name: String?,
-        type: FieldType<Nothing, T>,
+        type: SimpleFieldType<T>,
         docValues: Boolean? = null,
         index: Boolean? = null,
         store: Boolean? = null,
@@ -102,7 +139,7 @@ abstract class FieldSet {
         return SimpleField(name, type, params)
     }
     fun <T> field(
-        type: FieldType<Nothing, T>,
+        type: SimpleFieldType<T>,
         docValues: Boolean? = null,
         index: Boolean? = null,
         store: Boolean? = null,
@@ -240,10 +277,25 @@ abstract class FieldSet {
             params = params,
         )
     }
+    fun join(
+        name: String? = null,
+        relations: Map<String, List<String>>,
+        eagerGlobalOrdinals: Boolean? = null,
+    ): JoinField {
+        val params = Params(
+            "eager_global_ordinals" to eagerGlobalOrdinals,
+        )
+        // TODO: relation sub-fields
+        return JoinField(name, JoinType, relations, params = params)
+    }
 
     operator fun <T> SimpleField<T>.provideDelegate(
         thisRef: FieldSet, prop: KProperty<*>
     ): ReadOnlyProperty<FieldSet, SimpleField<T>> = FieldProperty(this, thisRef, prop)
+
+    operator fun JoinField.provideDelegate(
+        thisRef: FieldSet, prop: KProperty<*>
+    ): ReadOnlyProperty<FieldSet, JoinField> = FieldProperty(this, thisRef, prop)
 
     class FieldProperty<F: SimpleField<T>, T>(
         private val field: F, fieldSet: FieldSet, prop: KProperty<*>
@@ -315,12 +367,14 @@ abstract class SubFields<V> : FieldSet(), FieldOperations {
     }
 
     internal class FieldWrapper<T, V>(
-        private val subFields: SubFields<*>,
+        private val subFields: SubFields<V>,
         type: FieldType<T, V>,
         params: Params,
     ) : Field<T, V>(subFields.getFieldName(), type, params) {
         override fun getFieldName(): String = subFields.getFieldName()
         override fun getQualifiedFieldName(): String = subFields.getQualifiedFieldName()
+
+        override fun getFieldType(): FieldType<*, V> = subFields.getFieldType()
 
         override fun getSubFields(): SubFields<*> = subFields
 
@@ -456,11 +510,6 @@ open class MetaFields : FieldSet() {
     open val source by SourceField()
     open val size by SizeField()
 
-    // These are to support Elasticsearch 5.x
-    val uid by MetaField("_uid", KeywordType)
-    open val parent by ParentField()
-    open val all by AllField()
-
     // TODO: Could we get rid of overriding provideDelegate operator?
 
     open class MetaField<V>(
@@ -474,7 +523,7 @@ open class MetaFields : FieldSet() {
     }
 
     class RoutingField(
-        required: Boolean? = null,
+        val required: Boolean? = null,
     ) : MetaField<String>("_routing", KeywordType, Params("required" to required)) {
         override operator fun provideDelegate(
             thisRef: FieldSet, prop: KProperty<*>
@@ -511,22 +560,6 @@ open class MetaFields : FieldSet() {
             thisRef: FieldSet, prop: KProperty<*>
         ): ReadOnlyProperty<FieldSet, SizeField> = FieldProperty(this, thisRef, prop)
     }
-
-    class ParentField(
-        type: String? = null,
-    ) : MetaField<String>("_parent", KeywordType, Params("type" to type)) {
-        override operator fun provideDelegate(
-            thisRef: FieldSet, prop: KProperty<*>
-        ): ReadOnlyProperty<FieldSet, ParentField> = FieldProperty(this, thisRef, prop)
-    }
-
-    class AllField(
-        enabled: Boolean? = null,
-    ) : MetaField<String>("_all", KeywordType, Params("enabled" to enabled)) {
-        override operator fun provideDelegate(
-            thisRef: FieldSet, prop: KProperty<*>
-        ): ReadOnlyProperty<FieldSet, AllField> = FieldProperty(this, thisRef, prop)
-    }
 }
 
 /**
@@ -535,8 +568,142 @@ open class MetaFields : FieldSet() {
 abstract class Document : BaseDocument() {
     open val meta = MetaFields()
 
-    open val docType: String = "_doc"
-
-    // TODO: consider to pass it via a constructor
     open val dynamic: Dynamic? = null
+}
+
+fun mergeDocuments(vararg docs: Document): Document {
+    require(docs.isNotEmpty()) {
+        "Nothing to merge, document list is empty"
+    }
+
+    val expectedMeta = docs[0].meta
+    val expectedDocName = docs[0]::class.simpleName
+    val expectedMetaFieldsByName = expectedMeta.fields
+    for (doc in docs.slice(1 until docs.size)) {
+        val metaFields = doc.meta.fields
+        checkMetaFields(doc::class.simpleName, metaFields, expectedDocName, expectedMetaFieldsByName)
+    }
+
+    // val fieldSets = docs.map(Document::_fields)
+
+    return object : Document() {
+        override val meta = expectedMeta
+
+        init {
+            _fields.addAll(mergeFieldSets(docs.toList()))
+        }
+    }
+}
+
+private fun mergeFieldSets(fieldSets: List<FieldSet>): List<Field<*, *>> {
+    val mergedFields = mutableListOf<Field<*, *>>()
+    val mergedFieldsByName = mutableMapOf<String, Int>()
+    for (fields in fieldSets) {
+        for (field in fields._fields) {
+            val fieldName = field.getFieldName()
+                .also(::println)
+            val mergedFieldIx = mergedFieldsByName[fieldName]
+            if (mergedFieldIx == null) {
+                mergedFieldsByName[fieldName] = mergedFields.size
+                mergedFields.add(field)
+                println(" > Added new")
+                continue
+            }
+            val expectedField = mergedFields[mergedFieldIx]
+            println(expectedField)
+
+            // Merge sub fields
+            val subFields = field.getSubFields()
+            val expectedSubFields = expectedField.getSubFields()
+            if (subFields != null || expectedSubFields != null) {
+                checkFieldsIdentical(field, expectedField)
+                val templateField = if (subFields != null) {
+                    field
+                } else {
+                    expectedField
+                }
+
+                val mergedSubFields = object : SubFields<Any?>() {
+                    init {
+                        _fields.addAll(mergeFieldSets(listOfNotNull(expectedSubFields, subFields)))
+                    }
+
+                    override fun getFieldName(): String = expectedSubFields!!.getFieldName()
+                }
+                mergedFields[mergedFieldIx] = SubFields.FieldWrapper(
+                    mergedSubFields,
+                    templateField.type as SubFieldsType<*, *, *>,
+                    templateField.getMappingParams()
+                )
+
+                continue
+            }
+
+            // Merge sub documents
+            val subDocument = field.getSubDocument()
+            if (subDocument != null) {
+                val expectedSubDocument = expectedField.getSubDocument()
+                requireNotNull(expectedSubDocument) {
+                    "$fieldName are differ by sub document presence"
+                }
+                val mergedSubDocument = object : SubDocument() {
+                    init {
+                        _fields.addAll(mergeFieldSets(listOf(expectedSubDocument, subDocument)))
+                    }
+
+                    override fun getFieldName(): String = expectedSubDocument.getFieldName()
+                }
+                val t = expectedField.getFieldType()
+                mergedFields[mergedFieldIx] = SubDocument.FieldWrapper(
+                    mergedSubDocument,
+                    expectedField.getFieldType() as ObjectType<*>,
+                    expectedField.getMappingParams()
+                )
+                println(" > Merged sub documents")
+                continue
+            }
+
+            checkFieldsIdentical(field, expectedField)
+        }
+    }
+
+    return mergedFields
+}
+
+private fun checkMetaFields(
+    docName: String?,
+    metaFields: Map<String, Field<*, *>>,
+    expectedDocName: String?,
+    expectedMetaFields: Map<String, Field<*, *>>
+) {
+    for (expectedFieldName in expectedMetaFields.keys) {
+        require(expectedFieldName in metaFields) {
+            "$expectedDocName has meta field $expectedFieldName but $docName does not"
+        }
+    }
+    for ((metaFieldName, metaField) in metaFields) {
+        val expectedMetaField = expectedMetaFields[metaFieldName]
+        requireNotNull(expectedMetaField) {
+            "$docName has meta field $metaFieldName but $expectedDocName does not"
+        }
+        checkFieldsIdentical(metaField, expectedMetaField)
+    }
+}
+
+private fun checkFieldsIdentical(field: Field<*, *>, expected: Field<*, *>) {
+    val fieldName = field.getFieldName()
+    val expectedName = expected.getFieldName()
+    require(fieldName == expectedName) {
+        "Different field names: $fieldName != $expectedName"
+    }
+
+    val fieldType = field.getFieldType()
+    val expectedType = expected.getFieldType()
+    require(fieldType == expectedType) {
+        "$fieldName has different field types: $fieldType != $expectedType"
+    }
+
+    require(field.params == expected.params) {
+        "${field.name} has different field params: ${field.params} != ${expected.params}"
+    }
 }

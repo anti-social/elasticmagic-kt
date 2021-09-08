@@ -22,11 +22,11 @@ class UserDocSource : DocSource() {
     var name by UserV2Doc.name
 }
 
-class CustomDocTypeTests : ElasticsearchTestBase("custom-doc-type") {
+class UpdateMappingTests : ElasticsearchTestBase("update-mapping") {
     @Test
-    fun testCustomDocType() = runTest {
+    fun testUpdateMapping() = runTest {
         cluster.createIndex(
-            index.indexName,
+            index.name,
             mapping = UserV1Doc,
             settings = Params(
                 "index.number_of_replicas" to 0,
@@ -49,7 +49,7 @@ class CustomDocTypeTests : ElasticsearchTestBase("custom-doc-type") {
                 .totalHits shouldBe 0
 
             cluster.updateMapping(
-                index.indexName,
+                index.name,
                 mapping = UserV2Doc
             )
             index.bulk(listOf(
@@ -67,7 +67,7 @@ class CustomDocTypeTests : ElasticsearchTestBase("custom-doc-type") {
                 .execute(index)
                 .totalHits shouldBe 1
         } finally {
-            cluster.deleteIndex(index.indexName)
+            cluster.deleteIndex(index.name)
         }
     }
 }

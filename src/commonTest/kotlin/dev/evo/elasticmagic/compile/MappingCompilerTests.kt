@@ -2,13 +2,16 @@ package dev.evo.elasticmagic.compile
 
 import dev.evo.elasticmagic.Document
 import dev.evo.elasticmagic.ElasticsearchVersion
+import dev.evo.elasticmagic.MetaFields
 import dev.evo.elasticmagic.Params
 import dev.evo.elasticmagic.SubDocument
 import dev.evo.elasticmagic.SubFields
+import dev.evo.elasticmagic.mergeDocuments
 import dev.evo.elasticmagic.serde.StdSerializer
 
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.maps.shouldContainExactly
+import io.kotest.matchers.nulls.shouldNotBeNull
 
 import kotlin.test.Test
 
@@ -27,7 +30,6 @@ class MappingCompilerTests {
         val emptyDoc = object : Document() {}
 
         val compiled = compiler.compile(serializer, emptyDoc)
-        compiled.docType shouldBe "_doc"
         compiled.body!! shouldContainExactly mapOf(
             "properties" to emptyMap<String, Any>()
         )
@@ -41,14 +43,11 @@ class MappingCompilerTests {
         }
 
         val productDoc = object : Document() {
-            override val docType = "product"
-
             val name by text(analyzer = "standard").subFields(::NameFields)
             val keywords by text().subFields(::NameFields)
         }
 
         val compiled = compiler.compile(serializer, productDoc)
-        compiled.docType shouldBe "product"
         compiled.body!! shouldContainExactly mapOf(
             "properties" to mapOf(
                 "name" to mapOf(
@@ -94,14 +93,11 @@ class MappingCompilerTests {
         }
 
         val userDoc = object : Document() {
-            override val docType = "user"
-
             val company by obj(::CompanyDoc)
             val opinion by obj(::OpinionDoc)
         }
 
         val compiled = compiler.compile(serializer, userDoc)
-        compiled.docType shouldBe "user"
         compiled.body!! shouldContainExactly mapOf(
             "properties" to mapOf(
                 "company" to mapOf(
@@ -130,6 +126,49 @@ class MappingCompilerTests {
                         )
                     )
                 ),
+            )
+        )
+    }
+
+    @Test
+    fun testMergeDocuments() {
+        abstract class QADoc : Document() {
+            val join by join(relations = mapOf("question" to listOf("answer")))
+        }
+
+        val questionDoc = object : QADoc() {
+            val id by int()
+            val text by text()
+        }
+
+        val answerDoc = object : QADoc() {
+            override val meta = questionDoc.meta
+
+            val id by int()
+            val text by text()
+            val accepted by boolean()
+        }
+
+        val commonDoc = mergeDocuments(questionDoc, answerDoc)
+
+        val compiled = compiler.compile(serializer, commonDoc)
+        compiled.body.shouldNotBeNull() shouldContainExactly mapOf(
+            "properties" to mapOf(
+                "join" to mapOf(
+                    "type" to "join",
+                    "relations" to mapOf(
+                        "question" to listOf("answer")
+                    )
+                ),
+                "id" to mapOf(
+                    "type" to "integer"
+                ),
+                "text" to mapOf(
+                    "type" to "text"
+                ),
+                "accepted" to mapOf(
+                    "type" to "boolean"
+                )
             )
         )
     }

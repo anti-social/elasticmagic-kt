@@ -89,6 +89,40 @@ object TextType : StringType() {
     override val name = "text"
 }
 
+data class Join(
+    val name: String,
+    val parent: String? = null,
+)
+
+object JoinType : SimpleFieldType<Join>() {
+    override val name = "join"
+
+    override fun serialize(v: Join): Any {
+        if (v.parent != null) {
+            return Params(
+                "name" to v.name,
+                "parent" to v.parent,
+            )
+        }
+        return v.name
+    }
+
+    override fun deserialize(v: Any, valueFactory: (() -> Join)?): Join {
+        return when (v) {
+            is String -> Join(v, null)
+            is Map<*, *> -> {
+                val name = v["name"] as String
+                val parent = v["parent"] as String?
+                Join(name, parent)
+            }
+            else -> throw IllegalArgumentException(
+                "Join value must be String or Map but was: ${v::class}"
+            )
+        }
+    }
+}
+
+
 open class ObjectType<T: SubDocument> : FieldType<T, BaseDocSource> {
     override val name = "object"
 
