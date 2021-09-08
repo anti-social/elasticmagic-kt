@@ -7,7 +7,7 @@ include(
     "serde-jackson-json",
     "transport",
     "transport-ktor",
-    "tests"
+    "integ-tests"
 
 )
 
