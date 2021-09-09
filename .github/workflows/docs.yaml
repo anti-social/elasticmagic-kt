@@ -1,0 +1,26 @@
+name: Build and deploy documentation
+
+on:
+- workflow_dispatch
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - uses: actions/setup-java@v1
+      with:
+        java-version: 11
+
+    - name: Build docs
+      run: ./gradlew dokkaHtml --info
+
+    - name: Publish docs
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./build/dokka/html
+        # keep_files: true
+        full_commit_message: Publish documentation
