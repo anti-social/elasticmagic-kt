@@ -48,6 +48,12 @@ jobs:
         set -eux
         ./gradlew check -x integ-tests:check $GRADLE_ARGS
 
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v2
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        verbose: true
+
   integ-tests:
     needs: unit-tests
     runs-on: ubuntu-latest
