@@ -6,15 +6,20 @@ plugins {
 
 // Collect all source and class directories for jacoco
 // TODO: Is there a better way to do that?
-val allKotlinSourceDirs = allprojects.flatMap { p ->
-    listOf(
-        "${p.projectDir}/src/commonMain/kotlin",
-        "${p.projectDir}/src/jvmMain/kotlin",
-    )
-}
-val allKotlinClassDirs = allprojects.map { p ->
-    "${p.buildDir}/classes/kotlin/jvm"
-}
+val ignoreCoverageForProjects = setOf("integ-tests")
+val allKotlinSourceDirs = allprojects
+    .filter { p -> p.name !in ignoreCoverageForProjects }
+    .flatMap { p ->
+        listOf(
+            "${p.projectDir}/src/commonMain/kotlin",
+            "${p.projectDir}/src/jvmMain/kotlin",
+        )
+    }
+val allKotlinClassDirs = allprojects
+    .filter { p -> p.name !in ignoreCoverageForProjects }
+    .map { p ->
+        "${p.buildDir}/classes/kotlin/jvm"
+    }
 
 allprojects {
     apply {
