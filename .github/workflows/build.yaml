@@ -13,6 +13,7 @@ env:
 
 jobs:
   unit-tests:
+    if: "!contains(github.event.head_commit.message, '[docs]')"
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -55,6 +56,7 @@ jobs:
         verbose: true
 
   integ-tests:
+    if: "!contains(github.event.head_commit.message, '[docs]')"
     needs: unit-tests
     runs-on: ubuntu-latest
     strategy:
