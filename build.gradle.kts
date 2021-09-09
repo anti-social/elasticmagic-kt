@@ -2,6 +2,8 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
 plugins {
     kotlin("multiplatform") apply false
+    id("org.jetbrains.dokka") version "1.5.0"
+
 }
 
 // Collect all source and class directories for jacoco

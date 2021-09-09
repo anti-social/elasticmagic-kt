@@ -1,11 +1,17 @@
 object Versions {
+    // Gradle plugins
+    const val dokka = "1.5.0"
+
+    // Kotlin and libs
     const val kotlin = "1.4.32"
     const val kotlinxSerialization = "1.1.0"
     const val kotlinxCoroutines = "1.4.3-native-mt"
     const val ktor = "1.5.2"
 
+    // Other dependencies
     const val jackson = "2.12.2"
 
+    // Testing
     const val kotest = "4.4.1"
 }
 
