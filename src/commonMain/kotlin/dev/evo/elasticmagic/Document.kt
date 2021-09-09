@@ -577,6 +577,10 @@ fun mergeDocuments(vararg docs: Document): Document {
         "Nothing to merge, document list is empty"
     }
 
+    if (docs.size == 1) {
+        return docs[0]
+    }
+
     val expectedMeta = docs[0].meta
     val expectedDocName = docs[0]::class.simpleName
     val expectedMetaFieldsByName = expectedMeta.fields

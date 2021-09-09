@@ -41,38 +41,28 @@ class AnswerDocSource : DocSource() {
 class ParentChildTests : ElasticsearchTestBase("parent-child") {
     @Test
     fun testParentChildQueries() = runTest {
-        println(KnowledgeDoc.meta)
-        println(QuestionDoc.meta)
-        println(AnswerDoc.meta)
-        cluster.createIndex(
-            index.name,
-            mapping = mergeDocuments(QuestionDoc, AnswerDoc)
+        val q1 = QuestionDocSource().apply {
+            id = 1
+            join = Join("question")
+            text = "What is the answer to life, the universe, and everything?"
+        }
+        val a1 = AnswerDocSource().apply {
+            id = 1
+            join = Join("answer", "q~1")
+            text = "Maybe 50?"
+        }
+        val a2 = AnswerDocSource().apply {
+            id = 2
+            join = Join("answer", "q~1")
+            text = "It's 42."
+            accepted = true
+        }
+        val docSources = listOf(
+            DocSourceWithMeta(IdentActionMeta("q~1", routing = "q~1"), q1),
+            DocSourceWithMeta(IdentActionMeta("a~1", routing = "q~1"), a1),
+            DocSourceWithMeta(IdentActionMeta("a~2", routing = "q~1"), a2),
         )
-
-        try {
-            val q1 = QuestionDocSource().apply {
-                id = 1
-                join = Join("question")
-                text = "What is the answer to life, the universe, and everything?"
-            }
-            val a1 = AnswerDocSource().apply {
-                id = 1
-                join = Join("answer", "q~1")
-                text = "Maybe 50?"
-            }
-            val a2 = AnswerDocSource().apply {
-                id = 2
-                join = Join("answer", "q~1")
-                text = "It's 42."
-                accepted = true
-            }
-            val bulkResult = index.bulk(listOf(
-                CreateAction(ActionMeta("q~1", routing = "q~1"), q1),
-                CreateAction(ActionMeta("a~1", routing = "q~1"), a1),
-                CreateAction(ActionMeta("a~2", routing = "q~1"), a2),
-            ), refresh = Refresh.TRUE)
-            bulkResult.errors shouldBe false
-
+        withFixtures(listOf(QuestionDoc, AnswerDoc), docSources) {
             val sourceFactory = DocSourceFactory.byJoin(
                 "question" to ::QuestionDocSource,
                 "answer" to ::AnswerDocSource
@@ -141,8 +131,6 @@ class ParentChildTests : ElasticsearchTestBase("parent-child") {
                     val parentsAgg = searchResult.agg<TermsAggResult>("parents")
                     parentsAgg.buckets shouldBe listOf(TermBucket("q~1", docCount = 3))
                 }
-        } finally {
-            cluster.deleteIndex(index.name)
         }
     }
 }

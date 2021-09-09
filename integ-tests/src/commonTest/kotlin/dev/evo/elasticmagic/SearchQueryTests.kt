@@ -4,7 +4,6 @@ import dev.evo.elasticmagic.transport.ElasticsearchException
 
 import io.kotest.matchers.doubles.shouldBeLessThan
 import io.kotest.matchers.nulls.shouldNotBeNull
-
 import io.kotest.matchers.shouldBe
 
 import kotlin.test.Test
@@ -128,56 +127,6 @@ class SearchQueryTests : ElasticsearchTestBase("test-search-query") {
         .withActionMeta(id = "104")
         .also { docSources[it.meta.id] = it }
 
-    private suspend fun ensureIndex() {
-        if (!cluster.indexExists(index.name)) {
-            cluster.createIndex(
-                index.name,
-                mapping = OrderDoc,
-                settings = Params(
-                    "index.number_of_replicas" to 0,
-                ),
-            )
-        } else {
-            cluster.updateMapping(index.name, mapping = OrderDoc)
-        }
-    }
-
-    private suspend fun withFixtures(docs: List<DocSourceAndMeta>, block: suspend () -> Unit) {
-        ensureIndex()
-
-        val indexActions = docs.map { docAndMeta ->
-            IndexAction(
-                docAndMeta.meta,
-                docAndMeta.doc,
-            )
-        }
-        val bulkResult = index.bulk(indexActions, refresh = Refresh.TRUE)
-        val deleteActions = mutableListOf<Action<*>>()
-        val failedItems = mutableListOf<BulkError>()
-        for (bulkItem in bulkResult.items) {
-            when (bulkItem) {
-                is BulkItem.Ok -> {
-                    deleteActions.add(DeleteAction(bulkItem))
-                }
-                is BulkItem.Error -> {
-                    failedItems.add(bulkItem.error)
-                }
-            }
-        }
-        if (failedItems.isNotEmpty()) {
-            throw ElasticsearchException(
-                failedItems.joinToString("\n") { bulkErr ->
-                    "${bulkErr.type} - ${bulkErr.reason}"
-                }
-            )
-        }
-        try {
-            block()
-        } finally {
-            index.bulk(deleteActions, refresh = Refresh.TRUE)
-        }
-    }
-
     private fun checkOrderHits(hits: List<SearchHit<OrderDocSource>>, expectedIds: Set<String>) {
         hits.size shouldBe expectedIds.size
         for (hit in hits) {
@@ -208,7 +157,7 @@ class SearchQueryTests : ElasticsearchTestBase("test-search-query") {
 
     @Test
     fun emptyQuery() = runTest {
-        withFixtures(listOf(
+        withFixtures(OrderDoc, listOf(
             karlssonsJam, karlssonsBestDonuts, karlssonsJustDonuts, littleBrotherDogStuff
         )) {
             val searchResult = SearchQuery(::OrderDocSource)
@@ -223,7 +172,7 @@ class SearchQueryTests : ElasticsearchTestBase("test-search-query") {
 
     @Test
     fun simpleTermQuery() = runTest {
-        withFixtures(listOf(karlssonsJam, littleBrotherDogStuff)) {
+        withFixtures(OrderDoc, listOf(karlssonsJam, littleBrotherDogStuff)) {
             val searchResult = SearchQuery(
                 ::OrderDocSource,
                 OrderDoc.user.id.eq(1)
@@ -239,7 +188,7 @@ class SearchQueryTests : ElasticsearchTestBase("test-search-query") {
 
     @Test
     fun simpleNestedQuery() = runTest {
-        withFixtures(listOf(karlssonsJam, karlssonsBestDonuts, karlssonsJustDonuts)) {
+        withFixtures(OrderDoc, listOf(karlssonsJam, karlssonsBestDonuts, karlssonsJustDonuts)) {
             val searchResult = index.search(
                 SearchQuery(
                     ::OrderDocSource,
@@ -259,7 +208,7 @@ class SearchQueryTests : ElasticsearchTestBase("test-search-query") {
 
     @Test
     fun simpleFiltering() = runTest {
-        withFixtures(listOf(
+        withFixtures(OrderDoc, listOf(
             karlssonsJam, karlssonsBestDonuts, karlssonsJustDonuts, littleBrotherDogStuff
         )) {
             val searchResult = SearchQuery(::OrderDocSource)
@@ -275,7 +224,7 @@ class SearchQueryTests : ElasticsearchTestBase("test-search-query") {
 
     @Test
     fun idsFiltering() = runTest {
-        withFixtures(listOf(
+        withFixtures(OrderDoc, listOf(
             karlssonsJam, karlssonsBestDonuts, karlssonsJustDonuts, littleBrotherDogStuff
         )) {
             val searchResult = SearchQuery(::OrderDocSource)
@@ -291,7 +240,7 @@ class SearchQueryTests : ElasticsearchTestBase("test-search-query") {
 
     @Test
     fun sortNested() = runTest {
-        withFixtures(listOf(
+        withFixtures(OrderDoc, listOf(
             karlssonsJam, karlssonsBestDonuts, karlssonsJustDonuts, littleBrotherDogStuff
         )) {
             val searchResult = SearchQuery(::OrderDocSource)
@@ -317,7 +266,7 @@ class SearchQueryTests : ElasticsearchTestBase("test-search-query") {
 
     @Test
     fun aggTerms() = runTest {
-        withFixtures(listOf(
+        withFixtures(OrderDoc, listOf(
             karlssonsJam, karlssonsBestDonuts, karlssonsJustDonuts, littleBrotherDogStuff
         )) {
             val searchResult = SearchQuery(::OrderDocSource)
@@ -344,7 +293,7 @@ class SearchQueryTests : ElasticsearchTestBase("test-search-query") {
 
     @Test
     fun aggNested() = runTest {
-        withFixtures(listOf(
+        withFixtures(OrderDoc, listOf(
             karlssonsJam, karlssonsBestDonuts, karlssonsJustDonuts, littleBrotherDogStuff
         )) {
             val searchResult = SearchQuery(::OrderDocSource)

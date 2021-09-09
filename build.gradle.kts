@@ -30,7 +30,7 @@ allprojects {
     }
 
     afterEvaluate {
-        val coverage = tasks.register<JacocoReport>("jacocoJVMTestReport") {
+        tasks.register<JacocoReport>("jacocoJVMTestReport") {
             group = "Reporting"
             description = "Generate Jacoco coverage report."
 
