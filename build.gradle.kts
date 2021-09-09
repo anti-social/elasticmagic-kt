@@ -18,7 +18,7 @@ val allKotlinSourceDirs = allprojects
 val allKotlinClassDirs = allprojects
     .filter { p -> p.name !in ignoreCoverageForProjects }
     .map { p ->
-        "${p.buildDir}/classes/kotlin/jvm"
+        "${p.buildDir}/classes/kotlin/jvm/main"
     }
 
 allprojects {
