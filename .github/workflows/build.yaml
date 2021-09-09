@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        java-version: [8, 11]
+        java-version: [11]
     steps:
     - uses: actions/checkout@v2
 
@@ -59,7 +59,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        java-version: [8, 11]
+        java-version: [11]
         es-version: [6.8.18, 7.14.1]
     services:
       elasticsearch:
