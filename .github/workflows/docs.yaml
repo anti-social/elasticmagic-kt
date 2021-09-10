@@ -1,7 +1,10 @@
 name: Build and deploy documentation
 
 on:
-- workflow_dispatch
+  push:
+    branches:
+    - master
+    - docs
 
 jobs:
   docs:
