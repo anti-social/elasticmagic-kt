@@ -7,8 +7,8 @@ include(
     "serde-jackson-json",
     "transport",
     "transport-ktor",
-    "integ-tests"
-
+    "integ-tests",
+    "samples",
 )
 
 project(":serde").name = "elasticmagic-serde"

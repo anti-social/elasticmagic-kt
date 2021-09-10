@@ -1,0 +1,69 @@
+site_name: elasticmagic
+
+# Meta tags (placed in header)
+site_description: 
+site_author: Alexandr Koval
+site_url: https://anti-social.github.io/elasticmagic-kt
+
+# Repository (add link to repository on each page)
+repo_name: elasticmagic
+repo_url: http://github.com/anti-social/elasticmagic-kt
+#edit_uri: edit/master/docs/docs/
+
+#Copyright (shown at the footer)
+#copyright: 'Copyright &copy; 2017 Your Name'
+
+# Meterial theme
+theme:
+  name: 'material'
+  feature:
+    tabs: false
+
+#plugins:
+#  - search
+#    Required for variables support (https://github.com/rosscdh/mkdocs-markdownextradata-plugin)
+#  - markdownextradata
+
+#extra:
+#  palette:
+#    primary: 'indigo'
+#    accent: 'indigo'
+
+#  social:
+#    - icon: fontawesome/brands/github
+#      link: https://github.com/you
+#    - icon: fontawesome/brands/twitter
+#      link: https://twitter.com/you
+
+
+# Google Analytics
+#google_analytics:
+#  - 'UA-111111111-1'
+#  - 'auto'
+
+# Extensions
+markdown_extensions:
+  - admonition
+  - codehilite:
+      guess_lang: false
+  - footnotes
+  - meta
+  - def_list
+  - toc:
+      permalink: true
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.inlinehilite
+  - pymdownx.magiclink
+  - pymdownx.smartsymbols
+  - pymdownx.snippets
+  - pymdownx.highlight
+  - pymdownx.superfences
+
+# Dev server binding
+#dev_addr: 127.0.0.1:3001
+
+nav:
+  - Home: index.md
+  - Api: "https://anti-social.github.io/elasticmagic-kt/api/latest"

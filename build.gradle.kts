@@ -3,12 +3,12 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 plugins {
     kotlin("multiplatform") apply false
     id("org.jetbrains.dokka") version "1.5.0"
-
+    id("ru.vyarus.mkdocs") version "2.1.1"
 }
 
 // Collect all source and class directories for jacoco
 // TODO: Is there a better way to do that?
-val ignoreCoverageForProjects = setOf("integ-tests")
+val ignoreCoverageForProjects = setOf("integ-tests", "samples")
 val allKotlinSourceDirs = allprojects
     .filter { p -> p.name !in ignoreCoverageForProjects }
     .flatMap { p ->
@@ -24,9 +24,11 @@ val allKotlinClassDirs = allprojects
     }
 
 allprojects {
-    apply {
-        plugin("org.jetbrains.kotlin.multiplatform")
-        plugin("jacoco")
+    if (name != "samples") {
+        apply {
+            plugin("org.jetbrains.kotlin.multiplatform")
+            plugin("jacoco")
+        }
     }
 
     group = "dev.evo.elasticmagic"
@@ -52,7 +54,7 @@ allprojects {
             }
         }
 
-        tasks.named("jvmTest") {
+        tasks.findByName("jvmTest")?.run {
             outputs.upToDateWhen { false }
 
             finalizedBy("jacocoJVMTestReport")
@@ -71,4 +73,21 @@ configure<KotlinMultiplatformExtension> {
             }
         }
     }
+}
+
+tasks.dokkaHtml {
+    outputDirectory.set(buildDir.resolve("mkdocs/api/latest"))
+
+    dokkaSourceSets {
+        configureEach {
+            includes.from("docs/api/packages.md")
+            samples.from("samples/src/main/kotlin")
+        }
+    }
+}
+
+mkdocs {
+    sourcesDir = "docs"
+
+    publish.docPath = ""
 }

@@ -29,6 +29,9 @@ jobs:
         restore-keys: ${{ runner.os }}-gradle
 
     - name: Build docs
+      run: ./gradlew mkdocsBuild --info
+
+    - name: Build API docs
       run: ./gradlew dokkaHtml --info
 
     - name: Publish docs
