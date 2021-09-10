@@ -309,16 +309,15 @@
                 
                 <h1 id="welcome-to-elasticmagic">Welcome to Elasticmagic<a class="headerlink" href="#welcome-to-elasticmagic" title="Permanent link">&para;</a></h1>
 <h2 id="getting-started">Getting started<a class="headerlink" href="#getting-started" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><span class="k">package</span> <span class="nn">dev.evo.elasticmagic.samples</span>
+<p>First you need to describe a document:</p>
+<div class="highlight"><pre><span></span><code><span class="k">package</span> <span class="nn">samples.started</span>
 
 <span class="k">import</span> <span class="nn">dev.evo.elasticmagic.Document</span>
 
 <span class="kd">object</span> <span class="nc">UserDoc</span> <span class="p">:</span> <span class="n">Document</span><span class="p">()</span> <span class="p">{</span>
     <span class="kd">val</span> <span class="nv">id</span> <span class="k">by</span> <span class="n">int</span><span class="p">()</span>
-<span class="p">}</span>
-
-<span class="kd">fun</span> <span class="nf">gettingStarted</span><span class="p">()</span> <span class="p">{</span>
-    <span class="n">println</span><span class="p">(</span><span class="s">&quot;Getting started&quot;</span><span class="p">)</span>
+    <span class="kd">val</span> <span class="nv">name</span> <span class="k">by</span> <span class="n">keyword</span><span class="p">()</span>
+    <span class="kd">val</span> <span class="nv">about</span> <span class="k">by</span> <span class="n">text</span><span class="p">()</span>
 <span class="p">}</span>
 </code></pre></div>
                 
