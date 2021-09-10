@@ -2,6 +2,8 @@
 
 ## Getting started
 
+First you need to describe a document:
+
 ```kotlin
---8<-- "../samples/src/main/kotlin/dev/evo/elasticmagic/samples/GettingStarted.kt"
+--8<-- "../samples/src/main/kotlin/samples/started/UserDoc.kt"
 ```

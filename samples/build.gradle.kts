@@ -8,5 +8,5 @@ dependencies {
 }
 
 application {
-    mainClass.set("dev.evo.elasticmagic.samples.GettingStartedMainKt")
+    mainClass.set("samples.started.MainKt")
 }
