@@ -38,6 +38,6 @@ jobs:
       uses: peaceiris/actions-gh-pages@v3
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./build/dokka/html
+        publish_dir: ./build/mkdocs
         # keep_files: true
         full_commit_message: Publish documentation
