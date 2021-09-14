@@ -5,19 +5,202 @@ import io.kotest.matchers.maps.shouldContainExactly
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.types.shouldBeInstanceOf
 
 import kotlin.test.Test
 
 class SourceTests {
     object OrderDoc : Document() {
+        class UserOpinionDoc : SubDocument() {
+            val rating by float("rank")
+        }
+
         class UserDoc : SubDocument() {
             val id by int()
+            val opinion by obj(::UserOpinionDoc)
         }
 
         val id by long()
         val status by int()
         val total by float()
         val user by obj(::UserDoc)
+    }
+
+    @Test
+    fun dynDocSource() {
+        // TODO: Split into multiple test cases
+        val order = DynDocSource()
+        order.getSource() shouldContainExactly emptyMap()
+
+        order["id"] = 1L
+        order.getSource() shouldContainExactly mapOf("id" to 1L)
+        order["id"] shouldBe 1L
+
+        order[OrderDoc.id] = 2L
+        order[OrderDoc.status] = 0
+        order.getSource() shouldContainExactly mapOf<String, Any>(
+            "id" to 2L,
+            "status" to 0,
+        )
+
+        order[OrderDoc.user.id] = 111
+        order.getSource() shouldContainExactly mapOf(
+            "id" to 2L,
+            "status" to 0,
+            "user" to mapOf(
+                "id" to 111
+            )
+        )
+        val user = order[OrderDoc.user]
+        val userId = user?.get(OrderDoc.user.id)
+        userId shouldBe 111
+
+        order.setSource(mapOf(
+            "id" to 3L,
+            "status" to 0,
+            "total" to 9.99,
+            "user" to mapOf(
+                "id" to 123,
+                "opinion" to mapOf(
+                    "rank" to 50
+                )
+            )
+        ))
+        order[OrderDoc.id] shouldBe 3L
+        order["id"] shouldBe 3L
+        order[OrderDoc.status] shouldBe 0
+        order["status"] shouldBe 0
+        order[OrderDoc.total] shouldBe 9.99F
+        order["total"] shouldBe 9.99
+        order[OrderDoc.user.id] shouldBe 123
+        order["user.id"] shouldBe 123
+        order[OrderDoc.user].let { user ->
+            user.shouldNotBeNull()
+            user[OrderDoc.user.id] shouldBe 123
+            user["id"] shouldBe 123
+            user[OrderDoc.user.opinion].let { opinion ->
+                opinion.shouldNotBeNull()
+                opinion[OrderDoc.user.opinion.rating] shouldBe 50.0F
+                opinion["rank"] shouldBe 50
+            }
+        }
+        order[OrderDoc.user.opinion.rating] shouldBe 50.0F
+        order["user.opinion.rank"] shouldBe 50
+        order.getSource() shouldContainExactly mapOf(
+            "id" to 3L,
+            "status" to 0,
+            "total" to 9.99,
+            "user" to mapOf(
+                "id" to 123,
+                "opinion" to mapOf(
+                    "rank" to 50
+                )
+            )
+        )
+
+        order.setSource(mapOf("status" to listOf(0, 1)))
+        order[OrderDoc.status.list()] shouldBe listOf(0, 1)
+        order.getSource() shouldBe mapOf("status" to listOf(0, 1))
+
+        order.setSource(mapOf("status" to listOf(null, 0, 1)))
+        order[OrderDoc.status.list()] shouldBe listOf(null, 0, 1)
+        order.getSource() shouldBe mapOf("status" to listOf(null, 0, 1))
+
+        order.setSource(mapOf("status" to 0))
+        order[OrderDoc.status.list()] shouldBe listOf(0)
+        order.getSource() shouldBe mapOf("status" to 0)
+
+        order.setSource(mapOf("user" to listOf(mapOf("id" to 111), mapOf("id" to 222))))
+        order[OrderDoc.user.list()].let { users ->
+            users.shouldNotBeNull()
+            users[0].shouldNotBeNull()[OrderDoc.user.id] shouldBe 111
+            users[1].shouldNotBeNull()[OrderDoc.user.id] shouldBe 222
+        }
+        order.getSource() shouldBe mapOf("user" to listOf(mapOf("id" to 111), mapOf("id" to 222)))
+
+        DynDocSource {
+            val user = DynDocSource()
+            it[OrderDoc.user] = user
+            it.getSource() shouldContainExactly mapOf("user" to emptyMap<String, Any>())
+
+            user[OrderDoc.user.id] = 321
+            it.getSource() shouldContainExactly mapOf("user" to mapOf("id" to 321))
+
+            shouldThrow<IllegalArgumentException> {
+                it[OrderDoc.user.opinion] = user
+                Unit
+            }
+
+            it[OrderDoc.user.opinion].shouldBeNull()
+        }
+
+        DynDocSource {
+            it[OrderDoc.id] = 1L
+            it[OrderDoc.user] = DynDocSource {
+                it[OrderDoc.user.id] = 111
+                it[OrderDoc.user.opinion] = DynDocSource {
+                    it[OrderDoc.user.opinion.rating] = 99F
+                }
+            }
+
+            it["id"] shouldBe 1L
+            it["user.id"] shouldBe 111
+            it["user"].let { user ->
+                user.shouldBeInstanceOf<DynDocSource>()["id"] shouldBe 111
+            }
+
+            it.getSource() shouldContainExactly mapOf(
+                "id" to 1L,
+                "user" to mapOf(
+                    "id" to 111,
+                    "opinion" to mapOf(
+                        "rank" to 99F
+                    )
+                )
+            )
+        }
+
+        DynDocSource {
+            it[OrderDoc.id] = 2L
+
+            // here opinion and user doc sources have not prefix yet
+            val newOpinion = DynDocSource {
+                it[OrderDoc.user.opinion.rating] = 89.9F
+            }
+            newOpinion.getSource() shouldContainExactly mapOf(
+                "user" to mapOf(
+                    "opinion" to mapOf("rank" to 89.9F)
+                )
+            )
+            val newUser = DynDocSource {
+                it[OrderDoc.user.id] = 222
+            }
+            newUser.getSource() shouldContainExactly mapOf("user" to mapOf("id" to 222))
+
+            // opinion should be stripped
+            newUser[OrderDoc.user.opinion] = newOpinion
+            newOpinion.getSource() shouldContainExactly mapOf("rank" to 89.9F)
+            newUser.getSource() shouldContainExactly mapOf(
+                "user" to mapOf(
+                    "id" to 222,
+                    "opinion" to mapOf("rank" to 89.9F)
+                )
+            )
+
+            // and user also should be stripped
+            it[OrderDoc.user] = newUser
+            newUser.getSource() shouldContainExactly mapOf(
+                "id" to 222,
+                "opinion" to mapOf("rank" to 89.9F)
+            )
+            it.getSource() shouldContainExactly mapOf(
+                "id" to 2L,
+                "user" to mapOf(
+                    "id" to 222,
+                    "opinion" to mapOf("rank" to 89.9F)
+                )
+            )
+        }
     }
 
     @Test
@@ -31,8 +214,8 @@ class SourceTests {
                 )
             }
 
-            override fun setSource(source: RawSource) {
-                id = source["id"] as Int
+            override fun setSource(rawSource: RawSource) {
+                id = rawSource["id"]?.let(OrderDoc.user.id.type::deserialize)
             }
         }
 
@@ -51,14 +234,14 @@ class SourceTests {
                 )
             }
 
-            override fun setSource(source: RawSource) {
-                id = source["id"]
+            override fun setSource(rawSource: RawSource) {
+                id = rawSource["id"]
                     ?.let(OrderDoc.id.type::deserialize)
-                statuses = source["status"]
+                statuses = rawSource["status"]
                     ?.let(RequiredListType(OrderDoc.status.type)::deserialize)
-                total = source["total"]
+                total = rawSource["total"]
                     ?.let(OrderDoc.total.type::deserialize)
-                user = source["user"]
+                user = rawSource["user"]
                     ?.let(SourceType(OrderDoc.user.getFieldType(), ::User)::deserialize)
             }
         }
@@ -83,12 +266,12 @@ class SourceTests {
     @Test
     fun sourceInheritance() {
         open class IdOrderDocSource : DocSource() {
-            var id by SourceTests.OrderDoc.id.required()
+            var id by OrderDoc.id.required()
         }
 
         class FullOrderDocSource : IdOrderDocSource() {
-            var status by SourceTests.OrderDoc.status
-            var total by SourceTests.OrderDoc.total
+            var status by OrderDoc.status
+            var total by OrderDoc.total
         }
 
         val minOrder = IdOrderDocSource()
@@ -127,7 +310,7 @@ class SourceTests {
     @Test
     fun optionalValue() {
         class OrderDocSource : DocSource() {
-            var status by SourceTests.OrderDoc.status
+            var status by OrderDoc.status
         }
 
         val order = OrderDocSource()
@@ -154,7 +337,7 @@ class SourceTests {
     @Test
     fun requiredValue() {
         class OrderDocSource : DocSource() {
-            var status by SourceTests.OrderDoc.status.required()
+            var status by OrderDoc.status.required()
         }
 
         shouldThrow<IllegalArgumentException> {
@@ -182,7 +365,7 @@ class SourceTests {
     @Test
     fun optionalListOfOptionalValues() {
         class OrderDocSource : DocSource() {
-            var status by SourceTests.OrderDoc.status.list()
+            var status by OrderDoc.status.list()
         }
 
         val order = OrderDocSource()

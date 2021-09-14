@@ -54,9 +54,9 @@ abstract class SerializableTransport<OBJ>(
             compiled.parameters,
             contentType = serde.contentType,
         ) {
-            println("${compiled.method} ${compiled.path} ${compiled.parameters}")
+            // println("${compiled.method} ${compiled.path} ${compiled.parameters}")
             if (compiled.body != null) {
-                append(serde.serializer.objToString(compiled.body).also(::println))
+                append(serde.serializer.objToString(compiled.body))
             }
         }
         val result = serde.deserializer.objFromString(
@@ -250,7 +250,7 @@ class ElasticsearchIndex<OBJ>(
             compiled.parameters,
             contentType = "application/x-ndjson",
         ) {
-            println("${compiled.method} ${compiled.path} ${compiled.parameters}")
+            // println("${compiled.method} ${compiled.path} ${compiled.parameters}")
             if (compiled.body != null) {
                 for ((header, source) in compiled.body) {
                     append(serde.serializer.objToString(header))
@@ -261,7 +261,6 @@ class ElasticsearchIndex<OBJ>(
                     }
                 }
             }
-            println(this.toByteArray().decodeToString())
         }
         val result = serde.deserializer.objFromString(response)
         return compiled.processResult(result)

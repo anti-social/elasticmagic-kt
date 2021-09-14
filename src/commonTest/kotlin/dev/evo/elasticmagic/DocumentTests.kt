@@ -167,7 +167,7 @@ class DocumentTests {
         }
 
         val userDoc = UserDoc()
-        userDoc.company.getFieldType().shouldBeInstanceOf<ObjectType<*>>()
+        userDoc.company.getFieldType().shouldBeInstanceOf<ObjectType<*, *>>()
         userDoc.company.getFieldName() shouldBe "company"
         userDoc.company.getQualifiedFieldName() shouldBe "company"
         userDoc.company.name.getFieldName() shouldBe "name"

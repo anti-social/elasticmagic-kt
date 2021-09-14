@@ -24,15 +24,17 @@ val allKotlinClassDirs = allprojects
     }
 
 allprojects {
-    if (name != "samples") {
-        apply {
-            plugin("org.jetbrains.kotlin.multiplatform")
-            plugin("jacoco")
-        }
+    group = "dev.evo.elasticmagic"
+    version = "0.0.1"
+
+    if (name == "samples") {
+        return@allprojects
     }
 
-    group = "dev.evo.elasticmagic"
-    version = "0.1-SNAPSHOT"
+    apply {
+        plugin("org.jetbrains.kotlin.multiplatform")
+        plugin("jacoco")
+    }
 
     repositories {
         mavenCentral()

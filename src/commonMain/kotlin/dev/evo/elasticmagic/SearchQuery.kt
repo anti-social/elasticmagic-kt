@@ -241,8 +241,8 @@ open class SearchQuery<S: BaseDocSource>(
         operator fun invoke(
             query: QueryExpression? = null,
             params: Params = Params(),
-        ): SearchQuery<StdDocSource> {
-            return SearchQuery(::StdDocSource, query = query, params = params)
+        ): SearchQuery<DynDocSource> {
+            return SearchQuery(::DynDocSource, query = query, params = params)
         }
     }
 

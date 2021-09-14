@@ -11,7 +11,7 @@ fun emptySource(): Map<Nothing, Nothing> = emptyMap()
 abstract class BaseDocSource {
     abstract fun getSource(): Map<String, Any?>
 
-    abstract fun setSource(source: RawSource)
+    abstract fun setSource(rawSource: RawSource)
 
     fun withActionMeta(
         id: String,
@@ -125,9 +125,9 @@ open class DocSource : BaseDocSource() {
         return source
     }
 
-    override fun setSource(source: RawSource) {
+    override fun setSource(rawSource: RawSource) {
         clearSource()
-        for ((fieldName, fieldValue) in source) {
+        for ((fieldName, fieldValue) in rawSource) {
             setField(fieldName as String, fieldValue)
         }
         for (fieldValue in fieldValues) {
@@ -140,17 +140,6 @@ open class DocSource : BaseDocSource() {
     fun clearSource() {
         fieldValues.map(FieldValue<*>::clear)
     }
-
-    // override fun serialize(ctx: Serializer.ObjectCtx, compiler: DocSourceCompiler) {
-    //     for (fieldValue in fieldValues) {
-    //         if (fieldValue.isRequired && !fieldValue.isInitialized) {
-    //             throw IllegalStateException("Field ${fieldValue.name} is required")
-    //         }
-    //         if (fieldValue.isInitialized) {
-    //             ctx.field(fieldValue.name, fieldValue.serialize())
-    //         }
-    //     }
-    // }
 
     fun getField(name: String): Any? {
         return fieldProperties[name]?.fieldValue?.value
@@ -378,33 +367,235 @@ open class DocSource : BaseDocSource() {
     }
 }
 
-class StdDocSource : BaseDocSource() {
-    private var rawSource =  mutableMapOf<String, Any?>()
+class DynDocSource private constructor(
+    rawSource: RawSource = emptyMap<Any?, Any?>(),
+    private var prefix: List<String> = emptyList(),
+) : BaseDocSource() {
+    private var source: MutableMap<String, Any?> = mutableMapOf()
 
-    override fun getSource(): Map<String, Any?> {
-        return rawSource.toMap()
+    init {
+        setSource(rawSource)
     }
 
-    override fun setSource(source: RawSource) {
+    constructor() : this(emptyMap<Any?, Any?>())
+
+    constructor(rawSource: RawSource) : this(rawSource, prefix = emptyList())
+
+    constructor(setup: (DynDocSource) -> Unit) : this() {
+        setup(this)
+    }
+
+    private object DynSourceSerde {
+        fun serialize(value: Any?): Any? {
+            return when (value) {
+                is DynDocSource -> value.getSource()
+                is List<*> -> value.map(::serialize)
+                null -> null
+                else -> value
+            }
+        }
+
+        fun deserialize(fieldName: String, value: Any?, prefix: List<String>): Any? {
+            return when (value) {
+                is Map<*, *> -> DynDocSource(value, prefix = prefix + listOf(fieldName))
+                is List<*> -> value.map { deserialize(fieldName, it, prefix) }
+                null -> null
+                else -> value
+            }
+        }
+    }
+
+    override fun getSource(): Map<String, Any?> {
+        val rawSource = mutableMapOf<String, Any?>()
+        for ((fieldName, sourceValue) in source) {
+            rawSource[fieldName] = DynSourceSerde.serialize(sourceValue)
+        }
+        return rawSource
+    }
+
+    override fun setSource(rawSource: RawSource) {
         clearSource()
-        for ((fieldName, fieldValue) in source) {
-            setField(fieldName as String, fieldValue)
+        for ((fieldName, fieldValue) in rawSource) {
+            source[fieldName as String] = DynSourceSerde.deserialize(fieldName, fieldValue, prefix)
         }
     }
 
     fun clearSource() {
-        rawSource.clear()
+        source.clear()
     }
 
-    fun setField(name: String, value: Any?) {
-        rawSource[name] = value
+    private fun <V> setFieldValue(path: List<String>, value: V?, serialize: (V) -> Any) {
+        var curSource = this.source
+        for ((ix, fieldName) in path.subList(0, path.size - 1).withIndex()) {
+            val subDocSource = when (val subDocSource = curSource[fieldName]) {
+                null -> DynDocSource(prefix = path.subList(0, ix + 1))
+                is DynDocSource -> subDocSource
+                is List<*> -> throw IllegalArgumentException(
+                    "Cannot traverse through a list value: ${currentFieldName(path, ix)}"
+                )
+                else -> throw IllegalArgumentException(
+                    "Expected sub document for field: ${currentFieldName(path, ix)}"
+                )
+            }
+            curSource[fieldName] = subDocSource
+            curSource = subDocSource.source
+        }
+
+        val serializedValue = if (value != null) serialize(value) else null
+        if (serializedValue is DynDocSource) {
+            serializedValue.stripPrefix(path)
+        }
+        curSource[path.last()] = serializedValue
     }
 
-    fun getField(name: String): Any? {
-        return rawSource[name]
+    private fun <V> getFieldValue(path: List<String>, deserialize: (Any) -> V): V? {
+        var curSource: MutableMap<*, *> = source
+        for ((ix, fieldName) in path.subList(0, path.size - 1).withIndex()) {
+            curSource = when (val subSource = curSource[fieldName]) {
+                null -> return null
+                is DynDocSource -> subSource.source
+                is List<*> -> throw IllegalArgumentException(
+                    "Cannot traverse through a list value: ${currentFieldName(path, ix)}"
+                )
+                else -> throw IllegalArgumentException(
+                    "Expected sub document for field: ${currentFieldName(path, ix)}"
+                )
+            }
+        }
+        return deserialize(curSource[path.last()] ?: return null)
+    }
+
+    private fun currentFieldName(path: List<String>, curIx: Int? = null): String {
+        val toIndex = if (curIx != null) curIx + 1 else path.size
+        return path.subList(0, toIndex).joinToString(".")
+    }
+
+    private fun checkPathStartsWithPrefix(path: List<String>): List<String> {
+        require(prefix.size <= path.size) {
+            failPrefixCheck(path)
+        }
+        for ((name, expectedName) in path.zip(prefix)) {
+            if (name != expectedName) {
+                failPrefixCheck(path)
+            }
+        }
+        return path.subList(prefix.size, path.size)
+    }
+
+    private fun failPrefixCheck(path: List<String>): Nothing {
+        throw IllegalArgumentException(
+            "Field name ${path.joinToString(".")} does not start with " +
+                    "sub document prefix: ${prefix.joinToString(".")}"
+        )
+    }
+
+    private fun stripPrefix(prefix: List<String>) {
+        for ((ix, fieldName) in prefix.withIndex()) {
+            when (val fieldValue = source[fieldName]) {
+                null -> {
+                    if (source.isNotEmpty()) {
+                        throw IllegalArgumentException(
+                            "Cannot bind sub document to prefix ${currentFieldName(prefix)}:" +
+                                    " another fields are present"
+                        )
+                    }
+                }
+                is DynDocSource -> {
+                    if (source.size > 1) {
+                        throw IllegalArgumentException(
+                            "Cannot bind sub document to prefix ${currentFieldName(prefix)}:" +
+                                    " another fields are present"
+                        )
+                    }
+                    source = fieldValue.source
+                }
+                else -> throw IllegalArgumentException(
+                    "Expected sub document for field: ${currentFieldName(prefix, ix)}"
+                )
+            }
+        }
+        this.prefix = prefix
+    }
+
+    operator fun get(name: String): Any? {
+        return getFieldValue(name.split('.'), AnyFieldType::deserialize)
+    }
+
+    operator fun <V> get(field: Field<*, V>): V? {
+        val fieldType = field.getFieldType()
+        val path = checkPathStartsWithPrefix(
+            field.getQualifiedFieldName().split('.')
+        )
+        return getFieldValue(path, fieldType::deserialize)
+    }
+
+    operator fun <V: SubDocument> get(subDoc: V): DynDocSource? {
+        val path = checkPathStartsWithPrefix(
+            subDoc.getQualifiedFieldName().split('.')
+        )
+        return getFieldValue(path, AnyFieldType::deserialize) as DynDocSource?
+    }
+
+    operator fun set(name: String, value: Any?) {
+        return setFieldValue(name.split('.'), value, AnyFieldType::serialize)
+    }
+
+    operator fun <V> set(field: Field<*, V>, value: V?) {
+        val fieldType = field.getFieldType()
+        val path = checkPathStartsWithPrefix(
+            field.getQualifiedFieldName().split('.')
+        )
+        setFieldValue(path, value, fieldType::serialize)
+    }
+
+    operator fun <V: SubDocument> set(subDoc: V, value: DynDocSource?) {
+        val path = checkPathStartsWithPrefix(
+            subDoc.getQualifiedFieldName().split('.')
+        )
+        setFieldValue(path, value, AnyFieldType::serialize)
     }
 
     override fun toString(): String {
-        return "StdSource($rawSource)"
+        return "${this::class.simpleName}(prefix = $prefix, source = $source)"
+    }
+}
+
+fun <V> Field<*, V>.list(): Field<*, List<V?>> {
+    return object : SimpleField<List<V?>>(getFieldName(), OptionalListType(getFieldType()), getMappingParams()) {
+        override fun getQualifiedFieldName(): String {
+            return this@list.getQualifiedFieldName()
+        }
+    }
+}
+
+fun SubDocument.list(): Field<*, List<DynDocSource?>> {
+    val listType = OptionalListType(DynDocSourceFieldType)
+    return object : SimpleField<List<DynDocSource?>>(getFieldName(), listType, emptyMap()) {
+        override fun getQualifiedFieldName(): String {
+            return this@list.getQualifiedFieldName()
+        }
+    }
+}
+
+internal object AnyFieldType : SimpleFieldType<Any>() {
+    override val name: String
+        get() = throw IllegalStateException("Should not be used in mappings")
+
+    override fun deserialize(v: Any, valueFactory: (() -> Any)?): Any {
+        return v
+    }
+}
+
+internal object DynDocSourceFieldType : SimpleFieldType<DynDocSource>() {
+    override val name: String
+        get() = throw IllegalStateException("Should not be used in mappings")
+
+    override fun deserialize(v: Any, valueFactory: (() -> DynDocSource)?): DynDocSource {
+        return when (v) {
+            is DynDocSource -> v
+            else -> throw IllegalArgumentException(
+                "DynDocSource object expected but was ${v::class.simpleName}"
+            )
+        }
     }
 }

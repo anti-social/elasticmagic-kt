@@ -447,7 +447,7 @@ abstract class SubDocument : BaseDocument(), FieldOperations {
 
     class SubDocumentProperty<T: SubDocument>(
         private val name: String?,
-        private val type: ObjectType<T>,
+        private val type: ObjectType<T, BaseDocSource>,
         private val params: Params,
         private val subDocumentFactory: () -> T,
     ) {
@@ -480,7 +480,7 @@ abstract class SubDocument : BaseDocument(), FieldOperations {
     internal class FieldWrapper(
         name: String,
         val subDocument: SubDocument,
-        type: ObjectType<*>,
+        type: ObjectType<*, BaseDocSource>,
         params: Params,
     ) : Field<SubDocument, BaseDocSource>(name, type, params) {
         init {
@@ -661,7 +661,7 @@ private fun mergeFieldSets(fieldSets: List<FieldSet>): List<Field<*, *>> {
                 mergedFields[mergedFieldIx] = SubDocument.FieldWrapper(
                     expectedField.getFieldName(),
                     mergedSubDocument,
-                    expectedField.getFieldType() as ObjectType<*>,
+                    expectedField.getFieldType() as ObjectType<*, BaseDocSource>,
                     expectedField.getMappingParams()
                 )
 
