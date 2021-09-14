@@ -234,6 +234,26 @@
     Getting started
   </a>
   
+    <nav class="md-nav" aria-label="Getting started">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#setup" class="md-nav__link">
+    Setup
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#using" class="md-nav__link">
+    Using
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
     </ul>
@@ -288,6 +308,26 @@
     Getting started
   </a>
   
+    <nav class="md-nav" aria-label="Getting started">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#setup" class="md-nav__link">
+    Setup
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#using" class="md-nav__link">
+    Using
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
     </ul>
@@ -308,8 +348,39 @@
                 
                 
                 <h1 id="welcome-to-elasticmagic">Welcome to Elasticmagic<a class="headerlink" href="#welcome-to-elasticmagic" title="Permanent link">&para;</a></h1>
+<p>Elasticmagic implements advanced type awareness DSL for Kotlin to construct Elasticsearch queries.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The library is in very alpha status. API may change significantly at any time.
+Use it on your own risk</p>
+</div>
 <h2 id="getting-started">Getting started<a class="headerlink" href="#getting-started" title="Permanent link">&para;</a></h2>
-<p>First you need to describe a document:</p>
+<h3 id="setup">Setup<a class="headerlink" href="#setup" title="Permanent link">&para;</a></h3>
+<p>Add following dependencies in your <code>build.gradle.kts</code> script:</p>
+<div class="admonition todo">
+<p class="admonition-title">Todo</p>
+<p>At the moment artifacts are not yet published on maven central. Stay tuned   </p>
+</div>
+<div class="highlight"><pre><span></span><code><span class="n">repositories</span> <span class="p">{</span>
+    <span class="n">mavenCentral</span><span class="p">()</span>
+<span class="p">}</span>
+
+<span class="kd">val</span> <span class="nv">elasticmagicVersion</span> <span class="o">=</span> <span class="s">&quot;0.0.1&quot;</span>
+<span class="kd">val</span> <span class="nv">ktorVersion</span> <span class="o">=</span> <span class="s">&quot;1.5.2&quot;</span>
+
+<span class="n">dependencies</span> <span class="p">{</span>
+    <span class="c1">// Elasticmagic core api</span>
+    <span class="n">implementation</span><span class="p">(</span><span class="s">&quot;dev.evo.elasticmagic:elasticmagic:</span><span class="si">$</span><span class="n">elasticmagicVersion</span><span class="s">&quot;</span><span class="p">)</span>
+    <span class="c1">// Json serialization using kotlinx.serialization</span>
+    <span class="n">implementation</span><span class="p">(</span><span class="s">&quot;dev.evo.elasticmagic:elasticmagic-serde-serialization-json:</span><span class="si">$</span><span class="n">elasticmagicVersion</span><span class="s">&quot;</span><span class="p">)</span>
+    <span class="c1">// Transport that uses ktor http client</span>
+    <span class="n">implementation</span><span class="p">(</span><span class="s">&quot;dev.evo.elasticmagic:elasticmagic-transport-ktor:</span><span class="si">$</span><span class="n">elasticmagicVersion</span><span class="s">&quot;</span><span class="p">)</span>
+
+    <span class="n">implementation</span><span class="p">(</span><span class="s">&quot;io.ktor:ktor-client-cio:</span><span class="si">$</span><span class="n">ktorVersion</span><span class="s">&quot;</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="using">Using<a class="headerlink" href="#using" title="Permanent link">&para;</a></h3>
+<p>First you need to describe a document (represents a mapping in terms of Elasticsearch):</p>
 <div class="highlight"><pre><span></span><code><span class="k">package</span> <span class="nn">samples.started</span>
 
 <span class="k">import</span> <span class="nn">dev.evo.elasticmagic.Document</span>
@@ -317,9 +388,145 @@
 <span class="kd">object</span> <span class="nc">UserDoc</span> <span class="p">:</span> <span class="n">Document</span><span class="p">()</span> <span class="p">{</span>
     <span class="kd">val</span> <span class="nv">id</span> <span class="k">by</span> <span class="n">int</span><span class="p">()</span>
     <span class="kd">val</span> <span class="nv">name</span> <span class="k">by</span> <span class="n">keyword</span><span class="p">()</span>
+    <span class="kd">val</span> <span class="nv">groups</span> <span class="k">by</span> <span class="n">keyword</span><span class="p">()</span>
     <span class="kd">val</span> <span class="nv">about</span> <span class="k">by</span> <span class="n">text</span><span class="p">()</span>
 <span class="p">}</span>
 </code></pre></div>
+<p>Now create <code>ElasticsearchCluster</code> object. It is an entry point to execute search queries:</p>
+<div class="highlight"><pre><span></span><code><span class="k">package</span> <span class="nn">samples.started</span>
+
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.ElasticsearchCluster</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.serde.serialization.JsonSerde</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.transport.ElasticsearchKtorTransport</span>
+
+<span class="k">import</span> <span class="nn">io.ktor.client.engine.cio.CIO</span>
+
+<span class="kd">val</span> <span class="nv">esTransport</span> <span class="o">=</span> <span class="n">ElasticsearchKtorTransport</span><span class="p">(</span>
+    <span class="s">&quot;http://localhost:9200&quot;</span><span class="p">,</span>
+    <span class="n">deserializer</span> <span class="o">=</span> <span class="n">JsonSerde</span><span class="p">.</span><span class="na">deserializer</span><span class="p">,</span>
+    <span class="n">engine</span> <span class="o">=</span> <span class="n">CIO</span><span class="p">.</span><span class="na">create</span> <span class="p">{}</span>
+<span class="p">)</span>
+<span class="kd">val</span> <span class="nv">cluster</span> <span class="o">=</span> <span class="n">ElasticsearchCluster</span><span class="p">(</span><span class="n">esTransport</span><span class="p">,</span> <span class="n">JsonSerde</span><span class="p">)</span>
+<span class="kd">val</span> <span class="nv">userIndex</span> <span class="o">=</span> <span class="n">cluster</span><span class="o">[</span><span class="s">&quot;user&quot;</span><span class="o">]</span>
+</code></pre></div>
+<p>Create our index if it does not exist or update the mapping otherwise:</p>
+<div class="highlight"><pre><span></span><code><span class="k">package</span> <span class="nn">samples.started</span>
+
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.Params</span>
+
+<span class="kd">suspend</span> <span class="kd">fun</span> <span class="nf">ensureIndexExists</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">cluster</span><span class="p">.</span><span class="na">indexExists</span><span class="p">(</span><span class="n">userIndex</span><span class="p">.</span><span class="na">name</span><span class="p">))</span> <span class="p">{</span>
+        <span class="n">cluster</span><span class="p">.</span><span class="na">createIndex</span><span class="p">(</span>
+            <span class="n">userIndex</span><span class="p">.</span><span class="na">name</span><span class="p">,</span>
+            <span class="n">mapping</span> <span class="o">=</span> <span class="n">UserDoc</span><span class="p">,</span>
+            <span class="n">settings</span> <span class="o">=</span> <span class="n">Params</span><span class="p">(</span>
+                <span class="s">&quot;index.number_of_replicas&quot;</span> <span class="n">to</span> <span class="m">0</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="n">cluster</span><span class="p">.</span><span class="na">updateMapping</span><span class="p">(</span><span class="n">userIndex</span><span class="p">.</span><span class="na">name</span><span class="p">,</span> <span class="n">mapping</span> <span class="o">=</span> <span class="n">UserDoc</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Describe document sources and index them: </p>
+<div class="highlight"><pre><span></span><code><span class="k">package</span> <span class="nn">samples.started</span>
+
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.DynDocSource</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.IndexAction</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.IdentActionMeta</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.list</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.Refresh</span>
+
+<span class="kd">suspend</span> <span class="kd">fun</span> <span class="nf">indexDocs</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">val</span> <span class="nv">docs</span> <span class="o">=</span> <span class="n">listOf</span><span class="p">(</span>
+        <span class="n">DynDocSource</span> <span class="p">{</span>
+            <span class="c1">// Note that you can&#39;t write like following (it just won&#39;t compile):</span>
+            <span class="c1">// it[UserDoc.id] = &quot;0&quot;</span>
+            <span class="c1">// it[UserDoc.name] = 123</span>
+            <span class="c1">// it[UserDoc.groups.list()] = &quot;root&quot;</span>
+            <span class="nb">it</span><span class="o">[</span><span class="n">UserDoc</span><span class="p">.</span><span class="na">id</span><span class="o">]</span> <span class="o">=</span> <span class="m">0</span>
+            <span class="nb">it</span><span class="o">[</span><span class="n">UserDoc</span><span class="p">.</span><span class="na">name</span><span class="o">]</span> <span class="o">=</span> <span class="s">&quot;root&quot;</span>
+            <span class="nb">it</span><span class="o">[</span><span class="n">UserDoc</span><span class="p">.</span><span class="na">groups</span><span class="p">.</span><span class="na">list</span><span class="p">()</span><span class="o">]</span> <span class="o">=</span> <span class="n">listOf</span><span class="p">(</span><span class="s">&quot;root&quot;</span><span class="p">,</span> <span class="s">&quot;wheel&quot;</span><span class="p">)</span>
+            <span class="nb">it</span><span class="o">[</span><span class="n">UserDoc</span><span class="p">.</span><span class="na">about</span><span class="o">]</span> <span class="o">=</span> <span class="s">&quot;Super user&quot;</span>
+        <span class="p">},</span>
+        <span class="n">DynDocSource</span> <span class="p">{</span>
+            <span class="nb">it</span><span class="o">[</span><span class="n">UserDoc</span><span class="p">.</span><span class="na">id</span><span class="o">]</span> <span class="o">=</span> <span class="m">1</span>
+            <span class="nb">it</span><span class="o">[</span><span class="n">UserDoc</span><span class="p">.</span><span class="na">name</span><span class="o">]</span> <span class="o">=</span> <span class="s">&quot;daemon&quot;</span>
+            <span class="nb">it</span><span class="o">[</span><span class="n">UserDoc</span><span class="p">.</span><span class="na">groups</span><span class="p">.</span><span class="na">list</span><span class="p">()</span><span class="o">]</span> <span class="o">=</span> <span class="n">listOf</span><span class="p">(</span><span class="s">&quot;daemon&quot;</span><span class="p">)</span>
+            <span class="nb">it</span><span class="o">[</span><span class="n">UserDoc</span><span class="p">.</span><span class="na">about</span><span class="o">]</span> <span class="o">=</span> <span class="s">&quot;Daemon user&quot;</span>
+        <span class="p">},</span>
+        <span class="n">DynDocSource</span> <span class="p">{</span>
+            <span class="nb">it</span><span class="o">[</span><span class="n">UserDoc</span><span class="p">.</span><span class="na">id</span><span class="o">]</span> <span class="o">=</span> <span class="m">65535</span>
+            <span class="nb">it</span><span class="o">[</span><span class="n">UserDoc</span><span class="p">.</span><span class="na">name</span><span class="o">]</span> <span class="o">=</span> <span class="s">&quot;nobody&quot;</span>
+            <span class="nb">it</span><span class="o">[</span><span class="n">UserDoc</span><span class="p">.</span><span class="na">groups</span><span class="p">.</span><span class="na">list</span><span class="p">()</span><span class="o">]</span> <span class="o">=</span> <span class="n">listOf</span><span class="p">(</span><span class="s">&quot;nobody&quot;</span><span class="p">)</span>
+            <span class="nb">it</span><span class="o">[</span><span class="n">UserDoc</span><span class="p">.</span><span class="na">about</span><span class="o">]</span> <span class="o">=</span> <span class="s">&quot;Just nobody&quot;</span>
+        <span class="p">},</span>
+        <span class="n">DynDocSource</span> <span class="p">{</span>
+            <span class="nb">it</span><span class="o">[</span><span class="n">UserDoc</span><span class="p">.</span><span class="na">id</span><span class="o">]</span> <span class="o">=</span> <span class="m">65534</span>
+            <span class="nb">it</span><span class="o">[</span><span class="n">UserDoc</span><span class="p">.</span><span class="na">name</span><span class="o">]</span> <span class="o">=</span> <span class="s">&quot;noone&quot;</span>
+            <span class="nb">it</span><span class="o">[</span><span class="n">UserDoc</span><span class="p">.</span><span class="na">groups</span><span class="p">.</span><span class="na">list</span><span class="p">()</span><span class="o">]</span> <span class="o">=</span> <span class="n">listOf</span><span class="p">(</span><span class="s">&quot;nobody&quot;</span><span class="p">)</span>
+            <span class="nb">it</span><span class="o">[</span><span class="n">UserDoc</span><span class="p">.</span><span class="na">about</span><span class="o">]</span> <span class="o">=</span> <span class="s">&quot;Another nobody&quot;</span>
+        <span class="p">},</span>
+    <span class="p">)</span>
+    <span class="c1">// Create index actions, make bulk request and refresh the index</span>
+    <span class="n">userIndex</span><span class="p">.</span><span class="na">bulk</span><span class="p">(</span>
+        <span class="n">docs</span><span class="p">.</span><span class="na">map</span> <span class="p">{</span> <span class="n">doc</span> <span class="o">-&gt;</span>
+            <span class="n">IndexAction</span><span class="p">(</span>
+                <span class="n">meta</span> <span class="o">=</span> <span class="n">IdentActionMeta</span><span class="p">(</span><span class="n">id</span> <span class="o">=</span> <span class="n">doc</span><span class="o">[</span><span class="n">UserDoc</span><span class="p">.</span><span class="na">id</span><span class="o">]</span><span class="p">.</span><span class="na">toString</span><span class="p">()),</span>
+                <span class="n">source</span> <span class="o">=</span> <span class="n">doc</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">},</span>
+        <span class="n">refresh</span> <span class="o">=</span> <span class="n">Refresh</span><span class="p">.</span><span class="na">TRUE</span><span class="p">,</span>
+    <span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>And finally we can search our data:</p>
+<div class="highlight"><pre><span></span><code><span class="k">package</span> <span class="nn">samples.started</span>
+
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.DynDocSource</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.SearchQuery</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.SearchQueryResult</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.TermsAgg</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.TermsAggResult</span>
+
+<span class="kd">fun</span> <span class="nf">printUsers</span><span class="p">(</span><span class="n">result</span><span class="p">:</span> <span class="n">SearchQueryResult</span><span class="o">&lt;</span><span class="n">DynDocSource</span><span class="o">&gt;</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">println</span><span class="p">(</span><span class="s">&quot;Found: </span><span class="si">${</span><span class="n">result</span><span class="p">.</span><span class="na">totalHits</span><span class="si">}</span><span class="s"> users&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">hit</span> <span class="k">in</span> <span class="n">result</span><span class="p">.</span><span class="na">hits</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">val</span> <span class="nv">user</span> <span class="o">=</span> <span class="n">hit</span><span class="p">.</span><span class="na">source</span><span class="o">!!</span>
+        <span class="n">println</span><span class="p">(</span><span class="s">&quot;  </span><span class="si">${</span><span class="n">user</span><span class="o">[</span><span class="n">UserDoc</span><span class="p">.</span><span class="na">id</span><span class="o">]</span><span class="si">}</span><span class="s">: </span><span class="si">${</span><span class="n">user</span><span class="o">[</span><span class="n">UserDoc</span><span class="p">.</span><span class="na">name</span><span class="o">]</span><span class="si">}</span><span class="s">&quot;</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="n">println</span><span class="p">()</span>
+<span class="p">}</span>
+
+<span class="kd">fun</span> <span class="nf">printGroupsAgg</span><span class="p">(</span><span class="n">aggResult</span><span class="p">:</span> <span class="n">TermsAggResult</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">println</span><span class="p">(</span><span class="s">&quot;Groups aggregation&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">bucket</span> <span class="k">in</span> <span class="n">aggResult</span><span class="p">.</span><span class="na">buckets</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">println</span><span class="p">(</span><span class="s">&quot;  </span><span class="si">${</span><span class="n">bucket</span><span class="p">.</span><span class="na">key</span><span class="si">}</span><span class="s">: </span><span class="si">${</span><span class="n">bucket</span><span class="p">.</span><span class="na">docCount</span><span class="si">}</span><span class="s">&quot;</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">suspend</span> <span class="kd">fun</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">ensureIndexExists</span><span class="p">()</span>
+    <span class="n">indexDocs</span><span class="p">()</span>
+
+    <span class="c1">// Find all users</span>
+    <span class="kd">val</span> <span class="nv">sq</span> <span class="o">=</span> <span class="n">SearchQuery</span><span class="p">()</span>
+    <span class="n">printUsers</span><span class="p">(</span><span class="n">sq</span><span class="p">.</span><span class="na">execute</span><span class="p">(</span><span class="n">userIndex</span><span class="p">))</span>
+
+    <span class="c1">// Find nobody users</span>
+    <span class="n">sq</span><span class="p">.</span><span class="na">query</span><span class="p">(</span><span class="n">UserDoc</span><span class="p">.</span><span class="na">about</span><span class="p">.</span><span class="na">match</span><span class="p">(</span><span class="s">&quot;nobody&quot;</span><span class="p">))</span>
+    <span class="n">printUsers</span><span class="p">(</span><span class="n">sq</span><span class="p">.</span><span class="na">execute</span><span class="p">(</span><span class="n">userIndex</span><span class="p">))</span>
+
+    <span class="c1">// Build an aggregation that counts users inside a group</span>
+    <span class="n">printGroupsAgg</span><span class="p">(</span>
+        <span class="n">SearchQuery</span><span class="p">()</span>
+            <span class="p">.</span><span class="na">aggs</span><span class="p">(</span><span class="s">&quot;groups&quot;</span> <span class="n">to</span> <span class="n">TermsAgg</span><span class="p">(</span><span class="n">UserDoc</span><span class="p">.</span><span class="na">groups</span><span class="p">))</span>
+            <span class="p">.</span><span class="na">execute</span><span class="p">(</span><span class="n">userIndex</span><span class="p">)</span>
+            <span class="p">.</span><span class="na">agg</span><span class="o">&lt;</span><span class="n">TermsAggResult</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;groups&quot;</span><span class="p">)</span>
+    <span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>You can find fully working sample at <a href="https://github.com/anti-social/elasticmagic-kt/tree/master/samples/src/main/kotlin/samples/started">https://github.com/anti-social/elasticmagic-kt/tree/master/samples/src/main/kotlin/samples/started</a></p>
                 
               
               
