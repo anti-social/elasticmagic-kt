@@ -31,6 +31,13 @@ jobs:
         key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle', '**/*.gradle.kts', 'buildSrc') }}
         restore-keys: ${{ runner.os }}-gradle
 
+    - name: Cache Kotlin Native
+      uses: actions/cache@v2
+      with:
+        path: ~/.konan
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle', '**/*.gradle.kts', 'buildSrc') }}
+        restore-keys: ${{ runner.os }}-konan
+
     - name: Build docs
       run: ./gradlew mkdocsBuild --info
 
