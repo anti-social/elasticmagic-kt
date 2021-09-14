@@ -43,7 +43,7 @@ First you need to describe a document (represents a mapping in terms of Elastics
 --8<-- "../samples/src/main/kotlin/samples/started/UserDoc.kt"
 ```
 
-Now create `ElasticsearchCluster` object. It is an entry point to execute search queries:
+Now create `ElasticsearchCluster` object. It is an entry point for executing search queries:
 
 ```kotlin
 --8<-- "../samples/src/main/kotlin/samples/started/Cluster.kt"
@@ -67,4 +67,4 @@ And finally we can search our data:
 --8<-- "../samples/src/main/kotlin/samples/started/Main.kt"
 ```
 
-You can find fully working sample at https://github.com/anti-social/elasticmagic-kt/tree/master/samples/src/main/kotlin/samples/started
+You can find fully working example at [Getting Started](https://github.com/anti-social/elasticmagic-kt/tree/master/samples/src/main/kotlin/samples/started)
