@@ -91,6 +91,26 @@ class Term(
     }
 }
 
+class Terms(
+    val field: Named,
+    val terms: List<Any>,
+    val boost: Double? = null,
+) : QueryExpression {
+    override val name = "terms"
+
+    override fun visit(
+        ctx: Serializer.ObjectCtx,
+        compiler: SearchQueryCompiler
+    ) {
+        ctx.array(field.getQualifiedFieldName()) {
+            compiler.visit(this, terms)
+        }
+        if (boost != null) {
+            ctx.field("boost", boost)
+        }
+    }
+}
+
 class Exists(
     val field: Named,
 ) : QueryExpression {

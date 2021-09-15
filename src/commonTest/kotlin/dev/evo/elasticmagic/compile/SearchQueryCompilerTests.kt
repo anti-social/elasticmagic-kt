@@ -455,6 +455,20 @@ class SearchQueryCompilerTests {
     }
 
     @Test
+    fun testTerms() {
+        val query = SearchQuery(
+            AnyField("tags").contains(listOf(1, 9))
+        )
+        compile(query).body shouldContainExactly mapOf(
+            "query" to mapOf(
+                "terms" to mapOf(
+                    "tags" to listOf(1, 9)
+                )
+            )
+        )
+    }
+
+    @Test
     fun testIds() {
         val query = SearchQuery(
             Ids(listOf(

@@ -28,6 +28,10 @@ interface FieldOperations : Named {
         return Bool.mustNot(Term(this, term))
     }
 
+    fun contains(terms: List<Any>): QueryExpression {
+        return Terms(this, terms)
+    }
+
     fun match(text: String): QueryExpression = Match(this, text)
 
     fun range(
