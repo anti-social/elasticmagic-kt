@@ -40,6 +40,8 @@
     
     
     
+      <link rel="stylesheet" href="extra.css">
+    
     
       
     
@@ -245,8 +247,8 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#using" class="md-nav__link">
-    Using
+  <a href="#usage" class="md-nav__link">
+    Usage
   </a>
   
 </li>
@@ -260,6 +262,48 @@
   
 </nav>
       
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
+      
+      <label class="md-nav__link" for="__nav_2">
+        Guide
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Guide" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          Guide
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="document/" class="md-nav__link">
+        Document (aka mapping)
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
     </li>
   
 
@@ -319,8 +363,8 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#using" class="md-nav__link">
-    Using
+  <a href="#usage" class="md-nav__link">
+    Usage
   </a>
   
 </li>
@@ -379,7 +423,7 @@ Use it on your own risk</p>
     <span class="n">implementation</span><span class="p">(</span><span class="s">&quot;io.ktor:ktor-client-cio:</span><span class="si">$</span><span class="n">ktorVersion</span><span class="s">&quot;</span><span class="p">)</span>
 <span class="p">}</span>
 </code></pre></div>
-<h3 id="using">Using<a class="headerlink" href="#using" title="Permanent link">&para;</a></h3>
+<h3 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">&para;</a></h3>
 <p>First you need to describe a document (represents a mapping in terms of Elasticsearch):</p>
 <div class="highlight"><pre><span></span><code><span class="k">package</span> <span class="nn">samples.started</span>
 
@@ -541,6 +585,25 @@ Use it on your own risk</p>
       
         
 <footer class="md-footer">
+  
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+      
+        <a href="document/" class="md-footer__link md-footer__link--next" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              Document (aka mapping)
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
   
   <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">
