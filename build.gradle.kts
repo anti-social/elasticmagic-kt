@@ -93,3 +93,5 @@ mkdocs {
 
     publish.docPath = ""
 }
+
+tasks.getByName("mkdocsBuild").dependsOn(":samples:compileKotlin")

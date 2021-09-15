@@ -118,6 +118,10 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
         this.sorts += sorts
     }
 
+    fun sort(vararg fields: Named): T = self {
+        this.sorts += fields.map(::Sort)
+    }
+
     fun clearSort(): T = self {
         sorts.clear()
     }

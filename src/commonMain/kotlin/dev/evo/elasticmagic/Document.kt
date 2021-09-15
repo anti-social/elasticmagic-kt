@@ -337,7 +337,8 @@ abstract class SubFields<V> : FieldSet(), FieldOperations {
             val subFields = subFieldsFactory()
             if (subFields::_field.isInitialized) {
                 throw IllegalStateException(
-                    "Field [$fieldName] has already been initialized as [${subFields._field.getFieldName()}]"
+                    "[$fieldName] sub-fields has already been initialized as " +
+                            "[${subFields._field.getFieldName()}] sub-fields"
                 )
             }
 

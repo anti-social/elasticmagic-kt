@@ -24,3 +24,20 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach 
 application {
     mainClass.set("samples.started.MainKt")
 }
+
+tasks {
+    val startScripts by getting(CreateStartScripts::class)
+    val subFieldsMistakeStartScript by creating(CreateStartScripts::class) {
+        applicationName = "subfields-mistake"
+        mainClass.set("samples.document.subfields.mistake.MistakeKt")
+        classpath = startScripts.classpath
+        outputDir = startScripts.outputDir
+    }
+    startScripts.dependsOn(subFieldsMistakeStartScript)
+
+    register<JavaExec>("runSubFieldsMistake") {
+        mainClass.set(subFieldsMistakeStartScript.mainClass)
+        classpath = subFieldsMistakeStartScript.classpath!!
+    }
+}
+

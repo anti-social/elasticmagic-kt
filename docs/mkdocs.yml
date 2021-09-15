@@ -29,6 +29,9 @@ theme:
 #    primary: 'indigo'
 #    accent: 'indigo'
 
+extra_css:
+- extra.css
+
 #  social:
 #    - icon: fontawesome/brands/github
 #      link: https://github.com/you
@@ -66,4 +69,6 @@ markdown_extensions:
 
 nav:
   - Home: index.md
+  - Guide:
+    - Document (aka mapping): document.md
   - Api: "https://anti-social.github.io/elasticmagic-kt/api/latest"

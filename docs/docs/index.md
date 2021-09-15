@@ -35,7 +35,7 @@ dependencies {
 }
 ```
 
-### Using
+### Usage
 
 First you need to describe a document (represents a mapping in terms of Elasticsearch):
 

@@ -37,4 +37,7 @@ interface FieldOperations : Named {
     fun gte(other: Any?): QueryExpression = range(gte = other)
     fun lt(other: Any?): QueryExpression = range(lt = other)
     fun lte(other: Any?): QueryExpression = range(lte = other)
+
+    fun asc(): Sort = Sort(this, order = Sort.Order.ASC)
+    fun desc(): Sort = Sort(this, order = Sort.Order.DESC)
 }
