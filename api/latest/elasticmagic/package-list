@@ -661,12 +661,13 @@ $dokka.location:dev.evo.elasticmagic/FunctionScore.BoostMode.SUM/ordinal/#/Point
 $dokka.location:dev.evo.elasticmagic/FunctionScore.BoostMode///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-function-score/-boost-mode/index.html
 $dokka.location:dev.evo.elasticmagic/FunctionScore.BoostMode/toValue/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-function-score/-boost-mode/to-value.html
 $dokka.location:dev.evo.elasticmagic/FunctionScore.FieldValueFactor///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-function-score/-field-value-factor/index.html
-$dokka.location:dev.evo.elasticmagic/FunctionScore.FieldValueFactor/FieldValueFactor/#dev.evo.elasticmagic.Named#kotlin.Double?#kotlin.Double?#dev.evo.elasticmagic.QueryExpression?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-function-score/-field-value-factor/-field-value-factor.html
+$dokka.location:dev.evo.elasticmagic/FunctionScore.FieldValueFactor/FieldValueFactor/#dev.evo.elasticmagic.Named#kotlin.Double?#kotlin.Double?#kotlin.String?#dev.evo.elasticmagic.QueryExpression?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-function-score/-field-value-factor/-field-value-factor.html
 $dokka.location:dev.evo.elasticmagic/FunctionScore.FieldValueFactor/accept/#dev.evo.elasticmagic.serde.Serializer.ObjectCtx#dev.evo.elasticmagic.compile.SearchQueryCompiler/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-function-score/-field-value-factor/accept.html
 $dokka.location:dev.evo.elasticmagic/FunctionScore.FieldValueFactor/factor/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-function-score/-field-value-factor/factor.html
 $dokka.location:dev.evo.elasticmagic/FunctionScore.FieldValueFactor/field/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-function-score/-field-value-factor/field.html
 $dokka.location:dev.evo.elasticmagic/FunctionScore.FieldValueFactor/filter/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-function-score/-field-value-factor/filter.html
 $dokka.location:dev.evo.elasticmagic/FunctionScore.FieldValueFactor/missing/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-function-score/-field-value-factor/missing.html
+$dokka.location:dev.evo.elasticmagic/FunctionScore.FieldValueFactor/modifier/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-function-score/-field-value-factor/modifier.html
 $dokka.location:dev.evo.elasticmagic/FunctionScore.FieldValueFactor/reduce/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-function-score/-field-value-factor/reduce.html
 $dokka.location:dev.evo.elasticmagic/FunctionScore.Function///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-function-score/-function/index.html
 $dokka.location:dev.evo.elasticmagic/FunctionScore.Function/Function/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-function-score/-function/-function.html
@@ -705,7 +706,7 @@ $dokka.location:dev.evo.elasticmagic/FunctionScore.Weight/filter/#/PointingToDec
 $dokka.location:dev.evo.elasticmagic/FunctionScore.Weight/reduce/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-function-score/-weight/reduce.html
 $dokka.location:dev.evo.elasticmagic/FunctionScore.Weight/weight/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-function-score/-weight/weight.html
 $dokka.location:dev.evo.elasticmagic/FunctionScore///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-function-score/index.html
-$dokka.location:dev.evo.elasticmagic/FunctionScore/FunctionScore/#dev.evo.elasticmagic.QueryExpression?#kotlin.Double?#dev.evo.elasticmagic.FunctionScore.ScoreMode?#dev.evo.elasticmagic.FunctionScore.BoostMode?#kotlin.Double?#kotlin.collections.List[dev.evo.elasticmagic.FunctionScore.Function]/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-function-score/-function-score.html
+$dokka.location:dev.evo.elasticmagic/FunctionScore/FunctionScore/#dev.evo.elasticmagic.QueryExpression?#kotlin.collections.List[dev.evo.elasticmagic.FunctionScore.Function]#kotlin.Double?#dev.evo.elasticmagic.FunctionScore.ScoreMode?#dev.evo.elasticmagic.FunctionScore.BoostMode?#kotlin.Double?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-function-score/-function-score.html
 $dokka.location:dev.evo.elasticmagic/FunctionScore/boost/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-function-score/boost.html
 $dokka.location:dev.evo.elasticmagic/FunctionScore/boostMode/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-function-score/boost-mode.html
 $dokka.location:dev.evo.elasticmagic/FunctionScore/functions/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-function-score/functions.html
