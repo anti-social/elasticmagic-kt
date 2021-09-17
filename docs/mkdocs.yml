@@ -72,4 +72,5 @@ nav:
   - Guide:
     - Document (aka mapping): document.md
     - Document source: docsource.md
+    - Querying: querying.md
   - Api: "https://anti-social.github.io/elasticmagic-kt/api/latest"

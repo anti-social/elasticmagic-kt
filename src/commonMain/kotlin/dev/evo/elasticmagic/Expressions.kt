@@ -499,11 +499,11 @@ interface FunctionScoreExpression : QueryExpression {
 
 class FunctionScore(
     val query: QueryExpression? = null,
+    override val functions: List<Function>,
     val boost: Double? = null,
     val scoreMode: ScoreMode? = null,
     val boostMode: BoostMode? = null,
     val minScore: Double? = null,
-    override val functions: List<Function>,
 ) : FunctionScoreExpression {
     enum class ScoreMode : ToValue {
         MULTIPLY, SUM, AVG, FIRST, MAX, MIN;
@@ -552,7 +552,7 @@ class FunctionScore(
         val weight: Double,
         override val filter: QueryExpression?,
     ) : Function() {
-        override fun reduce(): Expression? {
+        override fun reduce(): Expression {
             return copy(
                 filter = reduceFilter()
             )
@@ -572,9 +572,10 @@ class FunctionScore(
         val field: Named,
         val factor: Double? = null,
         val missing: Double? = null,
+        val modifier: String? = null,
         override val filter: QueryExpression? = null,
     ) : Function() {
-        override fun reduce(): Expression? {
+        override fun reduce(): Expression {
             return copy(
                 filter = reduceFilter()
             )
@@ -587,12 +588,9 @@ class FunctionScore(
             super.accept(ctx, compiler) {
                 ctx.obj("field_value_factor") {
                     field("field", field.getQualifiedFieldName())
-                    if (factor != null) {
-                        field("factor", factor)
-                    }
-                    if (missing != null) {
-                        field("missing", missing)
-                    }
+                    fieldIfNotNull("factor", factor)
+                    fieldIfNotNull("missing", missing)
+                    fieldIfNotNull("modifier", modifier)
                 }
             }
         }
