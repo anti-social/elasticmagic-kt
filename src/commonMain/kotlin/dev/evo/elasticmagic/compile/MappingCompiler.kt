@@ -1,6 +1,13 @@
 package dev.evo.elasticmagic.compile
 
-import dev.evo.elasticmagic.*
+import dev.evo.elasticmagic.AnyField
+import dev.evo.elasticmagic.BaseDocument
+import dev.evo.elasticmagic.Document
+import dev.evo.elasticmagic.ElasticsearchVersion
+import dev.evo.elasticmagic.FieldSet
+import dev.evo.elasticmagic.MetaFields
+import dev.evo.elasticmagic.SubDocumentField
+import dev.evo.elasticmagic.SubFieldsField
 import dev.evo.elasticmagic.serde.Serializer
 import dev.evo.elasticmagic.serde.Serializer.ObjectCtx
 

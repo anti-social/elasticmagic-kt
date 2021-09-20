@@ -15,6 +15,7 @@ enum class SearchType : ToValue {
     }
 }
 
+@Suppress("UnnecessaryAbstractClass")
 abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
     protected val sourceFactory: (obj: Deserializer.ObjectCtx) -> S,
     protected var query: QueryExpression? = null,

@@ -45,9 +45,6 @@ allprojects {
     configure<io.gitlab.arturbosch.detekt.extensions.DetektExtension> {
         config = files("$rootDir/detekt.yml")
         source = files("$projectDir/src")
-        reports {
-            html.enabled = true
-        }
     }
 
     afterEvaluate {

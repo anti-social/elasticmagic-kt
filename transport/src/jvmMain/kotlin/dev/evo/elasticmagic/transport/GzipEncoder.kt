@@ -3,6 +3,7 @@ package dev.evo.elasticmagic.transport
 import java.io.ByteArrayOutputStream
 import java.util.zip.GZIPOutputStream
 
+@Suppress("MayBeConst")
 actual val isGzipEncoderImplemented: Boolean = true
 
 actual class GzipEncoder : RequestEncoder {

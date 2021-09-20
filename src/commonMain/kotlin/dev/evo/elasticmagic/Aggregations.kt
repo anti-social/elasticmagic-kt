@@ -3,7 +3,6 @@ package dev.evo.elasticmagic
 import dev.evo.elasticmagic.compile.SearchQueryCompiler
 import dev.evo.elasticmagic.serde.Deserializer
 import dev.evo.elasticmagic.serde.Serializer
-import dev.evo.elasticmagic.serde.toMap
 
 interface Aggregation : NamedExpression {
     fun processResult(obj: Deserializer.ObjectCtx): AggregationResult

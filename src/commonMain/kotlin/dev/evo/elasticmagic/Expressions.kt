@@ -311,7 +311,10 @@ class Script(
     }
 
     companion object {
+        @Suppress("FunctionNaming")
         fun Source(source: String): Spec.Source = Spec.Source(source)
+
+        @Suppress("FunctionNaming")
         fun Id(id: String): Spec.Id = Spec.Id(id)
     }
 

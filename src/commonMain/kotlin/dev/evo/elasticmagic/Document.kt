@@ -601,60 +601,29 @@ private fun mergeFieldSets(fieldSets: List<FieldSet>): List<AnyField> {
 
             // Merge sub fields
             // One document can have sub fields but another does not
-            val subFieldsField = field as? SubFieldsField
-            val expectedSubFieldsField = expectedField as? SubFieldsField
-            if (subFieldsField != null || expectedSubFieldsField != null) {
+            val firstSubFieldsField = field as? SubFieldsField
+            val secondSubFieldsField = expectedField as? SubFieldsField
+            if (firstSubFieldsField != null || secondSubFieldsField != null) {
                 checkFieldsIdentical(field, expectedField)
 
-                val subFields = subFieldsField?.subFields
-                val expectedSubFields = expectedSubFieldsField?.subFields
-
-                val templateField = when {
-                    subFields != null -> subFields.getBoundField()
-                    expectedSubFields != null -> expectedSubFields.getBoundField()
-                    else -> error("Unreachable")
-                }
-
-                // It is your responsibility to pass correct values when (de)-serializing
-                @Suppress("UNCHECKED_CAST")
-                val mergedSubFields = object : SubFields<Any?>(templateField as BoundField<Any?>) {
-                    init {
-                        mergeFieldSets(listOfNotNull(expectedSubFields, subFields))
-                            .forEach(::addField)
-                    }
-
-                }
-                mergedFields[mergedFieldIx] = SubFieldsField(
-                    templateField,
-                    mergedSubFields,
+                mergedFields[mergedFieldIx] = mergeSubFields(
+                    secondSubFieldsField, firstSubFieldsField
                 )
 
                 continue
             }
 
             // Merge sub documents
-            val subDocument = (field as? SubDocumentField)?.subDocument
-            if (subDocument != null) {
+            val subDocumentField = field as? SubDocumentField
+            if (subDocumentField != null) {
                 checkFieldsIdentical(field, expectedField)
 
-                val expectedSubDocument = (expectedField as? SubDocumentField)?.subDocument
+                val expectedSubDocument = expectedField as? SubDocumentField
                 requireNotNull(expectedSubDocument) {
                     "$fieldName are differ by sub document presence"
                 }
-                val mergedSubDocument = object : SubDocument(expectedSubDocument.getBoundField()) {
-                    init {
-                        mergeFieldSets(listOf(expectedSubDocument, subDocument))
-                            .forEach(::addField)
-                    }
 
-                    override fun getFieldName(): String = expectedField.getFieldName()
-                }
-                mergedFields[mergedFieldIx] = SubDocumentField(
-                    expectedField,
-                    mergedSubDocument,
-                    // expectedField.getFieldType() as ObjectType<BaseDocSource>,
-                    // expectedField.getMappingParams()
-                )
+                mergedFields[mergedFieldIx] = mergeSubDocuments(expectedField, subDocumentField)
 
                 continue
             }
@@ -664,6 +633,51 @@ private fun mergeFieldSets(fieldSets: List<FieldSet>): List<AnyField> {
     }
 
     return mergedFields
+}
+
+private fun mergeSubFields(first: SubFieldsField?, second: SubFieldsField?): SubFieldsField {
+    val firstSubFields = first?.subFields
+    val secondSubFields = second?.subFields
+
+    val templateField = when {
+        firstSubFields != null -> firstSubFields.getBoundField()
+        secondSubFields != null -> secondSubFields.getBoundField()
+        else -> error("Unreachable")
+    }
+
+    // It is your responsibility to pass correct values when (de)-serializing
+    @Suppress("UNCHECKED_CAST")
+    val mergedSubFields = object : SubFields<Any?>(templateField as BoundField<Any?>) {
+        init {
+            mergeFieldSets(listOfNotNull(secondSubFields, firstSubFields))
+                .forEach(::addField)
+        }
+
+    }
+
+    return SubFieldsField(
+        templateField,
+        mergedSubFields,
+    )
+}
+
+private fun mergeSubDocuments(first: SubDocumentField, second: SubDocumentField): SubDocumentField {
+    val firstSubDocument = first.subDocument
+    val secondSubDocument = second.subDocument
+
+    val mergedSubDocument = object : SubDocument(firstSubDocument.getBoundField()) {
+        init {
+            mergeFieldSets(listOf(secondSubDocument, firstSubDocument))
+                .forEach(::addField)
+        }
+
+        override fun getFieldName(): String = firstSubDocument.getFieldName()
+    }
+
+    return SubDocumentField(
+        first,
+        mergedSubDocument,
+    )
 }
 
 private fun checkMetaFields(

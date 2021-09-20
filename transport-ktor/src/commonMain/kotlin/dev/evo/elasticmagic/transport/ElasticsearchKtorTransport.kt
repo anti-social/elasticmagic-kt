@@ -32,6 +32,10 @@ class ElasticsearchKtorTransport(
         ContentEncoding()
     }
 
+    companion object {
+        private val HTTP_OK_CODES = 200..299
+    }
+
     // override suspend fun jsonRequest(
     //     method: Method,
     //     path: String,
@@ -107,7 +111,7 @@ class ElasticsearchKtorTransport(
         val statusCode = response.status.value
         val content = response.readText()
         return when (statusCode) {
-            in 200..299 -> content
+            in HTTP_OK_CODES -> content
             else -> {
                 val jsonError = try {
                     deserializer.objFromStringOrNull(content)

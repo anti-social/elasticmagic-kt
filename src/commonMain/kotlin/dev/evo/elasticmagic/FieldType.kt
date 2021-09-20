@@ -1,5 +1,8 @@
 package dev.evo.elasticmagic
 
+class ValueDeserializationException(value: Any, type: String) :
+    IllegalArgumentException("Cannot deserialize $value to $type")
+
 interface FieldType<V> {
     val name: String
 
@@ -22,7 +25,7 @@ object IntType : NumberType<Int>() {
         is Int -> v
         is Long -> v.toInt()
         is String -> v.toInt()
-        else -> throw IllegalArgumentException("Unexpected field value: $v")
+        else -> throw ValueDeserializationException(v, "Int")
     }
 }
 
@@ -33,7 +36,7 @@ object LongType : NumberType<Long>() {
         is Int -> v.toLong()
         is Long -> v
         is String -> v.toLong()
-        else -> throw IllegalArgumentException()
+        else -> throw ValueDeserializationException(v, "Long")
     }
 }
 
@@ -46,7 +49,7 @@ object FloatType : NumberType<Float>() {
         is Float -> v
         is Double -> v.toFloat()
         is String -> v.toFloat()
-        else -> throw IllegalArgumentException()
+        else -> throw ValueDeserializationException(v, "Float")
     }
 }
 
@@ -59,7 +62,7 @@ object DoubleType : NumberType<Double>() {
         is Float -> v.toDouble()
         is Double -> v
         is String -> v.toDouble()
-        else -> throw IllegalArgumentException()
+        else -> throw ValueDeserializationException(v, "Double")
     }
 }
 
@@ -69,7 +72,7 @@ object BooleanType : FieldType<Boolean> {
     override fun deserialize(v: Any, valueFactory: (() -> Boolean)?) = when(v) {
         is Boolean -> v
         is String -> v.toBoolean()
-        else -> throw IllegalArgumentException()
+        else -> throw ValueDeserializationException(v, "Boolean")
     }
 }
 

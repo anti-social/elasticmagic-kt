@@ -77,14 +77,15 @@ sealed class TransportError {
     data class Structured(
         val type: String,
         val reason: String,
-        val line: Int?,
-        val col: Int?,
-        val phase: String?,
-        val grouped: Boolean?,
-        val rootCauses: List<ErrorCause>,
-        val failedShards: List<FailedShard>,
+        val line: Int? = null,
+        val col: Int? = null,
+        val phase: String? = null,
+        val grouped: Boolean? = null,
+        val rootCauses: List<ErrorCause> = emptyList(),
+        val failedShards: List<FailedShard> = emptyList(),
     ) : TransportError() {
         companion object {
+            @Suppress("NestedBlockDepth")
             fun parse(data: Deserializer.ObjectCtx): Structured? {
                 val cause = ErrorCause.parse(data) ?: return null
                 val phase = data.stringOrNull("phase")
@@ -139,11 +140,12 @@ sealed class TransportError {
                     return error
                 }
             }
-            val error = data.stringOrNull("error")
-            if (error != null) {
-                return Simple(error)
+
+            return when (val error = data.anyOrNull("error")) {
+                is Deserializer.ObjectCtx -> Simple(error.toMap().toString())
+                null -> Simple(data.toMap().toString())
+                else -> Simple(error.toString())
             }
-            return Simple(data.toMap().toString())
         }
     }
 }

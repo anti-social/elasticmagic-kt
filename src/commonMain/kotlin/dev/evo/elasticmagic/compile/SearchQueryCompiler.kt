@@ -185,31 +185,8 @@ open class SearchQueryCompiler(
         if (rawHits != null) {
             while (rawHits.hasNext()) {
                 val rawHit = rawHits.obj()
-                val source = rawHit.objOrNull("_source")?.let { rawSource ->
-                    preparedSearchQuery.sourceFactory(rawHit).apply {
-                        setSource(rawSource.toMap())
-                    }
-                }
-                val rawSort = rawHit.arrayOrNull("sort")
-                val sort = mutableListOf<Any>()
-                if (rawSort != null) {
-                    while (rawSort.hasNext()) {
-                        sort.add(rawSort.any())
-                    }
-                }
                 hits.add(
-                    SearchHit(
-                        index = rawHit.string("_index"),
-                        type = rawHit.stringOrNull("_type") ?: "_doc",
-                        id = rawHit.string("_id"),
-                        routing = rawHit.stringOrNull("_routing"),
-                        version = rawHit.longOrNull("_version"),
-                        seqNo = rawHit.longOrNull("_seq_no"),
-                        primaryTerm = rawHit.longOrNull("_primary_term"),
-                        score = rawHit.doubleOrNull("_score"),
-                        sort = sort.ifEmpty { null },
-                        source = source,
-                    )
+                    processSearchHit(rawHit, preparedSearchQuery)
                 )
             }
         }
@@ -230,6 +207,36 @@ open class SearchQueryCompiler(
             maxScore = rawHitsData.doubleOrNull("max_score"),
             hits = hits,
             aggs = aggResults,
+        )
+    }
+
+    private fun <S: BaseDocSource> processSearchHit(
+        rawHit: Deserializer.ObjectCtx,
+        preparedSearchQuery: PreparedSearchQuery<S>,
+    ): SearchHit<S> {
+        val source = rawHit.objOrNull("_source")?.let { rawSource ->
+            preparedSearchQuery.sourceFactory(rawHit).apply {
+                setSource(rawSource.toMap())
+            }
+        }
+        val rawSort = rawHit.arrayOrNull("sort")
+        val sort = mutableListOf<Any>()
+        if (rawSort != null) {
+            while (rawSort.hasNext()) {
+                sort.add(rawSort.any())
+            }
+        }
+        return SearchHit(
+            index = rawHit.string("_index"),
+            type = rawHit.stringOrNull("_type") ?: "_doc",
+            id = rawHit.string("_id"),
+            routing = rawHit.stringOrNull("_routing"),
+            version = rawHit.longOrNull("_version"),
+            seqNo = rawHit.longOrNull("_seq_no"),
+            primaryTerm = rawHit.longOrNull("_primary_term"),
+            score = rawHit.doubleOrNull("_score"),
+            sort = sort.ifEmpty { null },
+            source = source,
         )
     }
 }

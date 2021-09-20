@@ -69,7 +69,8 @@ object DocSourceFactory {
                         )
                     if (curJoinField.name != joinField.name) {
                         throw IllegalArgumentException(
-                            "Document sources have different join fields: '${curJoinField.name}' and '${joinField.name}'"
+                            "Document sources have different join fields: " +
+                                    "'${curJoinField.name}' and '${joinField.name}'"
                         )
                     }
                     curJoinField
@@ -162,17 +163,19 @@ open class DocSource : BaseDocSource() {
             return false
         }
         for ((fieldValue, otherFieldValue) in fieldValues.zip(other.fieldValues)) {
-            if (fieldValue.name != otherFieldValue.name) {
-                return false
-            }
-            if (fieldValue.isInitialized != otherFieldValue.isInitialized) {
-                return false
-            }
-            if (fieldValue.value != otherFieldValue.value) {
+            if (fieldValue != otherFieldValue) {
                 return false
             }
         }
         return true
+    }
+
+    override fun hashCode(): Int {
+        var h = this::class.hashCode()
+        for (v in fieldValues) {
+            h = 37 * h + v.hashCode()
+        }
+        return h
     }
 
     override fun toString(): String {
@@ -250,7 +253,31 @@ open class DocSource : BaseDocSource() {
         fun serialize(): Any? {
             return value?.let(type::serialize)
         }
-    } 
+
+        override fun equals(other: Any?): Boolean {
+            if (other !is FieldValue<*>) {
+                return false
+            }
+            if (name != other.name) {
+                return false
+            }
+            if (isInitialized != other.isInitialized) {
+                return false
+            }
+            if (value != other.value) {
+                return false
+            }
+
+            return true
+        }
+
+        override fun hashCode(): Int {
+            var h = name.hashCode()
+            h = 37 * h + isInitialized.hashCode()
+            h = 37 * h + value.hashCode()
+            return h
+        }
+    }
 
     abstract class FieldValueProperty<V>(
         val fieldValue: FieldValue<V>,

@@ -2,6 +2,7 @@ package dev.evo.elasticmagic.serde.jackson
 
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
+
 import dev.evo.elasticmagic.serde.Deserializer
 import dev.evo.elasticmagic.serde.StdDeserializer
 

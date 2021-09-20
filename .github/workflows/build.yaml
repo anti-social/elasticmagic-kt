@@ -54,6 +54,11 @@ jobs:
         key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle', '**/*.gradle.kts', 'buildSrc') }}
         restore-keys: ${{ runner.os }}-konan
 
+    - name: Run linter
+      run: |
+        set -eux
+        ./gradlew detekt $GRADLE_ARGS
+
     - name: Run unit tests
       run: |
         set -eux
