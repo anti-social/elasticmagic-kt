@@ -788,4 +788,20 @@ class SourceTests {
         }
         order.getSource() shouldContainExactly mapOf("user" to listOf(mapOf("id" to 19)))
     }
+
+    @Test
+    fun defaultValue() {
+        class OrderDocSource : DocSource() {
+            var id by OrderDoc.id.required()
+            var status by OrderDoc.status.required().list().required(default = listOf(0, 3))
+            var total by OrderDoc.total.required(default = 666.66f)
+        }
+
+        val order = OrderDocSource()
+        shouldThrow<IllegalStateException> {
+            order.id
+        }
+        order.status shouldBe listOf(0, 3)
+        order.total shouldBe 666.66f
+    }
 }
