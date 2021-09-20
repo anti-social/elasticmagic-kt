@@ -2,8 +2,9 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
 plugins {
     kotlin("multiplatform") apply false
-    id("org.jetbrains.dokka") version "1.5.0"
-    id("ru.vyarus.mkdocs") version "2.1.1"
+    id("io.gitlab.arturbosch.detekt") version Versions.detekt apply false
+    id("org.jetbrains.dokka") version Versions.dokka
+    id("ru.vyarus.mkdocs") version Versions.mkdocs
 }
 
 // Collect all source and class directories for jacoco
@@ -34,10 +35,19 @@ allprojects {
     apply {
         plugin("org.jetbrains.kotlin.multiplatform")
         plugin("jacoco")
+        plugin("io.gitlab.arturbosch.detekt")
     }
 
     repositories {
         mavenCentral()
+    }
+
+    configure<io.gitlab.arturbosch.detekt.extensions.DetektExtension> {
+        config = files("$rootDir/detekt.yml")
+        source = files("$projectDir/src")
+        reports {
+            html.enabled = true
+        }
     }
 
     afterEvaluate {
@@ -60,6 +70,12 @@ allprojects {
             outputs.upToDateWhen { false }
 
             finalizedBy("jacocoJVMTestReport")
+        }
+
+        tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+            kotlinOptions {
+                jvmTarget = JavaVersion.VERSION_11.toString()
+            }
         }
     }
 }

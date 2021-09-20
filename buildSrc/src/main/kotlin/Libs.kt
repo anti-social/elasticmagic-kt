@@ -1,6 +1,8 @@
 object Versions {
     // Gradle plugins
+    const val detekt = "1.18.1"
     const val dokka = "1.5.0"
+    const val mkdocs = "2.1.1"
 
     // Kotlin and libs
     const val kotlin = "1.4.32"
