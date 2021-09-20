@@ -459,6 +459,8 @@ $dokka.location:dev.evo.elasticmagic/DisMaxNode/toQueryExpression/#/PointingToDe
 $dokka.location:dev.evo.elasticmagic/DocSource.FieldValue///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-doc-source/-field-value/index.html
 $dokka.location:dev.evo.elasticmagic/DocSource.FieldValue/FieldValue/#kotlin.String#dev.evo.elasticmagic.FieldType[TypeParam(bounds=[kotlin.Any?])]#kotlin.Boolean/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-doc-source/-field-value/-field-value.html
 $dokka.location:dev.evo.elasticmagic/DocSource.FieldValue/clear/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-doc-source/-field-value/clear.html
+$dokka.location:dev.evo.elasticmagic/DocSource.FieldValue/equals/#kotlin.Any?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-doc-source/-field-value/equals.html
+$dokka.location:dev.evo.elasticmagic/DocSource.FieldValue/hashCode/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-doc-source/-field-value/hash-code.html
 $dokka.location:dev.evo.elasticmagic/DocSource.FieldValue/isInitialized/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-doc-source/-field-value/is-initialized.html
 $dokka.location:dev.evo.elasticmagic/DocSource.FieldValue/isRequired/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-doc-source/-field-value/is-required.html
 $dokka.location:dev.evo.elasticmagic/DocSource.FieldValue/name/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-doc-source/-field-value/name.html
@@ -491,6 +493,7 @@ $dokka.location:dev.evo.elasticmagic/DocSource/equals/#kotlin.Any?/PointingToDec
 $dokka.location:dev.evo.elasticmagic/DocSource/getField/#kotlin.String/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-doc-source/get-field.html
 $dokka.location:dev.evo.elasticmagic/DocSource/getJoinField/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-doc-source/get-join-field.html
 $dokka.location:dev.evo.elasticmagic/DocSource/getSource/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-doc-source/get-source.html
+$dokka.location:dev.evo.elasticmagic/DocSource/hashCode/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-doc-source/hash-code.html
 $dokka.location:dev.evo.elasticmagic/DocSource/list/dev.evo.elasticmagic.BoundField[TypeParam(bounds=[kotlin.Any?])]#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-doc-source/list.html
 $dokka.location:dev.evo.elasticmagic/DocSource/provideDelegate/dev.evo.elasticmagic.BoundField[TypeParam(bounds=[kotlin.Any?])]#dev.evo.elasticmagic.DocSource#kotlin.reflect.KProperty[*]/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-doc-source/provide-delegate.html
 $dokka.location:dev.evo.elasticmagic/DocSource/provideDelegate/dev.evo.elasticmagic.SubFields[TypeParam(bounds=[kotlin.Any?])]#dev.evo.elasticmagic.DocSource#kotlin.reflect.KProperty[*]/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-doc-source/provide-delegate.html
@@ -1304,6 +1307,8 @@ $dokka.location:dev.evo.elasticmagic/UpdateSource/upsert/#/PointingToDeclaration
 $dokka.location:dev.evo.elasticmagic/ValueCountAgg///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-value-count-agg/index.html
 $dokka.location:dev.evo.elasticmagic/ValueCountAgg/ValueCountAgg/#dev.evo.elasticmagic.FieldOperations#dev.evo.elasticmagic.Script?#kotlin.Any?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-value-count-agg/-value-count-agg.html
 $dokka.location:dev.evo.elasticmagic/ValueCountAgg/name/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-value-count-agg/name.html
+$dokka.location:dev.evo.elasticmagic/ValueDeserializationException///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-value-deserialization-exception/index.html
+$dokka.location:dev.evo.elasticmagic/ValueDeserializationException/ValueDeserializationException/#kotlin.Any#kotlin.String/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-value-deserialization-exception/-value-deserialization-exception.html
 $dokka.location:dev.evo.elasticmagic/WeightedAvgAgg.ValueSource///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-weighted-avg-agg/-value-source/index.html
 $dokka.location:dev.evo.elasticmagic/WeightedAvgAgg.ValueSource/ValueSource/#dev.evo.elasticmagic.FieldOperations?#dev.evo.elasticmagic.Script?#kotlin.Any?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-weighted-avg-agg/-value-source/-value-source.html
 $dokka.location:dev.evo.elasticmagic/WeightedAvgAgg.ValueSource/field/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-weighted-avg-agg/-value-source/field.html
