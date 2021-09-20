@@ -74,7 +74,7 @@ data class SingleValueMetricAggResult<T>(
 ) : AggregationResult
 
 abstract class NumericValueAgg(
-    val field: Named? = null,
+    val field: FieldOperations? = null,
     val script: Script? = null,
     val missing: Any? = null,
     val format: String? = null,
@@ -96,7 +96,7 @@ abstract class NumericValueAgg(
 }
 
 abstract class SingleDoubleValueAgg(
-    field: Named? = null, script: Script? = null, missing: Any? = null, format: String? = null
+    field: FieldOperations? = null, script: Script? = null, missing: Any? = null, format: String? = null
 ) : NumericValueAgg(field, script, missing, format) {
     override fun processResult(obj: Deserializer.ObjectCtx): SingleValueMetricAggResult<Double> {
         return SingleValueMetricAggResult(
@@ -107,7 +107,7 @@ abstract class SingleDoubleValueAgg(
 }
 
 abstract class SingleLongValueAgg(
-    field: Named, script: Script? = null, missing: Any? = null, format: String? = null
+    field: FieldOperations, script: Script? = null, missing: Any? = null, format: String? = null
 ) : NumericValueAgg(field, script, missing, format) {
     override fun processResult(obj: Deserializer.ObjectCtx): SingleValueMetricAggResult<Long> {
         return SingleValueMetricAggResult(
@@ -118,30 +118,30 @@ abstract class SingleLongValueAgg(
 }
 
 class MinAgg(
-    field: Named, script: Script? = null, missing: Any? = null, format: String? = null
+    field: FieldOperations, script: Script? = null, missing: Any? = null, format: String? = null
 ) : SingleDoubleValueAgg(field, script, missing, format) {
     override val name = "min"
 }
 
 class MaxAgg(
-    field: Named, script: Script? = null, missing: Any? = null, format: String? = null
+    field: FieldOperations, script: Script? = null, missing: Any? = null, format: String? = null
 ) : SingleDoubleValueAgg(field, script, missing, format) {
     override val name = "max"
 }
 
 class AvgAgg(
-    field: Named, script: Script? = null, missing: Any? = null, format: String? = null
+    field: FieldOperations, script: Script? = null, missing: Any? = null, format: String? = null
 ) : SingleDoubleValueAgg(field, script, missing, format) {
     override val name = "avg"
 }
 
 class WeightedAvgAgg(
     val value: ValueSource, val weight: ValueSource, format: String? = null
-) : NumericValueAgg() {
+) : NumericValueAgg(format = format) {
     override val name = "weighted_avg"
 
     class ValueSource(
-        val field: Named? = null,
+        val field: FieldOperations? = null,
         val script: Script? = null,
         val missing: Any? = null,
     )
@@ -154,6 +154,7 @@ class WeightedAvgAgg(
             obj("weight") {
                 visit(ctx, compiler, weight)
             }
+            fieldIfNotNull("format", format)
         }
     }
 
@@ -176,31 +177,31 @@ class WeightedAvgAgg(
 }
 
 class SumAgg(
-    field: Named, script: Script? = null, missing: Any? = null, format: String? = null
+    field: FieldOperations, script: Script? = null, missing: Any? = null, format: String? = null
 ) : SingleDoubleValueAgg(field, script, missing, format) {
     override val name = "sum"
 }
 
 class MedianAbsoluteDeviationAgg(
-    field: Named, script: Script? = null, missing: Any? = null, format: String? = null
+    field: FieldOperations, script: Script? = null, missing: Any? = null, format: String? = null
 ) : SingleDoubleValueAgg(field, script, missing, format) {
     override val name = "median_absolute_deviation"
 }
 
 class ValueCountAgg(
-    field: Named, script: Script? = null, missing: Any? = null
+    field: FieldOperations, script: Script? = null, missing: Any? = null
 ) : SingleLongValueAgg(field, script, missing) {
     override val name = "value_count"
 }
 
 class CardinalityAgg(
-    field: Named, script: Script? = null, missing: Any? = null
+    field: FieldOperations, script: Script? = null, missing: Any? = null
 ) : SingleLongValueAgg(field, script, missing) {
     override val name = "cardinality"
 }
 
 class StatsAgg(
-    field: Named? = null, script: Script? = null, missing: Any? = null, format: String? = null
+    field: FieldOperations? = null, script: Script? = null, missing: Any? = null, format: String? = null
 ) : NumericValueAgg(field, script, missing, format) {
     override val name = "stats"
 
@@ -224,7 +225,7 @@ data class StatsAggResult(
 ) : AggregationResult
 
 class ExtendedStatsAgg(
-    field: Named? = null, script: Script? = null, missing: Any? = null, format: String? = null
+    field: FieldOperations? = null, script: Script? = null, missing: Any? = null, format: String? = null
 ) : NumericValueAgg(field, script, missing, format) {
     override val name = "extended_stats"
 
@@ -265,7 +266,7 @@ data class ExtendedStatsAggResult(
 }
 
 abstract class BaseTermsAgg(
-    val field: Named? = null,
+    val field: FieldOperations? = null,
     val script: Script? = null,
     val size: Int? = null,
     val shardSize: Int? = null,
@@ -351,7 +352,7 @@ abstract class BaseTermsAgg(
 }
 
 class TermsAgg(
-    field: Named? = null,
+    field: FieldOperations? = null,
     script: Script? = null,
     size: Int? = null,
     shardSize: Int? = null,
@@ -416,7 +417,7 @@ data class TermBucket(
 ) : KeyedBucket<Any>()
 
 class SignificantTermsAgg(
-    field: Named? = null,
+    field: FieldOperations? = null,
     script: Script? = null,
     size: Int? = null,
     shardSize: Int? = null,
@@ -505,7 +506,7 @@ data class AggRange<T>(
 }
 
 abstract class BaseRangeAgg<T>(
-    val field: Named? = null,
+    val field: FieldOperations? = null,
     val script: Script? = null,
     val ranges: List<AggRange<T>>,
     val format: String? = null,
@@ -597,7 +598,7 @@ data class RangeBucket(
 ) : KeyedBucket<String>()
 
 class RangeAgg(
-    field: Named? = null,
+    field: FieldOperations? = null,
     script: Script? = null,
     ranges: List<AggRange<Double>>,
     format: String? = null,
@@ -619,7 +620,7 @@ class RangeAgg(
 
     companion object {
         fun simpleRanges(
-            field: Named? = null,
+            field: FieldOperations? = null,
             script: Script? = null,
             ranges: List<Pair<Double?, Double?>>,
             format: String? = null,
@@ -643,7 +644,7 @@ class RangeAgg(
 }
 
 class DateRangeAgg(
-    field: Named? = null,
+    field: FieldOperations? = null,
     script: Script? = null,
     ranges: List<AggRange<String>>,
     format: String? = null,
@@ -665,7 +666,7 @@ class DateRangeAgg(
 
     companion object {
         fun simpleRanges(
-            field: Named? = null,
+            field: FieldOperations? = null,
             script: Script? = null,
             ranges: List<Pair<String?, String?>>,
             format: String? = null,
@@ -699,7 +700,7 @@ data class HistogramBounds<T>(
 }
 
 abstract class BaseHistogramAgg<T, R: AggregationResult, B>(
-    val field: Named? = null,
+    val field: FieldOperations? = null,
     val script: Script? = null,
     val offset: T? = null,
     val minDocCount: Long? = null,
@@ -778,7 +779,7 @@ abstract class BaseHistogramAgg<T, R: AggregationResult, B>(
 }
 
 class HistogramAgg(
-    field: Named? = null,
+    field: FieldOperations? = null,
     script: Script? = null,
     val interval: Double,
     offset: Double? = null,
@@ -835,7 +836,7 @@ data class HistogramBucket(
 ) : KeyedBucket<Double>()
 
 class DateHistogramAgg(
-    field: Named? = null,
+    field: FieldOperations? = null,
     script: Script? = null,
     val calendarInterval: String? = null,
     val fixedInterval: String? = null,
@@ -960,7 +961,7 @@ data class FiltersBucket(
 ) : KeyedBucket<String>()
 
 class NestedAgg(
-    val path: Named,
+    val path: FieldOperations,
     aggs: Map<String, Aggregation>,
 ) : SingleBucketAggregation(aggs) {
     override val name = "nested"

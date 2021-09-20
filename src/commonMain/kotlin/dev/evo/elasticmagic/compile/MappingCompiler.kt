@@ -26,7 +26,7 @@ open class MappingCompiler(
     }
 
     private fun visit(ctx: ObjectCtx, meta: MetaFields) {
-        for (metaField in meta._fields) {
+        for (metaField in meta.getAllFields()) {
             val mappingParams = metaField.getMappingParams()
             if (mappingParams.isEmpty()) {
                 continue
@@ -44,24 +44,25 @@ open class MappingCompiler(
     }
 
     private fun visit(ctx: ObjectCtx, fieldSet: FieldSet) {
-        for (field in fieldSet._fields) {
+        for (field in fieldSet.getAllFields()) {
             ctx.obj(field.getFieldName()) {
                 visit(this, field)
             }
         }
     }
 
-    private fun visit(ctx: ObjectCtx, field: Field<*, *>) {
+    private fun visit(ctx: ObjectCtx, field: AnyField) {
         ctx.field("type", field.getFieldType().name)
         visit(ctx, field.getMappingParams())
 
         when (field) {
-            is SubFields.FieldWrapper -> {
+            is SubFieldsField -> {
+                println(field.subFields.getAllFields())
                 ctx.obj("fields") {
                     visit(this, field.subFields)
                 }
             }
-            is SubDocument.FieldWrapper -> {
+            is SubDocumentField -> {
                 visit(ctx, field.subDocument)
             }
         }

@@ -3,7 +3,7 @@ package dev.evo.elasticmagic
 import dev.evo.elasticmagic.serde.Deserializer
 
 data class FieldFormat(
-    val field: Named,
+    val field: FieldOperations,
     val format: String? = null,
 )
 
@@ -28,7 +28,7 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
     protected val aggregations: MutableMap<String, Aggregation> = mutableMapOf()
 
     protected val docvalueFields: MutableList<FieldFormat> = mutableListOf()
-    protected val storedFields: MutableList<Named> = mutableListOf()
+    protected val storedFields: MutableList<FieldOperations> = mutableListOf()
     protected val scriptFields: MutableMap<String, Script> = mutableMapOf()
 
     protected val rescores: MutableList<Rescore> = mutableListOf()
@@ -118,7 +118,7 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
         this.sorts += sorts
     }
 
-    fun sort(vararg fields: Named): T = self {
+    fun sort(vararg fields: FieldOperations): T = self {
         this.sorts += fields.map(::Sort)
     }
 
@@ -134,7 +134,7 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
         this.trackTotalHits = trackTotalHits
     }
 
-    fun docvalueFields(vararg fields: Named): T = self {
+    fun docvalueFields(vararg fields: FieldOperations): T = self {
         docvalueFields += fields.map(::FieldFormat)
     }
 
@@ -142,7 +142,7 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
         docvalueFields += fields
     }
 
-    fun storedFields(vararg fields: Named): T = self {
+    fun storedFields(vararg fields: FieldOperations): T = self {
         storedFields += fields
     }
 
@@ -266,7 +266,7 @@ data class PreparedSearchQuery<S: BaseDocSource>(
     val trackScores: Boolean?,
     val trackTotalHits: Boolean?,
     val docvalueFields: List<FieldFormat>,
-    val storedFields: List<Named>,
+    val storedFields: List<FieldOperations>,
     val scriptFields: Map<String, Script>,
     val size: Long?,
     val from: Long?,

@@ -1,9 +1,10 @@
 package samples.document.subfields
 
+import dev.evo.elasticmagic.BoundField
 import dev.evo.elasticmagic.Document
 import dev.evo.elasticmagic.SubFields
 
-class AboutSubFields : SubFields<String>() {
+class AboutSubFields(field: BoundField<String>) : SubFields<String>(field) {
     val sort by keyword(normalizer = "lowercase")
     val autocomplete by text(analyzer = "autocomplete")
 }

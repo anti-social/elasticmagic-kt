@@ -25,6 +25,7 @@ jobs:
 
     - name: Install libcurl
       run: |
+        sudo apt-get -y update
         sudo apt-get -y --no-install-recommends install libcurl4 libcurl4-openssl-dev
 
     - name: Set up Java ${{ matrix.java-version }}
@@ -88,6 +89,7 @@ jobs:
 
     - name: Install libcurl
       run: |
+        sudo apt-get -y update
         sudo apt-get -y --no-install-recommends install libcurl4 libcurl4-openssl-dev
 
     - name: Set up Java ${{ matrix.python-version }}

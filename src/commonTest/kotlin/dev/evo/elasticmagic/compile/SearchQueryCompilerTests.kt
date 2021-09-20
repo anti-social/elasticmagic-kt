@@ -1,11 +1,12 @@
 package dev.evo.elasticmagic.compile
 
+import dev.evo.elasticmagic.BaseDocSource
 import dev.evo.elasticmagic.BoolNode
+import dev.evo.elasticmagic.BoundField
 import dev.evo.elasticmagic.DisMax
 import dev.evo.elasticmagic.DisMaxNode
 import dev.evo.elasticmagic.Document
 import dev.evo.elasticmagic.ElasticsearchVersion
-import dev.evo.elasticmagic.Field
 import dev.evo.elasticmagic.FieldFormat
 import dev.evo.elasticmagic.FunctionScore
 import dev.evo.elasticmagic.FunctionScoreNode
@@ -19,7 +20,9 @@ import dev.evo.elasticmagic.Sort
 import dev.evo.elasticmagic.SubDocument
 import dev.evo.elasticmagic.FieldType
 import dev.evo.elasticmagic.Ids
+import dev.evo.elasticmagic.Named
 import dev.evo.elasticmagic.QueryRescore
+import dev.evo.elasticmagic.RootFieldSet
 import dev.evo.elasticmagic.serde.StdSerializer
 
 import io.kotest.matchers.maps.shouldContainExactly
@@ -27,22 +30,19 @@ import io.kotest.matchers.nulls.shouldNotBeNull
 
 import kotlin.test.Test
 
-class AnyField(name: String) : Field<Nothing, Nothing>(
+class AnyField(name: String) : BoundField<Any>(
     name,
-    object : FieldType<Nothing, Nothing> {
+    object : FieldType<Any> {
         override val name: String
-            get() = TODO("not implemented")
+            get() = throw IllegalStateException("Fake field type cannot be used in mapping")
 
-        override fun deserialize(v: Any, valueFactory: (() -> Nothing)?): Nothing {
-            TODO("not implemented")
+        override fun deserialize(v: Any, valueFactory: (() -> Any)?): Any {
+            return v
         }
     },
-    Params()
-) {
-    init {
-        _setFieldName(name)
-    }
-}
+    Params(),
+    RootFieldSet
+)
 
 class SearchQueryCompilerTests {
     private val serializer = object : StdSerializer() {
@@ -118,11 +118,11 @@ class SearchQueryCompilerTests {
 
     @Test
     fun testFilteredQuery() {
-        class OpinionDoc : SubDocument() {
+        class OpinionDoc(field: BoundField<BaseDocSource>) : SubDocument(field) {
             val count by int()
         }
 
-        class CompanyDoc : SubDocument() {
+        class CompanyDoc(field: BoundField<BaseDocSource>) : SubDocument(field) {
             val name by text()
             val opinion by obj(::OpinionDoc)
         }
