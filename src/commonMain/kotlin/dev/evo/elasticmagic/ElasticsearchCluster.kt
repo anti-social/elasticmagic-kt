@@ -7,7 +7,6 @@ import dev.evo.elasticmagic.compile.CreateIndexRequest
 import dev.evo.elasticmagic.compile.UpdateMappingRequest
 import dev.evo.elasticmagic.compile.usingIndex
 import dev.evo.elasticmagic.serde.Serde
-import dev.evo.elasticmagic.serde.toMap
 import dev.evo.elasticmagic.transport.ElasticsearchException
 import dev.evo.elasticmagic.transport.ElasticsearchTransport
 import dev.evo.elasticmagic.transport.Method
@@ -43,6 +42,7 @@ internal fun Params.toRequestParameters(): Parameters {
     return Parameters(*this.toList().toTypedArray())
 }
 
+@Suppress("UnnecessaryAbstractClass")
 abstract class SerializableTransport<OBJ>(
     protected val esTransport: ElasticsearchTransport,
     protected val serde: Serde<OBJ>,
@@ -128,21 +128,6 @@ class ElasticsearchCluster<OBJ>(
             getCompilers().createIndex.compile(serde.serializer, createIndex)
         )
     }
-
-    // TODO: Merge multiple mappings
-    // Possibly it's worth explicitly merge multiple documents:
-    // mergeDocuments(ProductDoc, CompanyDoc)
-    // suspend fun createIndex(
-    //     indexName: String,
-    //     settings: Params,
-    //     mappings: List<Document>,
-    //     aliases: Params = Params(),
-    //     waitForActiveShards: Boolean? = null,
-    //     masterTimeout: String? = null,
-    //     timeout: String? = null,
-    // ): CreateIndexResult {
-    //
-    // }
 
     suspend fun deleteIndex(
         indexName: String,

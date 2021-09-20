@@ -1,6 +1,7 @@
 package dev.evo.elasticmagic
 
 import dev.evo.elasticmagic.compile.CompilerProvider
+
 import java.util.concurrent.atomic.AtomicReference
 
 internal actual class CompilersHolder actual constructor(

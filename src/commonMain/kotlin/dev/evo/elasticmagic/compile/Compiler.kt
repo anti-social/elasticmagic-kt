@@ -16,6 +16,7 @@ class Compiled<B, R>(
     val processResult: (Deserializer.ObjectCtx) -> R,
 )
 
+@Suppress("UnnecessaryAbstractClass")
 abstract class BaseCompiler(
     val esVersion: ElasticsearchVersion,
 ) {
@@ -69,19 +70,23 @@ abstract class BaseCompiler(
     }
 }
 
+@Suppress("UnnecessaryAbstractClass")
 abstract class ElasticsearchFeatures {
     abstract val requiresMappingTypeName: Boolean
 }
 
+@Suppress("ClassNaming")
 object ElasticsearchFeatures_6_0 : ElasticsearchFeatures() {
     override val requiresMappingTypeName = true
 }
 
+@Suppress("ClassNaming")
 object ElasticsearchFeatures_7_0 : ElasticsearchFeatures() {
     override val requiresMappingTypeName = false
 }
 
 class CompilerProvider(esVersion: ElasticsearchVersion) {
+    @Suppress("MagicNumber")
     val features = when {
         esVersion.major == 7 -> ElasticsearchFeatures_7_0
         esVersion.major == 6 -> ElasticsearchFeatures_6_0

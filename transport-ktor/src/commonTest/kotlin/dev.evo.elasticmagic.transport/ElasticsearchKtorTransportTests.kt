@@ -1,30 +1,29 @@
 package dev.evo.elasticmagic.transport
 
-import io.ktor.client.engine.mock.MockEngine
-import io.ktor.client.engine.mock.respond
-import io.ktor.client.engine.mock.respondError
-import io.ktor.client.engine.mock.toByteArray
-import io.ktor.http.ContentType
-import io.ktor.http.headersOf
-import io.ktor.http.HttpHeaders
-import io.ktor.http.HttpMethod
-import io.ktor.http.HttpStatusCode
-import io.ktor.http.Url
-
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.put
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.addJsonObject
-import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.putJsonArray
-import kotlinx.serialization.json.putJsonObject
-
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
-
+// import io.ktor.client.engine.mock.MockEngine
+// import io.ktor.client.engine.mock.respond
+// import io.ktor.client.engine.mock.respondError
+// import io.ktor.client.engine.mock.toByteArray
+// import io.ktor.http.ContentType
+// import io.ktor.http.headersOf
+// import io.ktor.http.HttpHeaders
+// import io.ktor.http.HttpMethod
+// import io.ktor.http.HttpStatusCode
+//
+// import kotlinx.serialization.encodeToString
+// import kotlinx.serialization.json.put
+// import kotlinx.serialization.json.Json
+// import kotlinx.serialization.json.JsonObject
+// import kotlinx.serialization.json.addJsonObject
+// import kotlinx.serialization.json.buildJsonObject
+// import kotlinx.serialization.json.jsonObject
+// import kotlinx.serialization.json.putJsonArray
+// import kotlinx.serialization.json.putJsonObject
+//
+// import kotlin.test.Test
+// import kotlin.test.assertEquals
+// import kotlin.test.assertFailsWith
+//
 // @ExperimentalStdlibApi
 // @io.ktor.util.KtorExperimentalAPI
 // class ElasticsearchKtorTransportTests {

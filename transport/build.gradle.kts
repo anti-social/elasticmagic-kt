@@ -2,9 +2,16 @@ configureMultiplatform()
 
 kotlin {
     sourceSets {
-        val commonMain by getting {
+        getByName("commonMain") {
             dependencies {
                 api(project(":elasticmagic-serde"))
+            }
+        }
+
+        getByName("commonTest") {
+            dependencies {
+                api(project(":elasticmagic-serde-serialization-json"))
+                api(Libs.kotlinSerialization("json"))
             }
         }
     }

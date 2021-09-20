@@ -3,8 +3,7 @@ name: Build and test
 on:
   push:
     branches:
-    - "**"
-    - "!docs"
+    - "master"
     tags: [ "v*" ]
   pull_request:
     branches: [ master ]
@@ -53,6 +52,11 @@ jobs:
         path: ~/.konan
         key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle', '**/*.gradle.kts', 'buildSrc') }}
         restore-keys: ${{ runner.os }}-konan
+
+    - name: Run linter
+      run: |
+        set -eux
+        ./gradlew detekt $GRADLE_ARGS
 
     - name: Run unit tests
       run: |

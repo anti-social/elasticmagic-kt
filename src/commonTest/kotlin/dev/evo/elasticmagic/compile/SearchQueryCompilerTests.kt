@@ -20,7 +20,6 @@ import dev.evo.elasticmagic.Sort
 import dev.evo.elasticmagic.SubDocument
 import dev.evo.elasticmagic.FieldType
 import dev.evo.elasticmagic.Ids
-import dev.evo.elasticmagic.Named
 import dev.evo.elasticmagic.QueryRescore
 import dev.evo.elasticmagic.RootFieldSet
 import dev.evo.elasticmagic.serde.StdSerializer

@@ -1,7 +1,5 @@
 package dev.evo.elasticmagic
 
-import dev.evo.elasticmagic.transport.ElasticsearchException
-
 import io.kotest.matchers.doubles.shouldBeLessThan
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe

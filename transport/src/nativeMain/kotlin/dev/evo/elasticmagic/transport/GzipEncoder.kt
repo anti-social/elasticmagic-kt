@@ -1,5 +1,6 @@
 package dev.evo.elasticmagic.transport
 
+@Suppress("MayBeConst")
 actual val isGzipEncoderImplemented: Boolean = false
 
 actual class GzipEncoder : RequestEncoder {

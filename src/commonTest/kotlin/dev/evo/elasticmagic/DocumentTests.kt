@@ -3,7 +3,6 @@ package dev.evo.elasticmagic
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.maps.shouldContainExactly
 import io.kotest.matchers.maps.shouldNotContainKey
-import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
 import io.kotest.matchers.types.shouldBeSameInstanceAs
@@ -37,54 +36,54 @@ class DocumentTests {
         emptyDoc.meta.size.getQualifiedFieldName() shouldBe "_size"
     }
 
-    // @Test
-    // fun testMetaFieldParams() {
-    //     val emptyDoc = object : Document() {
-    //         override val meta = object : MetaFields() {
-    //             override val routing by RoutingField(required = true)
-    //             override val source by SourceField(enabled = false)
-    //             override val size by SizeField(enabled = true)
-    //         }
-    //     }
-    //
-    //     emptyDoc.meta.routing.getFieldName() shouldBe "_routing"
-    //     emptyDoc.meta.routing.getQualifiedFieldName() shouldBe "_routing"
-    //     emptyDoc.meta.routing.getMappingParams() shouldContainExactly mapOf(
-    //         "required" to true,
-    //     )
-    //     emptyDoc.meta.source.getFieldName() shouldBe "_source"
-    //     emptyDoc.meta.source.getQualifiedFieldName() shouldBe "_source"
-    //     emptyDoc.meta.source.getMappingParams() shouldContainExactly mapOf(
-    //         "enabled" to false,
-    //     )
-    //     emptyDoc.meta.size.getFieldName() shouldBe "_size"
-    //     emptyDoc.meta.size.getQualifiedFieldName() shouldBe "_size"
-    //     emptyDoc.meta.size.getMappingParams() shouldContainExactly mapOf(
-    //         "enabled" to true,
-    //     )
-    // }
-    //
-    // @Test
-    // fun testCustomFieldType() {
-    //     val myType = object : SimpleFieldType<String>() {
-    //         override val name = "mine"
-    //         override fun deserialize(v: Any, valueFactory: (() -> String)?): String {
-    //             return v.toString()
-    //         }
-    //     }
-    //
-    //     val userDoc = object : Document() {
-    //         val status by field(myType)
-    //         val cls by field("class", myType)
-    //     }
-    //
-    //     userDoc.status.getFieldType() shouldBe myType
-    //     userDoc.status.getFieldName() shouldBe "status"
-    //     userDoc.status.getQualifiedFieldName() shouldBe "status"
-    //     userDoc.cls.getFieldType() shouldBe myType
-    //     userDoc.cls.getFieldName() shouldBe "class"
-    //     userDoc.cls.getQualifiedFieldName() shouldBe "class"
-    // }
+    @Test
+    fun testMetaFieldParams() {
+        val emptyDoc = object : Document() {
+            override val meta = object : MetaFields() {
+                override val routing by RoutingField(required = true)
+                override val source by SourceField(enabled = false)
+                override val size by SizeField(enabled = true)
+            }
+        }
+
+        emptyDoc.meta.routing.getFieldName() shouldBe "_routing"
+        emptyDoc.meta.routing.getQualifiedFieldName() shouldBe "_routing"
+        emptyDoc.meta.routing.getMappingParams() shouldContainExactly mapOf(
+            "required" to true,
+        )
+        emptyDoc.meta.source.getFieldName() shouldBe "_source"
+        emptyDoc.meta.source.getQualifiedFieldName() shouldBe "_source"
+        emptyDoc.meta.source.getMappingParams() shouldContainExactly mapOf(
+            "enabled" to false,
+        )
+        emptyDoc.meta.size.getFieldName() shouldBe "_size"
+        emptyDoc.meta.size.getQualifiedFieldName() shouldBe "_size"
+        emptyDoc.meta.size.getMappingParams() shouldContainExactly mapOf(
+            "enabled" to true,
+        )
+    }
+
+    @Test
+    fun testCustomFieldType() {
+        val myType = object : FieldType<String> {
+            override val name = "mine"
+            override fun deserialize(v: Any, valueFactory: (() -> String)?): String {
+                return v.toString()
+            }
+        }
+
+        val userDoc = object : Document() {
+            val status by field(myType)
+            val cls by field("class", myType)
+        }
+
+        userDoc.status.getFieldType() shouldBe myType
+        userDoc.status.getFieldName() shouldBe "status"
+        userDoc.status.getQualifiedFieldName() shouldBe "status"
+        userDoc.cls.getFieldType() shouldBe myType
+        userDoc.cls.getFieldName() shouldBe "class"
+        userDoc.cls.getQualifiedFieldName() shouldBe "class"
+    }
 
     @Test
     fun testMappingParameters() {
