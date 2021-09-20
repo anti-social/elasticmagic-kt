@@ -70,7 +70,7 @@ abstract class QueryExpressionNode<T: QueryExpressionNode<T>>(
 }
 
 class Term(
-    val field: Named,
+    val field: FieldOperations,
     val term: Any,
     val boost: Double? = null,
 ) : QueryExpression {
@@ -92,7 +92,7 @@ class Term(
 }
 
 class Terms(
-    val field: Named,
+    val field: FieldOperations,
     val terms: List<Any>,
     val boost: Double? = null,
 ) : QueryExpression {
@@ -112,7 +112,7 @@ class Terms(
 }
 
 class Exists(
-    val field: Named,
+    val field: FieldOperations,
 ) : QueryExpression {
     override val name = "exists"
 
@@ -125,7 +125,7 @@ class Exists(
 }
 
 class Range(
-    val field: Named,
+    val field: FieldOperations,
     val gt: Any? = null,
     val gte: Any? = null,
     val lt: Any? = null,
@@ -155,7 +155,7 @@ class Range(
 }
 
 class Match(
-    val field: Named,
+    val field: FieldOperations,
     val query: String,
     val analyzer: String? = null,
     val minimumShouldMatch: Any? = null,
@@ -193,7 +193,7 @@ class MatchAll : QueryExpression {
 
 class MultiMatch(
     val query: String,
-    val fields: List<Named>,
+    val fields: List<FieldOperations>,
     val type: Type? = null,
     val boost: Double? = null,
     val params: Params? = null,
@@ -214,7 +214,7 @@ class MultiMatch(
     ) {
         ctx.field("query", query)
         ctx.array("fields") {
-            compiler.visit(this, fields.map(Named::getQualifiedFieldName))
+            compiler.visit(this, fields.map(FieldOperations::getQualifiedFieldName))
         }
         ctx.fieldIfNotNull("type", type?.toValue())
         ctx.fieldIfNotNull("boost", boost)
@@ -237,7 +237,7 @@ class Ids(
 }
 
 class Nested(
-    val path: Named,
+    val path: FieldOperations,
     val query: QueryExpression,
     val scoreMode: ScoreMode? = null,
     val ignoreUnmapped: Boolean? = null,
@@ -569,7 +569,7 @@ class FunctionScore(
     }
 
     data class FieldValueFactor(
-        val field: Named,
+        val field: FieldOperations,
         val factor: Double? = null,
         val missing: Double? = null,
         val modifier: String? = null,
@@ -669,7 +669,7 @@ class Sort(
     val nested: Nested? = null,
 ) : Expression {
     constructor(
-        field: Named? = null,
+        field: FieldOperations? = null,
         scriptType: String? = null,
         script: Script? = null,
         order: Order? = null,
@@ -689,12 +689,12 @@ class Sort(
     )
 
     sealed class By {
-        class Field(val field: Named) : By()
+        class Field(val field: FieldOperations) : By()
         class Script(val type: String, val script: dev.evo.elasticmagic.Script) : By()
 
         companion object {
             internal operator fun invoke(
-                field: Named?, scriptType: String?, script: dev.evo.elasticmagic.Script?
+                field: FieldOperations?, scriptType: String?, script: dev.evo.elasticmagic.Script?
             ): By {
                 return when {
                     field != null && script != null -> throw IllegalArgumentException(
@@ -758,7 +758,7 @@ class Sort(
     }
 
     class Nested(
-        val path: Named,
+        val path: FieldOperations,
         val filter: QueryExpression? = null,
         val maxChildren: Int? = null,
         val nested: Nested? = null,
