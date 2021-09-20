@@ -54,7 +54,7 @@ Sub-fields also can be used in search queries:
 ```
 
 !!! Note
-    It is a common mistake to make sub-fields a singleton object. Following example
+    It is a mistake to make sub-fields a singleton object. Following example
     will fail at runtime.
 
 ```kotlin
@@ -68,8 +68,8 @@ Sub-fields also can be used in search queries:
 Exception in thread "main" java.lang.ExceptionInInitializerError
         at samples.document.subfields.mistake.MistakeKt.main(Mistake.kt:17)
         at samples.document.subfields.mistake.MistakeKt.main(Mistake.kt)
-Caused by: java.lang.IllegalStateException: [description] sub-fields has already been initialized as [about] sub-fields
-        at dev.evo.elasticmagic.SubFields$SubFieldsDelegate.provideDelegate(Document.kt:339)
+Caused by: java.lang.IllegalStateException: Field [description] has already been initialized as [about]
+        at dev.evo.elasticmagic.SubFields$UnboundSubFields.provideDelegate(Document.kt:363)
         at samples.document.subfields.mistake.UserDoc.<clinit>(Mistake.kt:13)
         ... 2 more
 ```

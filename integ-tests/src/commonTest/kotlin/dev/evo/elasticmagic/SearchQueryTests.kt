@@ -9,14 +9,14 @@ import io.kotest.matchers.shouldBe
 import kotlin.test.Test
 
 object OrderDoc : Document() {
-    class User : SubDocument() {
+    class User(field: BoundField<BaseDocSource>) : SubDocument(field) {
         val id by int()
         val name by text()
         val phone by keyword()
         val rating by float()
     }
 
-    class CartItem : SubDocument() {
+    class CartItem(field: BoundField<BaseDocSource>) : SubDocument(field) {
         val productId by long("product_id")
         val productName by text("product_name")
         val productPrice by float("product_price")

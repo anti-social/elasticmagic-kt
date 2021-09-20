@@ -1,6 +1,6 @@
 package dev.evo.elasticmagic
 
-interface FieldType<out T, V> {
+interface FieldType<V> {
     val name: String
 
     fun serialize(v: V): Any {
@@ -13,9 +13,7 @@ interface FieldType<out T, V> {
     ): V
 }
 
-abstract class SimpleFieldType<V> : FieldType<Nothing, V>
-
-abstract class NumberType<V: Number> : SimpleFieldType<V>()
+abstract class NumberType<V: Number> : FieldType<V>
 
 object IntType : NumberType<Int>() {
     override val name = "integer"
@@ -65,7 +63,7 @@ object DoubleType : NumberType<Double>() {
     }
 }
 
-object BooleanType : SimpleFieldType<Boolean>() {
+object BooleanType : FieldType<Boolean> {
     override val name = "boolean"
 
     override fun deserialize(v: Any, valueFactory: (() -> Boolean)?) = when(v) {
@@ -75,7 +73,7 @@ object BooleanType : SimpleFieldType<Boolean>() {
     }
 }
 
-abstract class StringType : SimpleFieldType<String>() {
+abstract class StringType : FieldType<String> {
     override fun deserialize(v: Any, valueFactory: (() -> String)?): String {
         return v.toString()
     }
@@ -89,20 +87,12 @@ object TextType : StringType() {
     override val name = "text"
 }
 
-internal class SubFieldsType<V>(val type: FieldType<*, V>) : SimpleFieldType<V>() {
-    override val name = type.name
-
-    override fun deserialize(v: Any, valueFactory: (() -> V)?): V {
-        return type.deserialize(v, valueFactory)
-    }
-}
-
 data class Join(
     val name: String,
     val parent: String? = null,
 )
 
-object JoinType : SimpleFieldType<Join>() {
+object JoinType : FieldType<Join> {
     override val name = "join"
 
     override fun serialize(v: Join): Any {
@@ -130,7 +120,7 @@ object JoinType : SimpleFieldType<Join>() {
     }
 }
 
-open class ObjectType<out T: SubDocument, V: BaseDocSource> : FieldType<T, V> {
+open class ObjectType<V: BaseDocSource> : FieldType<V> {
     override val name = "object"
 
     override fun serialize(v: V): Map<String, Any?> {
@@ -154,14 +144,14 @@ open class ObjectType<out T: SubDocument, V: BaseDocSource> : FieldType<T, V> {
     }
 }
 
-class NestedType<out T: SubDocument, V: BaseDocSource> : ObjectType<T, V>() {
+class NestedType<V: BaseDocSource> : ObjectType<V>() {
     override val name = "nested"
 }
 
 open class SourceType<V: BaseDocSource>(
-    val type: FieldType<*, BaseDocSource>,
+    val type: FieldType<BaseDocSource>,
     private val sourceFactory: () -> V
-) : SimpleFieldType<V>() {
+) : FieldType<V> {
     override val name = type.name
 
     override fun serialize(v: V): Any {
@@ -174,7 +164,7 @@ open class SourceType<V: BaseDocSource>(
     }
 }
 
-class OptionalListType<V>(val type: FieldType<*, V>) : SimpleFieldType<List<V?>>() {
+class OptionalListType<V>(val type: FieldType<V>) : FieldType<List<V?>> {
     override val name get() = type.name
 
     override fun serialize(v: List<V?>): Any {
@@ -203,7 +193,7 @@ class OptionalListType<V>(val type: FieldType<*, V>) : SimpleFieldType<List<V?>>
     }
 }
 
-class RequiredListType<V>(val type: FieldType<*, V>) : SimpleFieldType<List<V>>() {
+class RequiredListType<V>(val type: FieldType<V>) : FieldType<List<V>> {
     override val name get() = type.name
 
     override fun serialize(v: List<V>): Any {

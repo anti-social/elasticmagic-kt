@@ -1,15 +1,15 @@
 package dev.evo.elasticmagic.compile
 
+import dev.evo.elasticmagic.BoundField
+import dev.evo.elasticmagic.DocSourceField
 import dev.evo.elasticmagic.Document
 import dev.evo.elasticmagic.ElasticsearchVersion
-import dev.evo.elasticmagic.MetaFields
 import dev.evo.elasticmagic.Params
 import dev.evo.elasticmagic.SubDocument
 import dev.evo.elasticmagic.SubFields
 import dev.evo.elasticmagic.mergeDocuments
 import dev.evo.elasticmagic.serde.StdSerializer
 
-import io.kotest.matchers.shouldBe
 import io.kotest.matchers.maps.shouldContainExactly
 import io.kotest.matchers.nulls.shouldNotBeNull
 
@@ -37,7 +37,7 @@ class MappingCompilerTests {
 
     @Test
     fun testSubFields() {
-        class NameFields<T> : SubFields<T>() {
+        class NameFields<V>(field: BoundField<V>) : SubFields<V>(field) {
             val sort by keyword(normalizer = "lowercase")
             val autocomplete by text(analyzer = "ngram")
         }
@@ -83,11 +83,11 @@ class MappingCompilerTests {
 
     @Test
     fun testSubDocument() {
-        class OpinionDoc : SubDocument() {
+        class OpinionDoc(field: DocSourceField) : SubDocument(field) {
             val count by int()
         }
 
-        class CompanyDoc : SubDocument() {
+        class CompanyDoc(field: DocSourceField) : SubDocument(field) {
             val name by text(analyzer = "standard")
             val opinion by obj(::OpinionDoc, params = Params("enabled" to false))
         }

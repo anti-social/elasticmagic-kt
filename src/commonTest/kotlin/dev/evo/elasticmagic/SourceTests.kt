@@ -11,11 +11,11 @@ import kotlin.test.Test
 
 class SourceTests {
     object OrderDoc : Document() {
-        class UserOpinionDoc : SubDocument() {
+        class UserOpinionDoc(field: DocSourceField) : SubDocument(field) {
             val rating by float("rank")
         }
 
-        class UserDoc : SubDocument() {
+        class UserDoc(field: DocSourceField) : SubDocument(field) {
             val id by int()
             val opinion by obj(::UserOpinionDoc)
         }
@@ -215,7 +215,7 @@ class SourceTests {
             }
 
             override fun setSource(rawSource: RawSource) {
-                id = rawSource["id"]?.let(OrderDoc.user.id.type::deserialize)
+                id = rawSource["id"]?.let(OrderDoc.user.id.getFieldType()::deserialize)
             }
         }
 
@@ -236,11 +236,11 @@ class SourceTests {
 
             override fun setSource(rawSource: RawSource) {
                 id = rawSource["id"]
-                    ?.let(OrderDoc.id.type::deserialize)
+                    ?.let(OrderDoc.id.getFieldType()::deserialize)
                 statuses = rawSource["status"]
-                    ?.let(RequiredListType(OrderDoc.status.type)::deserialize)
+                    ?.let(RequiredListType(OrderDoc.status.getFieldType())::deserialize)
                 total = rawSource["total"]
-                    ?.let(OrderDoc.total.type::deserialize)
+                    ?.let(OrderDoc.total.getFieldType()::deserialize)
                 user = rawSource["user"]
                     ?.let(SourceType(OrderDoc.user.getFieldType(), ::User)::deserialize)
             }
