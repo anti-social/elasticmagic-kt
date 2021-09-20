@@ -3,8 +3,7 @@ name: Build and test
 on:
   push:
     branches:
-    - "**"
-    - "!docs"
+    - "master"
     tags: [ "v*" ]
   pull_request:
     branches: [ master ]
