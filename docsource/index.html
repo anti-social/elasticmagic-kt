@@ -406,10 +406,12 @@ See more info at <a href="https://github.com/anti-social/elasticmagic-kt/issues/
 <p>Suppose we have following <code>Document</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="k">package</span> <span class="nn">samples.docsource</span>
 
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.BaseDocSource</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.BoundField</span>
 <span class="k">import</span> <span class="nn">dev.evo.elasticmagic.Document</span>
 <span class="k">import</span> <span class="nn">dev.evo.elasticmagic.SubDocument</span>
 
-<span class="kd">class</span> <span class="nc">RoleDoc</span> <span class="p">:</span> <span class="n">SubDocument</span><span class="p">()</span> <span class="p">{</span>
+<span class="kd">class</span> <span class="nc">RoleDoc</span><span class="p">(</span><span class="n">field</span><span class="p">:</span> <span class="n">BoundField</span><span class="o">&lt;</span><span class="n">BaseDocSource</span><span class="o">&gt;</span><span class="p">)</span> <span class="p">:</span> <span class="n">SubDocument</span><span class="p">(</span><span class="n">field</span><span class="p">)</span> <span class="p">{</span>
     <span class="kd">val</span> <span class="nv">name</span> <span class="k">by</span> <span class="n">keyword</span><span class="p">()</span>
     <span class="kd">val</span> <span class="nv">permissions</span> <span class="k">by</span> <span class="n">keyword</span><span class="p">()</span>
 <span class="p">}</span>

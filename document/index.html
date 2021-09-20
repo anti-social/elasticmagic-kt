@@ -602,10 +602,11 @@ You don't need to import all those field types:</p>
 for any simple field:</p>
 <div class="highlight"><pre><span></span><code><span class="k">package</span> <span class="nn">samples.document.subfields</span>
 
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.BoundField</span>
 <span class="k">import</span> <span class="nn">dev.evo.elasticmagic.Document</span>
 <span class="k">import</span> <span class="nn">dev.evo.elasticmagic.SubFields</span>
 
-<span class="kd">class</span> <span class="nc">AboutSubFields</span> <span class="p">:</span> <span class="n">SubFields</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span><span class="p">()</span> <span class="p">{</span>
+<span class="kd">class</span> <span class="nc">AboutSubFields</span><span class="p">(</span><span class="n">field</span><span class="p">:</span> <span class="n">BoundField</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span><span class="p">)</span> <span class="p">:</span> <span class="n">SubFields</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span><span class="p">(</span><span class="n">field</span><span class="p">)</span> <span class="p">{</span>
     <span class="kd">val</span> <span class="nv">sort</span> <span class="k">by</span> <span class="n">keyword</span><span class="p">(</span><span class="n">normalizer</span> <span class="o">=</span> <span class="s">&quot;lowercase&quot;</span><span class="p">)</span>
     <span class="kd">val</span> <span class="nv">autocomplete</span> <span class="k">by</span> <span class="n">text</span><span class="p">(</span><span class="n">analyzer</span> <span class="o">=</span> <span class="s">&quot;autocomplete&quot;</span><span class="p">)</span>
 <span class="p">}</span>
@@ -624,22 +625,22 @@ for any simple field:</p>
 </code></pre></div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>It is a common mistake to make sub-fields a singleton object. Following example
+<p>It is a mistake to make sub-fields a singleton object. Following example
 will fail at runtime.</p>
 </div>
 <div class="highlight"><pre><span></span><code><span class="k">package</span> <span class="nn">samples.document.subfields.mistake</span>
 
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.BoundField</span>
 <span class="k">import</span> <span class="nn">dev.evo.elasticmagic.Document</span>
 <span class="k">import</span> <span class="nn">dev.evo.elasticmagic.SubFields</span>
 
-<span class="kd">object</span> <span class="nc">AboutSubFields</span> <span class="p">:</span> <span class="n">SubFields</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span><span class="p">()</span> <span class="p">{</span>
+<span class="kd">class</span> <span class="nc">AboutSubFields</span><span class="p">(</span><span class="n">field</span><span class="p">:</span> <span class="n">BoundField</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span><span class="p">)</span> <span class="p">:</span> <span class="n">SubFields</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span><span class="p">(</span><span class="n">field</span><span class="p">)</span> <span class="p">{</span>
     <span class="kd">val</span> <span class="nv">sort</span> <span class="k">by</span> <span class="n">keyword</span><span class="p">(</span><span class="n">normalizer</span> <span class="o">=</span> <span class="s">&quot;lowercase&quot;</span><span class="p">)</span>
-    <span class="kd">val</span> <span class="nv">autocomplete</span> <span class="k">by</span> <span class="n">text</span><span class="p">(</span><span class="n">analyzer</span> <span class="o">=</span> <span class="s">&quot;autocomplete&quot;</span><span class="p">)</span>
 <span class="p">}</span>
 
 <span class="kd">object</span> <span class="nc">UserDoc</span> <span class="p">:</span> <span class="n">Document</span><span class="p">()</span> <span class="p">{</span>
-    <span class="kd">val</span> <span class="nv">about</span> <span class="k">by</span> <span class="n">text</span><span class="p">().</span><span class="na">subFields</span> <span class="p">{</span> <span class="n">AboutSubFields</span> <span class="p">}</span>
-    <span class="kd">val</span> <span class="nv">description</span> <span class="k">by</span> <span class="n">text</span><span class="p">().</span><span class="na">subFields</span> <span class="p">{</span> <span class="n">AboutSubFields</span> <span class="p">}</span>
+    <span class="kd">val</span> <span class="nv">about</span> <span class="k">by</span> <span class="n">text</span><span class="p">().</span><span class="na">subFields</span><span class="p">(</span><span class="o">::</span><span class="n">AboutSubFields</span><span class="p">)</span>
+    <span class="kd">val</span> <span class="nv">description</span> <span class="k">by</span> <span class="n">text</span><span class="p">().</span><span class="na">subFields</span> <span class="p">{</span> <span class="n">about</span> <span class="p">}</span>
 <span class="p">}</span>
 
 <span class="kd">fun</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
@@ -652,8 +653,8 @@ will fail at runtime.</p>
 <div class="highlight"><pre><span></span><code>Exception in thread &quot;main&quot; java.lang.ExceptionInInitializerError
         at samples.document.subfields.mistake.MistakeKt.main(Mistake.kt:17)
         at samples.document.subfields.mistake.MistakeKt.main(Mistake.kt)
-Caused by: java.lang.IllegalStateException: [description] sub-fields has already been initialized as [about] sub-fields
-        at dev.evo.elasticmagic.SubFields$SubFieldsDelegate.provideDelegate(Document.kt:339)
+Caused by: java.lang.IllegalStateException: Field [description] has already been initialized as [about]
+        at dev.evo.elasticmagic.SubFields$UnboundSubFields.provideDelegate(Document.kt:363)
         at samples.document.subfields.mistake.UserDoc.&lt;clinit&gt;(Mistake.kt:13)
         ... 2 more
 </code></pre></div>
@@ -665,11 +666,13 @@ Caused by: java.lang.IllegalStateException: [description] sub-fields has already
 in a sub-document can have its own source value:</p>
 <div class="highlight"><pre><span></span><code><span class="k">package</span> <span class="nn">samples.document.`object`</span>
 
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.BaseDocSource</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.BoundField</span>
 <span class="k">import</span> <span class="nn">dev.evo.elasticmagic.Document</span>
 <span class="k">import</span> <span class="nn">dev.evo.elasticmagic.SearchQuery</span>
 <span class="k">import</span> <span class="nn">dev.evo.elasticmagic.SubDocument</span>
 
-<span class="kd">class</span> <span class="nc">GroupDoc</span> <span class="p">:</span> <span class="n">SubDocument</span><span class="p">()</span> <span class="p">{</span>
+<span class="kd">class</span> <span class="nc">GroupDoc</span><span class="p">(</span><span class="n">field</span><span class="p">:</span> <span class="n">BoundField</span><span class="o">&lt;</span><span class="n">BaseDocSource</span><span class="o">&gt;</span><span class="p">)</span> <span class="p">:</span> <span class="n">SubDocument</span><span class="p">(</span><span class="n">field</span><span class="p">)</span> <span class="p">{</span>
     <span class="kd">val</span> <span class="nv">id</span> <span class="k">by</span> <span class="n">int</span><span class="p">()</span>
     <span class="kd">val</span> <span class="nv">name</span> <span class="k">by</span> <span class="n">keyword</span><span class="p">()</span>
 <span class="p">}</span>
@@ -696,13 +699,15 @@ In the example below we find all users that have a <code>moderator</code> role w
 <code>article</code> and <code>order</code> permissions:</p>
 <div class="highlight"><pre><span></span><code><span class="k">package</span> <span class="nn">samples.document.nested</span>
 
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.BaseDocSource</span>
 <span class="k">import</span> <span class="nn">dev.evo.elasticmagic.Bool</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.BoundField</span>
 <span class="k">import</span> <span class="nn">dev.evo.elasticmagic.Document</span>
 <span class="k">import</span> <span class="nn">dev.evo.elasticmagic.Nested</span>
 <span class="k">import</span> <span class="nn">dev.evo.elasticmagic.SearchQuery</span>
 <span class="k">import</span> <span class="nn">dev.evo.elasticmagic.SubDocument</span>
 
-<span class="kd">class</span> <span class="nc">RoleDoc</span> <span class="p">:</span> <span class="n">SubDocument</span><span class="p">()</span> <span class="p">{</span>
+<span class="kd">class</span> <span class="nc">RoleDoc</span><span class="p">(</span><span class="n">field</span><span class="p">:</span> <span class="n">BoundField</span><span class="o">&lt;</span><span class="n">BaseDocSource</span><span class="o">&gt;</span><span class="p">)</span> <span class="p">:</span> <span class="n">SubDocument</span><span class="p">(</span><span class="n">field</span><span class="p">)</span> <span class="p">{</span>
     <span class="kd">val</span> <span class="nv">name</span> <span class="k">by</span> <span class="n">keyword</span><span class="p">()</span>
     <span class="kd">val</span> <span class="nv">permissions</span> <span class="k">by</span> <span class="n">keyword</span><span class="p">()</span>
 <span class="p">}</span>
