@@ -1,6 +1,8 @@
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
 plugins {
+    `maven-publish`
+    signing
     kotlin("multiplatform") apply false
     id("io.gitlab.arturbosch.detekt") version Versions.detekt apply false
     id("org.jetbrains.dokka") version Versions.dokka
@@ -49,6 +51,10 @@ allprojects {
         apply {
             plugin("maven-publish")
             plugin("signing")
+        }
+
+        signing {
+            sign(publishing.publications)
         }
     }
 
