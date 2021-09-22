@@ -39,6 +39,6 @@ suspend fun main() {
         SearchQuery()
             .aggs("groups" to TermsAgg(UserDoc.groups))
             .execute(userIndex)
-            .agg<TermsAggResult>("groups")
+            .agg("groups")
     )
 }

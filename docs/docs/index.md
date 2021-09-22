@@ -68,3 +68,9 @@ And finally we can search our data:
 ```
 
 You can find fully working example at [Getting Started](https://github.com/anti-social/elasticmagic-kt/tree/master/samples/src/main/kotlin/samples/started)
+
+And run it with (of cause you need Elasticsearch available at `localhost:9200`):
+
+```shell
+./gradlew :samples:run
+```
