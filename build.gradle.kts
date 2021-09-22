@@ -47,6 +47,24 @@ allprojects {
         source = files("$projectDir/src")
     }
 
+    val detektJvm = tasks.register<io.gitlab.arturbosch.detekt.Detekt>("detektJvm") {
+        source = fileTree("$projectDir/src")
+        include(
+            "commonMain/**/*.kt",
+            "commonTest/**/*.kt",
+            "jvmMain/**/*.kt",
+            "jvmTest/**/*.kt",
+        )
+        classpath.setFrom(
+            configurations.getByName("detekt"),
+            configurations.getByName("jvmCompileClasspath"),
+            configurations.getByName("jvmTestCompileClasspath"),
+        )
+        config.from("$rootDir/detekt.yml")
+        debug = true
+        jvmTarget = JavaVersion.VERSION_11.toString()
+    }
+
     afterEvaluate {
         tasks.register<JacocoReport>("jacocoJVMTestReport") {
             group = "Reporting"
