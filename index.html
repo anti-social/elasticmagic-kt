@@ -590,11 +590,14 @@ Use it on your own risk</p>
         <span class="n">SearchQuery</span><span class="p">()</span>
             <span class="p">.</span><span class="na">aggs</span><span class="p">(</span><span class="s">&quot;groups&quot;</span> <span class="n">to</span> <span class="n">TermsAgg</span><span class="p">(</span><span class="n">UserDoc</span><span class="p">.</span><span class="na">groups</span><span class="p">))</span>
             <span class="p">.</span><span class="na">execute</span><span class="p">(</span><span class="n">userIndex</span><span class="p">)</span>
-            <span class="p">.</span><span class="na">agg</span><span class="o">&lt;</span><span class="n">TermsAggResult</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;groups&quot;</span><span class="p">)</span>
+            <span class="p">.</span><span class="na">agg</span><span class="p">(</span><span class="s">&quot;groups&quot;</span><span class="p">)</span>
     <span class="p">)</span>
 <span class="p">}</span>
 </code></pre></div>
 <p>You can find fully working example at <a href="https://github.com/anti-social/elasticmagic-kt/tree/master/samples/src/main/kotlin/samples/started">Getting Started</a></p>
+<p>And run it with (of cause you need Elasticsearch available at <code>localhost:9200</code>):</p>
+<div class="highlight"><pre><span></span><code>./gradlew :samples:run
+</code></pre></div>
                 
               
               
