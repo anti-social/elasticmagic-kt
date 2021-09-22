@@ -10,3 +10,8 @@ kotlin {
         }
     }
 }
+
+configureMultiplatformPublishing(
+    "elasticmagic-transport-ktor",
+    "Elasticsearch Kotlin query DSL - jackson serialization implementation"
+)

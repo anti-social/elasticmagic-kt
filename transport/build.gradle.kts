@@ -16,3 +16,8 @@ kotlin {
         }
     }
 }
+
+configureMultiplatformPublishing(
+    "elasticmagic-transport-ktor",
+    "Elasticsearch Kotlin query DSL - transport interface"
+)
