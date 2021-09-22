@@ -54,6 +54,7 @@ class ActionMetaCompiler(
                     field("version_type", "external_gte")
                     fieldIfNotNull("version", meta.version)
                 }
+                null -> {}
             }
         }
     }

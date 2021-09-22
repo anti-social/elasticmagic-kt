@@ -48,24 +48,24 @@ abstract class StdSerializer(
     protected inner class ArrayCtx(
         private val array: MutableList<Any?>
     ) : Serializer.ArrayCtx {
-        override fun value(value: Int?) {
-            array.add(value)
+        override fun value(v: Int?) {
+            array.add(v)
         }
 
-        override fun value(value: Long?) {
-            array.add(value)
+        override fun value(v: Long?) {
+            array.add(v)
         }
 
-        override fun value(value: Float?) {
-            array.add(value)
+        override fun value(v: Float?) {
+            array.add(v)
         }
 
-        override fun value(value: Double?) {
-            array.add(value)
+        override fun value(v: Double?) {
+            array.add(v)
         }
 
-        override fun value(value: Boolean?) {
-            array.add(value)
+        override fun value(v: Boolean?) {
+            array.add(v)
         }
 
         override fun value(value: String?) {

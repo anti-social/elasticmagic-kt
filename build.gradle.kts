@@ -42,11 +42,6 @@ allprojects {
         mavenCentral()
     }
 
-    configure<io.gitlab.arturbosch.detekt.extensions.DetektExtension> {
-        config = files("$rootDir/detekt.yml")
-        source = files("$projectDir/src")
-    }
-
     afterEvaluate {
         tasks.register<JacocoReport>("jacocoJVMTestReport") {
             group = "Reporting"
@@ -71,9 +66,41 @@ allprojects {
 
         tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
             kotlinOptions {
-                jvmTarget = JavaVersion.VERSION_11.toString()
+                jvmTarget = Versions.jvmTarget.toString()
             }
         }
+
+        val detektConfig = "$rootDir/detekt.yml"
+        val detektOthers = tasks.register<io.gitlab.arturbosch.detekt.Detekt>("detektOthers") {
+            config.from(detektConfig)
+            source = fileTree("$projectDir/src")
+            include(
+                "jsMain/**/*.kt",
+                "jsTest/**/*.kt",
+                "nativeMain/**/*.kt",
+                "nativeTest/**/*.kt",
+            )
+        }
+        val detekt = tasks.getByName<io.gitlab.arturbosch.detekt.Detekt>("detekt") {
+            config.from(detektConfig)
+            source = fileTree("$projectDir/src").apply {
+                include(
+                    "commonMain/**/*.kt",
+                    "commonTest/**/*.kt",
+                    "jvmMain/**/*.kt",
+                    "jvmTest/**/*.kt",
+                )
+            }
+            classpath.setFrom(
+                configurations.getByName("detekt"),
+                configurations.getByName("jvmCompileClasspath"),
+                configurations.getByName("jvmTestCompileClasspath"),
+            )
+            jvmTarget = Versions.jvmTarget.toString()
+
+            dependsOn(detektOthers)
+        }
+        tasks.getByName("check").dependsOn(detekt)
     }
 }
 
@@ -81,6 +108,9 @@ configureMultiplatform()
 
 configure<KotlinMultiplatformExtension> {
     sourceSets {
+        all {
+            languageSettings.useExperimentalAnnotation("kotlin.ExperimentalStdlibApi")
+        }
         val commonMain by getting {
             dependencies {
                 api(project(":elasticmagic-serde"))

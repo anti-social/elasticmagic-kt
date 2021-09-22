@@ -301,13 +301,13 @@ abstract class BaseTermsAgg(
     enum class CollectMode : ToValue {
         BREADTH_FIRST, DEPTH_FIRST;
 
-        override fun toValue(): Any = name.toLowerCase()
+        override fun toValue(): Any = name.lowercase()
     }
 
     enum class ExecutionHint : ToValue {
         MAP, GLOBAL_ORDINALS;
 
-        override fun toValue(): Any = name.toLowerCase()
+        override fun toValue(): Any = name.lowercase()
     }
 
     override fun visit(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
@@ -328,12 +328,14 @@ abstract class BaseTermsAgg(
                 field("partition", include.partition)
                 field("num_partitions", include.numPartitions)
             }
+            null -> {}
         }
         when (exclude) {
             is Exclude.Values -> ctx.array("include") {
                 compiler.visit(this, exclude.values)
             }
             is Exclude.Regex -> ctx.field("include", exclude.regex)
+            null -> {}
         }
         ctx.fieldIfNotNull("missing", missing)
         if (order.isNotEmpty()) {

@@ -64,7 +64,6 @@ open class MappingCompiler(
 
         when (field) {
             is SubFieldsField -> {
-                println(field.subFields.getAllFields())
                 ctx.obj("fields") {
                     visit(this, field.subFields)
                 }

@@ -91,60 +91,64 @@ sealed class JsonDeserializer : Deserializer<JsonObject> {
             }
         }
 
+        private fun getCurrentEntry(): Map.Entry<String, JsonElement> {
+            return currentEntry ?: throw IllegalStateException("hasNext must be called first")
+        }
+
         override fun anyOrNull(): Pair<String, Any?> {
-            val (key, value) = currentEntry!!
+            val (key, value) = getCurrentEntry()
             return key to coerceToAny(value)
         }
 
         override fun intOrNull(): Pair<String, Int?> {
-            val (key, jsonValue) = currentEntry!!
+            val (key, jsonValue) = getCurrentEntry()
             return jsonValue.jsonPrimitiveOrNull.let { value ->
                 key to value?.intOrNull
             }
         }
 
         override fun longOrNull(): Pair<String, Long?> {
-            val (key, jsonValue) = currentEntry!!
+            val (key, jsonValue) = getCurrentEntry()
             return jsonValue.jsonPrimitiveOrNull.let { value ->
                 key to value?.longOrNull
             }
         }
 
         override fun floatOrNull(): Pair<String, Float?> {
-            val (key, jsonValue) = currentEntry!!
+            val (key, jsonValue) = getCurrentEntry()
             return jsonValue.jsonPrimitiveOrNull.let { value ->
                 key to value?.floatOrNull
             }
         }
 
         override fun doubleOrNull(): Pair<String, Double?> {
-            val (key, jsonValue) = currentEntry!!
+            val (key, jsonValue) = getCurrentEntry()
             return jsonValue.jsonPrimitiveOrNull.let { value ->
                 key to value?.doubleOrNull
             }
         }
 
         override fun booleanOrNull(): Pair<String, Boolean?> {
-            val (key, jsonValue) = currentEntry!!
+            val (key, jsonValue) = getCurrentEntry()
             return jsonValue.jsonPrimitiveOrNull.let { value ->
                 key to value?.booleanOrNull
             }
         }
 
         override fun stringOrNull(): Pair<String, String?> {
-            val (key, jsonValue) = currentEntry!!
+            val (key, jsonValue) = getCurrentEntry()
             return jsonValue.jsonPrimitiveOrNull.let { value ->
                 key to value?.contentOrNull
             }
         }
 
         override fun objOrNull(): Pair<String, Deserializer.ObjectCtx?> {
-            val (key, jsonValue) = currentEntry!!
+            val (key, jsonValue) = getCurrentEntry()
             return key to jsonValue.jsonObjectOrNull?.let(JsonDeserializer::ObjectCtx)
         }
 
         override fun arrayOrNull(): Pair<String, Deserializer.ArrayCtx?> {
-            val (key, jsonValue) = currentEntry!!
+            val (key, jsonValue) = getCurrentEntry()
             return key to jsonValue.jsonArrayOrNull?.let(JsonDeserializer::ArrayCtx)
         }
     }
@@ -152,6 +156,10 @@ sealed class JsonDeserializer : Deserializer<JsonObject> {
     private class ArrayCtx(arr: JsonArray) : Deserializer.ArrayCtx {
         private val iter = arr.iterator()
         private var currentValue: JsonElement? = null
+
+        private fun getCurrentValue(): JsonElement {
+            return currentValue ?: throw IllegalStateException("hasNext must be called first")
+        }
 
         private fun nextPrimitive(): JsonPrimitive? {
             return when(val v = currentValue) {
@@ -167,7 +175,7 @@ sealed class JsonDeserializer : Deserializer<JsonObject> {
         }
 
         override fun anyOrNull(): Any? {
-            return coerceToAny(currentValue!!)
+            return coerceToAny(getCurrentValue())
         }
 
         override fun intOrNull(): Int? {
@@ -195,11 +203,11 @@ sealed class JsonDeserializer : Deserializer<JsonObject> {
         }
 
         override fun objOrNull(): Deserializer.ObjectCtx? {
-            return (currentValue!! as? JsonObject)?.let(JsonDeserializer::ObjectCtx)
+            return (getCurrentValue() as? JsonObject)?.let(JsonDeserializer::ObjectCtx)
         }
 
         override fun arrayOrNull(): Deserializer.ArrayCtx? {
-            return (currentValue!! as? JsonArray)?.let(JsonDeserializer::ArrayCtx)
+            return (getCurrentValue() as? JsonArray)?.let(JsonDeserializer::ArrayCtx)
         }
     }
 

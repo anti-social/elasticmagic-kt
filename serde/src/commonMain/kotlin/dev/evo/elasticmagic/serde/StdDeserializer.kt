@@ -105,56 +105,60 @@ abstract class StdDeserializer : Deserializer<Map<String, Any?>> {
     protected class ObjectIterator(
         val iter: Iterator<Map.Entry<*, *>>,
     ) : Deserializer.ObjectIterator {
-        private var currentyEntry: Map.Entry<*, *>? = null
+        private var currentEntry: Map.Entry<*, *>? = null
 
         override fun hasNext(): Boolean {
             return iter.hasNext().also {
-                currentyEntry = if (it) iter.next() else null
+                currentEntry = if (it) iter.next() else null
             }
         }
 
+        private fun getCurrentEntry(): Map.Entry<*, *> {
+            return currentEntry ?: throw IllegalStateException("hasNext must be called first")
+        }
+
         override fun anyOrNull(): Pair<String, Any?> {
-            val (key, value) = currentyEntry!!
+            val (key, value) = getCurrentEntry()
             return key as String to coerceToAny(value)
         }
 
         override fun intOrNull(): Pair<String, Int?> {
-            val (key, value) = currentyEntry!!
+            val (key, value) = getCurrentEntry()
             return key as String to coerceToInt(value)
         }
 
         override fun longOrNull(): Pair<String, Long?> {
-            val (key, value) = currentyEntry!!
+            val (key, value) = getCurrentEntry()
             return key as String to coerceToLong(value)
         }
 
         override fun floatOrNull(): Pair<String, Float?> {
-            val (key, value) = currentyEntry!!
+            val (key, value) = getCurrentEntry()
             return key as String to coerceToFloat(value)
         }
 
         override fun doubleOrNull(): Pair<String, Double?> {
-            val (key, value) = currentyEntry!!
+            val (key, value) = getCurrentEntry()
             return key as String to coerceToDouble(value)
         }
 
         override fun booleanOrNull(): Pair<String, Boolean?> {
-            val (key, value) = currentyEntry!!
+            val (key, value) = getCurrentEntry()
             return key as String to coerceToBoolean(value)
         }
 
         override fun stringOrNull(): Pair<String, String?> {
-            val (key, value) = currentyEntry!!
+            val (key, value) = getCurrentEntry()
             return key as String to coerceToString(value)
         }
 
         override fun objOrNull(): Pair<String, Deserializer.ObjectCtx?> {
-            val (key, value) = currentyEntry!!
+            val (key, value) = getCurrentEntry()
             return key as String to coerceToMap(value)?.let(StdDeserializer::ObjectCtx)
         }
 
         override fun arrayOrNull(): Pair<String, Deserializer.ArrayCtx?> {
-            val (key, value) = currentyEntry!!
+            val (key, value) = getCurrentEntry()
             return key as String to coerceToList(value)?.let(StdDeserializer::ArrayCtx)
         }
     }
@@ -172,26 +176,30 @@ abstract class StdDeserializer : Deserializer<Map<String, Any?>> {
             }
         }
 
-        override fun anyOrNull(): Any? = coerceToAny(currentValue!!)
+        fun getCurrentValue(): Any {
+            return currentValue ?: throw IllegalStateException("hasNext must be called first")
+        }
 
-        override fun intOrNull(): Int? = coerceToInt(currentValue!!)
+        override fun anyOrNull(): Any? = coerceToAny(getCurrentValue())
 
-        override fun longOrNull(): Long? = coerceToLong(currentValue!!)
+        override fun intOrNull(): Int? = coerceToInt(getCurrentValue())
 
-        override fun floatOrNull(): Float? = coerceToFloat(currentValue!!)
+        override fun longOrNull(): Long? = coerceToLong(getCurrentValue())
 
-        override fun doubleOrNull(): Double? = coerceToDouble(currentValue!!)
+        override fun floatOrNull(): Float? = coerceToFloat(getCurrentValue())
 
-        override fun booleanOrNull(): Boolean? = coerceToBoolean(currentValue!!)
+        override fun doubleOrNull(): Double? = coerceToDouble(getCurrentValue())
 
-        override fun stringOrNull(): String? = coerceToString(currentValue!!)
+        override fun booleanOrNull(): Boolean? = coerceToBoolean(getCurrentValue())
+
+        override fun stringOrNull(): String? = coerceToString(getCurrentValue())
 
         override fun objOrNull(): Deserializer.ObjectCtx? {
-            return coerceToMap(currentValue!!)?.let(StdDeserializer::ObjectCtx)
+            return coerceToMap(getCurrentValue())?.let(StdDeserializer::ObjectCtx)
         }
 
         override fun arrayOrNull(): Deserializer.ArrayCtx? {
-            return coerceToList(currentValue!!)?.let(StdDeserializer::ArrayCtx)
+            return coerceToList(getCurrentValue())?.let(StdDeserializer::ArrayCtx)
         }
     }
 

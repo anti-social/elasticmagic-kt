@@ -203,9 +203,7 @@ class MultiMatch(
     enum class Type : ToValue {
         BEST_FIELDS, MOST_FIELDS, CROSS_FIELDS, PHRASE, PHRASE_PREFIX;
 
-        override fun toValue(): Any {
-            return name.toLowerCase()
-        }
+        override fun toValue(): Any = name.lowercase()
     }
 
     override fun visit(
@@ -247,7 +245,7 @@ class Nested(
     enum class ScoreMode : ToValue {
         AVG, MAX, MIN, NONE, SUM;
 
-        override fun toValue() = name.toLowerCase()
+        override fun toValue() = name.lowercase()
     }
 
     override fun visit(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
@@ -396,22 +394,22 @@ class Bool(
         compiler: SearchQueryCompiler
     ) {
         ctx.fieldIfNotNull("minimum_should_match", minimumShouldMatch)
-        if (!filter.isNullOrEmpty()) {
+        if (filter.isNotEmpty()) {
             ctx.array("filter") {
                 compiler.visit(this, filter)
             }
         }
-        if (!should.isNullOrEmpty()) {
+        if (should.isNotEmpty()) {
             ctx.array("should") {
                 compiler.visit(this, should)
             }
         }
-        if (!must.isNullOrEmpty()) {
+        if (must.isNotEmpty()) {
             ctx.array("must") {
                 compiler.visit(this, must)
             }
         }
-        if (!mustNot.isNullOrEmpty()) {
+        if (mustNot.isNotEmpty()) {
             ctx.array("must_not") {
                 compiler.visit(this, mustNot)
             }
@@ -511,12 +509,12 @@ class FunctionScore(
     enum class ScoreMode : ToValue {
         MULTIPLY, SUM, AVG, FIRST, MAX, MIN;
 
-        override fun toValue(): Any = name.toLowerCase()
+        override fun toValue(): Any = name.lowercase()
     }
     enum class BoostMode : ToValue {
         MULTIPLY, REPLACE, SUM, AVG, MAX, MIN;
 
-        override fun toValue(): Any = name.toLowerCase()
+        override fun toValue(): Any = name.lowercase()
     }
 
     override val name = "function_score"
@@ -725,25 +723,21 @@ class Sort(
     enum class Order : ToValue {
         ASC, DESC;
 
-        override fun toValue(): Any {
-            return name.toLowerCase()
-        }
+        override fun toValue(): Any = name.lowercase()
     }
 
     enum class Mode : ToValue {
         MIN, MAX, SUM, AVG, MEDIAN;
 
         override fun toValue(): Any {
-            return name.toLowerCase()
+            return name.lowercase()
         }
     }
 
     enum class NumericType : ToValue {
         DOUBLE, LONG, DATE, DATE_NANOS;
 
-        override fun toValue(): Any {
-            return name.toLowerCase()
-        }
+        override fun toValue(): Any = name.lowercase()
     }
 
     sealed class Missing : ToValue {
@@ -843,7 +837,7 @@ class QueryRescore(
     enum class ScoreMode : ToValue {
         TOTAL, MULTIPLY, AVG, MAX, MIN;
 
-        override fun toValue() = name.toLowerCase()
+        override fun toValue() = name.lowercase()
     }
 
     override fun visit(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
