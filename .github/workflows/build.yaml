@@ -17,7 +17,7 @@ env:
 jobs:
   unit-tests:
     if: |
-      contains(github.event.head_commit.message, '[skip tests]')
+      !contains(github.event.head_commit.message, '[skip tests]')
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -74,7 +74,7 @@ jobs:
 
   integ-tests:
     if: |
-      contains(github.event.head_commit.message, '[skip tests]')
+      !contains(github.event.head_commit.message, '[skip tests]')
     needs: unit-tests
     runs-on: ubuntu-latest
     strategy:
