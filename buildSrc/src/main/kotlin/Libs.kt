@@ -1,4 +1,8 @@
+import org.gradle.api.JavaVersion
+
 object Versions {
+    val jvmTarget = JavaVersion.VERSION_11
+
     // Gradle plugins
     const val detekt = "1.18.1"
     const val dokka = "1.5.0"
