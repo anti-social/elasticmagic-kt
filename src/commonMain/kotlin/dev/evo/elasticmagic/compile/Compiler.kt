@@ -85,7 +85,7 @@ object ElasticsearchFeatures_7_0 : ElasticsearchFeatures() {
     override val requiresMappingTypeName = false
 }
 
-class CompilerProvider(esVersion: ElasticsearchVersion) {
+class CompilerSet(esVersion: ElasticsearchVersion) {
     @Suppress("MagicNumber")
     val features = when {
         esVersion.major == 7 -> ElasticsearchFeatures_7_0

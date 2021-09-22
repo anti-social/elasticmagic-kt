@@ -2,7 +2,7 @@ package dev.evo.elasticmagic
 
 import dev.evo.elasticmagic.compile.BulkRequest
 import dev.evo.elasticmagic.compile.Compiled
-import dev.evo.elasticmagic.compile.CompilerProvider
+import dev.evo.elasticmagic.compile.CompilerSet
 import dev.evo.elasticmagic.compile.CreateIndexRequest
 import dev.evo.elasticmagic.compile.UpdateMappingRequest
 import dev.evo.elasticmagic.compile.usingIndex
@@ -10,6 +10,10 @@ import dev.evo.elasticmagic.serde.Serde
 import dev.evo.elasticmagic.transport.ElasticsearchException
 import dev.evo.elasticmagic.transport.ElasticsearchTransport
 import dev.evo.elasticmagic.transport.Method
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
 
 internal typealias Parameters = Map<String, List<String>>
 
@@ -67,21 +71,14 @@ abstract class SerializableTransport<OBJ>(
     }
 }
 
-internal expect class CompilersHolder(
-    compilers: CompilerProvider?,
-    fetch: suspend () -> CompilerProvider
-) {
-    suspend fun get(): CompilerProvider
-}
-
 class ElasticsearchCluster<OBJ>(
     esTransport: ElasticsearchTransport,
     serde: Serde<OBJ>,
-    compilers: CompilerProvider? = null,
+    private val compilers: CompilerSet? = null,
 ) : SerializableTransport<OBJ>(esTransport, serde) {
 
-    private var _compilers = CompilersHolder(compilers) {
-        CompilerProvider(fetchVersion())
+    private val sniffedCompilers = GlobalScope.async(Dispatchers.Unconfined, start = CoroutineStart.LAZY) {
+        CompilerSet(fetchVersion())
     }
 
     operator fun get(indexName: String): ElasticsearchIndex<OBJ> {
@@ -102,8 +99,8 @@ class ElasticsearchCluster<OBJ>(
         )
     }
 
-    private suspend fun getCompilers(): CompilerProvider {
-        return _compilers.get()
+    suspend fun getCompilers(): CompilerSet {
+        return compilers ?: sniffedCompilers.await()
     }
 
     suspend fun createIndex(
@@ -203,7 +200,7 @@ class ElasticsearchIndex<OBJ>(
     val name: String,
     esTransport: ElasticsearchTransport,
     serde: Serde<OBJ>,
-    private val getCompilers: suspend () -> CompilerProvider
+    private val getCompilers: suspend () -> CompilerSet
 ) : SerializableTransport<OBJ>(esTransport, serde) {
 
     suspend fun <S : BaseDocSource> search(
