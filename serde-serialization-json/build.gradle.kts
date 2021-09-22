@@ -15,3 +15,8 @@ kotlin {
         }
     }
 }
+
+configureMultiplatformPublishing(
+    "elasticmagic-transport-ktor",
+    "Elasticsearch Kotlin query DSL - kotlinx.serialization implementation"
+)

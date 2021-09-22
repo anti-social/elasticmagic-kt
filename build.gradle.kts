@@ -5,29 +5,36 @@ plugins {
     id("io.gitlab.arturbosch.detekt") version Versions.detekt apply false
     id("org.jetbrains.dokka") version Versions.dokka
     id("ru.vyarus.mkdocs") version Versions.mkdocs
+    id("org.ajoberstar.grgit") version Versions.grgit
+    id("io.github.gradle-nexus.publish-plugin")
 }
+
+val gitDescribe = grgit.describe(mapOf("match" to listOf("v*"), "tags" to true))
+    ?: "v0.0.0-SNAPSHOT"
 
 // Collect all source and class directories for jacoco
 // TODO: Is there a better way to do that?
-val ignoreCoverageForProjects = setOf("integ-tests", "samples")
-val allKotlinSourceDirs = allprojects
-    .filter { p -> p.name !in ignoreCoverageForProjects }
+val publishProjects = allprojects
+    .filter { p -> p.name.startsWith("elasticmagic") }
+    .toSet()
+val allKotlinSourceDirs = publishProjects
     .flatMap { p ->
         listOf(
             "${p.projectDir}/src/commonMain/kotlin",
             "${p.projectDir}/src/jvmMain/kotlin",
         )
     }
-val allKotlinClassDirs = allprojects
-    .filter { p -> p.name !in ignoreCoverageForProjects }
+val allKotlinClassDirs = publishProjects
     .map { p ->
         "${p.buildDir}/classes/kotlin/jvm/main"
     }
 
 allprojects {
     group = "dev.evo.elasticmagic"
-    version = "0.0.1"
+    version = gitDescribe.trimStart('v')
 
+    // We could make `samples` a separate project,
+    // but then we should open it as different project in IDE for working code completion
     if (name == "samples") {
         return@allprojects
     }
@@ -36,6 +43,13 @@ allprojects {
         plugin("org.jetbrains.kotlin.multiplatform")
         plugin("jacoco")
         plugin("io.gitlab.arturbosch.detekt")
+    }
+
+    if (this in publishProjects) {
+        apply {
+            plugin("maven-publish")
+            plugin("signing")
+        }
     }
 
     repositories {
@@ -139,3 +153,12 @@ mkdocs {
 }
 
 tasks.getByName("mkdocsBuild").dependsOn(":samples:compileKotlin")
+
+nexusPublishing {
+    repositories {
+        configureSonatypeRepository(project)
+    }
+}
+
+extra["projectUrl"] = uri("https://github.com/anti-social/prometheus-kt")
+configureMultiplatformPublishing("elasticmagic", "Elasticsearch Kotlin query DSL")

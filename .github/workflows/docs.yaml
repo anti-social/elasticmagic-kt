@@ -17,6 +17,7 @@ jobs:
       with:
         java-version: 11
 
+    ### Cache ###
     - name: Cache gradle wrapper
       uses: actions/cache@v2
       with:
@@ -37,6 +38,7 @@ jobs:
         path: ~/.konan
         key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle', '**/*.gradle.kts', 'buildSrc') }}
         restore-keys: ${{ runner.os }}-konan
+    ### End of Cache ###
 
     - name: Build docs
       run: ./gradlew mkdocsBuild --info
