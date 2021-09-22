@@ -3,7 +3,7 @@ package dev.evo.elasticmagic
 enum class Refresh : ToValue {
     TRUE, FALSE, WAIT_FOR;
 
-    override fun toValue(): Any = name.toLowerCase()
+    override fun toValue(): Any = name.lowercase()
 }
 
 enum class ConcurrencyControl(val value: String) : ToValue {

@@ -4,6 +4,7 @@ import dev.evo.elasticmagic.serde.serialization.JsonSerde
 import dev.evo.elasticmagic.transport.ElasticsearchException
 import dev.evo.elasticmagic.transport.ElasticsearchKtorTransport
 
+@Suppress("UnnecessaryAbstractClass")
 abstract class ElasticsearchTestBase(indexName: String) : TestBase() {
     protected val esTransport = ElasticsearchKtorTransport(
         "http://localhost:9200",

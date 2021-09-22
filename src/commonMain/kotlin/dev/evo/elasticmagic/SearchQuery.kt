@@ -10,9 +10,7 @@ data class FieldFormat(
 enum class SearchType : ToValue {
     QUERY_THEN_FETCH, DFS_QUERY_THEN_FETCH;
 
-    override fun toValue(): Any {
-        return name.toLowerCase()
-    }
+    override fun toValue(): Any = name.lowercase()
 }
 
 @Suppress("UnnecessaryAbstractClass")

@@ -30,7 +30,7 @@ class MappingCompilerTests {
         val emptyDoc = object : Document() {}
 
         val compiled = compiler.compile(serializer, emptyDoc)
-        compiled.body!! shouldContainExactly mapOf(
+        compiled.body.shouldNotBeNull() shouldContainExactly mapOf(
             "properties" to emptyMap<String, Any>()
         )
     }
@@ -48,7 +48,7 @@ class MappingCompilerTests {
         }
 
         val compiled = compiler.compile(serializer, productDoc)
-        compiled.body!! shouldContainExactly mapOf(
+        compiled.body.shouldNotBeNull() shouldContainExactly mapOf(
             "properties" to mapOf(
                 "name" to mapOf(
                     "type" to "text",
@@ -98,7 +98,7 @@ class MappingCompilerTests {
         }
 
         val compiled = compiler.compile(serializer, userDoc)
-        compiled.body!! shouldContainExactly mapOf(
+        compiled.body.shouldNotBeNull() shouldContainExactly mapOf(
             "properties" to mapOf(
                 "company" to mapOf(
                     "type" to "object",
@@ -132,7 +132,7 @@ class MappingCompilerTests {
 
     @Test
     fun testMergeDocuments() {
-        abstract class QADoc : Document() {
+        open class QADoc : Document() {
             val join by join(relations = mapOf("question" to listOf("answer")))
         }
 

@@ -10,7 +10,7 @@ import kotlin.reflect.KProperty
 enum class Dynamic : ToValue {
     TRUE, FALSE, STRICT, RUNTIME;
 
-    override fun toValue(): String = name.toLowerCase()
+    override fun toValue(): String = name.lowercase()
 }
 
 /**
@@ -438,6 +438,7 @@ typealias DocSourceField = BoundField<BaseDocSource>
 /**
  * Represents Elasticsearch sub-document.
  */
+@Suppress("UnnecessaryAbstractClass")
 abstract class SubDocument(
     private val field: DocSourceField
 ) : BaseDocument(), FieldOperations {
@@ -542,6 +543,7 @@ open class MetaFields : RootFieldSet() {
     ) : MetaField<Long>("_size", LongType, Params("enabled" to enabled))
 }
 
+@Suppress("UnnecessaryAbstractClass")
 abstract class RootFieldSet : BaseDocument() {
     companion object : RootFieldSet()
 
@@ -553,6 +555,7 @@ abstract class RootFieldSet : BaseDocument() {
 /**
  * Base class for describing a top level Elasticsearch document.
  */
+@Suppress("UnnecessaryAbstractClass")
 abstract class Document : RootFieldSet() {
     open val meta = MetaFields()
 
