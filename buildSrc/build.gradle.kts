@@ -23,10 +23,11 @@ val nexusPublishVersion = "1.1.0"
 // See example at: https://docs.gradle.org/current/dsl/org.gradle.api.tasks.SourceSetOutput.html
 val generatedResourcesDir = buildDir.resolve("generated-resources").resolve("main")
 val generateVersions = tasks.register("generateVersions") {
-   outputs.dir(generatedResourcesDir)
+   val versionsDir = generatedResourcesDir.resolve("elasticmagic")
+   outputs.dir(versionsDir)
 
    doLast {
-      generatedResourcesDir.resolve("versions.properties")
+      versionsDir.resolve("versions.properties")
          .writeText("kotlin=$kotlinVersion")
    }
 }
