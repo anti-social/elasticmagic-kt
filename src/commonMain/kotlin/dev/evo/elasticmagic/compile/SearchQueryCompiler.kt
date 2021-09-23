@@ -127,7 +127,13 @@ open class SearchQueryCompiler(
         }
         if (searchQuery.scriptFields.isNotEmpty()) {
             ctx.obj("script_fields") {
-                visit(this, searchQuery.scriptFields)
+                for ((fieldName, script) in searchQuery.scriptFields) {
+                    obj(fieldName) {
+                        obj("script") {
+                            visit(this, script)
+                        }
+                    }
+                }
             }
         }
         if (searchQuery.size != null) {

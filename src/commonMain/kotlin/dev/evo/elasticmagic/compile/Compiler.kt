@@ -95,11 +95,11 @@ class CompilerSet(esVersion: ElasticsearchVersion) {
         )
     }
 
-    val mapping: MappingCompiler = MappingCompiler(esVersion)
+    val searchQuery: SearchQueryCompiler = SearchQueryCompiler(esVersion)
+
+    val mapping: MappingCompiler = MappingCompiler(esVersion, searchQuery)
     val createIndex: CreateIndexCompiler = CreateIndexCompiler(esVersion, features, mapping)
     val updateMapping: UpdateMappingCompiler = UpdateMappingCompiler(esVersion, features, mapping)
-
-    val searchQuery: SearchQueryCompiler = SearchQueryCompiler(esVersion)
 
     val actionMetaCompiler: ActionMetaCompiler = ActionMetaCompiler(esVersion, features)
     val actionSourceCompiler: ActionSourceCompiler = ActionSourceCompiler(esVersion, searchQuery)

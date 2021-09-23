@@ -258,13 +258,16 @@ class Nested(
     }
 }
 
+// TODO: Refactor script creation
+// Script.WithSource, Script.WithId shortcuts
 class Script(
     val spec: Spec,
     val lang: String? = null,
     val params: Params = Params(),
-) : NamedExpression {
-    override val name: String = "script"
+) : Expression {
+    // override val name: String = "script"
 
+    // FIXME: Don't like it as it is error prone
     constructor(
         source: String? = null,
         id: String? = null,
@@ -272,6 +275,7 @@ class Script(
         params: Params = Params(),
     ) : this(Spec(source, id), lang, params)
 
+    // TODO: After update kotlin to 1.5 move subclasses outside of Spec
     sealed class Spec : Expression {
         class Source(val source: String) : Spec(), Expression {
             override fun accept(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
@@ -316,7 +320,7 @@ class Script(
         fun Id(id: String): Spec.Id = Spec.Id(id)
     }
 
-    override fun visit(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
+    override fun accept(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
         when (spec) {
             is Spec.Source -> ctx.field("source", spec.source)
             is Spec.Id -> ctx.field("id", spec.id)
@@ -603,7 +607,9 @@ class FunctionScore(
     ) : Function() {
         override fun accept(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
             ctx.obj("script_score") {
-                compiler.visit(this, script)
+                obj("script") {
+                    compiler.visit(this, script)
+                }
             }
         }
     }
@@ -808,7 +814,9 @@ class Sort(
             is By.Script -> {
                 ctx.obj("_script") {
                     field("type", by.type)
-                    compiler.visit(this, by.script)
+                    obj("script") {
+                        compiler.visit(this, by.script)
+                    }
                     compiler.visit(this, params)
                 }
             }

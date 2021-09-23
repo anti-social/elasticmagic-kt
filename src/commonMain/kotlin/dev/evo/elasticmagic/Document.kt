@@ -23,6 +23,8 @@ interface AnyField : FieldOperations {
     fun getMappingParams(): Params
 
     fun getParent(): Named
+
+    fun isIgnored(): Boolean
 }
 
 /**
@@ -38,6 +40,7 @@ open class BoundField<V>(
     private val type: FieldType<V>,
     private val params: Params,
     private val parent: FieldSet,
+    private val ignored: Boolean = false,
 ) : AnyField {
     private val qualifiedName = run {
         val parentQualifiedName = parent.getQualifiedFieldName()
@@ -57,6 +60,8 @@ open class BoundField<V>(
     override fun getMappingParams(): Params = params
 
     override fun getParent(): FieldSet = parent
+
+    override fun isIgnored(): Boolean = ignored
 }
 
 /**
@@ -72,7 +77,8 @@ class BoundJoinField(
     relations: Map<String, List<String>>,
     params: Params,
     parent: FieldSet,
-) : BoundField<Join>(name, type, Params(params, "relations" to relations), parent) {
+    ignored: Boolean,
+) : BoundField<Join>(name, type, Params(params, "relations" to relations), parent, ignored) {
 
     inner class Parent(private val name: String) : FieldOperations {
         override fun getFieldName(): String {
@@ -289,6 +295,7 @@ abstract class FieldSet : Named {
         val name: String?,
         val type: FieldType<V>,
         val params: Params,
+        val ignored: Boolean = false,
     ) {
         operator fun provideDelegate(
             thisRef: FieldSet, prop: KProperty<*>
@@ -297,7 +304,8 @@ abstract class FieldSet : Named {
                 name ?: prop.name,
                 type,
                 params,
-                thisRef
+                thisRef,
+                ignored,
             )
             thisRef.addField(field)
             return ReadOnlyProperty { _, _ -> field }
@@ -318,7 +326,8 @@ abstract class FieldSet : Named {
                 type,
                 relations,
                 params,
-                thisRef
+                thisRef,
+                ignored,
             )
             thisRef.addField(field)
             return ReadOnlyProperty { _, _ -> field }
@@ -370,6 +379,7 @@ internal open class WrapperField(val field: AnyField) : AnyField {
     override fun getFieldType(): FieldType<*> = field.getFieldType()
     override fun getMappingParams(): Params = field.getMappingParams()
     override fun getParent(): Named = field.getParent()
+    override fun isIgnored(): Boolean = field.isIgnored()
 }
 
 internal class SubFieldsField(
@@ -543,6 +553,24 @@ open class MetaFields : RootFieldSet() {
     ) : MetaField<Long>("_size", LongType, Params("enabled" to enabled))
 }
 
+open class RuntimeFields : RootFieldSet() {
+    val score by Field("_score", DoubleType, emptyMap(), ignored = true)
+    val doc by Field("_doc", IntType, emptyMap(), ignored = true)
+    val seqNo by Field("_seq_no", LongType, emptyMap(), ignored = true)
+
+    fun <V> runtime(name: String, type: FieldType<V>, script: Script): RuntimeField<V> {
+        return RuntimeField(name, type, script)
+    }
+
+    fun <V> runtime(type: FieldType<V>, script: Script): RuntimeField<V> {
+        return RuntimeField(null, type, script)
+    }
+
+    class RuntimeField<V>(
+        name: String?, type: FieldType<V>, script: Script
+    ) : Field<V>(name, type, mapOf("script" to script))
+}
+
 @Suppress("UnnecessaryAbstractClass")
 abstract class RootFieldSet : BaseDocument() {
     companion object : RootFieldSet()
@@ -558,6 +586,7 @@ abstract class RootFieldSet : BaseDocument() {
 @Suppress("UnnecessaryAbstractClass")
 abstract class Document : RootFieldSet() {
     open val meta = MetaFields()
+    open val runtime = RuntimeFields()
 
     open val dynamic: Dynamic? = null
 }

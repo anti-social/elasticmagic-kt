@@ -4,7 +4,10 @@ import dev.evo.elasticmagic.BoundField
 import dev.evo.elasticmagic.DocSourceField
 import dev.evo.elasticmagic.Document
 import dev.evo.elasticmagic.ElasticsearchVersion
+import dev.evo.elasticmagic.KeywordType
 import dev.evo.elasticmagic.Params
+import dev.evo.elasticmagic.RuntimeFields
+import dev.evo.elasticmagic.Script
 import dev.evo.elasticmagic.SubDocument
 import dev.evo.elasticmagic.SubFields
 import dev.evo.elasticmagic.mergeDocuments
@@ -21,8 +24,10 @@ class MappingCompilerTests {
             TODO("not implemented")
         }
     }
+    val esVersion = ElasticsearchVersion(6, 0, 0)
     private val compiler = MappingCompiler(
-        ElasticsearchVersion(6, 0, 0),
+        esVersion,
+        SearchQueryCompiler(esVersion)
     )
 
     @Test
@@ -125,6 +130,59 @@ class MappingCompilerTests {
                             "type" to "integer"
                         )
                     )
+                ),
+            )
+        )
+    }
+
+    @Test
+    fun testRuntimeFields() {
+        val logDoc = object : Document() {
+            // TODO: Replace with date field
+            val timestamp by keyword("@timestamp")
+
+            override val runtime = object : RuntimeFields() {
+                val dayOfWeek by runtime(
+                    "day_of_week",
+                    KeywordType,
+                    Script(
+                        Script.Source(
+                            """
+                            emit(
+                                doc[params.timestampField].value
+                                    .dayOfWeekEnum
+                                    .getDisplayName(TextStyle.FULL, Locale.ROOT)
+                            )""".trimIndent()
+                        ),
+                        params = Params(
+                            "timestampField" to timestamp
+                        )
+                    )
+                )
+            }
+        }
+
+        val compiled = compiler.compile(serializer, logDoc)
+        compiled.body.shouldNotBeNull() shouldContainExactly mapOf(
+            "runtime" to mapOf(
+                "day_of_week" to mapOf(
+                    "type" to "keyword",
+                    "script" to mapOf(
+                        "source" to """
+                            emit(
+                                doc[params.timestampField].value
+                                    .dayOfWeekEnum
+                                    .getDisplayName(TextStyle.FULL, Locale.ROOT)
+                            )""".trimIndent(),
+                        "params" to mapOf(
+                            "timestampField" to "@timestamp"
+                        )
+                    )
+                )
+            ),
+            "properties" to mapOf(
+                "@timestamp" to mapOf(
+                    "type" to "keyword",
                 ),
             )
         )

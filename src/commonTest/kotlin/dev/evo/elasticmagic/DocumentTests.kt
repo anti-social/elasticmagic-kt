@@ -37,6 +37,34 @@ class DocumentTests {
     }
 
     @Test
+    fun testRuntimeFields() {
+        val emptyDoc = object : Document() {
+            override val runtime = object : RuntimeFields() {
+                val fullName by runtime(
+                    "full_name",
+                    KeywordType,
+                    Script(
+                        Script.Source("emit(doc['first_name'].value + doc['last_name'].value)")
+                    )
+                )
+            }
+        }
+
+        emptyDoc.runtime.score.getFieldType() shouldBe DoubleType
+        emptyDoc.runtime.score.getFieldName() shouldBe "_score"
+        emptyDoc.runtime.score.getQualifiedFieldName() shouldBe "_score"
+        emptyDoc.runtime.doc.getFieldType() shouldBe IntType
+        emptyDoc.runtime.doc.getFieldName() shouldBe "_doc"
+        emptyDoc.runtime.doc.getQualifiedFieldName() shouldBe "_doc"
+        emptyDoc.runtime.seqNo.getFieldType() shouldBe LongType
+        emptyDoc.runtime.seqNo.getFieldName() shouldBe "_seq_no"
+        emptyDoc.runtime.seqNo.getQualifiedFieldName() shouldBe "_seq_no"
+        emptyDoc.runtime.fullName.getFieldType() shouldBe KeywordType
+        emptyDoc.runtime.fullName.getFieldName() shouldBe "full_name"
+        emptyDoc.runtime.fullName.getQualifiedFieldName() shouldBe "full_name"
+    }
+
+    @Test
     fun testMetaFieldParams() {
         val emptyDoc = object : Document() {
             override val meta = object : MetaFields() {
