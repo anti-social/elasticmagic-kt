@@ -78,6 +78,9 @@ allprojects {
             }
         }
 
+        tasks.findByName("nativeTest")?.run {
+            outputs.upToDateWhen { false }
+        }
         tasks.findByName("jvmTest")?.run {
             outputs.upToDateWhen { false }
 

@@ -126,11 +126,16 @@ class BoundJoinField(
  */
 abstract class FieldSet : Named {
     private val fields: ArrayList<AnyField> = arrayListOf()
-    private val fieldsByName: HashMap<String, AnyField> = hashMapOf()
+    private val fieldsByName: HashMap<String, Int> = hashMapOf()
 
     internal fun addField(field: AnyField) {
-        fields.add(field)
-        fieldsByName[field.getFieldName()] = field
+        val existingFieldIx = fieldsByName[field.getFieldName()]
+        if (existingFieldIx != null) {
+            fields[existingFieldIx] = field
+        } else {
+            fieldsByName[field.getFieldName()] = fields.size
+            fields.add(field)
+        }
     }
 
     internal fun getAllFields(): List<AnyField> {
@@ -138,7 +143,7 @@ abstract class FieldSet : Named {
     }
 
     internal fun getFieldByName(name: String): AnyField? {
-        return fieldsByName[name]
+        return fields[fieldsByName[name] ?: return null]
     }
 
     fun <T> field(
