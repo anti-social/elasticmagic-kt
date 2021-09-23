@@ -26,7 +26,7 @@ object Versions {
     const val kotest = "4.4.1"
 
     private fun readVersionProperties(): Properties {
-        return Versions::class.java.getResourceAsStream("/versions.properties").use { versions ->
+        return Versions::class.java.getResourceAsStream("/elasticmagic/versions.properties").use { versions ->
             Properties().apply {
                 load(versions)
             }
