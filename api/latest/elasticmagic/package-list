@@ -696,6 +696,12 @@ $dokka.location:dev.evo.elasticmagic/FunctionScore.Function/Function/#/PointingT
 $dokka.location:dev.evo.elasticmagic/FunctionScore.Function/children/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-function-score/-function/children.html
 $dokka.location:dev.evo.elasticmagic/FunctionScore.Function/filter/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-function-score/-function/filter.html
 $dokka.location:dev.evo.elasticmagic/FunctionScore.Function/reduceFilter/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-function-score/-function/reduce-filter.html
+$dokka.location:dev.evo.elasticmagic/FunctionScore.RandomScore///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-function-score/-random-score/index.html
+$dokka.location:dev.evo.elasticmagic/FunctionScore.RandomScore/RandomScore/#kotlin.Any?#dev.evo.elasticmagic.FieldOperations?#dev.evo.elasticmagic.QueryExpression?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-function-score/-random-score/-random-score.html
+$dokka.location:dev.evo.elasticmagic/FunctionScore.RandomScore/accept/#dev.evo.elasticmagic.serde.Serializer.ObjectCtx#dev.evo.elasticmagic.compile.SearchQueryCompiler/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-function-score/-random-score/accept.html
+$dokka.location:dev.evo.elasticmagic/FunctionScore.RandomScore/field/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-function-score/-random-score/field.html
+$dokka.location:dev.evo.elasticmagic/FunctionScore.RandomScore/filter/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-function-score/-random-score/filter.html
+$dokka.location:dev.evo.elasticmagic/FunctionScore.RandomScore/seed/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-function-score/-random-score/seed.html
 $dokka.location:dev.evo.elasticmagic/FunctionScore.ScoreMode.AVG///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-function-score/-score-mode/-a-v-g/index.html
 $dokka.location:dev.evo.elasticmagic/FunctionScore.ScoreMode.AVG/name/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-function-score/-score-mode/-a-v-g/name.html
 $dokka.location:dev.evo.elasticmagic/FunctionScore.ScoreMode.AVG/ordinal/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-function-score/-score-mode/-a-v-g/ordinal.html
