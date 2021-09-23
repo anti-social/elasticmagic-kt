@@ -55,9 +55,9 @@ interface QueryExpression : NamedExpression {
 @Suppress("UNUSED")
 data class NodeHandle<T: QueryExpressionNode<T>>(val name: String? = null)
 
-abstract class QueryExpressionNode<T: QueryExpressionNode<T>>(
-    val handle: NodeHandle<T>,
-) : QueryExpression {
+abstract class QueryExpressionNode<T: QueryExpressionNode<T>> : QueryExpression {
+    abstract val handle: NodeHandle<T>
+
     override fun visit(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
         toQueryExpression().visit(ctx, compiler)
     }
@@ -69,7 +69,7 @@ abstract class QueryExpressionNode<T: QueryExpressionNode<T>>(
     abstract fun toQueryExpression(): QueryExpression
 }
 
-class Term(
+data class Term(
     val field: FieldOperations,
     val term: Any,
     val boost: Double? = null,
@@ -91,7 +91,7 @@ class Term(
     }
 }
 
-class Terms(
+data class Terms(
     val field: FieldOperations,
     val terms: List<Any>,
     val boost: Double? = null,
@@ -111,7 +111,7 @@ class Terms(
     }
 }
 
-class Exists(
+data class Exists(
     val field: FieldOperations,
 ) : QueryExpression {
     override val name = "exists"
@@ -124,7 +124,7 @@ class Exists(
     }
 }
 
-class Range(
+data class Range(
     val field: FieldOperations,
     val gt: Any? = null,
     val gte: Any? = null,
@@ -154,7 +154,7 @@ class Range(
     }
 }
 
-class Match(
+data class Match(
     val field: FieldOperations,
     val query: String,
     val analyzer: String? = null,
@@ -182,7 +182,7 @@ class Match(
     }
 }
 
-class MatchAll : QueryExpression {
+object MatchAll : QueryExpression {
     override val name = "match_all"
 
     override fun visit(
@@ -191,7 +191,7 @@ class MatchAll : QueryExpression {
     ) {}
 }
 
-class MultiMatch(
+data class MultiMatch(
     val query: String,
     val fields: List<FieldOperations>,
     val type: Type? = null,
@@ -222,7 +222,7 @@ class MultiMatch(
     }
 }
 
-class Ids(
+data class Ids(
     val values: List<String>,
 ) : QueryExpression {
     override val name = "ids"
@@ -234,7 +234,7 @@ class Ids(
     }
 }
 
-class Nested(
+data class Nested(
     val path: FieldOperations,
     val query: QueryExpression,
     val scoreMode: ScoreMode? = null,
@@ -260,7 +260,7 @@ class Nested(
 
 // TODO: Refactor script creation
 // Script.WithSource, Script.WithId shortcuts
-class Script(
+data class Script(
     val spec: Spec,
     val lang: String? = null,
     val params: Params = Params(),
@@ -277,13 +277,13 @@ class Script(
 
     // TODO: After update kotlin to 1.5 move subclasses outside of Spec
     sealed class Spec : Expression {
-        class Source(val source: String) : Spec(), Expression {
+        data class Source(val source: String) : Spec(), Expression {
             override fun accept(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
                 ctx.field("source", source)
             }
         }
 
-        class Id(val id: String) : Spec(), Expression {
+        data class Id(val id: String) : Spec(), Expression {
             override fun accept(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
                 ctx.field("id", id)
             }
@@ -350,7 +350,7 @@ interface BoolExpression : QueryExpression {
     }
 }
 
-class Bool(
+data class Bool(
     override val filter: List<QueryExpression> = emptyList(),
     override val should: List<QueryExpression> = emptyList(),
     override val must: List<QueryExpression> = emptyList(),
@@ -421,20 +421,35 @@ class Bool(
     }
 }
 
-class BoolNode(
-    handle: NodeHandle<BoolNode>,
-    filter: List<QueryExpression> = emptyList(),
-    should: List<QueryExpression> = emptyList(),
-    must: List<QueryExpression> = emptyList(),
-    mustNot: List<QueryExpression> = emptyList(),
-    private val minimumShouldMatch: Any? = null,
-) : QueryExpressionNode<BoolNode>(handle), BoolExpression {
+data class BoolNode(
+    override val handle: NodeHandle<BoolNode>,
+    override var filter: MutableList<QueryExpression>,
+    override var should: MutableList<QueryExpression>,
+    override var must: MutableList<QueryExpression>,
+    override var mustNot: MutableList<QueryExpression>,
+    var minimumShouldMatch: Any? = null,
+) : QueryExpressionNode<BoolNode>(), BoolExpression {
     override val name: String = "bool"
 
-    override var filter: MutableList<QueryExpression> = filter.toMutableList()
-    override var should: MutableList<QueryExpression> = should.toMutableList()
-    override var must: MutableList<QueryExpression> = must.toMutableList()
-    override var mustNot: MutableList<QueryExpression> = mustNot.toMutableList()
+    companion object {
+        operator fun invoke(
+            handle: NodeHandle<BoolNode>,
+            filter: List<QueryExpression> = emptyList(),
+            should: List<QueryExpression> = emptyList(),
+            must: List<QueryExpression> = emptyList(),
+            mustNot: List<QueryExpression> = emptyList(),
+            minimumShouldMatch: Any? = null,
+        ): BoolNode {
+            return BoolNode(
+                handle,
+                filter = filter.toMutableList(),
+                should = should.toMutableList(),
+                must = must.toMutableList(),
+                mustNot = mustNot.toMutableList(),
+                minimumShouldMatch = minimumShouldMatch,
+            )
+        }
+    }
 
     override fun toQueryExpression(): Bool {
         return Bool(
@@ -477,14 +492,26 @@ class DisMax(
     }
 }
 
-class DisMaxNode(
-    handle: NodeHandle<DisMaxNode>,
-    queries: List<QueryExpression> = emptyList(),
+data class DisMaxNode(
+    override val handle: NodeHandle<DisMaxNode>,
+    override var queries: MutableList<QueryExpression>,
     var tieBreaker: Double? = null,
-) : DisMaxExpression, QueryExpressionNode<DisMaxNode>(handle) {
+) : QueryExpressionNode<DisMaxNode>(), DisMaxExpression {
     override val name = "dis_max"
 
-    override var queries: MutableList<QueryExpression> = queries.toMutableList()
+    companion object {
+        operator fun invoke(
+            handle: NodeHandle<DisMaxNode>,
+            queries: List<QueryExpression> = emptyList(),
+            tieBreaker: Double? = null,
+        ): DisMaxNode {
+            return DisMaxNode(
+                handle,
+                queries = queries.toMutableList(),
+                tieBreaker = tieBreaker,
+            )
+        }
+    }
 
     override fun toQueryExpression(): DisMax {
         return DisMax(
@@ -502,7 +529,7 @@ interface FunctionScoreExpression : QueryExpression {
     }
 }
 
-class FunctionScore(
+data class FunctionScore(
     val query: QueryExpression? = null,
     override val functions: List<Function>,
     val boost: Double? = null,
@@ -601,7 +628,7 @@ class FunctionScore(
         }
     }
 
-    class ScriptScore(
+    data class ScriptScore(
         val script: Script,
         override val filter: QueryExpression? = null,
     ) : Function() {
@@ -614,7 +641,7 @@ class FunctionScore(
         }
     }
 
-    class RandomScore(
+    data class RandomScore(
         val seed: Any? = null,
         val field: FieldOperations? = null,
         override val filter: QueryExpression? = null,
@@ -653,18 +680,39 @@ class FunctionScore(
     }
 }
 
-class FunctionScoreNode(
-    handle: NodeHandle<FunctionScoreNode>,
+data class FunctionScoreNode(
+    override val handle: NodeHandle<FunctionScoreNode>,
     var query: QueryExpression?,
     var boost: Double? = null,
     var scoreMode: FunctionScore.ScoreMode? = null,
     var boostMode: FunctionScore.BoostMode? = null,
     var minScore: Double? = null,
-    functions: List<FunctionScore.Function> = emptyList(),
-) : QueryExpressionNode<FunctionScoreNode>(handle), FunctionScoreExpression {
+    override var functions: MutableList<FunctionScore.Function>,
+) : QueryExpressionNode<FunctionScoreNode>(), FunctionScoreExpression {
     override val name: String = "function_score"
 
-    override var functions: MutableList<FunctionScore.Function> = functions.toMutableList()
+    companion object {
+        operator fun invoke(
+            handle: NodeHandle<FunctionScoreNode>,
+            query: QueryExpression?,
+            boost: Double? = null,
+            scoreMode: FunctionScore.ScoreMode? = null,
+            boostMode: FunctionScore.BoostMode? = null,
+            minScore: Double? = null,
+            functions: List<FunctionScore.Function> = emptyList(),
+        ): FunctionScoreNode {
+            return FunctionScoreNode(
+                handle,
+                query,
+                boost = boost,
+                scoreMode = scoreMode,
+                boostMode = boostMode,
+                minScore = minScore,
+                functions = functions.toMutableList()
+
+            )
+        }
+    }
 
     override fun toQueryExpression(): QueryExpression {
         return FunctionScore(

@@ -62,6 +62,24 @@ open class BoundField<V>(
     override fun getParent(): FieldSet = parent
 
     override fun isIgnored(): Boolean = ignored
+
+    override fun equals(other: Any?): Boolean {
+        if (other !is BoundField<*>) {
+            return false
+        }
+        return qualifiedName == other.qualifiedName &&
+                type == other.type &&
+                params == other.params &&
+                ignored == other.ignored
+    }
+
+    override fun hashCode(): Int {
+        var h = qualifiedName.hashCode()
+        h = 37 * h + type.hashCode()
+        h = 37 * h + params.hashCode()
+        h = 37 * h + ignored.hashCode()
+        return h
+    }
 }
 
 /**
@@ -119,8 +137,8 @@ abstract class FieldSet : Named {
         return fields.toList()
     }
 
-    internal fun getFieldsByName(): Map<String, AnyField> {
-        return fieldsByName.toMap()
+    internal fun getFieldByName(name: String): AnyField? {
+        return fieldsByName[name]
     }
 
     fun <T> field(
@@ -512,6 +530,7 @@ open class MetaFields : RootFieldSet() {
     open val source by SourceField()
     open val size by SizeField()
 
+    @Suppress("UnnecessaryAbstractClass")
     abstract class BaseMetaField<V, B: AnyField>(
         name: String, type: FieldType<V>, params: Params = Params(),
         private val boundFieldFactory: (String, Params, MetaFields) -> B
@@ -584,7 +603,7 @@ open class MetaFields : RootFieldSet() {
 
     class BoundSizeField(
         name: String, params: Params, parent: MetaFields
-    ) : BoundField<String>(name, KeywordType, params, parent)
+    ) : BoundField<Long>(name, LongType, params, parent)
 }
 
 open class RuntimeFields : RootFieldSet() {
@@ -636,14 +655,17 @@ fun mergeDocuments(vararg docs: Document): Document {
 
     val expectedMeta = docs[0].meta
     val expectedDocName = docs[0]::class.simpleName
-    val expectedMetaFieldsByName = expectedMeta.getFieldsByName()
     for (doc in docs.slice(1 until docs.size)) {
-        val metaFields = doc.meta.getFieldsByName()
-        checkMetaFields(doc::class.simpleName, metaFields, expectedDocName, expectedMetaFieldsByName)
+        checkMetaFields(doc::class.simpleName, doc.meta, expectedDocName, expectedMeta)
     }
 
     return object : Document() {
         override val meta = expectedMeta
+        override val runtime = object : RuntimeFields() {
+            init {
+                mergeFieldSets(docs.map(Document::runtime)).forEach(::addField)
+            }
+        }
 
         init {
             mergeFieldSets(docs.toList()).forEach(::addField)
@@ -748,17 +770,19 @@ private fun mergeSubDocuments(first: SubDocumentField, second: SubDocumentField)
 
 private fun checkMetaFields(
     docName: String?,
-    metaFields: Map<String, AnyField>,
+    metaFields: MetaFields,
     expectedDocName: String?,
-    expectedMetaFields: Map<String, AnyField>
+    expectedMetaFields: MetaFields
 ) {
-    for (expectedFieldName in expectedMetaFields.keys) {
-        require(expectedFieldName in metaFields) {
+    val expectedFieldNames = expectedMetaFields.getAllFields().map(AnyField::getFieldName)
+    for (expectedFieldName in expectedFieldNames) {
+        requireNotNull(metaFields.getFieldByName(expectedFieldName)) {
             "$expectedDocName has meta field $expectedFieldName but $docName does not"
         }
     }
-    for ((metaFieldName, metaField) in metaFields) {
-        val expectedMetaField = expectedMetaFields[metaFieldName]
+    for (metaField in metaFields.getAllFields()) {
+        val metaFieldName = metaField.getFieldName()
+        val expectedMetaField = expectedMetaFields.getFieldByName(metaFieldName)
         requireNotNull(expectedMetaField) {
             "$docName has meta field $metaFieldName but $expectedDocName does not"
         }

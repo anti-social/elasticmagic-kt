@@ -2,8 +2,10 @@ package dev.evo.elasticmagic
 
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.maps.shouldContainExactly
-import io.kotest.matchers.maps.shouldNotContainKey
+import io.kotest.matchers.nulls.shouldBeNull
+import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.string.shouldStartWith
 import io.kotest.matchers.types.shouldBeInstanceOf
 import io.kotest.matchers.types.shouldBeSameInstanceAs
 import io.kotest.matchers.types.shouldNotBeSameInstanceAs
@@ -265,23 +267,21 @@ class DocumentTests {
         val answerDoc = AnswerDoc()
 
         val mergedDoc = mergeDocuments(opinionDoc, answerDoc)
-        val mergedDocFields = mergedDoc.getFieldsByName()
-        mergedDocFields["text"] shouldBeSameInstanceAs opinionDoc.text
-        mergedDocFields["opinionId"] shouldBeSameInstanceAs answerDoc.opinionId
+        mergedDoc.getFieldByName("text") shouldBeSameInstanceAs opinionDoc.text
+        mergedDoc.getFieldByName("opinionId") shouldBeSameInstanceAs answerDoc.opinionId
 
-        val mergedUserDoc = mergedDocFields["user"]
+        val mergedUserDoc = mergedDoc.getFieldByName("user")
             .shouldBeInstanceOf<SubDocumentField>()
             .subDocument
-        val mergedUserDocFields = mergedUserDoc.getFieldsByName()
-        mergedUserDocFields["phone"] shouldBeSameInstanceAs opinionDoc.user.phone
-        mergedUserDocFields["companyId"] shouldBeSameInstanceAs answerDoc.user.companyId
+        mergedUserDoc.getFieldByName("phone") shouldBeSameInstanceAs opinionDoc.user.phone
+        mergedUserDoc.getFieldByName("companyId") shouldBeSameInstanceAs answerDoc.user.companyId
 
-        val opinionTitleSubFields = mergedUserDocFields["title"]
+        val opinionTitleSubFields = mergedUserDoc.getFieldByName("title")
             .shouldBeInstanceOf<SubFieldsField>()
             .subFields
-        val opinionTitleFields = opinionTitleSubFields.getFieldsByName()
-        opinionTitleFields["sort"] shouldBeSameInstanceAs opinionDoc.user.title.sort
-        opinionTitleFields["autocomplete"] shouldBeSameInstanceAs answerDoc.user.title.autocomplete
+        // val opinionTitleFields = opinionTitleSubFields.getFieldsByName()
+        opinionTitleSubFields.getFieldByName("sort") shouldBeSameInstanceAs opinionDoc.user.title.sort
+        opinionTitleSubFields.getFieldByName("autocomplete") shouldBeSameInstanceAs answerDoc.user.title.autocomplete
     }
 
     @Test
@@ -307,19 +307,16 @@ class DocumentTests {
         val companyDoc = CompanyDoc()
 
         val mergedDoc = mergeDocuments(userDoc, companyDoc)
-        val mergedDocFields = mergedDoc.getFieldsByName()
-        val firstNameFields = mergedDocFields["first_name"]
+        val firstNameFields = mergedDoc.getFieldByName("first_name")
             .shouldBeInstanceOf<SubFieldsField>()
             .subFields
-            .getFieldsByName()
-        firstNameFields["sort"] shouldBeSameInstanceAs userDoc.firstName.sort
-        firstNameFields shouldNotContainKey "autocomplete"
-        val lastNameFields = mergedDocFields["last_name"]
+        firstNameFields.getFieldByName("sort") shouldBeSameInstanceAs userDoc.firstName.sort
+        firstNameFields.getFieldByName("autocomplete").shouldBeNull()
+        val lastNameFields = mergedDoc.getFieldByName("last_name")
             .shouldBeInstanceOf<SubFieldsField>()
             .subFields
-            .getFieldsByName()
-        lastNameFields shouldNotContainKey "sort"
-        lastNameFields["autocomplete"] shouldBeSameInstanceAs companyDoc.lastName.autocomplete
+        lastNameFields.getFieldByName("sort").shouldBeNull()
+        lastNameFields.getFieldByName("autocomplete") shouldBeSameInstanceAs companyDoc.lastName.autocomplete
     }
 
     @Test
@@ -356,9 +353,8 @@ class DocumentTests {
         val companyDoc = CompanyDoc()
 
         val mergedDoc = mergeDocuments(userDoc, companyDoc)
-        val mergedDocFields = mergedDoc.getFieldsByName()
-        mergedDocFields["name"] shouldBeSameInstanceAs userDoc.name
-        mergedDocFields["company_name"] shouldBeSameInstanceAs companyDoc.name
+        mergedDoc.getFieldByName("name") shouldBeSameInstanceAs userDoc.name
+        mergedDoc.getFieldByName("company_name") shouldBeSameInstanceAs companyDoc.name
     }
 
     @Test
@@ -437,7 +433,114 @@ class DocumentTests {
         }
     }
 
+    @Test
+    fun testMergeDocuments_sameRuntimeFields() {
+        val userDoc = object : Document() {
+            val firstName by keyword()
+            val lastName by keyword()
+
+            override val runtime = object : RuntimeFields() {
+                val fullName by runtime(
+                    KeywordType,
+                    Script(
+                        Script.Source(
+                            "emit(doc[params.firstNameField].value + doc[params.lastNameField].value)"
+                        ),
+                        params = Params(
+                            "firstNameField" to firstName,
+                            "lastNameField" to lastName,
+                        )
+                    )
+                )
+            }
+        }
+
+        val companyDoc = object : Document() {
+            val firstName by keyword()
+            val lastName by keyword()
+
+            override val runtime = object : RuntimeFields() {
+                val fullName by runtime(
+                    KeywordType,
+                    Script(
+                        Script.Source(
+                            "emit(doc[params.firstNameField].value + doc[params.lastNameField].value)"
+                        ),
+                        params = Params(
+                            "firstNameField" to firstName,
+                            "lastNameField" to lastName,
+                        )
+                    )
+                )
+            }
+        }
+
+        val mergedDoc = mergeDocuments(userDoc, companyDoc)
+        val fullNameField = mergedDoc.runtime.getFieldByName("fullName").shouldNotBeNull()
+        fullNameField shouldBeSameInstanceAs userDoc.runtime.fullName
+    }
+
+    @Test
+    fun testMergeDocuments_differentRuntimeFields() {
+        val userDoc = object : Document() {
+            val firstName by keyword()
+            val lastName by keyword()
+
+            override val runtime = object : RuntimeFields() {
+                val fullName by runtime(
+                    KeywordType,
+                    Script(
+                        Script.Source(
+                            "emit(doc[params.firstNameField].value + doc[params.lastNameField].value)"
+                        ),
+                        params = Params(
+                            "firstNameField" to firstName,
+                            "lastNameField" to lastName,
+                        )
+                    )
+                )
+            }
+        }
+
+        val companyDoc = object : Document() {
+            val firstName by keyword()
+            val lastName by keyword()
+
+            override val runtime = object : RuntimeFields() {
+                val fullName by runtime(
+                    KeywordType,
+                    Script(
+                        Script.Source(
+                            "emit(doc[params.lastNameField].value + doc[params.firstNameField].value)"
+                        ),
+                        params = Params(
+                            "firstNameField" to firstName,
+                            "lastNameField" to lastName,
+                        )
+                    )
+                )
+            }
+        }
+
+        val exc = shouldThrow<IllegalArgumentException> {
+            mergeDocuments(userDoc, companyDoc)
+        }
+        exc.message shouldStartWith "fullName has different field params:"
+    }
+
     // TODO: Tests that must not be compiled
+    // @Test
+    // fun forbidChangingNameOfMetaFields() {
+    //     val userDoc = object : Document() {
+    //         val id by int()
+    //         val login by keyword()
+    //
+    //         override val meta = object : MetaFields() {
+    //             override val source by MetaField("source", KeywordType, emptyMap())
+    //         }
+    //     }
+    // }
+    //
     // @Test
     // fun forbidSubDocumentInsideSubFields() {
     //     class OpinionDoc(field: DocSourceField) : SubDocument(field) {
