@@ -614,6 +614,19 @@ class FunctionScore(
         }
     }
 
+    class RandomScore(
+        val seed: Any? = null,
+        val field: FieldOperations? = null,
+        override val filter: QueryExpression? = null,
+    ) : Function() {
+        override fun accept(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
+            ctx.obj("random_score") {
+                fieldIfNotNull("seed", seed)
+                fieldIfNotNull("field", field?.getQualifiedFieldName())
+            }
+        }
+    }
+
     override fun reduce(): QueryExpression? {
         val query = query?.reduce()
         if (functions.isEmpty() && minScore == null) {

@@ -140,8 +140,9 @@ class SearchQueryCompilerTests {
                     type = MultiMatch.Type.CROSS_FIELDS
                 ),
                 functions = listOf(
+                    FunctionScore.RandomScore(10, productDoc.runtime.seqNo),
                     FunctionScore.Weight(2.0, productDoc.company.opinion.count.eq(5)),
-                    FunctionScore.FieldValueFactor(productDoc.rank, 5.0)
+                    FunctionScore.FieldValueFactor(productDoc.rank, 5.0),
                 )
             )
         )
@@ -155,6 +156,12 @@ class SearchQueryCompilerTests {
                         mapOf(
                             "function_score" to mapOf(
                                 "functions" to listOf(
+                                    mapOf(
+                                        "random_score" to mapOf(
+                                            "seed" to 10,
+                                            "field" to "_seq_no",
+                                        ),
+                                    ),
                                     mapOf(
                                         "filter" to mapOf(
                                             "term" to mapOf(
