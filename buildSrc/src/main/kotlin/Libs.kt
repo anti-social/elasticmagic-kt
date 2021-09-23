@@ -17,6 +17,7 @@ object Versions {
     val kotlin = versionProps["kotlin"]!!.toString()
     const val kotlinxSerialization = "1.1.0"
     const val kotlinxCoroutines = "1.4.3-native-mt"
+    const val kotlinxDatetime = "0.2.1"
     const val ktor = "1.5.2"
 
     // Other dependencies
@@ -39,12 +40,20 @@ object Libs {
         return "io.kotest:kotest-$flavor:${Versions.kotest}"
     }
 
-    fun kotlinSerialization(flavor: String): String {
-        return "org.jetbrains.kotlinx:kotlinx-serialization-$flavor:${Versions.kotlinxSerialization}"
+    fun kotlinxLib(lib: String, version: String): String {
+        return "org.jetbrains.kotlinx:kotlinx-$lib:$version"
     }
 
-    fun kotlinCoroutines(flavor: String): String {
-        return "org.jetbrains.kotlinx:kotlinx-coroutines-$flavor:${Versions.kotlinxCoroutines}"
+    fun kotlinxSerialization(flavor: String): String {
+        return kotlinxLib("serialization-$flavor", Versions.kotlinxSerialization)
+    }
+
+    fun kotlinxCoroutines(flavor: String): String {
+        return kotlinxLib("coroutines-$flavor", Versions.kotlinxCoroutines)
+    }
+
+    fun kotlinxDatetime(): String {
+        return kotlinxLib("datetime", Versions.kotlinxDatetime)
     }
 
     fun ktorClient(flavor: String): String {

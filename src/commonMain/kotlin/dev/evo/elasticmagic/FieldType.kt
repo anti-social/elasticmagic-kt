@@ -1,5 +1,11 @@
 package dev.evo.elasticmagic
 
+import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toInstant
+import kotlinx.datetime.toLocalDateTime
+
 class ValueDeserializationException(value: Any, type: String) :
     IllegalArgumentException("Cannot deserialize $value to $type")
 
@@ -88,6 +94,21 @@ object KeywordType : StringType() {
 
 object TextType : StringType() {
     override val name = "text"
+}
+
+object DateType : FieldType<LocalDateTime> {
+    override val name = "date"
+
+    override fun serialize(v: LocalDateTime): Any {
+        return v.toInstant(TimeZone.UTC).toString()
+    }
+
+    override fun deserialize(v: Any, valueFactory: (() -> LocalDateTime)?) = when (v) {
+        is Int -> Instant.fromEpochMilliseconds(v.toLong()).toLocalDateTime(TimeZone.UTC)
+        is Long -> Instant.fromEpochMilliseconds(v).toLocalDateTime(TimeZone.UTC)
+        is String -> Instant.parse(v).toLocalDateTime(TimeZone.UTC)
+        else -> throw ValueDeserializationException(v, "LocalDateTime")
+    }
 }
 
 data class Join(

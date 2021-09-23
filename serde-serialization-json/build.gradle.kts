@@ -5,7 +5,7 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 api(project(":elasticmagic-serde"))
-                api(Libs.kotlinSerialization("json"))
+                api(Libs.kotlinxSerialization("json"))
             }
         }
         val commonTest by getting {

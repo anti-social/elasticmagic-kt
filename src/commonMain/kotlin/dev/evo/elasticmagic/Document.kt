@@ -1,5 +1,6 @@
 package dev.evo.elasticmagic
 
+import kotlinx.datetime.LocalDateTime
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 
@@ -247,6 +248,21 @@ abstract class FieldSet : Named {
     ): Field<Double> {
         return field(
             name, DoubleType,
+            docValues = docValues,
+            index = index,
+            store = store,
+            params = params,
+        )
+    }
+    fun date(
+        name: String? = null,
+        docValues: Boolean? = null,
+        index: Boolean? = null,
+        store: Boolean? = null,
+        params: Params? = null,
+    ): Field<LocalDateTime> {
+        return field(
+            name, DateType,
             docValues = docValues,
             index = index,
             store = store,

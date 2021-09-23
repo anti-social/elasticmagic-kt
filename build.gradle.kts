@@ -138,7 +138,8 @@ configure<KotlinMultiplatformExtension> {
             dependencies {
                 api(project(":elasticmagic-serde"))
                 api(project(":elasticmagic-transport"))
-                implementation(Libs.kotlinCoroutines("core"))
+                implementation(Libs.kotlinxCoroutines("core"))
+                api(Libs.kotlinxDatetime())
             }
         }
     }
