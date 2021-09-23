@@ -1,6 +1,10 @@
 import org.gradle.api.JavaVersion
 
+import java.util.Properties
+
 object Versions {
+    private val versionProps = readVersionProperties()
+
     val jvmTarget = JavaVersion.VERSION_11
 
     // Gradle plugins
@@ -10,7 +14,7 @@ object Versions {
     const val mkdocs = "2.1.1"
 
     // Kotlin and libs
-    const val kotlin = "1.4.32"
+    val kotlin = versionProps["kotlin"]!!.toString()
     const val kotlinxSerialization = "1.1.0"
     const val kotlinxCoroutines = "1.4.3-native-mt"
     const val ktor = "1.5.2"
@@ -20,6 +24,14 @@ object Versions {
 
     // Testing
     const val kotest = "4.4.1"
+
+    private fun readVersionProperties(): Properties {
+        return Versions::class.java.getResourceAsStream("/versions.properties").use { versions ->
+            Properties().apply {
+                load(versions)
+            }
+        }
+    }
 }
 
 object Libs {

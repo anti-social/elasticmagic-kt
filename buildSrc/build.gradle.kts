@@ -17,8 +17,27 @@ idea {
    }
 }
 
+val kotlinVersion = "1.4.32"
+val nexusPublishVersion = "1.1.0"
+
+// See example at: https://docs.gradle.org/current/dsl/org.gradle.api.tasks.SourceSetOutput.html
+val generatedResourcesDir = buildDir.resolve("generated-resources").resolve("main")
+val generateVersions = tasks.register("generateVersions") {
+   outputs.dir(generatedResourcesDir)
+
+   doLast {
+      generatedResourcesDir.resolve("versions.properties")
+         .writeText("kotlin=$kotlinVersion")
+   }
+}
+
+sourceSets {
+   main {
+      output.dir(mapOf("builtBy" to generateVersions), generatedResourcesDir)
+   }
+}
+
 dependencies {
-   // TODO: How could we use single kotlin version?
-   implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.4.32")
-   implementation("io.github.gradle-nexus:publish-plugin:1.1.0")
+   implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
+   implementation("io.github.gradle-nexus:publish-plugin:$nexusPublishVersion")
 }
