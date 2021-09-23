@@ -54,8 +54,7 @@ Sub-fields also can be used in search queries:
 ```
 
 !!! Note
-    It is a mistake to make sub-fields a singleton object. Following example
-    will fail at runtime.
+    It is a mistake to use sub-fields twice. Following example will fail at runtime.
 
 ```kotlin
 --8<-- "../samples/src/main/kotlin/samples/document/subfields/mistake/Mistake.kt"
@@ -126,6 +125,19 @@ Read more:
   
   * [Elasticsearch join type](https://www.elastic.co/guide/en/elasticsearch/reference/current/parent-join.html)
   * [Join API](https://anti-social.github.io/elasticmagic-kt/api/latest/elasticmagic/dev.evo.elasticmagic/-field-set/join.html)
+
+### Meta fields
+
+Elasticsearch document has some [metadata fields](https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-fields.html).
+Some of those fields can be customized. In following example we make a value for `_routing`
+field required and keep only `name` field in document source:
+
+```kotlin
+--8<-- "../samples/src/main/kotlin/samples/document/meta/Meta.kt"
+```
+
+Now you must provide the required routing value when indexing documents otherwise Elasticsearch
+will throw `routing_missing_exceptions`.
 
 ### Merge multiple documents
 

@@ -512,15 +512,15 @@ open class MetaFields : RootFieldSet() {
     open val source by SourceField()
     open val size by SizeField()
 
-    open class MetaField<V>(
-        name: String, type: FieldType<V>, params: Params = Params()
+    abstract class BaseMetaField<V, B: AnyField>(
+        name: String, type: FieldType<V>, params: Params = Params(),
+        private val boundFieldFactory: (String, Params, MetaFields) -> B
     ) : Field<V>(name, type, params) {
         operator fun provideDelegate(
             thisRef: MetaFields, prop: KProperty<*>
-        ): ReadOnlyProperty<MetaFields, BoundField<V>> {
-            val field = BoundField(
+        ): ReadOnlyProperty<MetaFields, B> {
+            val field = boundFieldFactory(
                 name ?: prop.name,
-                type,
                 params,
                 thisRef,
             )
@@ -529,28 +529,62 @@ open class MetaFields : RootFieldSet() {
         }
     }
 
+    open class MetaField<V>(
+        name: String, type: FieldType<V>, params: Params = Params()
+    ) : BaseMetaField<V, BoundField<V>>(
+        name, type, params,
+        { n, p, m -> BoundField(n, type, p, m)}
+    )
+
     class RoutingField(
         val required: Boolean? = null,
-    ) : MetaField<String>("_routing", KeywordType, Params("required" to required))
+    ) : BaseMetaField<String, BoundRoutingField>(
+        "_routing", KeywordType, Params("required" to required),
+        ::BoundRoutingField
+    )
+
+    class BoundRoutingField(
+        name: String, params: Params, parent: MetaFields
+    ) : BoundField<String>(name, KeywordType, params, parent)
 
     class FieldNamesField(
         enabled: Boolean? = null,
-    ) : MetaField<String>("_field_names", KeywordType, Params("enabled" to enabled))
+    ) : BaseMetaField<String, BoundFieldNamesField>(
+        "_field_names", KeywordType, Params("enabled" to enabled),
+        ::BoundFieldNamesField
+    )
+
+    class BoundFieldNamesField(
+        name: String, params: Params, parent: MetaFields
+    ) : BoundField<String>(name, KeywordType, params, parent)
 
     // TODO: What type should the source field be?
+    // TODO: Add constructor where `includes` & `excludes` arguments have type of `List<FieldOperations>`
     class SourceField(
         enabled: Boolean? = null,
         includes: List<String>? = null,
         excludes: List<String>? = null,
-    ) : MetaField<String>(
+    ) : BaseMetaField<String, BoundSourceField>(
         "_source",
         KeywordType,
-        Params("enabled" to enabled, "includes" to includes, "excludes" to excludes)
+        Params("enabled" to enabled, "includes" to includes, "excludes" to excludes),
+        ::BoundSourceField
     )
+
+    class BoundSourceField(
+        name: String, params: Params, parent: MetaFields
+    ) : BoundField<String>(name, KeywordType, params, parent)
 
     class SizeField(
         enabled: Boolean? = null,
-    ) : MetaField<Long>("_size", LongType, Params("enabled" to enabled))
+    ) : BaseMetaField<Long, BoundSizeField>(
+        "_size", LongType, Params("enabled" to enabled),
+        ::BoundSizeField
+    )
+
+    class BoundSizeField(
+        name: String, params: Params, parent: MetaFields
+    ) : BoundField<String>(name, KeywordType, params, parent)
 }
 
 open class RuntimeFields : RootFieldSet() {
