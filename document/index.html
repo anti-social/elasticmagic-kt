@@ -346,6 +346,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#meta-fields" class="md-nav__link">
+    Meta fields
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#merge-multiple-documents" class="md-nav__link">
     Merge multiple documents
   </a>
@@ -511,6 +518,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#meta-fields" class="md-nav__link">
+    Meta fields
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#merge-multiple-documents" class="md-nav__link">
     Merge multiple documents
   </a>
@@ -625,8 +639,7 @@ for any simple field:</p>
 </code></pre></div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>It is a mistake to make sub-fields a singleton object. Following example
-will fail at runtime.</p>
+<p>It is a mistake to use sub-fields twice. Following example will fail at runtime.</p>
 </div>
 <div class="highlight"><pre><span></span><code><span class="k">package</span> <span class="nn">samples.document.subfields.mistake</span>
 
@@ -762,6 +775,27 @@ a <code>moderator</code> role with <code>article</code> permission and <code>vie
 <li><a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/parent-join.html">Elasticsearch join type</a></li>
 <li><a href="https://anti-social.github.io/elasticmagic-kt/api/latest/elasticmagic/dev.evo.elasticmagic/-field-set/join.html">Join API</a></li>
 </ul>
+<h3 id="meta-fields">Meta fields<a class="headerlink" href="#meta-fields" title="Permanent link">&para;</a></h3>
+<p>Elasticsearch document has some <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-fields.html">metadata fields</a>.
+Some of those fields can be customized. In following example we make a value for <code>_routing</code>
+field required and keep only <code>name</code> field in document source:</p>
+<div class="highlight"><pre><span></span><code><span class="k">package</span> <span class="nn">samples.document.meta</span>
+
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.Document</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.MetaFields</span>
+
+<span class="kd">object</span> <span class="nc">ProductDoc</span> <span class="p">:</span> <span class="n">Document</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">val</span> <span class="nv">name</span> <span class="k">by</span> <span class="n">text</span><span class="p">()</span>
+    <span class="kd">val</span> <span class="nv">companyId</span> <span class="k">by</span> <span class="n">int</span><span class="p">()</span>
+
+    <span class="kd">override</span> <span class="kd">val</span> <span class="nv">meta</span> <span class="o">=</span> <span class="k">object</span> <span class="p">:</span> <span class="nc">MetaFields</span><span class="p">()</span> <span class="p">{</span>
+        <span class="kd">override</span> <span class="kd">val</span> <span class="nv">routing</span> <span class="k">by</span> <span class="n">RoutingField</span><span class="p">(</span><span class="n">required</span> <span class="o">=</span> <span class="kc">true</span><span class="p">)</span>
+        <span class="kd">override</span> <span class="kd">val</span> <span class="nv">source</span> <span class="k">by</span> <span class="n">SourceField</span><span class="p">(</span><span class="n">includes</span> <span class="o">=</span> <span class="n">listOf</span><span class="p">(</span><span class="s">&quot;name&quot;</span><span class="p">))</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Now you must provide the required routing value when indexing documents otherwise Elasticsearch
+will throw <code>routing_missing_exceptions</code>.</p>
 <h3 id="merge-multiple-documents">Merge multiple documents<a class="headerlink" href="#merge-multiple-documents" title="Permanent link">&para;</a></h3>
 <p>To create mapping for multiple documents you can use
 <a href="https://anti-social.github.io/elasticmagic-kt/api/latest/elasticmagic/dev.evo.elasticmagic/merge-documents.html">mergeDocuments</a>
