@@ -20,7 +20,7 @@ repositories {
     mavenCentral()
 }
 
-val elasticmagicVersion = "0.0.1"
+val elasticmagicVersion = "{{ version }}"
 val ktorVersion = "1.5.2"
 
 dependencies {
