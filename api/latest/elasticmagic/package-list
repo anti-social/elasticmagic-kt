@@ -288,6 +288,7 @@ $dokka.location:dev.evo.elasticmagic/Bool.Companion/mustNot/#kotlin.Array[dev.ev
 $dokka.location:dev.evo.elasticmagic/Bool.Companion/should/#kotlin.Array[dev.evo.elasticmagic.QueryExpression]/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-bool/-companion/should.html
 $dokka.location:dev.evo.elasticmagic/Bool///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-bool/index.html
 $dokka.location:dev.evo.elasticmagic/Bool/Bool/#kotlin.collections.List[dev.evo.elasticmagic.QueryExpression]#kotlin.collections.List[dev.evo.elasticmagic.QueryExpression]#kotlin.collections.List[dev.evo.elasticmagic.QueryExpression]#kotlin.collections.List[dev.evo.elasticmagic.QueryExpression]#kotlin.Any?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-bool/-bool.html
+$dokka.location:dev.evo.elasticmagic/Bool/clone/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-bool/clone.html
 $dokka.location:dev.evo.elasticmagic/Bool/filter/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-bool/filter.html
 $dokka.location:dev.evo.elasticmagic/Bool/minimumShouldMatch/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-bool/minimum-should-match.html
 $dokka.location:dev.evo.elasticmagic/Bool/must/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-bool/must.html
@@ -306,6 +307,7 @@ $dokka.location:dev.evo.elasticmagic/BoolNode.Companion///PointingToDeclaration/
 $dokka.location:dev.evo.elasticmagic/BoolNode.Companion/invoke/#dev.evo.elasticmagic.NodeHandle[dev.evo.elasticmagic.BoolNode]#kotlin.collections.List[dev.evo.elasticmagic.QueryExpression]#kotlin.collections.List[dev.evo.elasticmagic.QueryExpression]#kotlin.collections.List[dev.evo.elasticmagic.QueryExpression]#kotlin.collections.List[dev.evo.elasticmagic.QueryExpression]#kotlin.Any?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-bool-node/-companion/invoke.html
 $dokka.location:dev.evo.elasticmagic/BoolNode///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-bool-node/index.html
 $dokka.location:dev.evo.elasticmagic/BoolNode/BoolNode/#dev.evo.elasticmagic.NodeHandle[dev.evo.elasticmagic.BoolNode]#kotlin.collections.MutableList[dev.evo.elasticmagic.QueryExpression]#kotlin.collections.MutableList[dev.evo.elasticmagic.QueryExpression]#kotlin.collections.MutableList[dev.evo.elasticmagic.QueryExpression]#kotlin.collections.MutableList[dev.evo.elasticmagic.QueryExpression]#kotlin.Any?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-bool-node/-bool-node.html
+$dokka.location:dev.evo.elasticmagic/BoolNode/clone/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-bool-node/clone.html
 $dokka.location:dev.evo.elasticmagic/BoolNode/filter/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-bool-node/filter.html
 $dokka.location:dev.evo.elasticmagic/BoolNode/handle/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-bool-node/handle.html
 $dokka.location:dev.evo.elasticmagic/BoolNode/minimumShouldMatch/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-bool-node/minimum-should-match.html
@@ -456,6 +458,7 @@ $dokka.location:dev.evo.elasticmagic/DeleteIndexResult/DeleteIndexResult/#kotlin
 $dokka.location:dev.evo.elasticmagic/DeleteIndexResult/acknowledged/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-delete-index-result/acknowledged.html
 $dokka.location:dev.evo.elasticmagic/DisMax///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-dis-max/index.html
 $dokka.location:dev.evo.elasticmagic/DisMax/DisMax/#kotlin.collections.List[dev.evo.elasticmagic.QueryExpression]#kotlin.Double?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-dis-max/-dis-max.html
+$dokka.location:dev.evo.elasticmagic/DisMax/clone/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-dis-max/clone.html
 $dokka.location:dev.evo.elasticmagic/DisMax/name/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-dis-max/name.html
 $dokka.location:dev.evo.elasticmagic/DisMax/queries/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-dis-max/queries.html
 $dokka.location:dev.evo.elasticmagic/DisMax/reduce/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-dis-max/reduce.html
@@ -468,6 +471,7 @@ $dokka.location:dev.evo.elasticmagic/DisMaxNode.Companion///PointingToDeclaratio
 $dokka.location:dev.evo.elasticmagic/DisMaxNode.Companion/invoke/#dev.evo.elasticmagic.NodeHandle[dev.evo.elasticmagic.DisMaxNode]#kotlin.collections.List[dev.evo.elasticmagic.QueryExpression]#kotlin.Double?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-dis-max-node/-companion/invoke.html
 $dokka.location:dev.evo.elasticmagic/DisMaxNode///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-dis-max-node/index.html
 $dokka.location:dev.evo.elasticmagic/DisMaxNode/DisMaxNode/#dev.evo.elasticmagic.NodeHandle[dev.evo.elasticmagic.DisMaxNode]#kotlin.collections.MutableList[dev.evo.elasticmagic.QueryExpression]#kotlin.Double?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-dis-max-node/-dis-max-node.html
+$dokka.location:dev.evo.elasticmagic/DisMaxNode/clone/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-dis-max-node/clone.html
 $dokka.location:dev.evo.elasticmagic/DisMaxNode/handle/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-dis-max-node/handle.html
 $dokka.location:dev.evo.elasticmagic/DisMaxNode/name/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-dis-max-node/name.html
 $dokka.location:dev.evo.elasticmagic/DisMaxNode/queries/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-dis-max-node/queries.html
@@ -585,6 +589,7 @@ $dokka.location:dev.evo.elasticmagic/ElasticsearchVersion/minor/#/PointingToDecl
 $dokka.location:dev.evo.elasticmagic/ElasticsearchVersion/patch/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-elasticsearch-version/patch.html
 $dokka.location:dev.evo.elasticmagic/Exists///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-exists/index.html
 $dokka.location:dev.evo.elasticmagic/Exists/Exists/#dev.evo.elasticmagic.FieldOperations/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-exists/-exists.html
+$dokka.location:dev.evo.elasticmagic/Exists/clone/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-exists/clone.html
 $dokka.location:dev.evo.elasticmagic/Exists/field/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-exists/field.html
 $dokka.location:dev.evo.elasticmagic/Exists/name/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-exists/name.html
 $dokka.location:dev.evo.elasticmagic/Exists/visit/#dev.evo.elasticmagic.serde.Serializer.ObjectCtx#dev.evo.elasticmagic.compile.SearchQueryCompiler/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-exists/visit.html
@@ -699,6 +704,7 @@ $dokka.location:dev.evo.elasticmagic/FunctionScore.BoostMode/toValue/#/PointingT
 $dokka.location:dev.evo.elasticmagic/FunctionScore.FieldValueFactor///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-function-score/-field-value-factor/index.html
 $dokka.location:dev.evo.elasticmagic/FunctionScore.FieldValueFactor/FieldValueFactor/#dev.evo.elasticmagic.FieldOperations#kotlin.Double?#kotlin.Double?#kotlin.String?#dev.evo.elasticmagic.QueryExpression?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-function-score/-field-value-factor/-field-value-factor.html
 $dokka.location:dev.evo.elasticmagic/FunctionScore.FieldValueFactor/accept/#dev.evo.elasticmagic.serde.Serializer.ObjectCtx#dev.evo.elasticmagic.compile.SearchQueryCompiler/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-function-score/-field-value-factor/accept.html
+$dokka.location:dev.evo.elasticmagic/FunctionScore.FieldValueFactor/clone/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-function-score/-field-value-factor/clone.html
 $dokka.location:dev.evo.elasticmagic/FunctionScore.FieldValueFactor/factor/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-function-score/-field-value-factor/factor.html
 $dokka.location:dev.evo.elasticmagic/FunctionScore.FieldValueFactor/field/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-function-score/-field-value-factor/field.html
 $dokka.location:dev.evo.elasticmagic/FunctionScore.FieldValueFactor/filter/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-function-score/-field-value-factor/filter.html
@@ -713,8 +719,10 @@ $dokka.location:dev.evo.elasticmagic/FunctionScore.Function/reduceFilter/#/Point
 $dokka.location:dev.evo.elasticmagic/FunctionScore.RandomScore///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-function-score/-random-score/index.html
 $dokka.location:dev.evo.elasticmagic/FunctionScore.RandomScore/RandomScore/#kotlin.Any?#dev.evo.elasticmagic.FieldOperations?#dev.evo.elasticmagic.QueryExpression?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-function-score/-random-score/-random-score.html
 $dokka.location:dev.evo.elasticmagic/FunctionScore.RandomScore/accept/#dev.evo.elasticmagic.serde.Serializer.ObjectCtx#dev.evo.elasticmagic.compile.SearchQueryCompiler/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-function-score/-random-score/accept.html
+$dokka.location:dev.evo.elasticmagic/FunctionScore.RandomScore/clone/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-function-score/-random-score/clone.html
 $dokka.location:dev.evo.elasticmagic/FunctionScore.RandomScore/field/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-function-score/-random-score/field.html
 $dokka.location:dev.evo.elasticmagic/FunctionScore.RandomScore/filter/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-function-score/-random-score/filter.html
+$dokka.location:dev.evo.elasticmagic/FunctionScore.RandomScore/reduce/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-function-score/-random-score/reduce.html
 $dokka.location:dev.evo.elasticmagic/FunctionScore.RandomScore/seed/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-function-score/-random-score/seed.html
 $dokka.location:dev.evo.elasticmagic/FunctionScore.ScoreMode.AVG///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-function-score/-score-mode/-a-v-g/index.html
 $dokka.location:dev.evo.elasticmagic/FunctionScore.ScoreMode.AVG/name/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-function-score/-score-mode/-a-v-g/name.html
@@ -739,11 +747,14 @@ $dokka.location:dev.evo.elasticmagic/FunctionScore.ScoreMode/toValue/#/PointingT
 $dokka.location:dev.evo.elasticmagic/FunctionScore.ScriptScore///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-function-score/-script-score/index.html
 $dokka.location:dev.evo.elasticmagic/FunctionScore.ScriptScore/ScriptScore/#dev.evo.elasticmagic.Script#dev.evo.elasticmagic.QueryExpression?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-function-score/-script-score/-script-score.html
 $dokka.location:dev.evo.elasticmagic/FunctionScore.ScriptScore/accept/#dev.evo.elasticmagic.serde.Serializer.ObjectCtx#dev.evo.elasticmagic.compile.SearchQueryCompiler/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-function-score/-script-score/accept.html
+$dokka.location:dev.evo.elasticmagic/FunctionScore.ScriptScore/clone/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-function-score/-script-score/clone.html
 $dokka.location:dev.evo.elasticmagic/FunctionScore.ScriptScore/filter/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-function-score/-script-score/filter.html
+$dokka.location:dev.evo.elasticmagic/FunctionScore.ScriptScore/reduce/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-function-score/-script-score/reduce.html
 $dokka.location:dev.evo.elasticmagic/FunctionScore.ScriptScore/script/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-function-score/-script-score/script.html
 $dokka.location:dev.evo.elasticmagic/FunctionScore.Weight///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-function-score/-weight/index.html
 $dokka.location:dev.evo.elasticmagic/FunctionScore.Weight/Weight/#kotlin.Double#dev.evo.elasticmagic.QueryExpression?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-function-score/-weight/-weight.html
 $dokka.location:dev.evo.elasticmagic/FunctionScore.Weight/accept/#dev.evo.elasticmagic.serde.Serializer.ObjectCtx#dev.evo.elasticmagic.compile.SearchQueryCompiler/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-function-score/-weight/accept.html
+$dokka.location:dev.evo.elasticmagic/FunctionScore.Weight/clone/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-function-score/-weight/clone.html
 $dokka.location:dev.evo.elasticmagic/FunctionScore.Weight/filter/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-function-score/-weight/filter.html
 $dokka.location:dev.evo.elasticmagic/FunctionScore.Weight/reduce/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-function-score/-weight/reduce.html
 $dokka.location:dev.evo.elasticmagic/FunctionScore.Weight/weight/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-function-score/-weight/weight.html
@@ -751,6 +762,7 @@ $dokka.location:dev.evo.elasticmagic/FunctionScore///PointingToDeclaration/elas
 $dokka.location:dev.evo.elasticmagic/FunctionScore/FunctionScore/#dev.evo.elasticmagic.QueryExpression?#kotlin.collections.List[dev.evo.elasticmagic.FunctionScore.Function]#kotlin.Double?#dev.evo.elasticmagic.FunctionScore.ScoreMode?#dev.evo.elasticmagic.FunctionScore.BoostMode?#kotlin.Double?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-function-score/-function-score.html
 $dokka.location:dev.evo.elasticmagic/FunctionScore/boost/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-function-score/boost.html
 $dokka.location:dev.evo.elasticmagic/FunctionScore/boostMode/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-function-score/boost-mode.html
+$dokka.location:dev.evo.elasticmagic/FunctionScore/clone/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-function-score/clone.html
 $dokka.location:dev.evo.elasticmagic/FunctionScore/functions/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-function-score/functions.html
 $dokka.location:dev.evo.elasticmagic/FunctionScore/minScore/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-function-score/min-score.html
 $dokka.location:dev.evo.elasticmagic/FunctionScore/name/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-function-score/name.html
@@ -767,6 +779,7 @@ $dokka.location:dev.evo.elasticmagic/FunctionScoreNode///PointingToDeclaration/
 $dokka.location:dev.evo.elasticmagic/FunctionScoreNode/FunctionScoreNode/#dev.evo.elasticmagic.NodeHandle[dev.evo.elasticmagic.FunctionScoreNode]#dev.evo.elasticmagic.QueryExpression?#kotlin.Double?#dev.evo.elasticmagic.FunctionScore.ScoreMode?#dev.evo.elasticmagic.FunctionScore.BoostMode?#kotlin.Double?#kotlin.collections.MutableList[dev.evo.elasticmagic.FunctionScore.Function]/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-function-score-node/-function-score-node.html
 $dokka.location:dev.evo.elasticmagic/FunctionScoreNode/boost/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-function-score-node/boost.html
 $dokka.location:dev.evo.elasticmagic/FunctionScoreNode/boostMode/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-function-score-node/boost-mode.html
+$dokka.location:dev.evo.elasticmagic/FunctionScoreNode/clone/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-function-score-node/clone.html
 $dokka.location:dev.evo.elasticmagic/FunctionScoreNode/functions/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-function-score-node/functions.html
 $dokka.location:dev.evo.elasticmagic/FunctionScoreNode/handle/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-function-score-node/handle.html
 $dokka.location:dev.evo.elasticmagic/FunctionScoreNode/minScore/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-function-score-node/min-score.html
@@ -805,6 +818,7 @@ $dokka.location:dev.evo.elasticmagic/IdentDocSourceWithMeta/doc/#/PointingToDecl
 $dokka.location:dev.evo.elasticmagic/IdentDocSourceWithMeta/meta/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-ident-doc-source-with-meta/meta.html
 $dokka.location:dev.evo.elasticmagic/Ids///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-ids/index.html
 $dokka.location:dev.evo.elasticmagic/Ids/Ids/#kotlin.collections.List[kotlin.String]/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-ids/-ids.html
+$dokka.location:dev.evo.elasticmagic/Ids/clone/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-ids/clone.html
 $dokka.location:dev.evo.elasticmagic/Ids/name/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-ids/name.html
 $dokka.location:dev.evo.elasticmagic/Ids/values/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-ids/values.html
 $dokka.location:dev.evo.elasticmagic/Ids/visit/#dev.evo.elasticmagic.serde.Serializer.ObjectCtx#dev.evo.elasticmagic.compile.SearchQueryCompiler/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-ids/visit.html
@@ -837,6 +851,7 @@ $dokka.location:dev.evo.elasticmagic/LongType/name/#/PointingToDeclaration/elas
 $dokka.location:dev.evo.elasticmagic/Match///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-match/index.html
 $dokka.location:dev.evo.elasticmagic/Match/Match/#dev.evo.elasticmagic.FieldOperations#kotlin.String#kotlin.String?#kotlin.Any?#kotlin.collections.Map[kotlin.String,kotlin.Any]?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-match/-match.html
 $dokka.location:dev.evo.elasticmagic/Match/analyzer/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-match/analyzer.html
+$dokka.location:dev.evo.elasticmagic/Match/clone/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-match/clone.html
 $dokka.location:dev.evo.elasticmagic/Match/field/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-match/field.html
 $dokka.location:dev.evo.elasticmagic/Match/minimumShouldMatch/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-match/minimum-should-match.html
 $dokka.location:dev.evo.elasticmagic/Match/name/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-match/name.html
@@ -844,6 +859,7 @@ $dokka.location:dev.evo.elasticmagic/Match/params/#/PointingToDeclaration/elast
 $dokka.location:dev.evo.elasticmagic/Match/query/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-match/query.html
 $dokka.location:dev.evo.elasticmagic/Match/visit/#dev.evo.elasticmagic.serde.Serializer.ObjectCtx#dev.evo.elasticmagic.compile.SearchQueryCompiler/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-match/visit.html
 $dokka.location:dev.evo.elasticmagic/MatchAll///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-match-all/index.html
+$dokka.location:dev.evo.elasticmagic/MatchAll/clone/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-match-all/clone.html
 $dokka.location:dev.evo.elasticmagic/MatchAll/name/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-match-all/name.html
 $dokka.location:dev.evo.elasticmagic/MatchAll/visit/#dev.evo.elasticmagic.serde.Serializer.ObjectCtx#dev.evo.elasticmagic.compile.SearchQueryCompiler/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-match-all/visit.html
 $dokka.location:dev.evo.elasticmagic/MaxAgg///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-max-agg/index.html
@@ -909,6 +925,7 @@ $dokka.location:dev.evo.elasticmagic/MultiMatch.Type/toValue/#/PointingToDeclara
 $dokka.location:dev.evo.elasticmagic/MultiMatch///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-multi-match/index.html
 $dokka.location:dev.evo.elasticmagic/MultiMatch/MultiMatch/#kotlin.String#kotlin.collections.List[dev.evo.elasticmagic.FieldOperations]#dev.evo.elasticmagic.MultiMatch.Type?#kotlin.Double?#kotlin.collections.Map[kotlin.String,kotlin.Any]?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-multi-match/-multi-match.html
 $dokka.location:dev.evo.elasticmagic/MultiMatch/boost/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-multi-match/boost.html
+$dokka.location:dev.evo.elasticmagic/MultiMatch/clone/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-multi-match/clone.html
 $dokka.location:dev.evo.elasticmagic/MultiMatch/fields/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-multi-match/fields.html
 $dokka.location:dev.evo.elasticmagic/MultiMatch/name/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-multi-match/name.html
 $dokka.location:dev.evo.elasticmagic/MultiMatch/params/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-multi-match/params.html
@@ -942,6 +959,7 @@ $dokka.location:dev.evo.elasticmagic/Nested.ScoreMode///PointingToDeclaration/e
 $dokka.location:dev.evo.elasticmagic/Nested.ScoreMode/toValue/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-nested/-score-mode/to-value.html
 $dokka.location:dev.evo.elasticmagic/Nested///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-nested/index.html
 $dokka.location:dev.evo.elasticmagic/Nested/Nested/#dev.evo.elasticmagic.FieldOperations#dev.evo.elasticmagic.QueryExpression#dev.evo.elasticmagic.Nested.ScoreMode?#kotlin.Boolean?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-nested/-nested.html
+$dokka.location:dev.evo.elasticmagic/Nested/clone/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-nested/clone.html
 $dokka.location:dev.evo.elasticmagic/Nested/ignoreUnmapped/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-nested/ignore-unmapped.html
 $dokka.location:dev.evo.elasticmagic/Nested/name/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-nested/name.html
 $dokka.location:dev.evo.elasticmagic/Nested/path/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-nested/path.html
@@ -998,6 +1016,7 @@ $dokka.location:dev.evo.elasticmagic/PreparedSearchQuery/terminateAfter/#/Pointi
 $dokka.location:dev.evo.elasticmagic/PreparedSearchQuery/trackScores/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-prepared-search-query/track-scores.html
 $dokka.location:dev.evo.elasticmagic/PreparedSearchQuery/trackTotalHits/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-prepared-search-query/track-total-hits.html
 $dokka.location:dev.evo.elasticmagic/QueryExpression///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-query-expression/index.html
+$dokka.location:dev.evo.elasticmagic/QueryExpression/clone/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-query-expression/clone.html
 $dokka.location:dev.evo.elasticmagic/QueryExpression/reduce/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-query-expression/reduce.html
 $dokka.location:dev.evo.elasticmagic/QueryExpressionNode///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-query-expression-node/index.html
 $dokka.location:dev.evo.elasticmagic/QueryExpressionNode/QueryExpressionNode/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-query-expression-node/-query-expression-node.html
@@ -1024,14 +1043,17 @@ $dokka.location:dev.evo.elasticmagic/QueryRescore.ScoreMode///PointingToDeclarat
 $dokka.location:dev.evo.elasticmagic/QueryRescore.ScoreMode/toValue/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-query-rescore/-score-mode/to-value.html
 $dokka.location:dev.evo.elasticmagic/QueryRescore///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-query-rescore/index.html
 $dokka.location:dev.evo.elasticmagic/QueryRescore/QueryRescore/#dev.evo.elasticmagic.QueryExpression#kotlin.Double?#kotlin.Double?#dev.evo.elasticmagic.QueryRescore.ScoreMode?#kotlin.Int?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-query-rescore/-query-rescore.html
+$dokka.location:dev.evo.elasticmagic/QueryRescore/clone/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-query-rescore/clone.html
 $dokka.location:dev.evo.elasticmagic/QueryRescore/name/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-query-rescore/name.html
 $dokka.location:dev.evo.elasticmagic/QueryRescore/query/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-query-rescore/query.html
 $dokka.location:dev.evo.elasticmagic/QueryRescore/queryWeight/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-query-rescore/query-weight.html
 $dokka.location:dev.evo.elasticmagic/QueryRescore/rescoreQueryWeight/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-query-rescore/rescore-query-weight.html
 $dokka.location:dev.evo.elasticmagic/QueryRescore/scoreMode/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-query-rescore/score-mode.html
 $dokka.location:dev.evo.elasticmagic/QueryRescore/visit/#dev.evo.elasticmagic.serde.Serializer.ObjectCtx#dev.evo.elasticmagic.compile.SearchQueryCompiler/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-query-rescore/visit.html
+$dokka.location:dev.evo.elasticmagic/QueryRescore/windowSize/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-query-rescore/window-size.html
 $dokka.location:dev.evo.elasticmagic/Range///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-range/index.html
 $dokka.location:dev.evo.elasticmagic/Range/Range/#dev.evo.elasticmagic.FieldOperations#kotlin.Any?#kotlin.Any?#kotlin.Any?#kotlin.Any?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-range/-range.html
+$dokka.location:dev.evo.elasticmagic/Range/clone/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-range/clone.html
 $dokka.location:dev.evo.elasticmagic/Range/field/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-range/field.html
 $dokka.location:dev.evo.elasticmagic/Range/gt/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-range/gt.html
 $dokka.location:dev.evo.elasticmagic/Range/gte/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-range/gte.html
@@ -1074,7 +1096,7 @@ $dokka.location:dev.evo.elasticmagic/RequiredListType/name/#/PointingToDeclarati
 $dokka.location:dev.evo.elasticmagic/RequiredListType/serialize/#kotlin.collections.List[TypeParam(bounds=[kotlin.Any?])]/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-required-list-type/serialize.html
 $dokka.location:dev.evo.elasticmagic/RequiredListType/type/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-required-list-type/type.html
 $dokka.location:dev.evo.elasticmagic/Rescore///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-rescore/index.html
-$dokka.location:dev.evo.elasticmagic/Rescore/Rescore/#kotlin.Int?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-rescore/-rescore.html
+$dokka.location:dev.evo.elasticmagic/Rescore/Rescore/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-rescore/-rescore.html
 $dokka.location:dev.evo.elasticmagic/Rescore/accept/#dev.evo.elasticmagic.serde.Serializer.ObjectCtx#dev.evo.elasticmagic.compile.SearchQueryCompiler/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-rescore/accept.html
 $dokka.location:dev.evo.elasticmagic/Rescore/windowSize/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-rescore/window-size.html
 $dokka.location:dev.evo.elasticmagic/RootFieldSet.Companion///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-root-field-set/-companion/index.html
@@ -1098,16 +1120,19 @@ $dokka.location:dev.evo.elasticmagic/Script.Spec.Companion///PointingToDeclarati
 $dokka.location:dev.evo.elasticmagic/Script.Spec.Id///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-script/-spec/-id/index.html
 $dokka.location:dev.evo.elasticmagic/Script.Spec.Id/Id/#kotlin.String/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-script/-spec/-id/-id.html
 $dokka.location:dev.evo.elasticmagic/Script.Spec.Id/accept/#dev.evo.elasticmagic.serde.Serializer.ObjectCtx#dev.evo.elasticmagic.compile.SearchQueryCompiler/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-script/-spec/-id/accept.html
+$dokka.location:dev.evo.elasticmagic/Script.Spec.Id/clone/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-script/-spec/-id/clone.html
 $dokka.location:dev.evo.elasticmagic/Script.Spec.Id/id/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-script/-spec/-id/id.html
 $dokka.location:dev.evo.elasticmagic/Script.Spec.Source///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-script/-spec/-source/index.html
 $dokka.location:dev.evo.elasticmagic/Script.Spec.Source/Source/#kotlin.String/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-script/-spec/-source/-source.html
 $dokka.location:dev.evo.elasticmagic/Script.Spec.Source/accept/#dev.evo.elasticmagic.serde.Serializer.ObjectCtx#dev.evo.elasticmagic.compile.SearchQueryCompiler/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-script/-spec/-source/accept.html
+$dokka.location:dev.evo.elasticmagic/Script.Spec.Source/clone/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-script/-spec/-source/clone.html
 $dokka.location:dev.evo.elasticmagic/Script.Spec.Source/source/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-script/-spec/-source/source.html
 $dokka.location:dev.evo.elasticmagic/Script.Spec///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-script/-spec/index.html
 $dokka.location:dev.evo.elasticmagic/Script///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-script/index.html
 $dokka.location:dev.evo.elasticmagic/Script/Script/#dev.evo.elasticmagic.Script.Spec#kotlin.String?#kotlin.collections.Map[kotlin.String,kotlin.Any]/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-script/-script.html
 $dokka.location:dev.evo.elasticmagic/Script/Script/#kotlin.String?#kotlin.String?#kotlin.String?#kotlin.collections.Map[kotlin.String,kotlin.Any]/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-script/-script.html
 $dokka.location:dev.evo.elasticmagic/Script/accept/#dev.evo.elasticmagic.serde.Serializer.ObjectCtx#dev.evo.elasticmagic.compile.SearchQueryCompiler/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-script/accept.html
+$dokka.location:dev.evo.elasticmagic/Script/clone/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-script/clone.html
 $dokka.location:dev.evo.elasticmagic/Script/lang/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-script/lang.html
 $dokka.location:dev.evo.elasticmagic/Script/params/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-script/params.html
 $dokka.location:dev.evo.elasticmagic/Script/spec/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-script/spec.html
@@ -1128,6 +1153,7 @@ $dokka.location:dev.evo.elasticmagic/SearchQuery.Companion/invoke/#dev.evo.elast
 $dokka.location:dev.evo.elasticmagic/SearchQuery.Companion/invoke/#kotlin.Function0[TypeParam(bounds=[dev.evo.elasticmagic.BaseDocSource])]#dev.evo.elasticmagic.QueryExpression?#kotlin.collections.Map[kotlin.String,kotlin.Any]/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-search-query/-companion/invoke.html
 $dokka.location:dev.evo.elasticmagic/SearchQuery///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-search-query/index.html
 $dokka.location:dev.evo.elasticmagic/SearchQuery/SearchQuery/#kotlin.Function1[dev.evo.elasticmagic.serde.Deserializer.ObjectCtx,TypeParam(bounds=[dev.evo.elasticmagic.BaseDocSource])]#dev.evo.elasticmagic.QueryExpression?#kotlin.collections.Map[kotlin.String,kotlin.Any]/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-search-query/-search-query.html
+$dokka.location:dev.evo.elasticmagic/SearchQuery/clone/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-search-query/clone.html
 $dokka.location:dev.evo.elasticmagic/SearchQuery/execute/#dev.evo.elasticmagic.ElasticsearchIndex[*]/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-search-query/execute.html
 $dokka.location:dev.evo.elasticmagic/SearchQueryResult///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-search-query-result/index.html
 $dokka.location:dev.evo.elasticmagic/SearchQueryResult/SearchQueryResult/#kotlin.collections.Map[kotlin.String,kotlin.Any?]?#kotlin.Long#kotlin.Boolean#kotlin.Long?#kotlin.String?#kotlin.Double?#kotlin.collections.List[dev.evo.elasticmagic.SearchHit[TypeParam(bounds=[dev.evo.elasticmagic.BaseDocSource])]]#kotlin.collections.Map[kotlin.String,dev.evo.elasticmagic.AggregationResult]/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-search-query-result/-search-query-result.html
@@ -1220,6 +1246,7 @@ $dokka.location:dev.evo.elasticmagic/Sort.Mode/toValue/#/PointingToDeclaration/
 $dokka.location:dev.evo.elasticmagic/Sort.Nested///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-sort/-nested/index.html
 $dokka.location:dev.evo.elasticmagic/Sort.Nested/Nested/#dev.evo.elasticmagic.FieldOperations#dev.evo.elasticmagic.QueryExpression?#kotlin.Int?#dev.evo.elasticmagic.Sort.Nested?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-sort/-nested/-nested.html
 $dokka.location:dev.evo.elasticmagic/Sort.Nested/accept/#dev.evo.elasticmagic.serde.Serializer.ObjectCtx#dev.evo.elasticmagic.compile.SearchQueryCompiler/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-sort/-nested/accept.html
+$dokka.location:dev.evo.elasticmagic/Sort.Nested/clone/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-sort/-nested/clone.html
 $dokka.location:dev.evo.elasticmagic/Sort.Nested/filter/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-sort/-nested/filter.html
 $dokka.location:dev.evo.elasticmagic/Sort.Nested/maxChildren/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-sort/-nested/max-children.html
 $dokka.location:dev.evo.elasticmagic/Sort.Nested/nested/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-sort/-nested/nested.html
@@ -1251,6 +1278,7 @@ $dokka.location:dev.evo.elasticmagic/Sort/Sort/#dev.evo.elasticmagic.FieldOperat
 $dokka.location:dev.evo.elasticmagic/Sort/Sort/#dev.evo.elasticmagic.Sort.By#dev.evo.elasticmagic.Sort.Order?#dev.evo.elasticmagic.Sort.Mode?#dev.evo.elasticmagic.Sort.NumericType?#dev.evo.elasticmagic.Sort.Missing?#kotlin.String?#dev.evo.elasticmagic.Sort.Nested?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-sort/-sort.html
 $dokka.location:dev.evo.elasticmagic/Sort/accept/#dev.evo.elasticmagic.serde.Serializer.ObjectCtx#dev.evo.elasticmagic.compile.SearchQueryCompiler/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-sort/accept.html
 $dokka.location:dev.evo.elasticmagic/Sort/by/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-sort/by.html
+$dokka.location:dev.evo.elasticmagic/Sort/clone/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-sort/clone.html
 $dokka.location:dev.evo.elasticmagic/Sort/missing/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-sort/missing.html
 $dokka.location:dev.evo.elasticmagic/Sort/mode/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-sort/mode.html
 $dokka.location:dev.evo.elasticmagic/Sort/nested/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-sort/nested.html
@@ -1302,6 +1330,7 @@ $dokka.location:dev.evo.elasticmagic/SumAgg/name/#/PointingToDeclaration/elasti
 $dokka.location:dev.evo.elasticmagic/Term///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-term/index.html
 $dokka.location:dev.evo.elasticmagic/Term/Term/#dev.evo.elasticmagic.FieldOperations#kotlin.Any#kotlin.Double?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-term/-term.html
 $dokka.location:dev.evo.elasticmagic/Term/boost/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-term/boost.html
+$dokka.location:dev.evo.elasticmagic/Term/clone/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-term/clone.html
 $dokka.location:dev.evo.elasticmagic/Term/field/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-term/field.html
 $dokka.location:dev.evo.elasticmagic/Term/name/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-term/name.html
 $dokka.location:dev.evo.elasticmagic/Term/term/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-term/term.html
@@ -1315,6 +1344,7 @@ $dokka.location:dev.evo.elasticmagic/TermBucket/key/#/PointingToDeclaration/ela
 $dokka.location:dev.evo.elasticmagic/Terms///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-terms/index.html
 $dokka.location:dev.evo.elasticmagic/Terms/Terms/#dev.evo.elasticmagic.FieldOperations#kotlin.collections.List[kotlin.Any]#kotlin.Double?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-terms/-terms.html
 $dokka.location:dev.evo.elasticmagic/Terms/boost/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-terms/boost.html
+$dokka.location:dev.evo.elasticmagic/Terms/clone/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-terms/clone.html
 $dokka.location:dev.evo.elasticmagic/Terms/field/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-terms/field.html
 $dokka.location:dev.evo.elasticmagic/Terms/name/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-terms/name.html
 $dokka.location:dev.evo.elasticmagic/Terms/terms/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-terms/terms.html
