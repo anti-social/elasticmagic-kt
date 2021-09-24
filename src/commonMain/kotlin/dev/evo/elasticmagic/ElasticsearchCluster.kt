@@ -10,10 +10,7 @@ import dev.evo.elasticmagic.serde.Serde
 import dev.evo.elasticmagic.transport.ElasticsearchException
 import dev.evo.elasticmagic.transport.ElasticsearchTransport
 import dev.evo.elasticmagic.transport.Method
-import kotlinx.coroutines.CoroutineStart
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
+import kotlinx.coroutines.CompletableDeferred
 
 internal typealias Parameters = Map<String, List<String>>
 
@@ -77,9 +74,7 @@ class ElasticsearchCluster<OBJ>(
     private val compilers: CompilerSet? = null,
 ) : SerializableTransport<OBJ>(esTransport, serde) {
 
-    private val sniffedCompilers = GlobalScope.async(Dispatchers.Unconfined, start = CoroutineStart.LAZY) {
-        CompilerSet(fetchVersion())
-    }
+    private val sniffedCompilers = CompletableDeferred<CompilerSet>()
 
     operator fun get(indexName: String): ElasticsearchIndex<OBJ> {
         return ElasticsearchIndex(indexName, esTransport, serde, ::getCompilers)
@@ -100,7 +95,14 @@ class ElasticsearchCluster<OBJ>(
     }
 
     suspend fun getCompilers(): CompilerSet {
-        return compilers ?: sniffedCompilers.await()
+        if (compilers != null) {
+            return compilers
+        }
+        if (!sniffedCompilers.isCompleted) {
+            // Only first value will be set
+            sniffedCompilers.complete(CompilerSet(fetchVersion()))
+        }
+        return sniffedCompilers.await()
     }
 
     suspend fun createIndex(
