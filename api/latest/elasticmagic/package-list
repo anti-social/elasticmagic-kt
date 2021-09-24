@@ -441,6 +441,10 @@ $dokka.location:dev.evo.elasticmagic/DateRangeAgg.Companion/simpleRanges/#dev.ev
 $dokka.location:dev.evo.elasticmagic/DateRangeAgg///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-date-range-agg/index.html
 $dokka.location:dev.evo.elasticmagic/DateRangeAgg/DateRangeAgg/#dev.evo.elasticmagic.FieldOperations?#dev.evo.elasticmagic.Script?#kotlin.collections.List[dev.evo.elasticmagic.AggRange[kotlin.String]]#kotlin.String?#kotlin.String?#kotlin.Boolean?#kotlin.collections.Map[kotlin.String,kotlin.Any]#kotlin.collections.Map[kotlin.String,dev.evo.elasticmagic.Aggregation]/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-date-range-agg/-date-range-agg.html
 $dokka.location:dev.evo.elasticmagic/DateRangeAgg/name/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-date-range-agg/name.html
+$dokka.location:dev.evo.elasticmagic/DateTimeType///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-date-time-type/index.html
+$dokka.location:dev.evo.elasticmagic/DateTimeType/deserialize/#kotlin.Any#kotlin.Function0[kotlinx.datetime.LocalDateTime]?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-date-time-type/deserialize.html
+$dokka.location:dev.evo.elasticmagic/DateTimeType/name/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-date-time-type/name.html
+$dokka.location:dev.evo.elasticmagic/DateTimeType/serialize/#kotlinx.datetime.LocalDateTime/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-date-time-type/serialize.html
 $dokka.location:dev.evo.elasticmagic/DeleteAction///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-delete-action/index.html
 $dokka.location:dev.evo.elasticmagic/DeleteAction/DeleteAction/#dev.evo.elasticmagic.IdentActionMeta#dev.evo.elasticmagic.ConcurrencyControl?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-delete-action/-delete-action.html
 $dokka.location:dev.evo.elasticmagic/DeleteAction/concurrencyControl/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-delete-action/concurrency-control.html
@@ -636,6 +640,7 @@ $dokka.location:dev.evo.elasticmagic/FieldSet.JoinField/relations/#/PointingToDe
 $dokka.location:dev.evo.elasticmagic/FieldSet///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-field-set/index.html
 $dokka.location:dev.evo.elasticmagic/FieldSet/FieldSet/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-field-set/-field-set.html
 $dokka.location:dev.evo.elasticmagic/FieldSet/boolean/#kotlin.String?#kotlin.Boolean?#kotlin.Boolean?#kotlin.Boolean?#kotlin.collections.Map[kotlin.String,kotlin.Any]?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-field-set/boolean.html
+$dokka.location:dev.evo.elasticmagic/FieldSet/date/#kotlin.String?#kotlin.Boolean?#kotlin.Boolean?#kotlin.Boolean?#kotlin.collections.Map[kotlin.String,kotlin.Any]?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-field-set/date.html
 $dokka.location:dev.evo.elasticmagic/FieldSet/double/#kotlin.String?#kotlin.Boolean?#kotlin.Boolean?#kotlin.Boolean?#kotlin.collections.Map[kotlin.String,kotlin.Any]?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-field-set/double.html
 $dokka.location:dev.evo.elasticmagic/FieldSet/field/#dev.evo.elasticmagic.FieldType[TypeParam(bounds=[kotlin.Any?])]#kotlin.Boolean?#kotlin.Boolean?#kotlin.Boolean?#kotlin.collections.Map[kotlin.String,kotlin.Any]?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-field-set/field.html
 $dokka.location:dev.evo.elasticmagic/FieldSet/field/#kotlin.String?#dev.evo.elasticmagic.FieldType[TypeParam(bounds=[kotlin.Any?])]#kotlin.Boolean?#kotlin.Boolean?#kotlin.Boolean?#kotlin.collections.Map[kotlin.String,kotlin.Any]?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic/-field-set/field.html
