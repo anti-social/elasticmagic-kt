@@ -1,7 +1,6 @@
 package dev.evo.elasticmagic
 
 import io.kotest.matchers.shouldBe
-import io.kotest.matchers.types.shouldNotBeSameInstanceAs
 
 import kotlin.test.Test
 
