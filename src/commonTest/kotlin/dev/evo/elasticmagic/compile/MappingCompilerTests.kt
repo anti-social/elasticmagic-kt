@@ -139,7 +139,7 @@ class MappingCompilerTests {
     fun testRuntimeFields() {
         val logDoc = object : Document() {
             // TODO: Replace with date field
-            val timestamp by keyword("@timestamp")
+            val timestamp by date("@timestamp")
 
             override val runtime = object : RuntimeFields() {
                 val dayOfWeek by runtime(
@@ -182,7 +182,7 @@ class MappingCompilerTests {
             ),
             "properties" to mapOf(
                 "@timestamp" to mapOf(
-                    "type" to "keyword",
+                    "type" to "date",
                 ),
             )
         )

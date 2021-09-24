@@ -8,7 +8,7 @@ kotlin {
                 api(project(":elasticmagic-serde-serialization-json"))
                 api(project(":elasticmagic-transport-ktor"))
 
-                implementation(Libs.kotlinCoroutines("core"))
+                implementation(Libs.kotlinxCoroutines("core"))
                 implementation(Libs.ktorClient("core"))
             }
         }
