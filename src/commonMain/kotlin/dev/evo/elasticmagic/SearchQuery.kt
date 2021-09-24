@@ -249,6 +249,30 @@ open class SearchQuery<S: BaseDocSource>(
         }
     }
 
+    /**
+     * Clones this search query builder.
+     */
+    fun clone(): SearchQuery<S> {
+        val cloned = SearchQuery(sourceFactory)
+        cloned.query = query?.clone()
+        cloned.queryNodes = queryNodes
+        cloned.filters.addAll(filters)
+        cloned.postFilters.addAll(postFilters)
+        cloned.aggregations.putAll(aggregations)
+        cloned.rescores.addAll(rescores)
+        cloned.sorts.addAll(sorts)
+        cloned.trackScores = trackScores
+        cloned.trackTotalHits = trackTotalHits
+        cloned.docvalueFields.addAll(docvalueFields)
+        cloned.storedFields.addAll(storedFields)
+        cloned.scriptFields.putAll(scriptFields)
+        cloned.size = size
+        cloned.from = from
+        cloned.terminateAfter = terminateAfter
+        cloned.params.putAll(params)
+        return cloned
+    }
+
     suspend fun execute(index: ElasticsearchIndex<*>): SearchQueryResult<S> {
         return index.search(this)
     }

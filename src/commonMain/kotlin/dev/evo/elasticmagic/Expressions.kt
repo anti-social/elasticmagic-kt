@@ -47,12 +47,13 @@ interface NamedExpression : Expression {
 }
 
 interface QueryExpression : NamedExpression {
+    fun clone(): QueryExpression
+
     override fun reduce(): QueryExpression? {
         return this
     }
 }
 
-@Suppress("UNUSED")
 data class NodeHandle<T: QueryExpressionNode<T>>(val name: String? = null)
 
 abstract class QueryExpressionNode<T: QueryExpressionNode<T>> : QueryExpression {
@@ -76,6 +77,8 @@ data class Term(
 ) : QueryExpression {
     override val name = "term"
 
+    override fun clone() = copy()
+
     override fun visit(
         ctx: Serializer.ObjectCtx,
         compiler: SearchQueryCompiler
@@ -98,6 +101,8 @@ data class Terms(
 ) : QueryExpression {
     override val name = "terms"
 
+    override fun clone() = copy()
+
     override fun visit(
         ctx: Serializer.ObjectCtx,
         compiler: SearchQueryCompiler
@@ -116,6 +121,8 @@ data class Exists(
 ) : QueryExpression {
     override val name = "exists"
 
+    override fun clone() = copy()
+
     override fun visit(
         ctx: Serializer.ObjectCtx,
         compiler: SearchQueryCompiler
@@ -132,6 +139,8 @@ data class Range(
     val lte: Any? = null,
 ) : QueryExpression {
     override val name = "range"
+
+    override fun clone() = copy()
 
     override fun visit(
         ctx: Serializer.ObjectCtx,
@@ -163,6 +172,8 @@ data class Match(
 ) : QueryExpression {
     override val name = "match"
 
+    override fun clone() = copy()
+
     override fun visit(
         ctx: Serializer.ObjectCtx,
         compiler: SearchQueryCompiler
@@ -185,6 +196,8 @@ data class Match(
 object MatchAll : QueryExpression {
     override val name = "match_all"
 
+    override fun clone() = this
+
     override fun visit(
         ctx: Serializer.ObjectCtx,
         compiler: SearchQueryCompiler
@@ -205,6 +218,8 @@ data class MultiMatch(
 
         override fun toValue(): Any = name.lowercase()
     }
+
+    override fun clone() = copy()
 
     override fun visit(
         ctx: Serializer.ObjectCtx,
@@ -227,6 +242,8 @@ data class Ids(
 ) : QueryExpression {
     override val name = "ids"
 
+    override fun clone() = copy()
+
     override fun visit(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
         ctx.array("values") {
             compiler.visit(this, values)
@@ -248,6 +265,8 @@ data class Nested(
         override fun toValue() = name.lowercase()
     }
 
+    override fun clone() = copy()
+
     override fun visit(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
         ctx.field("path", path.getQualifiedFieldName())
         ctx.obj("query") {
@@ -265,8 +284,6 @@ data class Script(
     val lang: String? = null,
     val params: Params = Params(),
 ) : Expression {
-    // override val name: String = "script"
-
     // FIXME: Don't like it as it is error prone
     constructor(
         source: String? = null,
@@ -278,12 +295,16 @@ data class Script(
     // TODO: After update kotlin to 1.5 move subclasses outside of Spec
     sealed class Spec : Expression {
         data class Source(val source: String) : Spec(), Expression {
+            fun clone() = copy()
+
             override fun accept(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
                 ctx.field("source", source)
             }
         }
 
         data class Id(val id: String) : Spec(), Expression {
+            fun clone() = copy()
+
             override fun accept(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
                 ctx.field("id", id)
             }
@@ -319,6 +340,8 @@ data class Script(
         @Suppress("FunctionNaming")
         fun Id(id: String): Spec.Id = Spec.Id(id)
     }
+
+    fun clone() = copy()
 
     override fun accept(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
         when (spec) {
@@ -365,6 +388,8 @@ data class Bool(
         fun must(vararg expressions: QueryExpression) = Bool(must = expressions.toList())
         fun mustNot(vararg expressions: QueryExpression) = Bool(mustNot = expressions.toList())
     }
+
+    override fun clone() = copy()
 
     override fun reduce(): QueryExpression? {
         val filter = filter.mapNotNull { it.reduce() }
@@ -451,6 +476,13 @@ data class BoolNode(
         }
     }
 
+    override fun clone() = copy(
+        filter = filter.toMutableList(),
+        should = should.toMutableList(),
+        must = must.toMutableList(),
+        mustNot = mustNot.toMutableList()
+    )
+
     override fun toQueryExpression(): Bool {
         return Bool(
             filter = filter,
@@ -470,11 +502,13 @@ interface DisMaxExpression : QueryExpression {
     }
 }
 
-class DisMax(
+data class DisMax(
     override val queries: List<QueryExpression>,
     val tieBreaker: Double? = null,
 ) : DisMaxExpression {
     override val name = "dis_max"
+
+    override fun clone() = copy()
 
     override fun reduce(): QueryExpression? {
         return when {
@@ -513,6 +547,8 @@ data class DisMaxNode(
         }
     }
 
+    override fun clone() = copy(queries = queries.toMutableList())
+
     override fun toQueryExpression(): DisMax {
         return DisMax(
             queries = queries,
@@ -537,6 +573,8 @@ data class FunctionScore(
     val boostMode: BoostMode? = null,
     val minScore: Double? = null,
 ) : FunctionScoreExpression {
+    override val name = "function_score"
+
     enum class ScoreMode : ToValue {
         MULTIPLY, SUM, AVG, FIRST, MAX, MIN;
 
@@ -548,7 +586,32 @@ data class FunctionScore(
         override fun toValue(): Any = name.lowercase()
     }
 
-    override val name = "function_score"
+    override fun clone() = copy()
+
+    override fun reduce(): QueryExpression? {
+        val query = query?.reduce()
+        if (functions.isEmpty() && minScore == null) {
+            return query?.reduce()
+        }
+        return this
+    }
+
+    override fun visit(
+        ctx: Serializer.ObjectCtx,
+        compiler: SearchQueryCompiler
+    ) {
+        if (query != null) {
+            ctx.obj("query") {
+                compiler.visit(this, query)
+            }
+        }
+        ctx.fieldIfNotNull("boost", boost)
+        ctx.fieldIfNotNull("score_mode", scoreMode?.toValue())
+        ctx.fieldIfNotNull("boost_mode", boostMode?.toValue())
+        ctx.array("functions") {
+            compiler.visit(this, functions)
+        }
+    }
 
     abstract class Function : Expression {
         abstract val filter: QueryExpression?
@@ -584,6 +647,8 @@ data class FunctionScore(
         val weight: Double,
         override val filter: QueryExpression?,
     ) : Function() {
+        fun clone() = copy()
+
         override fun reduce(): Expression {
             return copy(
                 filter = reduceFilter()
@@ -607,6 +672,8 @@ data class FunctionScore(
         val modifier: String? = null,
         override val filter: QueryExpression? = null,
     ) : Function() {
+        fun clone() = copy()
+
         override fun reduce(): Expression {
             return copy(
                 filter = reduceFilter()
@@ -632,6 +699,14 @@ data class FunctionScore(
         val script: Script,
         override val filter: QueryExpression? = null,
     ) : Function() {
+        fun clone() = copy()
+
+        override fun reduce(): Expression {
+            return copy(
+                filter = reduceFilter()
+            )
+        }
+
         override fun accept(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
             ctx.obj("script_score") {
                 obj("script") {
@@ -646,36 +721,19 @@ data class FunctionScore(
         val field: FieldOperations? = null,
         override val filter: QueryExpression? = null,
     ) : Function() {
+        fun clone() = copy()
+
+        override fun reduce(): Expression {
+            return copy(
+                filter = reduceFilter()
+            )
+        }
+
         override fun accept(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
             ctx.obj("random_score") {
                 fieldIfNotNull("seed", seed)
                 fieldIfNotNull("field", field?.getQualifiedFieldName())
             }
-        }
-    }
-
-    override fun reduce(): QueryExpression? {
-        val query = query?.reduce()
-        if (functions.isEmpty() && minScore == null) {
-            return query?.reduce()
-        }
-        return this
-    }
-
-    override fun visit(
-        ctx: Serializer.ObjectCtx,
-        compiler: SearchQueryCompiler
-    ) {
-        if (query != null) {
-            ctx.obj("query") {
-                compiler.visit(this, query)
-            }
-        }
-        ctx.fieldIfNotNull("boost", boost)
-        ctx.fieldIfNotNull("score_mode", scoreMode?.toValue())
-        ctx.fieldIfNotNull("boost_mode", boostMode?.toValue())
-        ctx.array("functions") {
-            compiler.visit(this, functions)
         }
     }
 }
@@ -714,6 +772,8 @@ data class FunctionScoreNode(
         }
     }
 
+    override fun clone() = copy(functions = functions.toMutableList())
+
     override fun toQueryExpression(): QueryExpression {
         return FunctionScore(
             query = query,
@@ -727,7 +787,7 @@ data class FunctionScoreNode(
 }
 
 // TODO: geo distance
-class Sort(
+data class Sort(
     val by: By,
     val order: Order? = null,
     val mode: Mode? = null,
@@ -821,12 +881,14 @@ class Sort(
         }
     }
 
-    class Nested(
+    data class Nested(
         val path: FieldOperations,
         val filter: QueryExpression? = null,
         val maxChildren: Int? = null,
         val nested: Nested? = null,
     ) : Expression {
+        fun clone() = copy()
+
         override fun accept(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
             ctx.field("path", path.getQualifiedFieldName())
             if (filter != null) {
@@ -857,6 +919,8 @@ class Sort(
         return null
     }
 
+    fun clone() = copy()
+
     override fun accept(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
         val params = Params(
             "order" to order,
@@ -885,22 +949,22 @@ class Sort(
     }
 }
 
-abstract class Rescore(
-    val windowSize: Int? = null,
-) : NamedExpression {
+abstract class Rescore : NamedExpression {
+    abstract val windowSize: Int?
+
     override fun accept(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
         super.accept(ctx, compiler)
         ctx.fieldIfNotNull("window_size", windowSize)
     }
 }
 
-class QueryRescore(
+data class QueryRescore(
     val query: QueryExpression,
     val queryWeight: Double? = null,
     val rescoreQueryWeight: Double? = null,
     val scoreMode: ScoreMode? = null,
-    windowSize: Int? = null,
-) : Rescore(windowSize) {
+    override val windowSize: Int? = null,
+) : Rescore() {
     override val name = "query"
 
     enum class ScoreMode : ToValue {
@@ -908,6 +972,8 @@ class QueryRescore(
 
         override fun toValue() = name.lowercase()
     }
+
+    fun clone() = copy()
 
     override fun visit(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
         ctx.obj("rescore_query") {
