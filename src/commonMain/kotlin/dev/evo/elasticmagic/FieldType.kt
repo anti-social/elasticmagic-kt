@@ -96,18 +96,54 @@ object TextType : StringType() {
     override val name = "text"
 }
 
-object DateType : FieldType<LocalDateTime> {
+object DateTimeType : FieldType<LocalDateTime> {
     override val name = "date"
+
+    @Suppress("MaxLineLength")
+    private val DATETIME_REGEX =
+        "(\\d{4})(?:-(\\d{2}))?(?:-(\\d{2}))?(?:T(\\d{2})?(?::(\\d{2}))?(?::(\\d{2}))?(?:\\.(\\d{1,9}))?(?:Z)?)?".toRegex()
 
     override fun serialize(v: LocalDateTime): Any {
         return v.toInstant(TimeZone.UTC).toString()
     }
 
     override fun deserialize(v: Any, valueFactory: (() -> LocalDateTime)?) = when (v) {
-        is Int -> Instant.fromEpochMilliseconds(v.toLong()).toLocalDateTime(TimeZone.UTC)
-        is Long -> Instant.fromEpochMilliseconds(v).toLocalDateTime(TimeZone.UTC)
-        is String -> Instant.parse(v).toLocalDateTime(TimeZone.UTC)
+        is String -> {
+            parseDateWithOptionalTime(v)
+        }
+        is Number -> {
+            try {
+                parseDateWithOptionalTime(v.toString())
+            } catch (ex: ValueDeserializationException) {
+                Instant.fromEpochMilliseconds(v.toLong()).toLocalDateTime(TimeZone.UTC)
+            }
+        }
         else -> throw ValueDeserializationException(v, "LocalDateTime")
+    }
+
+    @Suppress("MagicNumber")
+    private fun parseDateWithOptionalTime(v: String): LocalDateTime {
+        val datetimeMatch = DATETIME_REGEX.matchEntire(v)
+            ?: throw ValueDeserializationException(v, "LocalDateTime")
+        val (year, month, day, hour, minute, second, msRaw) = datetimeMatch.destructured
+        val ms = when (msRaw.length) {
+            0 -> msRaw
+            in 1..2 -> msRaw.padEnd(3, '0')
+            else -> msRaw.substring(0, 3)
+        }
+        return LocalDateTime(
+            year.toInt(),
+            month.toIntIfNotEmpty(1),
+            day.toIntIfNotEmpty(1),
+            hour.toIntIfNotEmpty(0),
+            minute.toIntIfNotEmpty(0),
+            second.toIntIfNotEmpty(0),
+            ms.toIntIfNotEmpty(0) * 1000_000
+        )
+    }
+
+    private fun String.toIntIfNotEmpty(default: Int): Int {
+        return if (isEmpty()) default else toInt()
     }
 }
 

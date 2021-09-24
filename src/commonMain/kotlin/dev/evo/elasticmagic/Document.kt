@@ -262,7 +262,7 @@ abstract class FieldSet : Named {
         params: Params? = null,
     ): Field<LocalDateTime> {
         return field(
-            name, DateType,
+            name, DateTimeType,
             docValues = docValues,
             index = index,
             store = store,
