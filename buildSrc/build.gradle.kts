@@ -17,7 +17,7 @@ idea {
    }
 }
 
-val kotlinVersion = "1.4.32"
+val kotlinVersion = "1.5.31"
 val nexusPublishVersion = "1.1.0"
 
 // See example at: https://docs.gradle.org/current/dsl/org.gradle.api.tasks.SourceSetOutput.html

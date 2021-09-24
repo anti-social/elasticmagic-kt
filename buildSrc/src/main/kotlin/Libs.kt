@@ -15,10 +15,10 @@ object Versions {
 
     // Kotlin and libs
     val kotlin = versionProps["kotlin"]!!.toString()
-    const val kotlinxSerialization = "1.1.0"
-    const val kotlinxCoroutines = "1.4.3-native-mt"
+    const val kotlinxSerialization = "1.3.0-RC"
+    const val kotlinxCoroutines = "1.5.2-native-mt"
     const val kotlinxDatetime = "0.2.1"
-    const val ktor = "1.5.2"
+    const val ktor = "1.6.3"
 
     // Other dependencies
     const val jackson = "2.12.2"
