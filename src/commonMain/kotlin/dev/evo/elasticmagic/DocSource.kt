@@ -116,10 +116,10 @@ open class DocSource : BaseDocSource() {
     override fun getSource(): Map<String, Any?> {
         val source = mutableMapOf<String, Any?>()
         for (fieldValue in fieldValues) {
-            if (fieldValue.isRequired && !fieldValue.isInitialized) {
+            if (fieldValue.isRequired && !fieldValue.isInitialized && !fieldValue.hasDefault) {
                 throw IllegalStateException("Field ${fieldValue.name} is required")
             }
-            if (fieldValue.isInitialized) {
+            if (fieldValue.isInitialized || fieldValue.hasDefault) {
                 source[fieldValue.name] = fieldValue.serialize()
             }
         }
@@ -211,6 +211,12 @@ open class DocSource : BaseDocSource() {
         )
     }
 
+    fun <V> BoundField<V>.default(defaultValue: () -> V): OptionalValueDelegateWithDefault<V> {
+        return OptionalValueDelegateWithDefault(
+            getFieldName(), getFieldType(), defaultValue
+        )
+    }
+
     operator fun <V> SubFields<V>.provideDelegate(
         thisRef: DocSource, property: KProperty<*>
     ): ReadWriteProperty<DocSource, V?> {
@@ -234,12 +240,33 @@ open class DocSource : BaseDocSource() {
         val type: FieldType<V>,
         val isRequired: Boolean,
     ) {
+        constructor(
+            name: String,
+            type: FieldType<V>,
+            isRequired: Boolean,
+            defaultValue: () -> V
+        ) : this(name, type, isRequired) {
+            _defaultValue = defaultValue
+            hasDefault = true
+        }
+
         var isInitialized: Boolean = false
+            private set
+        var preInitialized: Boolean = false
+            private set
+        var hasDefault: Boolean = false
             private set
 
         private var _value: V? = null
+        private var _defaultValue: () -> V? = { null }
         var value: V?
-            get() = _value
+            get() {
+                if (!isInitialized && hasDefault && !preInitialized) {
+                    _value = _defaultValue()
+                    preInitialized = true
+                }
+                return _value
+            }
             set(value) {
                 isInitialized = true
                 _value = value
@@ -277,6 +304,10 @@ open class DocSource : BaseDocSource() {
             h = 37 * h + value.hashCode()
             return h
         }
+
+        override fun toString(): String {
+            return "FieldValue '$name' of type ${type.name}, isRequired: $isRequired"
+        }
     }
 
     abstract class FieldValueProperty<V>(
@@ -300,7 +331,25 @@ open class DocSource : BaseDocSource() {
         open fun required(): RequiredValueDelegate<V> {
             return RequiredValueDelegate(fieldName, fieldType)
         }
+
+        fun default(defaultValue: () -> V): OptionalValueDelegateWithDefault<V> {
+            return OptionalValueDelegateWithDefault(fieldName, fieldType, defaultValue)
+        }
     }
+
+    class OptionalValueDelegateWithDefault<V>(
+        private val fieldName: String,
+        private val fieldType: FieldType<V>,
+        private val defaultValue: () -> V,
+    ) {
+        operator fun provideDelegate(
+            thisRef: DocSource, property: KProperty<*>
+        ): ReadWriteProperty<DocSource, V?> {
+            return OptionalValueProperty(fieldName, fieldType, defaultValue)
+                .also { thisRef.bindProperty(it) }
+        }
+    }
+
 
     class OptionalListableValueDelegate<V>(
         fieldName: String,
@@ -317,13 +366,20 @@ open class DocSource : BaseDocSource() {
         }
     }
 
-    protected class OptionalValueProperty<V>(
-        fieldName: String,
-        fieldType: FieldType<V>,
-    ) :
-        FieldValueProperty<V>(FieldValue(fieldName, fieldType, false), fieldType),
+    protected class OptionalValueProperty<V>:
+        FieldValueProperty<V>,
         ReadWriteProperty<DocSource, V?>
     {
+        constructor(
+            fieldName: String,
+            fieldType: FieldType<V>,
+        ): super(FieldValue(fieldName, fieldType, true), fieldType)
+
+        constructor(
+            fieldName: String,
+            fieldType: FieldType<V>,
+            defaultValue: () -> V,
+        ): super(FieldValue(fieldName, fieldType, true, defaultValue), fieldType)
 
         override fun set(value: Any?) {
             fieldValue.value = if (value != null) {

@@ -791,17 +791,31 @@ class SourceTests {
 
     @Test
     fun defaultValue() {
+        class UserDocSource : DocSource() {
+            var id by OrderDoc.user.id
+        }
+
         class OrderDocSource : DocSource() {
             var id by OrderDoc.id.required()
-            var status by OrderDoc.status.required().list().required(default = listOf(0, 3))
-            var total by OrderDoc.total.required(default = 666.66f)
+            var status by OrderDoc.status.required().list().default { listOf(0, 3) }
+            var total by OrderDoc.total.default { 666.66f }
+            var user by OrderDoc.user.source(::UserDocSource).default { UserDocSource().apply { id = 777 } }
         }
 
         val order = OrderDocSource()
         shouldThrow<IllegalStateException> {
             order.id
         }
+
         order.status shouldBe listOf(0, 3)
         order.total shouldBe 666.66f
+
+        order.id = 111L
+        order.getSource() shouldContainExactly mapOf(
+            "id" to 111L,
+            "status" to listOf(0, 3),
+            "total" to 666.66f,
+            "user" to mapOf("id" to 777)
+        )
     }
 }
