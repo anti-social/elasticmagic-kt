@@ -252,8 +252,6 @@ open class DocSource : BaseDocSource() {
 
         var isInitialized: Boolean = false
             private set
-        var preInitialized: Boolean = false
-            private set
         var hasDefault: Boolean = false
             private set
 
@@ -261,9 +259,9 @@ open class DocSource : BaseDocSource() {
         private var _defaultValue: () -> V? = { null }
         var value: V?
             get() {
-                if (!isInitialized && hasDefault && !preInitialized) {
+                if (!isInitialized && hasDefault) {
+                    isInitialized = true
                     _value = _defaultValue()
-                    preInitialized = true
                 }
                 return _value
             }
