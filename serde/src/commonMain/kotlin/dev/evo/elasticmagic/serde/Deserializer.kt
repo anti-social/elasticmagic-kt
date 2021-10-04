@@ -6,23 +6,23 @@ interface Deserializer<OBJ> {
     interface ObjectCtx {
         fun iterator(): ObjectIterator
         fun anyOrNull(name: String): Any?
-        fun any(name: String): Any = anyOrNull(name) ?: error("no such key")
+        fun any(name: String): Any = anyOrNull(name) ?: error("no such key: [$name]")
         fun intOrNull(name: String): Int?
-        fun int(name: String): Int = intOrNull(name) ?: error("not an integer")
+        fun int(name: String): Int = intOrNull(name) ?: error("not an integer: [$name]")
         fun longOrNull(name: String): Long?
-        fun long(name: String): Long = longOrNull(name) ?: error("not a long")
+        fun long(name: String): Long = longOrNull(name) ?: error("not a long: [$name]")
         fun floatOrNull(name: String): Float?
-        fun float(name: String): Float = floatOrNull(name) ?: error("not a float")
+        fun float(name: String): Float = floatOrNull(name) ?: error("not a float: [$name]")
         fun doubleOrNull(name: String): Double?
-        fun double(name: String): Double = doubleOrNull(name) ?: error("not a double")
+        fun double(name: String): Double = doubleOrNull(name) ?: error("not a double: [$name]")
         fun booleanOrNull(name: String): Boolean?
-        fun boolean(name: String): Boolean = booleanOrNull(name) ?: error("not a boolean")
+        fun boolean(name: String): Boolean = booleanOrNull(name) ?: error("not a boolean: [$name]")
         fun stringOrNull(name: String): String?
-        fun string(name: String): String = stringOrNull(name) ?: error("not a string")
+        fun string(name: String): String = stringOrNull(name) ?: error("not a string: [$name]")
         fun objOrNull(name: String): ObjectCtx?
-        fun obj(name: String): ObjectCtx = objOrNull(name) ?: error("not an object")
+        fun obj(name: String): ObjectCtx = objOrNull(name) ?: error("not an object: [$name]")
         fun arrayOrNull(name: String): ArrayCtx?
-        fun array(name: String): ArrayCtx = arrayOrNull(name) ?: error("not an array")
+        fun array(name: String): ArrayCtx = arrayOrNull(name) ?: error("not an array: [$name]")
     }
 
     interface ObjectIterator {

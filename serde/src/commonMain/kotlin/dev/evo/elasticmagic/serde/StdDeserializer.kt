@@ -2,6 +2,9 @@ package dev.evo.elasticmagic.serde
 
 abstract class StdDeserializer : Deserializer<Map<String, Any?>> {
     companion object {
+        // We cannot distinguish double from int on JS platform
+        private val isJs = platform == Platform.JS
+
         private fun coerceToAny(v: Any?): Any? {
             return when (v) {
                 null -> null
@@ -20,6 +23,9 @@ abstract class StdDeserializer : Deserializer<Map<String, Any?>> {
         }
 
         private fun coerceToInt(v: Any?): Int? {
+            if (isJs && v is Number) {
+                return v.toInt()
+            }
             return when (v) {
                 is Int -> v
                 is Long -> v.toInt()
@@ -28,6 +34,9 @@ abstract class StdDeserializer : Deserializer<Map<String, Any?>> {
         }
 
         private fun coerceToLong(v: Any?): Long? {
+            if (isJs && v is Number) {
+                return v.toLong()
+            }
             return when (v) {
                 is Long -> v
                 is Int -> v.toLong()
@@ -36,6 +45,9 @@ abstract class StdDeserializer : Deserializer<Map<String, Any?>> {
         }
 
         private fun coerceToFloat(v: Any?): Float? {
+            if (isJs && v is Number) {
+                return v.toFloat()
+            }
             return when (v) {
                 is Float -> v
                 is Double -> v.toFloat()
@@ -46,6 +58,9 @@ abstract class StdDeserializer : Deserializer<Map<String, Any?>> {
         }
 
         private fun coerceToDouble(v: Any?): Double? {
+            if (isJs && v is Number) {
+                return v.toDouble()
+            }
             return when (v) {
                 is Double -> v
                 is Float -> v.toDouble()
