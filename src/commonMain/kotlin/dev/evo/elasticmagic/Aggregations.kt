@@ -8,6 +8,36 @@ import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
+sealed class AggValue : Expression {
+    data class Field(val field: FieldOperations) : AggValue() {
+        override fun clone() = copy()
+    }
+    data class Script(val script: dev.evo.elasticmagic.Script) : AggValue() {
+        override fun clone() = copy()
+    }
+    data class ValueScript(
+        val field: FieldOperations,
+        val script: dev.evo.elasticmagic.Script,
+    ) : AggValue() {
+        override fun clone() = copy()
+    }
+
+    override fun accept(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
+        when (this) {
+            is Field -> ctx.field("field", field.getQualifiedFieldName())
+            is Script -> ctx.obj("script") {
+                compiler.visit(this, script)
+            }
+            is ValueScript -> {
+                ctx.field("field", field.getQualifiedFieldName())
+                ctx.obj("script") {
+                    compiler.visit(this, script)
+                }
+            }
+        }
+    }
+}
+
 interface Aggregation<R: AggregationResult> : NamedExpression {
     fun processResult(obj: Deserializer.ObjectCtx): R
 }
@@ -74,31 +104,17 @@ data class SingleValueMetricAggResult<T>(
     val valueAsString: String? = null,
 ) : AggregationResult
 
-abstract class NumericValueAgg<R: AggregationResult>(
-    field: FieldOperations?, script: Script?
-) : MetricAggregation<R>() {
-    init {
-        require(field != null || script != null) {
-            "field or script required"
-        }
-    }
-
-    abstract val field: FieldOperations?
-    abstract val script: Script?
+abstract class NumericValueAgg<R: AggregationResult> : MetricAggregation<R>() {
+    abstract val value: AggValue
     abstract val missing: Any?
 
     override fun visit(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
-        ctx.fieldIfNotNull("field", field?.getQualifiedFieldName())
-        script?.let { script ->
-            compiler.visit(ctx, script)
-        }
+        compiler.visit(ctx, value)
         ctx.fieldIfNotNull("missing", missing)
     }
 }
 
-abstract class SingleDoubleValueAgg(
-    field: FieldOperations?, script: Script?
-) : NumericValueAgg<SingleValueMetricAggResult<Double>>(field, script) {
+abstract class SingleDoubleValueAgg : NumericValueAgg<SingleValueMetricAggResult<Double>>() {
     override fun processResult(obj: Deserializer.ObjectCtx): SingleValueMetricAggResult<Double> {
         return SingleValueMetricAggResult(
             obj.doubleOrNull("value"),
@@ -107,9 +123,7 @@ abstract class SingleDoubleValueAgg(
     }
 }
 
-abstract class SingleLongValueAgg(
-    field: FieldOperations?, script: Script?
-) : NumericValueAgg<SingleValueMetricAggResult<Long>>(field, script) {
+abstract class SingleLongValueAgg : NumericValueAgg<SingleValueMetricAggResult<Long>>() {
     override fun processResult(obj: Deserializer.ObjectCtx): SingleValueMetricAggResult<Long> {
         return SingleValueMetricAggResult(
             obj.long("value"),
@@ -119,34 +133,61 @@ abstract class SingleLongValueAgg(
 }
 
 data class MinAgg(
-    override val field: FieldOperations? = null,
-    override val script: Script? = null,
+    override val value: AggValue,
     override val missing: Any? = null,
     val format: String? = null,
-) : SingleDoubleValueAgg(field, script) {
+) : SingleDoubleValueAgg() {
     override val name = "min"
+
+    constructor(
+        field: FieldOperations,
+        missing: Any? = null,
+        format: String? = null,
+    ) : this(
+        AggValue.Field(field),
+        missing = missing,
+        format = format,
+    )
 
     override fun clone() = copy()
 }
 
 data class MaxAgg(
-    override val field: FieldOperations? = null,
-    override val script: Script? = null,
+    override val value: AggValue,
     override val missing: Any? = null,
     val format: String? = null,
-) : SingleDoubleValueAgg(field, script) {
+) : SingleDoubleValueAgg() {
     override val name = "max"
+
+    constructor(
+        field: FieldOperations,
+        missing: Any? = null,
+        format: String? = null,
+    ) : this(
+        AggValue.Field(field),
+        missing = missing,
+        format = format,
+    )
 
     override fun clone() = copy()
 }
 
 data class AvgAgg(
-    override val field: FieldOperations? = null,
-    override val script: Script? = null,
+    override val value: AggValue,
     override val missing: Any? = null,
     val format: String? = null,
-) : SingleDoubleValueAgg(field, script) {
+) : SingleDoubleValueAgg() {
     override val name = "avg"
+
+    constructor(
+        field: FieldOperations,
+        missing: Any? = null,
+        format: String? = null,
+    ) : this(
+        AggValue.Field(field),
+        missing = missing,
+        format = format,
+    )
 
     override fun clone() = copy()
 }
@@ -159,19 +200,22 @@ data class WeightedAvgAgg(
     override val name = "weighted_avg"
 
     data class ValueSource(
-        val field: FieldOperations? = null,
+        val value: AggValue,
         val script: Script? = null,
         val missing: Any? = null,
     ) : Expression {
         override fun clone() = copy()
 
+        constructor(
+            field: FieldOperations,
+            missing: Any? = null,
+        ) : this(
+            AggValue.Field(field),
+            missing = missing,
+        )
+
         override fun accept(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
-            ctx.fieldIfNotNull("field", field?.getQualifiedFieldName())
-            if (script != null) {
-                ctx.obj("script") {
-                    compiler.visit(this, script)
-                }
-            }
+            compiler.visit(ctx, value)
             ctx.fieldIfNotNull("missing", missing)
         }
     }
@@ -197,53 +241,92 @@ data class WeightedAvgAgg(
 }
 
 data class SumAgg(
-    override val field: FieldOperations? = null,
-    override val script: Script? = null,
+    override val value: AggValue,
     override val missing: Any? = null,
     val format: String? = null,
-) : SingleDoubleValueAgg(field, script) {
+) : SingleDoubleValueAgg() {
     override val name = "sum"
+
+    constructor(
+        field: FieldOperations,
+        missing: Any? = null,
+        format: String? = null,
+    ) : this(
+        AggValue.Field(field),
+        missing = missing,
+        format = format,
+    )
 
     override fun clone() = copy()
 }
 
 data class MedianAbsoluteDeviationAgg(
-    override val field: FieldOperations? = null,
-    override val script: Script? = null,
+    override val value: AggValue,
     override val missing: Any? = null,
-) : SingleDoubleValueAgg(field, script) {
+) : SingleDoubleValueAgg() {
     override val name = "median_absolute_deviation"
+
+    constructor(
+        field: FieldOperations,
+        missing: Any? = null,
+    ) : this(
+        AggValue.Field(field),
+        missing = missing,
+    )
 
     override fun clone() = copy()
 }
 
 data class ValueCountAgg(
-    override val field: FieldOperations? = null,
-    override val script: Script? = null,
+    override val value: AggValue,
     override val missing: Any? = null,
-) : SingleLongValueAgg(field, script) {
+) : SingleLongValueAgg() {
     override val name = "value_count"
+
+    constructor(
+        field: FieldOperations,
+        missing: Any? = null,
+    ) : this(
+        AggValue.Field(field),
+        missing = missing,
+    )
 
     override fun clone() = copy()
 }
 
 data class CardinalityAgg(
-    override val field: FieldOperations? = null,
-    override val script: Script? = null,
+    override val value: AggValue,
     override val missing: Any? = null,
-) : SingleLongValueAgg(field, script) {
+) : SingleLongValueAgg() {
     override val name = "cardinality"
+
+    constructor(
+        field: FieldOperations,
+        missing: Any? = null,
+    ) : this(
+        AggValue.Field(field),
+        missing = missing,
+    )
 
     override fun clone() = copy()
 }
 
 data class StatsAgg(
-    override val field: FieldOperations? = null,
-    override val script: Script? = null,
+    override val value: AggValue,
     override val missing: Any? = null,
     val format: String? = null,
-) : NumericValueAgg<StatsAggResult>(field, script) {
+) : NumericValueAgg<StatsAggResult>() {
     override val name = "stats"
+
+    constructor(
+        field: FieldOperations,
+        missing: Any? = null,
+        format: String? = null,
+    ) : this(
+        AggValue.Field(field),
+        missing = missing,
+        format = format,
+    )
 
     override fun clone() = copy()
 
@@ -275,12 +358,21 @@ data class StatsAggResult(
 ) : AggregationResult
 
 data class ExtendedStatsAgg(
-    override val field: FieldOperations? = null,
-    override val script: Script? = null,
+    override val value: AggValue,
     override val missing: Any? = null,
     val format: String? = null,
-) : NumericValueAgg<ExtendedStatsAggResult>(field, script) {
+) : NumericValueAgg<ExtendedStatsAggResult>() {
     override val name = "extended_stats"
+
+    constructor(
+        field: FieldOperations,
+        missing: Any? = null,
+        format: String? = null,
+    ) : this(
+        AggValue.Field(field),
+        missing = missing,
+        format = format,
+    )
 
     override fun clone() = copy()
 
@@ -331,11 +423,8 @@ data class BucketsOrder(
     }
 }
 
-abstract class BaseTermsAgg<R: AggregationResult>(
-    field: FieldOperations?, script: Script?
-) : BucketAggregation<R>() {
-    abstract val field: FieldOperations?
-    abstract val script: Script?
+abstract class BaseTermsAgg<R: AggregationResult> : BucketAggregation<R>() {
+    abstract val value: AggValue
     abstract val size: Int?
     abstract val shardSize: Int?
     abstract val minDocCount: Int?
@@ -347,12 +436,6 @@ abstract class BaseTermsAgg<R: AggregationResult>(
     abstract val collectMode: CollectMode?
     abstract val executionHint: ExecutionHint?
     abstract val params: Params
-
-    init {
-        require(field != null || script != null) {
-            "field or script required"
-        }
-    }
 
     sealed class Exclude {
         class Values(vararg val values: Any) : Exclude()
@@ -378,10 +461,7 @@ abstract class BaseTermsAgg<R: AggregationResult>(
     }
 
     override fun visit(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
-        ctx.fieldIfNotNull("field", field?.getQualifiedFieldName())
-        script?.let { script ->
-            compiler.visit(ctx, script)
-        }
+        compiler.visit(ctx, value)
         ctx.fieldIfNotNull("size", size)
         ctx.fieldIfNotNull("shard_size", shardSize)
         ctx.fieldIfNotNull("min_doc_count", minDocCount)
@@ -425,8 +505,7 @@ abstract class BaseTermsAgg<R: AggregationResult>(
 }
 
 data class TermsAgg(
-    override val field: FieldOperations? = null,
-    override val script: Script? = null,
+    override val value: AggValue,
     override val size: Int? = null,
     override val shardSize: Int? = null,
     override val minDocCount: Int? = null,
@@ -440,8 +519,40 @@ data class TermsAgg(
     val showTermDocCountError: Boolean? = null,
     override val params: Params = Params(),
     override val aggs: Map<String, Aggregation<*>> = emptyMap(),
-) : BaseTermsAgg<TermsAggResult>(field, script) {
+) : BaseTermsAgg<TermsAggResult>() {
     override val name = "terms"
+
+    constructor(
+        field: FieldOperations,
+        size: Int? = null,
+        shardSize: Int? = null,
+        minDocCount: Int? = null,
+        shardMinDocCount: Int? = null,
+        include: Include? = null,
+        exclude: Exclude? = null,
+        missing: Any? = null,
+        order: List<BucketsOrder> = emptyList(),
+        collectMode: CollectMode? = null,
+        executionHint: ExecutionHint? = null,
+        showTermDocCountError: Boolean? = null,
+        params: Params = Params(),
+        aggs: Map<String, Aggregation<*>> = emptyMap(),
+    ) : this(
+        AggValue.Field(field),
+        size = size,
+        shardSize = shardSize,
+        minDocCount = minDocCount,
+        shardMinDocCount = shardMinDocCount,
+        include = include,
+        exclude = exclude,
+        missing = missing,
+        order = order,
+        collectMode = collectMode,
+        executionHint = executionHint,
+        showTermDocCountError = showTermDocCountError,
+        params = params,
+        aggs = aggs,
+    )
 
     override fun clone() = copy()
 
@@ -487,8 +598,7 @@ data class TermBucket(
 ) : KeyedBucket<Any>()
 
 data class SignificantTermsAgg(
-    override val field: FieldOperations? = null,
-    override val script: Script? = null,
+    override val value: AggValue,
     override val size: Int? = null,
     override val shardSize: Int? = null,
     override val minDocCount: Int? = null,
@@ -502,8 +612,40 @@ data class SignificantTermsAgg(
     val backgroundFilter: QueryExpression? = null,
     override val params: Params = Params(),
     override val aggs: Map<String, Aggregation<*>> = emptyMap(),
-) : BaseTermsAgg<SignificantTermsAggResult>(field, script) {
+) : BaseTermsAgg<SignificantTermsAggResult>() {
     override val name = "significant_terms"
+
+    constructor(
+        field: FieldOperations,
+        size: Int? = null,
+        shardSize: Int? = null,
+        minDocCount: Int? = null,
+        shardMinDocCount: Int? = null,
+        include: Include? = null,
+        exclude: Exclude? = null,
+        missing: Any? = null,
+        order: List<BucketsOrder> = emptyList(),
+        collectMode: CollectMode? = null,
+        executionHint: ExecutionHint? = null,
+        backgroundFilter: QueryExpression? = null,
+        params: Params = Params(),
+        aggs: Map<String, Aggregation<*>> = emptyMap(),
+    ) : this(
+        AggValue.Field(field),
+        size = size,
+        shardSize = shardSize,
+        minDocCount = minDocCount,
+        shardMinDocCount = shardMinDocCount,
+        include = include,
+        exclude = exclude,
+        missing = missing,
+        order = order,
+        collectMode = collectMode,
+        executionHint = executionHint,
+        backgroundFilter = backgroundFilter,
+        params = params,
+        aggs = aggs,
+    )
 
     override fun clone() = copy()
 
@@ -561,11 +703,8 @@ data class AggRange<T>(
     }
 }
 
-abstract class BaseRangeAgg<T, R: AggregationResult, B>(
-    field: FieldOperations?, script: Script?
-) : BucketAggregation<R>() {
-    abstract val field: FieldOperations?
-    abstract val script: Script?
+abstract class BaseRangeAgg<T, R: AggregationResult, B> : BucketAggregation<R>() {
+    abstract val value: AggValue
     abstract val ranges: List<AggRange<T>>
     abstract val format: String?
     abstract val missing: T?
@@ -573,17 +712,8 @@ abstract class BaseRangeAgg<T, R: AggregationResult, B>(
     // abstract val keyed: Boolean?
     abstract val params: Params
 
-    init {
-        require(field != null || script != null) {
-            "field or script required"
-        }
-    }
-
     override fun visit(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
-        ctx.fieldIfNotNull("field", field?.getQualifiedFieldName())
-        script?.let { script ->
-            compiler.visit(ctx, script)
-        }
+        compiler.visit(ctx, value)
         ctx.array("ranges") {
             for ((from, to, key) in ranges) {
                 obj {
@@ -648,22 +778,34 @@ data class RangeBucket(
 ) : KeyedBucket<String>()
 
 data class RangeAgg(
-    override val field: FieldOperations? = null,
-    override val script: Script? = null,
+    override val value: AggValue,
     override val ranges: List<AggRange<Double>>,
     override val format: String? = null,
     override val missing: Double? = null,
     override val params: Params = Params(),
     override val aggs: Map<String, Aggregation<*>> = emptyMap(),
-) : BaseRangeAgg<Double, RangeAggResult, RangeBucket>(field, script) {
+) : BaseRangeAgg<Double, RangeAggResult, RangeBucket>() {
     override val name = "range"
 
-    override fun clone() = copy()
+    constructor(
+        field: FieldOperations,
+        ranges: List<AggRange<Double>>,
+        format: String? = null,
+        missing: Double? = null,
+        params: Params = Params(),
+        aggs: Map<String, Aggregation<*>> = emptyMap(),
+    ) : this(
+        AggValue.Field(field),
+        ranges = ranges,
+        format = format,
+        missing = missing,
+        params = params,
+        aggs = aggs,
+    )
 
     companion object {
         fun simpleRanges(
-            field: FieldOperations? = null,
-            script: Script? = null,
+            field: FieldOperations,
             ranges: List<Pair<Double?, Double?>>,
             format: String? = null,
             missing: Double? = null,
@@ -671,8 +813,7 @@ data class RangeAgg(
             params: Params = Params(),
         ): RangeAgg {
             return RangeAgg(
-                field = field,
-                script = script,
+                AggValue.Field(field),
                 ranges = ranges.map { AggRange(it.first, it.second) },
                 format = format,
                 missing = missing,
@@ -681,6 +822,8 @@ data class RangeAgg(
             )
         }
     }
+
+    override fun clone() = copy()
 
     override fun makeRangeResult(buckets: List<RangeBucket>) = RangeAggResult(buckets)
 
@@ -731,22 +874,34 @@ data class DateRangeBucket(
 }
 
 data class DateRangeAgg(
-    override val field: FieldOperations? = null,
-    override val script: Script? = null,
+    override val value: AggValue,
     override val ranges: List<AggRange<String>>,
     override val format: String? = null,
     override val missing: String? = null,
     override val params: Params = Params(),
     override val aggs: Map<String, Aggregation<*>> = emptyMap(),
-) : BaseRangeAgg<String, DateRangeAggResult, DateRangeBucket>(field, script) {
+) : BaseRangeAgg<String, DateRangeAggResult, DateRangeBucket>() {
     override val name = "date_range"
 
-    override fun clone() = copy()
+    constructor(
+        field: FieldOperations,
+        ranges: List<AggRange<String>>,
+        format: String? = null,
+        missing: String? = null,
+        params: Params = Params(),
+        aggs: Map<String, Aggregation<*>> = emptyMap(),
+    ) : this(
+        AggValue.Field(field),
+        ranges = ranges,
+        format = format,
+        missing = missing,
+        params = params,
+        aggs = aggs,
+    )
 
     companion object {
         fun simpleRanges(
-            field: FieldOperations? = null,
-            script: Script? = null,
+            field: FieldOperations,
             ranges: List<Pair<String?, String?>>,
             format: String? = null,
             missing: String? = null,
@@ -754,8 +909,7 @@ data class DateRangeAgg(
             params: Params = Params(),
         ): DateRangeAgg {
             return DateRangeAgg(
-                field = field,
-                script = script,
+                AggValue.Field(field),
                 ranges = ranges.map { AggRange(it.first, it.second) },
                 format = format,
                 missing = missing,
@@ -764,6 +918,8 @@ data class DateRangeAgg(
             )
         }
     }
+
+    override fun clone() = copy()
 
     override fun makeRangeResult(buckets: List<DateRangeBucket>) = DateRangeAggResult(buckets)
 
@@ -800,11 +956,8 @@ data class HistogramBounds<T>(
     }
 }
 
-abstract class BaseHistogramAgg<T, R: AggregationResult, B>(
-    field: FieldOperations?, script: Script?
-) : BucketAggregation<R>() {
-    abstract val field: FieldOperations?
-    abstract val script: Script?
+abstract class BaseHistogramAgg<T, R: AggregationResult, B> : BucketAggregation<R>() {
+    abstract val value: AggValue
     abstract val offset: T?
     abstract val minDocCount: Long?
     abstract val missing: T?
@@ -816,17 +969,8 @@ abstract class BaseHistogramAgg<T, R: AggregationResult, B>(
     abstract val hardBounds: HistogramBounds<T>?
     abstract val params: Params
 
-    init {
-        require(field != null || script != null) {
-            "field or script required"
-        }
-    }
-
     override fun visit(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
-        ctx.fieldIfNotNull("field", field?.getQualifiedFieldName())
-        script?.let { script ->
-            compiler.visit(ctx, script)
-        }
+        compiler.visit(ctx, value)
         ctx.fieldIfNotNull("offset", offset)
         ctx.fieldIfNotNull("min_doc_count", minDocCount)
         ctx.fieldIfNotNull("missing", missing)
@@ -886,8 +1030,7 @@ abstract class BaseHistogramAgg<T, R: AggregationResult, B>(
 }
 
 data class HistogramAgg(
-    override val field: FieldOperations? = null,
-    override val script: Script? = null,
+    override val value: AggValue,
     val interval: Double,
     override val offset: Double? = null,
     override val minDocCount: Long? = null,
@@ -898,8 +1041,34 @@ data class HistogramAgg(
     override val hardBounds: HistogramBounds<Double>? = null,
     override val params: Params = Params(),
     override val aggs: Map<String, Aggregation<*>> = emptyMap(),
-) : BaseHistogramAgg<Double, HistogramAggResult, HistogramBucket>(field, script) {
+) : BaseHistogramAgg<Double, HistogramAggResult, HistogramBucket>() {
     override val name = "histogram"
+
+    constructor(
+        field: FieldOperations,
+        interval: Double,
+        offset: Double? = null,
+        minDocCount: Long? = null,
+        missing: Double? = null,
+        format: String? = null,
+        order: List<BucketsOrder> = emptyList(),
+        extendedBounds: HistogramBounds<Double>? = null,
+        hardBounds: HistogramBounds<Double>? = null,
+        params: Params = Params(),
+        aggs: Map<String, Aggregation<*>> = emptyMap(),
+    ) : this(
+        AggValue.Field(field),
+        interval = interval,
+        offset = offset,
+        minDocCount = minDocCount,
+        missing = missing,
+        format = format,
+        order = order,
+        extendedBounds = extendedBounds,
+        hardBounds = hardBounds,
+        params = params,
+        aggs = aggs,
+    )
 
     override fun clone() = copy()
 
@@ -933,8 +1102,7 @@ data class HistogramBucket(
 ) : KeyedBucket<Double>()
 
 data class DateHistogramAgg(
-    override val field: FieldOperations? = null,
-    override val script: Script? = null,
+    override val value: AggValue,
     val interval: Interval,
     override val offset: String? = null,
     override val minDocCount: Long? = null,
@@ -947,8 +1115,34 @@ data class DateHistogramAgg(
     override val hardBounds: HistogramBounds<String>? = null,
     override val params: Params = Params(),
     override val aggs: Map<String, Aggregation<*>> = emptyMap(),
-) : BaseHistogramAgg<String, DateHistogramAggResult, DateHistogramBucket>(field, script) {
+) : BaseHistogramAgg<String, DateHistogramAggResult, DateHistogramBucket>() {
     override val name = "date_histogram"
+
+    constructor(
+        field: FieldOperations,
+        interval: Interval,
+        offset: String? = null,
+        minDocCount: Long? = null,
+        missing: String? = null,
+        format: String? = null,
+        order: List<BucketsOrder> = emptyList(),
+        extendedBounds: HistogramBounds<String>? = null,
+        hardBounds: HistogramBounds<String>? = null,
+        params: Params = Params(),
+        aggs: Map<String, Aggregation<*>> = emptyMap(),
+    ) : this(
+        AggValue.Field(field),
+        interval = interval,
+        offset = offset,
+        minDocCount = minDocCount,
+        missing = missing,
+        format = format,
+        order = order,
+        extendedBounds = extendedBounds,
+        hardBounds = hardBounds,
+        params = params,
+        aggs = aggs,
+    )
 
     sealed class Interval : Expression {
         abstract val name: String
