@@ -116,10 +116,10 @@ open class DocSource : BaseDocSource() {
     override fun getSource(): Map<String, Any?> {
         val source = mutableMapOf<String, Any?>()
         for (fieldValue in fieldValues) {
-            if (fieldValue.isRequired && !fieldValue.isInitialized && !fieldValue.hasDefault) {
+            if (fieldValue.isRequired && !fieldValue.isInitialized && fieldValue.defaultValue == null) {
                 throw IllegalStateException("Field ${fieldValue.name} is required")
             }
-            if (fieldValue.isInitialized || fieldValue.hasDefault) {
+            if (fieldValue.isInitialized || fieldValue.defaultValue != null) {
                 source[fieldValue.name] = fieldValue.serialize()
             }
         }
@@ -239,29 +239,17 @@ open class DocSource : BaseDocSource() {
         val name: String,
         val type: FieldType<V>,
         val isRequired: Boolean,
+        val defaultValue: (() -> V)? = null,
     ) {
-        constructor(
-            name: String,
-            type: FieldType<V>,
-            isRequired: Boolean,
-            defaultValue: () -> V
-        ) : this(name, type, isRequired) {
-            _defaultValue = defaultValue
-            hasDefault = true
-        }
-
         var isInitialized: Boolean = false
-            private set
-        var hasDefault: Boolean = false
             private set
 
         private var _value: V? = null
-        private var _defaultValue: () -> V? = { null }
         var value: V?
             get() {
-                if (!isInitialized && hasDefault) {
+                if (!isInitialized && defaultValue != null) {
                     isInitialized = true
-                    _value = _defaultValue()
+                    _value = defaultValue.let { it() }
                 }
                 return _value
             }
