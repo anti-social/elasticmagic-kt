@@ -3,16 +3,20 @@ package dev.evo.elasticmagic
 import dev.evo.elasticmagic.compile.SearchQueryCompiler
 import dev.evo.elasticmagic.serde.Deserializer
 import dev.evo.elasticmagic.serde.Serializer
+import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 
-interface Aggregation : NamedExpression {
-    fun processResult(obj: Deserializer.ObjectCtx): AggregationResult
+interface Aggregation<R: AggregationResult> : NamedExpression {
+    fun processResult(obj: Deserializer.ObjectCtx): R
 }
 
-abstract class MetricAggregation : Aggregation
+abstract class MetricAggregation<R: AggregationResult> : Aggregation<R>
 
-abstract class BucketAggregation(
-    val aggs: Map<String, Aggregation>,
-) : Aggregation {
+abstract class BucketAggregation<R: AggregationResult> : Aggregation<R> {
+    abstract val aggs: Map<String, Aggregation<*>>
+
     override fun accept(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
         super.accept(ctx, compiler)
 
@@ -32,10 +36,8 @@ abstract class BucketAggregation(
     }
 }
 
-abstract class SingleBucketAggregation(
-    aggs: Map<String, Aggregation>,
-) : BucketAggregation(aggs) {
-    override fun processResult(obj: Deserializer.ObjectCtx): AggregationResult {
+abstract class SingleBucketAggregation : BucketAggregation<SingleBucketAggResult>() {
+    override fun processResult(obj: Deserializer.ObjectCtx): SingleBucketAggResult {
         return SingleBucketAggResult(
             docCount = obj.long("doc_count"),
             aggs = processSubAggs(obj)
@@ -54,7 +56,7 @@ abstract class BaseBucket {
     abstract val aggs: Map<String, AggregationResult>
 
     inline fun <reified A: AggregationResult> agg(name: String): A {
-        return aggs[name] as A
+        return (aggs[name] ?: throw IllegalStateException("Unknown aggregation: [$name]")) as A
     }
 }
 
@@ -72,31 +74,31 @@ data class SingleValueMetricAggResult<T>(
     val valueAsString: String? = null,
 ) : AggregationResult
 
-abstract class NumericValueAgg(
-    val field: FieldOperations? = null,
-    val script: Script? = null,
-    val missing: Any? = null,
-    val format: String? = null,
-) : MetricAggregation() {
+abstract class NumericValueAgg<R: AggregationResult>(
+    field: FieldOperations?, script: Script?
+) : MetricAggregation<R>() {
     init {
         require(field != null || script != null) {
             "field or script required"
         }
     }
 
+    abstract val field: FieldOperations?
+    abstract val script: Script?
+    abstract val missing: Any?
+
     override fun visit(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
         ctx.fieldIfNotNull("field", field?.getQualifiedFieldName())
-        if (script != null) {
+        script?.let { script ->
             compiler.visit(ctx, script)
         }
         ctx.fieldIfNotNull("missing", missing)
-        ctx.fieldIfNotNull("format", format)
     }
 }
 
 abstract class SingleDoubleValueAgg(
-    field: FieldOperations? = null, script: Script? = null, missing: Any? = null, format: String? = null
-) : NumericValueAgg(field, script, missing, format) {
+    field: FieldOperations?, script: Script?
+) : NumericValueAgg<SingleValueMetricAggResult<Double>>(field, script) {
     override fun processResult(obj: Deserializer.ObjectCtx): SingleValueMetricAggResult<Double> {
         return SingleValueMetricAggResult(
             obj.doubleOrNull("value"),
@@ -106,8 +108,8 @@ abstract class SingleDoubleValueAgg(
 }
 
 abstract class SingleLongValueAgg(
-    field: FieldOperations, script: Script? = null, missing: Any? = null, format: String? = null
-) : NumericValueAgg(field, script, missing, format) {
+    field: FieldOperations?, script: Script?
+) : NumericValueAgg<SingleValueMetricAggResult<Long>>(field, script) {
     override fun processResult(obj: Deserializer.ObjectCtx): SingleValueMetricAggResult<Long> {
         return SingleValueMetricAggResult(
             obj.long("value"),
@@ -116,132 +118,186 @@ abstract class SingleLongValueAgg(
     }
 }
 
-class MinAgg(
-    field: FieldOperations, script: Script? = null, missing: Any? = null, format: String? = null
-) : SingleDoubleValueAgg(field, script, missing, format) {
+data class MinAgg(
+    override val field: FieldOperations? = null,
+    override val script: Script? = null,
+    override val missing: Any? = null,
+    val format: String? = null,
+) : SingleDoubleValueAgg(field, script) {
     override val name = "min"
+
+    override fun clone() = copy()
 }
 
-class MaxAgg(
-    field: FieldOperations, script: Script? = null, missing: Any? = null, format: String? = null
-) : SingleDoubleValueAgg(field, script, missing, format) {
+data class MaxAgg(
+    override val field: FieldOperations? = null,
+    override val script: Script? = null,
+    override val missing: Any? = null,
+    val format: String? = null,
+) : SingleDoubleValueAgg(field, script) {
     override val name = "max"
+
+    override fun clone() = copy()
 }
 
-class AvgAgg(
-    field: FieldOperations, script: Script? = null, missing: Any? = null, format: String? = null
-) : SingleDoubleValueAgg(field, script, missing, format) {
+data class AvgAgg(
+    override val field: FieldOperations? = null,
+    override val script: Script? = null,
+    override val missing: Any? = null,
+    val format: String? = null,
+) : SingleDoubleValueAgg(field, script) {
     override val name = "avg"
+
+    override fun clone() = copy()
 }
 
-class WeightedAvgAgg(
-    val value: ValueSource, val weight: ValueSource, format: String? = null
-) : NumericValueAgg(format = format) {
+data class WeightedAvgAgg(
+    val value: ValueSource,
+    val weight: ValueSource,
+    val format: String? = null,
+) : MetricAggregation<SingleValueMetricAggResult<Double>>() {
     override val name = "weighted_avg"
 
-    class ValueSource(
+    data class ValueSource(
         val field: FieldOperations? = null,
         val script: Script? = null,
         val missing: Any? = null,
-    )
+    ) : Expression {
+        override fun clone() = copy()
 
-    override fun accept(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
-        ctx.obj(name) {
-            obj("value") {
-                visit(ctx, compiler, value)
+        override fun accept(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
+            ctx.fieldIfNotNull("field", field?.getQualifiedFieldName())
+            if (script != null) {
+                ctx.obj("script") {
+                    compiler.visit(this, script)
+                }
             }
-            obj("weight") {
-                visit(ctx, compiler, weight)
-            }
-            fieldIfNotNull("format", format)
+            ctx.fieldIfNotNull("missing", missing)
         }
     }
 
-    private fun visit(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler, value: ValueSource) {
-        ctx.fieldIfNotNull("field", value.field?.getQualifiedFieldName())
-        if (value.script != null) {
-            ctx.obj("script") {
-                compiler.visit(this, value.script)
-            }
+    override fun clone() = copy()
+
+    override fun visit(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
+        ctx.obj("value") {
+            compiler.visit(this, value)
         }
-        ctx.fieldIfNotNull("missing", value.missing)
+        ctx.obj("weight") {
+            compiler.visit(this, weight)
+        }
+        ctx.fieldIfNotNull("format", format)
     }
 
     override fun processResult(obj: Deserializer.ObjectCtx): SingleValueMetricAggResult<Double> {
         return SingleValueMetricAggResult(
-            obj.double("value"),
+            obj.doubleOrNull("value"),
             obj.stringOrNull("value_as_string"),
         )
     }
 }
 
-class SumAgg(
-    field: FieldOperations, script: Script? = null, missing: Any? = null, format: String? = null
-) : SingleDoubleValueAgg(field, script, missing, format) {
+data class SumAgg(
+    override val field: FieldOperations? = null,
+    override val script: Script? = null,
+    override val missing: Any? = null,
+    val format: String? = null,
+) : SingleDoubleValueAgg(field, script) {
     override val name = "sum"
+
+    override fun clone() = copy()
 }
 
-class MedianAbsoluteDeviationAgg(
-    field: FieldOperations, script: Script? = null, missing: Any? = null, format: String? = null
-) : SingleDoubleValueAgg(field, script, missing, format) {
+data class MedianAbsoluteDeviationAgg(
+    override val field: FieldOperations? = null,
+    override val script: Script? = null,
+    override val missing: Any? = null,
+) : SingleDoubleValueAgg(field, script) {
     override val name = "median_absolute_deviation"
+
+    override fun clone() = copy()
 }
 
-class ValueCountAgg(
-    field: FieldOperations, script: Script? = null, missing: Any? = null
-) : SingleLongValueAgg(field, script, missing) {
+data class ValueCountAgg(
+    override val field: FieldOperations? = null,
+    override val script: Script? = null,
+    override val missing: Any? = null,
+) : SingleLongValueAgg(field, script) {
     override val name = "value_count"
+
+    override fun clone() = copy()
 }
 
-class CardinalityAgg(
-    field: FieldOperations, script: Script? = null, missing: Any? = null
-) : SingleLongValueAgg(field, script, missing) {
+data class CardinalityAgg(
+    override val field: FieldOperations? = null,
+    override val script: Script? = null,
+    override val missing: Any? = null,
+) : SingleLongValueAgg(field, script) {
     override val name = "cardinality"
+
+    override fun clone() = copy()
 }
 
-class StatsAgg(
-    field: FieldOperations? = null, script: Script? = null, missing: Any? = null, format: String? = null
-) : NumericValueAgg(field, script, missing, format) {
+data class StatsAgg(
+    override val field: FieldOperations? = null,
+    override val script: Script? = null,
+    override val missing: Any? = null,
+    val format: String? = null,
+) : NumericValueAgg<StatsAggResult>(field, script) {
     override val name = "stats"
+
+    override fun clone() = copy()
 
     override fun processResult(obj: Deserializer.ObjectCtx): StatsAggResult {
         return StatsAggResult(
             count = obj.long("count"),
-            min = obj.double("min"),
-            max = obj.double("max"),
-            avg = obj.double("avg"),
+            min = obj.doubleOrNull("min"),
+            max = obj.doubleOrNull("max"),
+            avg = obj.doubleOrNull("avg"),
             sum = obj.double("sum"),
+            minAsString = obj.stringOrNull("min_as_string"),
+            maxAsString = obj.stringOrNull("max_as_string"),
+            avgAsString = obj.stringOrNull("avg_as_string"),
+            sumAsString = obj.stringOrNull("sum_as_string"),
         )
     }
 }
 
 data class StatsAggResult(
     val count: Long,
-    val min: Double,
-    val max: Double,
-    val avg: Double,
+    val min: Double?,
+    val max: Double?,
+    val avg: Double?,
     val sum: Double,
+    val minAsString: String?,
+    val maxAsString: String?,
+    val avgAsString: String?,
+    val sumAsString: String?,
 ) : AggregationResult
 
-class ExtendedStatsAgg(
-    field: FieldOperations? = null, script: Script? = null, missing: Any? = null, format: String? = null
-) : NumericValueAgg(field, script, missing, format) {
+data class ExtendedStatsAgg(
+    override val field: FieldOperations? = null,
+    override val script: Script? = null,
+    override val missing: Any? = null,
+    val format: String? = null,
+) : NumericValueAgg<ExtendedStatsAggResult>(field, script) {
     override val name = "extended_stats"
+
+    override fun clone() = copy()
 
     override fun processResult(obj: Deserializer.ObjectCtx): ExtendedStatsAggResult {
         val stdDevBoundsRaw = obj.obj("std_deviation_bounds")
         return ExtendedStatsAggResult(
             count = obj.long("count"),
-            min = obj.double("min"),
-            max = obj.double("max"),
-            avg = obj.double("avg"),
+            min = obj.doubleOrNull("min"),
+            max = obj.doubleOrNull("max"),
+            avg = obj.doubleOrNull("avg"),
             sum = obj.double("sum"),
-            sumOfSquares = obj.double("sum_of_squares"),
-            variance = obj.double("variance"),
-            stdDeviation = obj.double("std_deviation"),
+            sumOfSquares = obj.doubleOrNull("sum_of_squares"),
+            variance = obj.doubleOrNull("variance"),
+            stdDeviation = obj.doubleOrNull("std_deviation"),
             stdDeviationBounds = ExtendedStatsAggResult.StdDeviationBounds(
-                upper = stdDevBoundsRaw.double("upper"),
-                lower = stdDevBoundsRaw.double("lower"),
+                upper = stdDevBoundsRaw.doubleOrNull("upper"),
+                lower = stdDevBoundsRaw.doubleOrNull("lower"),
             )
         )
     }
@@ -249,38 +305,49 @@ class ExtendedStatsAgg(
 
 data class ExtendedStatsAggResult(
     val count: Long,
-    val min: Double,
-    val max: Double,
-    val avg: Double,
+    val min: Double?,
+    val max: Double?,
+    val avg: Double?,
     val sum: Double,
-    val sumOfSquares: Double,
-    val variance: Double,
-    val stdDeviation: Double,
+    val sumOfSquares: Double?,
+    val variance: Double?,
+    val stdDeviation: Double?,
     val stdDeviationBounds: StdDeviationBounds
 ) : AggregationResult {
     data class StdDeviationBounds(
-        val upper: Double,
-        val lower: Double,
+        val upper: Double?,
+        val lower: Double?,
     )
 }
 
-abstract class BaseTermsAgg(
-    val field: FieldOperations? = null,
-    val script: Script? = null,
-    val size: Int? = null,
-    val shardSize: Int? = null,
-    val minDocCount: Int? = null,
-    val shardMinDocCount: Int? = null,
-    val include: Include? = null,
-    val exclude: Exclude? = null,
-    val missing: Any? = null,
-    val order: Map<String, String> = emptyMap(),
-    val collectMode: CollectMode? = null,
-    val executionHint: ExecutionHint? = null,
-    val showTermDocCountError: Boolean? = null,
-    val params: Params = Params(),
-    aggs: Map<String, Aggregation> = emptyMap(),
-) : BucketAggregation(aggs) {
+data class BucketsOrder(
+    val key: String,
+    val order: Sort.Order,
+) : Expression {
+    override fun clone() = copy()
+
+    override fun accept(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
+        ctx.field(key, order.toValue())
+    }
+}
+
+abstract class BaseTermsAgg<R: AggregationResult>(
+    field: FieldOperations?, script: Script?
+) : BucketAggregation<R>() {
+    abstract val field: FieldOperations?
+    abstract val script: Script?
+    abstract val size: Int?
+    abstract val shardSize: Int?
+    abstract val minDocCount: Int?
+    abstract val shardMinDocCount: Int?
+    abstract val include: Include?
+    abstract val exclude: Exclude?
+    abstract val missing: Any?
+    abstract val order: List<BucketsOrder>
+    abstract val collectMode: CollectMode?
+    abstract val executionHint: ExecutionHint?
+    abstract val params: Params
+
     init {
         require(field != null || script != null) {
             "field or script required"
@@ -288,12 +355,12 @@ abstract class BaseTermsAgg(
     }
 
     sealed class Exclude {
-        class Values(val values: List<Any>) : Exclude()
+        class Values(vararg val values: Any) : Exclude()
         class Regex(val regex: String) : Exclude()
     }
 
     sealed class Include {
-        class Values(val values: List<Any>) : Include()
+        class Values(vararg val values: Any) : Include()
         class Regex(val regex: String) : Include()
         class Partition(val partition: Int, val numPartitions: Int) : Include()
     }
@@ -301,91 +368,87 @@ abstract class BaseTermsAgg(
     enum class CollectMode : ToValue {
         BREADTH_FIRST, DEPTH_FIRST;
 
-        override fun toValue(): Any = name.lowercase()
+        override fun toValue() = name.lowercase()
     }
 
     enum class ExecutionHint : ToValue {
         MAP, GLOBAL_ORDINALS;
 
-        override fun toValue(): Any = name.lowercase()
+        override fun toValue() = name.lowercase()
     }
 
     override fun visit(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
         ctx.fieldIfNotNull("field", field?.getQualifiedFieldName())
-        if (script != null) {
+        script?.let { script ->
             compiler.visit(ctx, script)
         }
         ctx.fieldIfNotNull("size", size)
         ctx.fieldIfNotNull("shard_size", shardSize)
         ctx.fieldIfNotNull("min_doc_count", minDocCount)
         ctx.fieldIfNotNull("shard_min_doc_count", shardMinDocCount)
-        when (include) {
-            is Include.Values -> ctx.array("include") {
-                compiler.visit(this, include.values)
+        include?.let { include ->
+            when (include) {
+                is Include.Values -> ctx.array("include") {
+                    compiler.visit(this, include.values)
+                }
+                is Include.Regex -> ctx.field("include", include.regex)
+                is Include.Partition -> ctx.obj("include") {
+                    field("partition", include.partition)
+                    field("num_partitions", include.numPartitions)
+                }
             }
-            is Include.Regex -> ctx.field("include", include.regex)
-            is Include.Partition -> ctx.obj("include") {
-                field("partition", include.partition)
-                field("num_partitions", include.numPartitions)
-            }
-            null -> {}
         }
-        when (exclude) {
-            is Exclude.Values -> ctx.array("include") {
-                compiler.visit(this, exclude.values)
+        exclude?.let { exclude ->
+            when (exclude) {
+                is Exclude.Values -> ctx.array("exclude") {
+                    compiler.visit(this, exclude.values)
+                }
+                is Exclude.Regex -> ctx.field("exclude", exclude.regex)
             }
-            is Exclude.Regex -> ctx.field("include", exclude.regex)
-            null -> {}
         }
         ctx.fieldIfNotNull("missing", missing)
-        if (order.isNotEmpty()) {
-            ctx.obj("order") {
+        when (order.size) {
+            1 -> ctx.obj("order") {
+                compiler.visit(this, order[0])
+            }
+            in 2..Int.MAX_VALUE -> ctx.array("order") {
                 compiler.visit(this, order)
             }
+            else -> {}
         }
         ctx.fieldIfNotNull("collect_mode", collectMode?.toValue())
         ctx.fieldIfNotNull("execution_hint", executionHint?.toValue())
-        ctx.fieldIfNotNull("show_term_doc_count_error", showTermDocCountError)
         if (params.isNotEmpty()) {
             compiler.visit(ctx, params)
         }
     }
 }
 
-class TermsAgg(
-    field: FieldOperations? = null,
-    script: Script? = null,
-    size: Int? = null,
-    shardSize: Int? = null,
-    minDocCount: Int? = null,
-    shardMinDocCount: Int? = null,
-    include: Include? = null,
-    exclude: Exclude? = null,
-    missing: Any? = null,
-    order: Map<String, String> = emptyMap(),
-    collectMode: CollectMode? = null,
-    executionHint: ExecutionHint? = null,
-    showTermDocCountError: Boolean? = null,
-    params: Params = Params(),
-    aggs: Map<String, Aggregation> = emptyMap(),
-) : BaseTermsAgg(
-    field = field,
-    script = script,
-    size = size,
-    shardSize = shardSize,
-    minDocCount = minDocCount,
-    shardMinDocCount = shardMinDocCount,
-    include = include,
-    exclude = exclude,
-    missing = missing,
-    order = order,
-    collectMode = collectMode,
-    executionHint = executionHint,
-    showTermDocCountError = showTermDocCountError,
-    params = params,
-    aggs = aggs,
-) {
+data class TermsAgg(
+    override val field: FieldOperations? = null,
+    override val script: Script? = null,
+    override val size: Int? = null,
+    override val shardSize: Int? = null,
+    override val minDocCount: Int? = null,
+    override val shardMinDocCount: Int? = null,
+    override val include: Include? = null,
+    override val exclude: Exclude? = null,
+    override val missing: Any? = null,
+    override val order: List<BucketsOrder> = emptyList(),
+    override val collectMode: CollectMode? = null,
+    override val executionHint: ExecutionHint? = null,
+    val showTermDocCountError: Boolean? = null,
+    override val params: Params = Params(),
+    override val aggs: Map<String, Aggregation<*>> = emptyMap(),
+) : BaseTermsAgg<TermsAggResult>(field, script) {
     override val name = "terms"
+
+    override fun clone() = copy()
+
+    override fun visit(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
+        ctx.fieldIfNotNull("show_term_doc_count_error", showTermDocCountError)
+        super.visit(ctx, compiler)
+    }
 
     override fun processResult(obj: Deserializer.ObjectCtx): TermsAggResult {
         val buckets = mutableListOf<TermBucket>()
@@ -402,65 +465,58 @@ class TermsAgg(
             )
 
         }
-        return TermsAggResult(buckets)
+        return TermsAggResult(
+            buckets,
+            docCountErrorUpperBound = obj.long("doc_count_error_upper_bound"),
+            sumOtherDocCount = obj.long("sum_other_doc_count"),
+        )
     }
 }
 
 data class TermsAggResult(
-    override val buckets: List<TermBucket>
+    override val buckets: List<TermBucket>,
+    val docCountErrorUpperBound: Long,
+    val sumOtherDocCount: Long,
 ) : BucketAggResult<TermBucket>()
 
 data class TermBucket(
     override val key: Any,
     override val docCount: Long,
-    override val aggs: Map<String, AggregationResult> = emptyMap(),
     val docCountErrorUpperBound: Long? = null,
+    override val aggs: Map<String, AggregationResult> = emptyMap(),
 ) : KeyedBucket<Any>()
 
-class SignificantTermsAgg(
-    field: FieldOperations? = null,
-    script: Script? = null,
-    size: Int? = null,
-    shardSize: Int? = null,
-    minDocCount: Int? = null,
-    shardMinDocCount: Int? = null,
-    include: BaseTermsAgg.Include? = null,
-    exclude: BaseTermsAgg.Exclude? = null,
-    missing: Any? = null,
-    order: Map<String, String> = emptyMap(),
-    collectMode: BaseTermsAgg.CollectMode? = null,
-    executionHint: BaseTermsAgg.ExecutionHint? = null,
-    showTermDocCountError: Boolean? = null,
+data class SignificantTermsAgg(
+    override val field: FieldOperations? = null,
+    override val script: Script? = null,
+    override val size: Int? = null,
+    override val shardSize: Int? = null,
+    override val minDocCount: Int? = null,
+    override val shardMinDocCount: Int? = null,
+    override val include: Include? = null,
+    override val exclude: Exclude? = null,
+    override val missing: Any? = null,
+    override val order: List<BucketsOrder> = emptyList(),
+    override val collectMode: CollectMode? = null,
+    override val executionHint: ExecutionHint? = null,
     val backgroundFilter: QueryExpression? = null,
-    params: Params = Params(),
-    aggs: Map<String, Aggregation> = emptyMap(),
-) : BaseTermsAgg(
-    field = field,
-    script = script,
-    size = size,
-    shardSize = shardSize,
-    minDocCount = minDocCount,
-    shardMinDocCount = shardMinDocCount,
-    include = include,
-    exclude = exclude,
-    missing = missing,
-    order = order,
-    collectMode = collectMode,
-    executionHint = executionHint,
-    showTermDocCountError = showTermDocCountError,
-    params = params,
-    aggs = aggs,
-) {
+    override val params: Params = Params(),
+    override val aggs: Map<String, Aggregation<*>> = emptyMap(),
+) : BaseTermsAgg<SignificantTermsAggResult>(field, script) {
     override val name = "significant_terms"
 
+    override fun clone() = copy()
+
     override fun visit(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
-        super.visit(ctx, compiler)
         if (backgroundFilter != null) {
-            compiler.visit(ctx, backgroundFilter)
+            ctx.obj("background_filter") {
+                compiler.visit(this, backgroundFilter)
+            }
         }
+        super.visit(ctx, compiler)
     }
 
-    override fun processResult(obj: Deserializer.ObjectCtx): SignificantTermAggResult {
+    override fun processResult(obj: Deserializer.ObjectCtx): SignificantTermsAggResult {
         val buckets = mutableListOf<SignificantTermBucket>()
         val rawBuckets = obj.array("buckets")
         while (rawBuckets.hasNext()) {
@@ -477,21 +533,21 @@ class SignificantTermsAgg(
             )
 
         }
-        return SignificantTermAggResult(buckets)
+        return SignificantTermsAggResult(buckets)
     }
 }
 
-data class SignificantTermAggResult(
-    override val buckets: List<SignificantTermBucket>
+data class SignificantTermsAggResult(
+    override val buckets: List<SignificantTermBucket>,
 ) : BucketAggResult<SignificantTermBucket>()
 
 data class SignificantTermBucket(
     override val key: Any,
     override val docCount: Long,
-    override val aggs: Map<String, AggregationResult>,
     val bgCount: Long,
     val score: Float,
     val docCountErrorUpperBound: Long? = null,
+    override val aggs: Map<String, AggregationResult> = emptyMap(),
 ) : KeyedBucket<Any>()
 
 data class AggRange<T>(
@@ -500,22 +556,23 @@ data class AggRange<T>(
     val key: String? = null,
 ) {
     companion object {
-        internal fun <T> fromPair(pair: Pair<T?, T?>): AggRange<T> {
-            return AggRange(from = pair.first, to = pair.second)
-        }
+        fun <T> from(from: T, key: String? = null) = AggRange(from, null, key)
+        fun <T> to(to: T, key: String? = null) = AggRange(null, to, key)
     }
 }
 
-abstract class BaseRangeAgg<T>(
-    val field: FieldOperations? = null,
-    val script: Script? = null,
-    val ranges: List<AggRange<T>>,
-    val format: String? = null,
-    val missing: T? = null,
-    val keyed: Boolean? = null,
-    val params: Params = Params(),
-    aggs: Map<String, Aggregation> = emptyMap(),
-) : BucketAggregation(aggs) {
+abstract class BaseRangeAgg<T, R: AggregationResult, B>(
+    field: FieldOperations?, script: Script?
+) : BucketAggregation<R>() {
+    abstract val field: FieldOperations?
+    abstract val script: Script?
+    abstract val ranges: List<AggRange<T>>
+    abstract val format: String?
+    abstract val missing: T?
+    // TODO: Keyed response
+    // abstract val keyed: Boolean?
+    abstract val params: Params
+
     init {
         require(field != null || script != null) {
             "field or script required"
@@ -524,7 +581,7 @@ abstract class BaseRangeAgg<T>(
 
     override fun visit(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
         ctx.fieldIfNotNull("field", field?.getQualifiedFieldName())
-        if (script != null) {
+        script?.let { script ->
             compiler.visit(ctx, script)
         }
         ctx.array("ranges") {
@@ -538,26 +595,26 @@ abstract class BaseRangeAgg<T>(
         }
         ctx.fieldIfNotNull("format", format)
         ctx.fieldIfNotNull("missing", missing)
-        ctx.fieldIfNotNull("keyed", keyed)
+        // ctx.fieldIfNotNull("keyed", keyed)
         if (params.isNotEmpty()) {
             compiler.visit(ctx, params)
         }
     }
 
-    override fun processResult(obj: Deserializer.ObjectCtx): RangeAggResult {
+    override fun processResult(obj: Deserializer.ObjectCtx): R {
         val bucketsArray = obj.arrayOrNull("buckets")
         if (bucketsArray != null) {
-            val buckets = mutableListOf<RangeBucket>()
+            val buckets = mutableListOf<B>()
             while (bucketsArray.hasNext()) {
                 buckets.add(
                     processBucketResult(bucketsArray.obj())
                 )
             }
-            return RangeAggResult(buckets)
+            return makeRangeResult(buckets)
         }
 
         val bucketsObj = obj.obj("buckets")
-        val buckets = mutableListOf<RangeBucket>()
+        val buckets = mutableListOf<B>()
         val bucketsIter = bucketsObj.iterator()
         while (bucketsIter.hasNext()) {
             val (bucketKey, bucketObj) = bucketsIter.obj()
@@ -565,13 +622,72 @@ abstract class BaseRangeAgg<T>(
                 processBucketResult(bucketObj, bucketKey)
             )
         }
-        return RangeAggResult(buckets)
+        return makeRangeResult(buckets)
     }
 
-    private fun processBucketResult(
+    protected abstract fun makeRangeResult(buckets: List<B>): R
+
+    protected abstract fun processBucketResult(
         bucketObj: Deserializer.ObjectCtx,
         bucketKey: String? = null,
-    ): RangeBucket {
+    ): B
+}
+
+data class RangeAggResult(
+    override val buckets: List<RangeBucket>,
+) : BucketAggResult<RangeBucket>()
+
+data class RangeBucket(
+    override val key: String,
+    override val docCount: Long,
+    val from: Double? = null,
+    val fromAsString: String? = null,
+    val to: Double? = null,
+    val toAsString: String? = null,
+    override val aggs: Map<String, AggregationResult> = emptyMap(),
+) : KeyedBucket<String>()
+
+data class RangeAgg(
+    override val field: FieldOperations? = null,
+    override val script: Script? = null,
+    override val ranges: List<AggRange<Double>>,
+    override val format: String? = null,
+    override val missing: Double? = null,
+    override val params: Params = Params(),
+    override val aggs: Map<String, Aggregation<*>> = emptyMap(),
+) : BaseRangeAgg<Double, RangeAggResult, RangeBucket>(field, script) {
+    override val name = "range"
+
+    override fun clone() = copy()
+
+    companion object {
+        fun simpleRanges(
+            field: FieldOperations? = null,
+            script: Script? = null,
+            ranges: List<Pair<Double?, Double?>>,
+            format: String? = null,
+            missing: Double? = null,
+            aggs: Map<String, Aggregation<*>> = emptyMap(),
+            params: Params = Params(),
+        ): RangeAgg {
+            return RangeAgg(
+                field = field,
+                script = script,
+                ranges = ranges.map { AggRange(it.first, it.second) },
+                format = format,
+                missing = missing,
+                params = params,
+                aggs = aggs,
+            )
+        }
+    }
+
+    override fun makeRangeResult(buckets: List<RangeBucket>) = RangeAggResult(buckets)
+
+    override fun processBucketResult(
+        bucketObj: Deserializer.ObjectCtx,
+        bucketKey: String?
+    ): RangeBucket  {
         return RangeBucket(
             key = bucketKey ?: bucketObj.string("key"),
             docCount = bucketObj.long("doc_count"),
@@ -584,86 +700,48 @@ abstract class BaseRangeAgg<T>(
     }
 }
 
-data class RangeAggResult(
-    override val buckets: List<RangeBucket>,
-) : BucketAggResult<RangeBucket>()
+data class DateRangeAggResult(
+    override val buckets: List<DateRangeBucket>,
+) : BucketAggResult<DateRangeBucket>()
 
-data class RangeBucket(
+data class DateRangeBucket(
     override val key: String,
     override val docCount: Long,
-    override val aggs: Map<String, AggregationResult>,
     val from: Double? = null,
     val fromAsString: String? = null,
     val to: Double? = null,
     val toAsString: String? = null,
-) : KeyedBucket<String>()
+    override val aggs: Map<String, AggregationResult> = emptyMap(),
+) : KeyedBucket<String>() {
+    fun fromAsDatetime(timeZone: TimeZone): LocalDateTime? {
+        return if (from != null) {
+            Instant.fromEpochMilliseconds(from.toLong()).toLocalDateTime(timeZone)
+        } else {
+            null
+        }
+    }
 
-class RangeAgg(
-    field: FieldOperations? = null,
-    script: Script? = null,
-    ranges: List<AggRange<Double>>,
-    format: String? = null,
-    missing: Double? = null,
-    keyed: Boolean? = null,
-    aggs: Map<String, Aggregation> = emptyMap(),
-    params: Params = Params(),
-) : BaseRangeAgg<Double>(
-    field = field,
-    script = script,
-    ranges = ranges,
-    format = format,
-    missing = missing,
-    keyed = keyed,
-    params = params,
-    aggs = aggs,
-) {
-    override val name = "range"
-
-    companion object {
-        fun simpleRanges(
-            field: FieldOperations? = null,
-            script: Script? = null,
-            ranges: List<Pair<Double?, Double?>>,
-            format: String? = null,
-            missing: Double? = null,
-            keyed: Boolean? = null,
-            aggs: Map<String, Aggregation> = emptyMap(),
-            params: Params = Params(),
-        ): RangeAgg {
-            return RangeAgg(
-                field = field,
-                script = script,
-                ranges = ranges.map(AggRange.Companion::fromPair),
-                format = format,
-                missing = missing,
-                keyed = keyed,
-                params = params,
-                aggs = aggs,
-            )
+    fun toAsDatetime(timeZone: TimeZone): LocalDateTime? {
+        return if (to != null) {
+            Instant.fromEpochMilliseconds(to.toLong()).toLocalDateTime(timeZone)
+        } else {
+            null
         }
     }
 }
 
-class DateRangeAgg(
-    field: FieldOperations? = null,
-    script: Script? = null,
-    ranges: List<AggRange<String>>,
-    format: String? = null,
-    missing: String? = null,
-    keyed: Boolean? = null,
-    params: Params = Params(),
-    aggs: Map<String, Aggregation> = emptyMap(),
-) : BaseRangeAgg<String>(
-    field = field,
-    script = script,
-    ranges = ranges,
-    format = format,
-    missing = missing,
-    keyed = keyed,
-    params = params,
-    aggs = aggs,
-) {
+data class DateRangeAgg(
+    override val field: FieldOperations? = null,
+    override val script: Script? = null,
+    override val ranges: List<AggRange<String>>,
+    override val format: String? = null,
+    override val missing: String? = null,
+    override val params: Params = Params(),
+    override val aggs: Map<String, Aggregation<*>> = emptyMap(),
+) : BaseRangeAgg<String, DateRangeAggResult, DateRangeBucket>(field, script) {
     override val name = "date_range"
+
+    override fun clone() = copy()
 
     companion object {
         fun simpleRanges(
@@ -672,48 +750,72 @@ class DateRangeAgg(
             ranges: List<Pair<String?, String?>>,
             format: String? = null,
             missing: String? = null,
-            keyed: Boolean? = null,
-            aggs: Map<String, Aggregation> = emptyMap(),
+            aggs: Map<String, Aggregation<*>> = emptyMap(),
             params: Params = Params(),
         ): DateRangeAgg {
             return DateRangeAgg(
                 field = field,
                 script = script,
-                ranges = ranges.map(AggRange.Companion::fromPair),
+                ranges = ranges.map { AggRange(it.first, it.second) },
                 format = format,
                 missing = missing,
-                keyed = keyed,
                 params = params,
                 aggs = aggs,
             )
         }
     }
+
+    override fun makeRangeResult(buckets: List<DateRangeBucket>) = DateRangeAggResult(buckets)
+
+    override fun processBucketResult(
+        bucketObj: Deserializer.ObjectCtx,
+        bucketKey: String?
+    ): DateRangeBucket  {
+        return DateRangeBucket(
+            key = bucketKey ?: bucketObj.string("key"),
+            docCount = bucketObj.long("doc_count"),
+            from = bucketObj.doubleOrNull("from"),
+            fromAsString = bucketObj.stringOrNull("from_as_string"),
+            to = bucketObj.doubleOrNull("to"),
+            toAsString = bucketObj.stringOrNull("to_as_string"),
+            aggs = processSubAggs(bucketObj),
+        )
+    }
 }
 
 data class HistogramBounds<T>(
-    val min: T,
-    val max: T,
+    val min: T?,
+    val max: T?,
 ) : Expression {
+    companion object {
+        fun <T> from(min: T) = HistogramBounds(min, null)
+        fun <T> to(max: T) = HistogramBounds(null, max)
+    }
+
+    override fun clone() = copy()
+
     override fun accept(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
-        ctx.field("min", min)
-        ctx.field("max", max)
+        ctx.fieldIfNotNull("min", min)
+        ctx.fieldIfNotNull("max", max)
     }
 }
 
 abstract class BaseHistogramAgg<T, R: AggregationResult, B>(
-    val field: FieldOperations? = null,
-    val script: Script? = null,
-    val offset: T? = null,
-    val minDocCount: Long? = null,
-    val missing: T? = null,
-    val format: String? = null,
-    val keyed: Boolean? = null,
-    val order: Map<String, String> = emptyMap(),
-    val extendedBounds: HistogramBounds<T>? = null,
-    val hardBounds: HistogramBounds<T>? = null,
-    val params: Params = Params(),
-    aggs: Map<String, Aggregation> = emptyMap(),
-) : BucketAggregation(aggs) {
+    field: FieldOperations?, script: Script?
+) : BucketAggregation<R>() {
+    abstract val field: FieldOperations?
+    abstract val script: Script?
+    abstract val offset: T?
+    abstract val minDocCount: Long?
+    abstract val missing: T?
+    abstract val format: String?
+    // TODO: Keyed format response
+    // abstract val keyed: Boolean?
+    abstract val order: List<BucketsOrder>
+    abstract val extendedBounds: HistogramBounds<T>?
+    abstract val hardBounds: HistogramBounds<T>?
+    abstract val params: Params
+
     init {
         require(field != null || script != null) {
             "field or script required"
@@ -722,25 +824,29 @@ abstract class BaseHistogramAgg<T, R: AggregationResult, B>(
 
     override fun visit(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
         ctx.fieldIfNotNull("field", field?.getQualifiedFieldName())
-        if (script != null) {
+        script?.let { script ->
             compiler.visit(ctx, script)
         }
         ctx.fieldIfNotNull("offset", offset)
         ctx.fieldIfNotNull("min_doc_count", minDocCount)
         ctx.fieldIfNotNull("missing", missing)
         ctx.fieldIfNotNull("format", format)
-        ctx.fieldIfNotNull("keyed", keyed)
-        if (order.isNotEmpty()) {
-            ctx.obj("order") {
+        // ctx.fieldIfNotNull("keyed", keyed)
+        when (order.size) {
+            1 -> ctx.obj("order") {
+                compiler.visit(this, order[0])
+            }
+            in 2..Int.MAX_VALUE -> ctx.array("order") {
                 compiler.visit(this, order)
             }
+            else -> {}
         }
-        if (extendedBounds != null) {
+        extendedBounds?.let { extendedBounds ->
             ctx.obj("extended_bounds") {
                 extendedBounds.accept(this, compiler)
             }
         }
-        if (hardBounds != null) {
+        hardBounds?.let { hardBounds ->
             ctx.obj("hard_bounds") {
                 hardBounds.accept(this, compiler)
             }
@@ -779,33 +885,23 @@ abstract class BaseHistogramAgg<T, R: AggregationResult, B>(
     protected abstract val makeHistogramResult: (List<B>) -> R
 }
 
-class HistogramAgg(
-    field: FieldOperations? = null,
-    script: Script? = null,
+data class HistogramAgg(
+    override val field: FieldOperations? = null,
+    override val script: Script? = null,
     val interval: Double,
-    offset: Double? = null,
-    minDocCount: Long? = null,
-    missing: Double? = null,
-    keyed: Boolean? = null,
-    order: Map<String, String> = emptyMap(),
-    extendedBounds: HistogramBounds<Double>? = null,
-    hardBounds: HistogramBounds<Double>? = null,
-    params: Params = Params(),
-    aggs: Map<String, Aggregation> = emptyMap(),
-) : BaseHistogramAgg<Double, HistogramAggResult, HistogramBucket>(
-    field = field,
-    script = script,
-    offset = offset,
-    minDocCount = minDocCount,
-    missing = missing,
-    keyed = keyed,
-    order = order,
-    extendedBounds = extendedBounds,
-    hardBounds = hardBounds,
-    params = params,
-    aggs = aggs,
-) {
+    override val offset: Double? = null,
+    override val minDocCount: Long? = null,
+    override val missing: Double? = null,
+    override val format: String? = null,
+    override val order: List<BucketsOrder> = emptyList(),
+    override val extendedBounds: HistogramBounds<Double>? = null,
+    override val hardBounds: HistogramBounds<Double>? = null,
+    override val params: Params = Params(),
+    override val aggs: Map<String, Aggregation<*>> = emptyMap(),
+) : BaseHistogramAgg<Double, HistogramAggResult, HistogramBucket>(field, script) {
     override val name = "histogram"
+
+    override fun clone() = copy()
 
     override fun visit(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
         ctx.field("interval", interval)
@@ -836,47 +932,53 @@ data class HistogramBucket(
     val keyAsString: String?,
 ) : KeyedBucket<Double>()
 
-class DateHistogramAgg(
-    field: FieldOperations? = null,
-    script: Script? = null,
-    val calendarInterval: String? = null,
-    val fixedInterval: String? = null,
-    val interval: String? = null,
-    offset: String? = null,
-    minDocCount: Long? = null,
-    missing: String? = null,
-    keyed: Boolean? = null,
-    order: Map<String, String> = emptyMap(),
-    extendedBounds: HistogramBounds<String>? = null,
-    hardBounds: HistogramBounds<String>? = null,
-    params: Params = Params(),
-    aggs: Map<String, Aggregation> = emptyMap(),
-) : BaseHistogramAgg<String, DateHistogramAggResult, DateHistogramBucket>(
-    field = field,
-    script = script,
-    offset = offset,
-    minDocCount = minDocCount,
-    missing = missing,
-    keyed = keyed,
-    order = order,
-    extendedBounds = extendedBounds,
-    hardBounds = hardBounds,
-    params = params,
-    aggs = aggs,
-) {
+data class DateHistogramAgg(
+    override val field: FieldOperations? = null,
+    override val script: Script? = null,
+    val interval: Interval,
+    override val offset: String? = null,
+    override val minDocCount: Long? = null,
+    // TODO: Should it be a LocalDateTime?
+    override val missing: String? = null,
+    override val format: String? = null,
+    override val order: List<BucketsOrder> = emptyList(),
+    // TODO: Should it be a HistogramBounds<LocalDateTime>?
+    override val extendedBounds: HistogramBounds<String>? = null,
+    override val hardBounds: HistogramBounds<String>? = null,
+    override val params: Params = Params(),
+    override val aggs: Map<String, Aggregation<*>> = emptyMap(),
+) : BaseHistogramAgg<String, DateHistogramAggResult, DateHistogramBucket>(field, script) {
     override val name = "date_histogram"
 
-    init {
-        require(calendarInterval != null || fixedInterval != null || interval != null) {
-            "One of interval argument is required: calendarInterval, fixedInterval or interval"
+    sealed class Interval : Expression {
+        abstract val name: String
+        abstract val interval: String
+
+        override fun accept(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
+            ctx.field(name, interval)
+        }
+
+        data class Auto(override val interval: String) : Interval() {
+            override val name: String = "interval"
+
+            override fun clone() = copy()
+        }
+        data class Calendar(override val interval: String) : Interval() {
+            override val name = "calendar_interval"
+
+            override fun clone() = copy()
+        }
+        data class Fixed(override val interval: String) : Interval() {
+            override val name = "fixed_interval"
+
+            override fun clone() = copy()
         }
     }
 
-    override fun visit(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
-        ctx.field("calendar_interval", calendarInterval)
-        ctx.field("fixed_interval", fixedInterval)
-        ctx.field("interval", interval)
+    override fun clone() = copy()
 
+    override fun visit(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
+        compiler.visit(ctx, interval)
         super.visit(ctx, compiler)
     }
 
@@ -901,50 +1003,61 @@ data class DateHistogramBucket(
     override val docCount: Long,
     override val aggs: Map<String, AggregationResult>,
     val keyAsString: String?,
-) : KeyedBucket<Long>()
+) : KeyedBucket<Long>() {
+    fun keyAsDatetime(timeZone: TimeZone): LocalDateTime {
+        return Instant.fromEpochMilliseconds(key).toLocalDateTime(timeZone)
+    }
+}
 
-class GlobalAgg(
-    aggs: Map<String, Aggregation> = emptyMap(),
-) : SingleBucketAggregation(aggs) {
+data class GlobalAgg(
+    override val aggs: Map<String, Aggregation<*>> = emptyMap(),
+) : SingleBucketAggregation() {
     override val name = "global"
+
+    override fun clone() = copy()
 
     override fun visit(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {}
 }
 
-class FilterAgg(
+data class FilterAgg(
     val filter: QueryExpression,
-    aggs: Map<String, Aggregation> = emptyMap(),
-) : SingleBucketAggregation(aggs) {
+    override val aggs: Map<String, Aggregation<*>> = emptyMap(),
+) : SingleBucketAggregation() {
     override val name = "filter"
+
+    override fun clone() = copy()
 
     override fun visit(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
         compiler.visit(ctx, filter)
     }
 }
 
-class FiltersAgg(
+// TODO: Anonymous filters. Possibly we need another class: AnonymousFiltersAgg
+data class FiltersAgg(
     val filters: Map<String, QueryExpression>,
-    aggs: Map<String, Aggregation>,
-) : BucketAggregation(aggs) {
+    val otherBucketKey: String? = null,
+    override val aggs: Map<String, Aggregation<*>> = emptyMap(),
+) : BucketAggregation<FiltersAggResult>() {
     override val name = "filters"
+
+    override fun clone() = copy()
 
     override fun visit(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
         ctx.obj("filters") {
             compiler.visit(this, filters)
         }
+        ctx.fieldIfNotNull("other_bucket_key", otherBucketKey)
     }
 
     override fun processResult(obj: Deserializer.ObjectCtx): FiltersAggResult {
         val bucketsIter = obj.obj("buckets").iterator()
-        val buckets = mutableListOf<FiltersBucket>()
+        val buckets = mutableMapOf<String, FiltersBucket>()
         while (bucketsIter.hasNext()) {
             val (bucketKey, bucketObj) = bucketsIter.obj()
-            buckets.add(
-                FiltersBucket(
-                    key = bucketKey,
-                    docCount = bucketObj.long("doc_count"),
-                    aggs = processSubAggs(bucketObj),
-                )
+            buckets[bucketKey] = FiltersBucket(
+                key = bucketKey,
+                docCount = bucketObj.long("doc_count"),
+                aggs = processSubAggs(bucketObj),
             )
         }
         return FiltersAggResult(buckets)
@@ -952,8 +1065,13 @@ class FiltersAgg(
 }
 
 data class FiltersAggResult(
-    override val buckets: List<FiltersBucket>,
-) : BucketAggResult<FiltersBucket>()
+    val buckets: Map<String, FiltersBucket>,
+) : AggregationResult {
+    fun bucket(key: String): FiltersBucket {
+        return buckets[key]
+            ?: throw IllegalStateException("Missing bucket: [$key]")
+    }
+}
 
 data class FiltersBucket(
     override val key: String,
@@ -961,11 +1079,13 @@ data class FiltersBucket(
     override val aggs: Map<String, AggregationResult>,
 ) : KeyedBucket<String>()
 
-class NestedAgg(
+data class NestedAgg(
     val path: FieldOperations,
-    aggs: Map<String, Aggregation>,
-) : SingleBucketAggregation(aggs) {
+    override val aggs: Map<String, Aggregation<*>>,
+) : SingleBucketAggregation() {
     override val name = "nested"
+
+    override fun clone() = copy()
 
     override fun visit(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
         ctx.field("path", path.getQualifiedFieldName())

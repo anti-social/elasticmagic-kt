@@ -10,7 +10,7 @@ data class FieldFormat(
 enum class SearchType : ToValue {
     QUERY_THEN_FETCH, DFS_QUERY_THEN_FETCH;
 
-    override fun toValue(): Any = name.lowercase()
+    override fun toValue() = name.lowercase()
 }
 
 @Suppress("UnnecessaryAbstractClass")
@@ -24,7 +24,7 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
     protected val filters: MutableList<QueryExpression> = mutableListOf()
     protected val postFilters: MutableList<QueryExpression> = mutableListOf()
 
-    protected val aggregations: MutableMap<String, Aggregation> = mutableMapOf()
+    protected val aggregations: MutableMap<String, Aggregation<*>> = mutableMapOf()
 
     protected val docvalueFields: MutableList<FieldFormat> = mutableListOf()
     protected val storedFields: MutableList<FieldOperations> = mutableListOf()
@@ -97,7 +97,7 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
         this.postFilters += filters
     }
 
-    fun aggs(vararg aggregations: Pair<String, Aggregation>): T = self {
+    fun aggs(vararg aggregations: Pair<String, Aggregation<*>>): T = self {
         this.aggregations.putAll(aggregations)
     }
 
@@ -283,7 +283,7 @@ data class PreparedSearchQuery<S: BaseDocSource>(
     val query: QueryExpression?,
     val filters: List<QueryExpression>,
     val postFilters: List<QueryExpression>,
-    val aggregations: Map<String, Aggregation>,
+    val aggregations: Map<String, Aggregation<*>>,
     val rescores: List<Rescore>,
     val sorts: List<Sort>,
     val trackScores: Boolean?,

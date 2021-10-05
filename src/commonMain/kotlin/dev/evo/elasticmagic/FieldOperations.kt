@@ -5,7 +5,7 @@ interface Named : ToValue {
 
     fun getQualifiedFieldName(): String
 
-    override fun toValue(): Any {
+    override fun toValue(): String {
         return getQualifiedFieldName()
     }
 }

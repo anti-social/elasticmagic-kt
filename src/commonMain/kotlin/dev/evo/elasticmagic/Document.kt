@@ -11,7 +11,7 @@ import kotlin.reflect.KProperty
 enum class Dynamic : ToValue {
     TRUE, FALSE, STRICT, RUNTIME;
 
-    override fun toValue(): String = name.lowercase()
+    override fun toValue() = name.lowercase()
 }
 
 /**

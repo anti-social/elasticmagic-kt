@@ -26,19 +26,29 @@ abstract class BaseCompiler(
 
     fun visit(ctx: ArrayCtx, values: List<*>) {
         for (value in values) {
-            when (value) {
-                is Map<*, *> -> ctx.obj {
-                    visit(this, value)
-                }
-                is List<*> -> ctx.array {
-                    visit(this, value)
-                }
-                is Named -> {
-                    ctx.value(value.getQualifiedFieldName())
-                }
-                else -> {
-                    dispatch(ctx, value)
-                }
+            arrayValue(ctx, value)
+        }
+    }
+
+    fun visit(ctx: ArrayCtx, values: Array<*>) {
+        for (value in values) {
+            arrayValue(ctx, value)
+        }
+    }
+
+    private fun arrayValue(ctx: ArrayCtx, value: Any?) {
+        when (value) {
+            is Map<*, *> -> ctx.obj {
+                visit(this, value)
+            }
+            is List<*> -> ctx.array {
+                visit(this, value)
+            }
+            is Named -> {
+                ctx.value(value.getQualifiedFieldName())
+            }
+            else -> {
+                dispatch(ctx, value)
             }
         }
     }

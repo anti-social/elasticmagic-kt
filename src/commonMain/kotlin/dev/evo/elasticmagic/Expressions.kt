@@ -8,6 +8,8 @@ interface ToValue {
 }
 
 interface Expression : SearchQueryCompiler.Visitable {
+    fun clone(): Expression
+
     fun children(): Iterator<Expression>? {
         return null
     }
@@ -47,7 +49,7 @@ interface NamedExpression : Expression {
 }
 
 interface QueryExpression : NamedExpression {
-    fun clone(): QueryExpression
+    override fun clone(): QueryExpression
 
     override fun reduce(): QueryExpression? {
         return this
@@ -216,7 +218,7 @@ data class MultiMatch(
     enum class Type : ToValue {
         BEST_FIELDS, MOST_FIELDS, CROSS_FIELDS, PHRASE, PHRASE_PREFIX;
 
-        override fun toValue(): Any = name.lowercase()
+        override fun toValue() = name.lowercase()
     }
 
     override fun clone() = copy()
@@ -295,7 +297,7 @@ data class Script(
     // TODO: After update kotlin to 1.5 move subclasses outside of Spec
     sealed class Spec : Expression {
         data class Source(val source: String) : Spec(), Expression {
-            fun clone() = copy()
+            override fun clone() = copy()
 
             override fun accept(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
                 ctx.field("source", source)
@@ -303,7 +305,7 @@ data class Script(
         }
 
         data class Id(val id: String) : Spec(), Expression {
-            fun clone() = copy()
+            override fun clone() = copy()
 
             override fun accept(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
                 ctx.field("id", id)
@@ -341,7 +343,7 @@ data class Script(
         fun Id(id: String): Spec.Id = Spec.Id(id)
     }
 
-    fun clone() = copy()
+    override fun clone() = copy()
 
     override fun accept(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
         when (spec) {
@@ -578,12 +580,12 @@ data class FunctionScore(
     enum class ScoreMode : ToValue {
         MULTIPLY, SUM, AVG, FIRST, MAX, MIN;
 
-        override fun toValue(): Any = name.lowercase()
+        override fun toValue() = name.lowercase()
     }
     enum class BoostMode : ToValue {
         MULTIPLY, REPLACE, SUM, AVG, MAX, MIN;
 
-        override fun toValue(): Any = name.lowercase()
+        override fun toValue() = name.lowercase()
     }
 
     override fun clone() = copy()
@@ -647,7 +649,7 @@ data class FunctionScore(
         val weight: Double,
         override val filter: QueryExpression?,
     ) : Function() {
-        fun clone() = copy()
+        override fun clone() = copy()
 
         override fun reduce(): Expression {
             return copy(
@@ -672,7 +674,7 @@ data class FunctionScore(
         val modifier: String? = null,
         override val filter: QueryExpression? = null,
     ) : Function() {
-        fun clone() = copy()
+        override fun clone() = copy()
 
         override fun reduce(): Expression {
             return copy(
@@ -699,7 +701,7 @@ data class FunctionScore(
         val script: Script,
         override val filter: QueryExpression? = null,
     ) : Function() {
-        fun clone() = copy()
+        override fun clone() = copy()
 
         override fun reduce(): Expression {
             return copy(
@@ -721,7 +723,7 @@ data class FunctionScore(
         val field: FieldOperations? = null,
         override val filter: QueryExpression? = null,
     ) : Function() {
-        fun clone() = copy()
+        override fun clone() = copy()
 
         override fun reduce(): Expression {
             return copy(
@@ -850,21 +852,19 @@ data class Sort(
     enum class Order : ToValue {
         ASC, DESC;
 
-        override fun toValue(): Any = name.lowercase()
+        override fun toValue() = name.lowercase()
     }
 
     enum class Mode : ToValue {
         MIN, MAX, SUM, AVG, MEDIAN;
 
-        override fun toValue(): Any {
-            return name.lowercase()
-        }
+        override fun toValue() = name.lowercase()
     }
 
     enum class NumericType : ToValue {
         DOUBLE, LONG, DATE, DATE_NANOS;
 
-        override fun toValue(): Any = name.lowercase()
+        override fun toValue() = name.lowercase()
     }
 
     sealed class Missing : ToValue {
@@ -887,7 +887,7 @@ data class Sort(
         val maxChildren: Int? = null,
         val nested: Nested? = null,
     ) : Expression {
-        fun clone() = copy()
+        override fun clone() = copy()
 
         override fun accept(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
             ctx.field("path", path.getQualifiedFieldName())
@@ -919,7 +919,7 @@ data class Sort(
         return null
     }
 
-    fun clone() = copy()
+    override fun clone() = copy()
 
     override fun accept(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
         val params = Params(
@@ -973,7 +973,7 @@ data class QueryRescore(
         override fun toValue() = name.lowercase()
     }
 
-    fun clone() = copy()
+    override fun clone() = copy()
 
     override fun visit(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
         ctx.obj("rescore_query") {
