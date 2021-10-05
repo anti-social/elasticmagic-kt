@@ -59,13 +59,13 @@ class AggregationTests {
 
     @Test
     fun min_max_avg_sum() {
-        table(
+        table<String, (FieldOperations, Any?) -> SingleDoubleValueAgg>(
             headers("aggName", "aggFn"),
-            row("min") { f: FieldOperations, m: Double -> MinAgg(f, missing = m) },
-            row("max") { f, m -> MaxAgg(f, missing = m) },
-            row("avg") { f, m -> AvgAgg(f, missing = m) },
-            row("sum") { f, m -> SumAgg(f, missing = m) },
-            row("median_absolute_deviation") { f, m -> MedianAbsoluteDeviationAgg(f, missing = m) },
+            row("min", ::MinAgg),
+            row("max", ::MaxAgg),
+            row("avg", ::AvgAgg),
+            row("sum", ::SumAgg),
+            row("median_absolute_deviation", ::MedianAbsoluteDeviationAgg),
         ).forAll { aggName, aggFn ->
             val agg = aggFn(
                 MovieDoc.rating,
@@ -103,14 +103,13 @@ class AggregationTests {
 
     @Test
     fun valueCount_cardinality() {
-        table(
+        table<String, (FieldOperations, Any?) -> SingleLongValueAgg>(
             headers("aggName", "aggFn"),
             row("value_count", ::ValueCountAgg),
             row("cardinality", ::CardinalityAgg),
         ).forAll { aggName, aggFn ->
             val agg = aggFn(
                 MovieDoc.numRatings,
-                null,
                 0,
             )
             agg.compile() shouldContainExactly mapOf(
@@ -168,16 +167,16 @@ class AggregationTests {
     fun weightedAvg() {
         val agg = WeightedAvgAgg(
             value = WeightedAvgAgg.ValueSource(
-                field = MovieDoc.rating,
+                MovieDoc.rating,
                 missing = 0.0,
             ),
             weight = WeightedAvgAgg.ValueSource(
-                script = Script(
+                AggValue.Script(Script(
                     "doc[params.rating_field].value + 1",
                     params = mapOf(
                         "rating_field" to MovieDoc.numRatings
                     )
-                ),
+                )),
             ),
         )
         agg.compile() shouldContainExactly mapOf(
@@ -568,10 +567,6 @@ class AggregationTests {
 
     @Test
     fun dateRange() {
-        shouldThrow<IllegalArgumentException> {
-            DateRangeAgg(ranges = emptyList())
-        }
-
         DateRangeAgg(
             MovieDoc.releaseDate,
             ranges = listOf(
@@ -776,10 +771,6 @@ class AggregationTests {
 
     @Test
     fun dateHistogram() {
-        shouldThrow<IllegalArgumentException> {
-            DateHistogramAgg(interval = DateHistogramAgg.Interval.Calendar("1y"),)
-        }
-
         DateHistogramAgg(
             MovieDoc.releaseDate,
             interval = DateHistogramAgg.Interval.Calendar("1y"),
