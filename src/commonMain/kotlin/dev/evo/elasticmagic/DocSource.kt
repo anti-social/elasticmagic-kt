@@ -116,10 +116,10 @@ open class DocSource : BaseDocSource() {
     override fun getSource(): Map<String, Any?> {
         val source = mutableMapOf<String, Any?>()
         for (fieldValue in fieldValues) {
-            if (fieldValue.isRequired && !fieldValue.isInitialized) {
+            if (fieldValue.isRequired && !fieldValue.isInitialized && fieldValue.defaultValue == null) {
                 throw IllegalStateException("Field ${fieldValue.name} is required")
             }
-            if (fieldValue.isInitialized) {
+            if (fieldValue.isInitialized || fieldValue.defaultValue != null) {
                 source[fieldValue.name] = fieldValue.serialize()
             }
         }
@@ -211,10 +211,16 @@ open class DocSource : BaseDocSource() {
         )
     }
 
+    fun <V> BoundField<V>.default(defaultValue: () -> V): OptionalValueDelegateWithDefault<V> {
+        return OptionalValueDelegateWithDefault(
+            getFieldName(), getFieldType(), defaultValue
+        )
+    }
+
     operator fun <V> SubFields<V>.provideDelegate(
         thisRef: DocSource, property: KProperty<*>
     ): ReadWriteProperty<DocSource, V?> {
-        return OptionalValueProperty<V>(
+        return OptionalValueProperty(
             getFieldName(), getFieldType()
         )
             .also {
@@ -233,13 +239,20 @@ open class DocSource : BaseDocSource() {
         val name: String,
         val type: FieldType<V>,
         val isRequired: Boolean,
+        val defaultValue: (() -> V)? = null,
     ) {
         var isInitialized: Boolean = false
             private set
 
         private var _value: V? = null
         var value: V?
-            get() = _value
+            get() {
+                if (!isInitialized && defaultValue != null) {
+                    isInitialized = true
+                    _value = defaultValue.invoke()
+                }
+                return _value
+            }
             set(value) {
                 isInitialized = true
                 _value = value
@@ -277,6 +290,10 @@ open class DocSource : BaseDocSource() {
             h = 37 * h + value.hashCode()
             return h
         }
+
+        override fun toString(): String {
+            return "FieldValue '$name' of type ${type.name}, isRequired: $isRequired"
+        }
     }
 
     abstract class FieldValueProperty<V>(
@@ -300,7 +317,25 @@ open class DocSource : BaseDocSource() {
         open fun required(): RequiredValueDelegate<V> {
             return RequiredValueDelegate(fieldName, fieldType)
         }
+
+        fun default(defaultValue: () -> V): OptionalValueDelegateWithDefault<V> {
+            return OptionalValueDelegateWithDefault(fieldName, fieldType, defaultValue)
+        }
     }
+
+    class OptionalValueDelegateWithDefault<V>(
+        private val fieldName: String,
+        private val fieldType: FieldType<V>,
+        private val defaultValue: () -> V,
+    ) {
+        operator fun provideDelegate(
+            thisRef: DocSource, property: KProperty<*>
+        ): ReadWriteProperty<DocSource, V?> {
+            return OptionalValueProperty(fieldName, fieldType, defaultValue)
+                .also { thisRef.bindProperty(it) }
+        }
+    }
+
 
     class OptionalListableValueDelegate<V>(
         fieldName: String,
@@ -320,12 +355,12 @@ open class DocSource : BaseDocSource() {
     protected class OptionalValueProperty<V>(
         fieldName: String,
         fieldType: FieldType<V>,
+        defaultValue: (() -> V)? = null,
     ) :
-        FieldValueProperty<V>(FieldValue(fieldName, fieldType, false), fieldType),
+        FieldValueProperty<V>(FieldValue(fieldName, fieldType, false, defaultValue), fieldType),
         ReadWriteProperty<DocSource, V?>
     {
-
-        override fun set(value: Any?) {
+       override fun set(value: Any?) {
             fieldValue.value = if (value != null) {
                 fieldType.deserialize(value)
             } else {
