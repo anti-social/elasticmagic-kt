@@ -116,10 +116,10 @@ open class DocSource : BaseDocSource() {
     override fun getSource(): Map<String, Any?> {
         val source = mutableMapOf<String, Any?>()
         for (fieldValue in fieldValues) {
-            if (fieldValue.isRequired && !fieldValue.isInitialized && fieldValue.defaultValue == null) {
-                throw IllegalStateException("Field ${fieldValue.name} is required")
+            if (!fieldValue.isInitialized && fieldValue.isRequired) {
+                throw IllegalStateException("Field [${fieldValue.name}] is required")
             }
-            if (fieldValue.isInitialized || fieldValue.defaultValue != null) {
+            if (fieldValue.isInitialized || fieldValue.hasDefault) {
                 source[fieldValue.name] = fieldValue.serialize()
             }
         }
@@ -238,18 +238,20 @@ open class DocSource : BaseDocSource() {
     class FieldValue<V>(
         val name: String,
         val type: FieldType<V>,
-        val isRequired: Boolean,
-        val defaultValue: (() -> V)? = null,
+        val optionality: Optionality<V>,
     ) {
         var isInitialized: Boolean = false
             private set
 
+        val isRequired: Boolean get() = optionality is Optionality.Required
+        val hasDefault: Boolean get() = optionality is Optionality.Optional && optionality.default != null
+
         private var _value: V? = null
         var value: V?
             get() {
-                if (!isInitialized && defaultValue != null) {
+                if (!isInitialized && optionality is Optionality.Optional && optionality.default != null) {
                     isInitialized = true
-                    _value = defaultValue.invoke()
+                    _value = optionality.default.invoke()
                 }
                 return _value
             }
@@ -257,6 +259,11 @@ open class DocSource : BaseDocSource() {
                 isInitialized = true
                 _value = value
             }
+
+        sealed class Optionality<V> {
+            class Required<V> : Optionality<V>()
+            class Optional<V>(val default: (() -> V)? = null) : Optionality<V>()
+        }
 
         fun clear() {
             isInitialized = false
@@ -292,7 +299,7 @@ open class DocSource : BaseDocSource() {
         }
 
         override fun toString(): String {
-            return "FieldValue '$name' of type ${type.name}, isRequired: $isRequired"
+            return "FieldValue($name, ${type.name}, $optionality)"
         }
     }
 
@@ -357,7 +364,9 @@ open class DocSource : BaseDocSource() {
         fieldType: FieldType<V>,
         defaultValue: (() -> V)? = null,
     ) :
-        FieldValueProperty<V>(FieldValue(fieldName, fieldType, false, defaultValue), fieldType),
+        FieldValueProperty<V>(
+            FieldValue(fieldName, fieldType, FieldValue.Optionality.Optional(defaultValue)), fieldType
+        ),
         ReadWriteProperty<DocSource, V?>
     {
        override fun set(value: Any?) {
@@ -407,7 +416,9 @@ open class DocSource : BaseDocSource() {
         fieldName: String,
         fieldType: FieldType<V>,
     ) :
-        FieldValueProperty<V>(FieldValue(fieldName, fieldType, true), fieldType),
+        FieldValueProperty<V>(
+            FieldValue(fieldName, fieldType, FieldValue.Optionality.Required()), fieldType
+        ),
         ReadWriteProperty<DocSource, V>
     {
 
