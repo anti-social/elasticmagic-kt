@@ -220,7 +220,7 @@ open class DocSource : BaseDocSource() {
     operator fun <V> SubFields<V>.provideDelegate(
         thisRef: DocSource, property: KProperty<*>
     ): ReadWriteProperty<DocSource, V?> {
-        return OptionalValueProperty<V>(
+        return OptionalValueProperty(
             getFieldName(), getFieldType()
         )
             .also {
@@ -352,22 +352,15 @@ open class DocSource : BaseDocSource() {
         }
     }
 
-    protected class OptionalValueProperty<V>:
-        FieldValueProperty<V>,
+    protected class OptionalValueProperty<V>(
+        fieldName: String,
+        fieldType: FieldType<V>,
+        defaultValue: (() -> V)? = null,
+    ) :
+        FieldValueProperty<V>(FieldValue(fieldName, fieldType, false, defaultValue), fieldType),
         ReadWriteProperty<DocSource, V?>
     {
-        constructor(
-            fieldName: String,
-            fieldType: FieldType<V>,
-        ): super(FieldValue(fieldName, fieldType, true), fieldType)
-
-        constructor(
-            fieldName: String,
-            fieldType: FieldType<V>,
-            defaultValue: () -> V,
-        ): super(FieldValue(fieldName, fieldType, true, defaultValue), fieldType)
-
-        override fun set(value: Any?) {
+       override fun set(value: Any?) {
             fieldValue.value = if (value != null) {
                 fieldType.deserialize(value)
             } else {
