@@ -249,7 +249,7 @@ open class DocSource : BaseDocSource() {
             get() {
                 if (!isInitialized && defaultValue != null) {
                     isInitialized = true
-                    _value = defaultValue.let { it() }
+                    _value = defaultValue.invoke()
                 }
                 return _value
             }
