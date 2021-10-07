@@ -7,3 +7,22 @@
 # Elasticmagic for Kotlin
 
 Elasticsearch query DSL for Kotlin
+
+Read [User Guide](https://anti-social.github.io/elasticmagic-kt/document/)
+
+## Features
+
+- Multiplatform (JVM and Native at the moment)
+- Only asynchronous API
+- No code generation (instead makes heavy use of kotlin delegates)
+- No reflection (only for delegates)
+- Sub-fields and sub-documents with navigation
+- Typed document source
+- Parent child relations (ability to merge multiple documents into a single mapping)
+- Focus on search API
+- Supports several serialization libraries (kotlinx.serialization and jackson out of the box)
+- Supports Elasticsearch 6.x and 7.x (autodetect Elasticsearch version)
+
+## Not a goal
+
+- Covering full Elasticsearch API
