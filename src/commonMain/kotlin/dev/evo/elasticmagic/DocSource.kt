@@ -57,33 +57,33 @@ object DocSourceFactory {
         vararg sourceFactories: Pair<String, () -> DocSource>
     ): (Deserializer.ObjectCtx) -> DocSource {
         val sourceFactoriesMap = sourceFactories.toMap()
-        val joinField = sourceFactories
+        val joinFieldName = sourceFactories
             .map { (_, sourceFactory) -> sourceFactory() }
-            .fold(null) { curJoinField: DocSource.FieldValue<*>?, docSource ->
-                if (curJoinField == null) {
-                    docSource.getJoinField()
+            .fold(null) { curJoinFieldName: String?, docSource ->
+                if (curJoinFieldName == null) {
+                    docSource.getJoinFieldName()
                 } else {
-                    val joinField = docSource.getJoinField()
+                    val joinFieldName = docSource.getJoinFieldName()
                         ?: throw IllegalArgumentException(
                             "Missing join field"
                         )
-                    if (curJoinField.name != joinField.name) {
+                    if (curJoinFieldName != joinFieldName) {
                         throw IllegalArgumentException(
                             "Document sources have different join fields: " +
-                                    "'${curJoinField.name}' and '${joinField.name}'"
+                                    "'$curJoinFieldName' and '$joinFieldName'"
                         )
                     }
-                    curJoinField
+                    curJoinFieldName
                 }
             }
-        require(joinField != null) {
+        require(joinFieldName != null) {
             "Missing join field"
         }
 
         return { obj ->
             val sourceObj = obj.obj("_source")
-            val joinName = sourceObj.objOrNull(joinField.name)?.string("name")
-                ?: sourceObj.string(joinField.name)
+            val joinName = sourceObj.objOrNull(joinFieldName)?.string("name")
+                ?: sourceObj.string(joinFieldName)
             sourceFactoriesMap[joinName]?.invoke()
                 ?: throw IllegalStateException("No source factory for '$joinName' type")
         }
@@ -91,36 +91,40 @@ object DocSourceFactory {
 }
 
 open class DocSource : BaseDocSource() {
-    private val fieldValues: MutableList<FieldValue<*>> = mutableListOf()
-    private val fieldProperties: MutableMap<String, FieldValueProperty<*>> = mutableMapOf()
-    private var joinField: FieldValue<*>? = null
+    private var fieldProps: ArrayList<FieldValueProperty<*>> = arrayListOf()
+    private var fieldPropsByName: HashMap<String, FieldValueProperty<*>> = hashMapOf()
+    private var joinFieldProperty: FieldValueProperty<*>? = null
 
-    fun getJoinField(): FieldValue<*>? {
-        return joinField
+    fun getJoinFieldName(): String? {
+        return joinFieldProperty?.name
     }
 
     private fun bindProperty(fieldProperty: FieldValueProperty<*>) {
-        val fieldValue = fieldProperty.fieldValue
-        fieldValues.add(fieldValue)
-        fieldProperties[fieldValue.name] = fieldProperty
-        if (fieldProperty.fieldType is JoinType) {
-            if (joinField != null) {
+        val fieldName = fieldProperty.name
+        if (fieldName in fieldPropsByName) {
+            throw IllegalStateException(
+                "Field [$fieldName] has already been bound to this document source"
+            )
+        }
+        fieldProps.add(fieldProperty)
+        fieldPropsByName[fieldName] = fieldProperty
+        if (fieldProperty.type is JoinType) {
+            val joinFieldName = joinFieldProperty?.name
+            if (joinFieldName != null) {
                 throw IllegalStateException(
-                    "Join field already bound to this document source: ${joinField?.name}"
+                    "Join field has already been bound to this document source as [$joinFieldName] field"
                 )
             }
-            joinField = fieldValue
+            joinFieldProperty = fieldProperty
         }
     }
 
     override fun getSource(): Map<String, Any?> {
         val source = mutableMapOf<String, Any?>()
-        for (fieldValue in fieldValues) {
-            if (!fieldValue.isInitialized && fieldValue.isRequired) {
-                throw IllegalStateException("Field [${fieldValue.name}] is required")
-            }
-            if (fieldValue.isInitialized || fieldValue.hasDefault) {
-                source[fieldValue.name] = fieldValue.serialize()
+        for (fieldProperty in fieldProps) {
+            fieldProperty.checkRequired()
+            if (fieldProperty.isInitialized) {
+                source[fieldProperty.name] = fieldProperty.serialize()
             }
         }
         return source
@@ -128,28 +132,20 @@ open class DocSource : BaseDocSource() {
 
     override fun setSource(rawSource: RawSource) {
         clearSource()
-        for ((fieldName, fieldValue) in rawSource) {
-            setField(fieldName as String, fieldValue)
+        for ((fieldName, rawValue) in rawSource) {
+            setFieldValue(fieldName as String, rawValue)
         }
-        for (fieldValue in fieldValues) {
-            if (fieldValue.isRequired && !fieldValue.isInitialized) {
-                throw IllegalArgumentException("Field ${fieldValue.name} is required")
-            }
-        }
+        fieldProps.forEach(FieldValueProperty<*>::checkRequired)
     }
 
     fun clearSource() {
-        fieldValues.map(FieldValue<*>::clear)
+        fieldProps.map(FieldValueProperty<*>::clear)
     }
 
-    fun getField(name: String): Any? {
-        return fieldProperties[name]?.fieldValue?.value
-    }
-
-    fun setField(name: String, value: Any?) {
-        val fieldProperty = fieldProperties[name]
+    private fun setFieldValue(name: String, value: Any?) {
+        val fieldProperty = fieldPropsByName[name]
             ?: throw IllegalArgumentException("Unknown field name: $name")
-        fieldProperty.set(value)
+        fieldProperty.deserialize(value)
     }
 
     override fun equals(other: Any?): Boolean {
@@ -162,8 +158,15 @@ open class DocSource : BaseDocSource() {
         if (other::class != this::class) {
             return false
         }
-        for ((fieldValue, otherFieldValue) in fieldValues.zip(other.fieldValues)) {
-            if (fieldValue != otherFieldValue) {
+        for ((fieldProperty, otherFieldProperty) in fieldProps.zip(other.fieldProps)) {
+            if (
+                fieldProperty.isInitialized &&
+                otherFieldProperty.isInitialized &&
+                fieldProperty.value != otherFieldProperty.value
+            ) {
+                return false
+            }
+            if (fieldProperty.isInitialized != otherFieldProperty.isInitialized) {
                 return false
             }
         }
@@ -172,19 +175,20 @@ open class DocSource : BaseDocSource() {
 
     override fun hashCode(): Int {
         var h = this::class.hashCode()
-        for (v in fieldValues) {
-            h = 37 * h + v.hashCode()
+        for (p in fieldProps) {
+            h = 37 * h + p.isInitialized.hashCode()
+            h = 37 * h + p.value.hashCode()
         }
         return h
     }
 
     override fun toString(): String {
-        return fieldValues
-            .filter(FieldValue<*>::isInitialized)
+        return fieldProps
+            .filter(FieldValueProperty<*>::isInitialized)
             .joinToString(
                 separator = ", ", prefix = "${this::class.simpleName}(", postfix = ")"
-            ) { fieldValue ->
-                "${fieldValue.name}=${fieldValue.value}"
+            ) { prop ->
+                "${prop.name}=${prop.value}"
             }
     }
 
@@ -235,81 +239,6 @@ open class DocSource : BaseDocSource() {
         )
     }
 
-    class FieldValue<V>(
-        val name: String,
-        val type: FieldType<V>,
-        val optionality: Optionality<V>,
-    ) {
-        var isInitialized: Boolean = false
-            private set
-
-        val isRequired: Boolean get() = optionality is Optionality.Required
-        val hasDefault: Boolean get() = optionality is Optionality.Optional && optionality.default != null
-
-        private var _value: V? = null
-        var value: V?
-            get() {
-                if (!isInitialized && optionality is Optionality.Optional && optionality.default != null) {
-                    isInitialized = true
-                    _value = optionality.default.invoke()
-                }
-                return _value
-            }
-            set(value) {
-                isInitialized = true
-                _value = value
-            }
-
-        sealed class Optionality<V> {
-            class Required<V> : Optionality<V>()
-            class Optional<V>(val default: (() -> V)? = null) : Optionality<V>()
-        }
-
-        fun clear() {
-            isInitialized = false
-            _value = null
-        }
-
-        fun serialize(): Any? {
-            return value?.let(type::serialize)
-        }
-
-        override fun equals(other: Any?): Boolean {
-            if (other !is FieldValue<*>) {
-                return false
-            }
-            if (name != other.name) {
-                return false
-            }
-            if (isInitialized != other.isInitialized) {
-                return false
-            }
-            if (value != other.value) {
-                return false
-            }
-
-            return true
-        }
-
-        override fun hashCode(): Int {
-            var h = name.hashCode()
-            h = 37 * h + isInitialized.hashCode()
-            h = 37 * h + value.hashCode()
-            return h
-        }
-
-        override fun toString(): String {
-            return "FieldValue($name, ${type.name}, $optionality)"
-        }
-    }
-
-    abstract class FieldValueProperty<V>(
-        val fieldValue: FieldValue<V>,
-        val fieldType: FieldType<V>,
-    ) {
-        abstract fun set(value: Any?)
-    }
-
     open class OptionalValueDelegate<V>(
         protected val fieldName: String,
         protected val fieldType: FieldType<V>,
@@ -337,8 +266,8 @@ open class DocSource : BaseDocSource() {
     ) {
         operator fun provideDelegate(
             thisRef: DocSource, property: KProperty<*>
-        ): ReadWriteProperty<DocSource, V?> {
-            return OptionalValueProperty(fieldName, fieldType, defaultValue)
+        ): ReadWriteProperty<DocSource, V> {
+            return DefaultValueProperty(fieldName, fieldType, defaultValue)
                 .also { thisRef.bindProperty(it) }
         }
     }
@@ -356,33 +285,6 @@ open class DocSource : BaseDocSource() {
             return OptionalValueDelegate(
                 fieldName, OptionalListType(fieldType)
             )
-        }
-    }
-
-    protected class OptionalValueProperty<V>(
-        fieldName: String,
-        fieldType: FieldType<V>,
-        defaultValue: (() -> V)? = null,
-    ) :
-        FieldValueProperty<V>(
-            FieldValue(fieldName, fieldType, FieldValue.Optionality.Optional(defaultValue)), fieldType
-        ),
-        ReadWriteProperty<DocSource, V?>
-    {
-       override fun set(value: Any?) {
-            fieldValue.value = if (value != null) {
-                fieldType.deserialize(value)
-            } else {
-                null
-            }
-        }
-
-        override fun getValue(thisRef: DocSource, property: KProperty<*>): V? {
-            return fieldValue.value
-        }
-
-        override fun setValue(thisRef: DocSource, property: KProperty<*>, value: V?) {
-            fieldValue.value = value
         }
     }
 
@@ -412,27 +314,145 @@ open class DocSource : BaseDocSource() {
         }
     }
 
-    protected class RequiredValueProperty<V>(
+    /**
+     * Container for a field value that distinguish null value from non-initialized.
+     */
+    private class FieldValue<V> {
+        var isInitialized: Boolean = false
+            private set
+
+        private var _value: V? = null
+        var value: V?
+            get() = _value
+            set(value) {
+                isInitialized = true
+                _value = value
+            }
+
+        fun clear() {
+            isInitialized = false
+            _value = null
+        }
+    }
+
+    private sealed class FieldValueProperty<V>(
+        val name: String,
+        val type: FieldType<V>,
+        protected val fieldValue: FieldValue<V>,
+    ) {
+        abstract val isInitialized: Boolean
+        abstract val value: V?
+
+        open fun checkRequired() {}
+
+        fun clear() = fieldValue.clear()
+
+        abstract fun serialize(): Any?
+        abstract fun deserialize(value: Any?)
+    }
+
+    private class OptionalValueProperty<V>(
         fieldName: String,
         fieldType: FieldType<V>,
     ) :
-        FieldValueProperty<V>(
-            FieldValue(fieldName, fieldType, FieldValue.Optionality.Required()), fieldType
-        ),
-        ReadWriteProperty<DocSource, V>
+        FieldValueProperty<V>(fieldName, fieldType, FieldValue()),
+        ReadWriteProperty<DocSource, V?>
     {
+        override val isInitialized get() = fieldValue.isInitialized
 
-        override fun set(value: Any?) {
-            fieldValue.value = if (value != null) {
-                fieldType.deserialize(value)
-            } else {
-                throw IllegalArgumentException("Value cannot be null for required field")
+        override val value get() = fieldValue.value
+
+        override fun serialize(): Any? {
+            return fieldValue.value?.let { v ->
+                type.serialize(v)
             }
         }
 
-        override fun getValue(thisRef: DocSource, property: KProperty<*>): V {
-            return fieldValue.value ?: error("Field is not initialized")
+        override fun deserialize(value: Any?) {
+            fieldValue.value = if (value != null) {
+                type.deserialize(value)
+            } else {
+                null
+            }
         }
+
+        override fun getValue(thisRef: DocSource, property: KProperty<*>): V? = value
+
+        override fun setValue(thisRef: DocSource, property: KProperty<*>, value: V?) {
+            fieldValue.value = value
+        }
+    }
+
+    private class DefaultValueProperty<V>(
+        fieldName: String,
+        fieldType: FieldType<V>,
+        val defaultValue: () -> V,
+    ) :
+        FieldValueProperty<V>(fieldName, fieldType, FieldValue()),
+        ReadWriteProperty<DocSource, V>
+    {
+        override val isInitialized = true
+
+        override val value get(): V {
+            return when (val v = fieldValue.value) {
+                null -> {
+                    defaultValue().also(fieldValue::value::set)
+                }
+                else -> v
+            }
+        }
+
+        override fun serialize(): Any {
+            return type.serialize(value)
+        }
+
+        override fun deserialize(value: Any?) {
+            fieldValue.value = if (value != null) {
+                type.deserialize(value)
+            } else {
+                null
+            }
+        }
+
+        override fun getValue(thisRef: DocSource, property: KProperty<*>): V = value
+
+        override fun setValue(thisRef: DocSource, property: KProperty<*>, value: V) {
+            fieldValue.value = value
+        }
+    }
+
+    private class RequiredValueProperty<V>(
+        fieldName: String,
+        fieldType: FieldType<V>,
+    ) :
+        FieldValueProperty<V>(fieldName, fieldType, FieldValue()),
+        ReadWriteProperty<DocSource, V>
+    {
+        override val isInitialized get() = fieldValue.isInitialized
+
+        override fun checkRequired() {
+            if (!isInitialized) {
+                throw IllegalStateException("Field [$name] is required")
+            }
+        }
+
+        override val value get(): V {
+            return fieldValue.value ?: error("Field [$name] is required")
+        }
+
+        override fun serialize(): Any {
+            return type.serialize(value)
+        }
+
+        override fun deserialize(value: Any?) {
+            fieldValue.value = if (value != null) {
+                type.deserialize(value)
+            } else {
+                throw IllegalArgumentException("Value cannot be null for required field [$name]")
+            }
+        }
+
+        override fun getValue(thisRef: DocSource, property: KProperty<*>): V = value
 
         override fun setValue(thisRef: DocSource, property: KProperty<*>, value: V) {
             fieldValue.value = value

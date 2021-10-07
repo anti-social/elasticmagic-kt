@@ -284,7 +284,7 @@ class SourceTests {
             fullOrder.getSource() shouldContainExactly emptyMap()
         }
 
-        shouldThrow<IllegalArgumentException> {
+        shouldThrow<IllegalStateException> {
             fullOrder.setSource(emptySource())
         }
 
@@ -340,7 +340,7 @@ class SourceTests {
             var status by OrderDoc.status.required()
         }
 
-        shouldThrow<IllegalArgumentException> {
+        shouldThrow<IllegalStateException> {
             OrderDocSource().setSource(emptySource())
         }
 
@@ -799,18 +799,24 @@ class SourceTests {
             var id by OrderDoc.id.required()
             var status by OrderDoc.status.required().list().default { listOf(0, 3) }
             var total by OrderDoc.total.default { 666.66f }
-            var user by OrderDoc.user.source(::UserDocSource).default { UserDocSource().apply { id = 777 } }
+            var user by OrderDoc.user.source(::UserDocSource)
+                .default { UserDocSource().apply { id = 777 } }
         }
 
         val order = OrderDocSource()
         shouldThrow<IllegalStateException> {
             order.id
         }
+        shouldThrow<IllegalStateException> {
+            order.getSource()
+        }
+
+        order.id = 111L
 
         order.status shouldBe listOf(0, 3)
         order.total shouldBe 666.66f
+        order.user shouldBe UserDocSource().apply { id = 777 }
 
-        order.id = 111L
         order.getSource() shouldContainExactly mapOf(
             "id" to 111L,
             "status" to listOf(0, 3),
