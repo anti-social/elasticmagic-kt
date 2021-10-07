@@ -462,17 +462,31 @@ See more info at <a href="https://github.com/anti-social/elasticmagic-kt/issues/
 
 <span class="k">import</span> <span class="nn">samples.docsource.UserDoc</span>
 
+<span class="c1">// Explicit types are specified for clarity. You can totally omit them</span>
+
 <span class="kd">class</span> <span class="nc">RoleDocSource</span> <span class="p">:</span> <span class="n">DocSource</span><span class="p">()</span> <span class="p">{</span>
-    <span class="kd">var</span> <span class="nv">name</span> <span class="k">by</span> <span class="n">UserDoc</span><span class="p">.</span><span class="na">roles</span><span class="p">.</span><span class="na">name</span><span class="p">.</span><span class="na">required</span><span class="p">()</span>
-    <span class="kd">var</span> <span class="nv">permissions</span> <span class="k">by</span> <span class="n">UserDoc</span><span class="p">.</span><span class="na">roles</span><span class="p">.</span><span class="na">permissions</span><span class="p">.</span><span class="na">required</span><span class="p">().</span><span class="na">list</span><span class="p">().</span><span class="na">required</span><span class="p">()</span>
+    <span class="kd">var</span> <span class="nv">name</span><span class="p">:</span> <span class="kt">String</span> <span class="k">by</span> <span class="n">UserDoc</span><span class="p">.</span><span class="na">roles</span><span class="p">.</span><span class="na">name</span><span class="p">.</span><span class="na">required</span><span class="p">()</span>
+    <span class="kd">var</span> <span class="nv">permissions</span><span class="p">:</span> <span class="n">List</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span> <span class="k">by</span> <span class="n">UserDoc</span><span class="p">.</span><span class="na">roles</span><span class="p">.</span><span class="na">permissions</span><span class="p">.</span><span class="na">required</span><span class="p">().</span><span class="na">list</span><span class="p">().</span><span class="na">required</span><span class="p">()</span>
 <span class="p">}</span>
 
 <span class="kd">class</span> <span class="nc">UserDocSource</span> <span class="p">:</span> <span class="n">DocSource</span><span class="p">()</span> <span class="p">{</span>
-    <span class="kd">var</span> <span class="nv">id</span> <span class="k">by</span> <span class="n">UserDoc</span><span class="p">.</span><span class="na">id</span><span class="p">.</span><span class="na">required</span><span class="p">()</span>
-    <span class="kd">var</span> <span class="nv">login</span> <span class="k">by</span> <span class="n">UserDoc</span><span class="p">.</span><span class="na">login</span><span class="p">.</span><span class="na">required</span><span class="p">()</span>
-    <span class="kd">var</span> <span class="nv">groups</span> <span class="k">by</span> <span class="n">UserDoc</span><span class="p">.</span><span class="na">groups</span><span class="p">.</span><span class="na">required</span><span class="p">().</span><span class="na">list</span><span class="p">().</span><span class="na">required</span><span class="p">()</span>
-    <span class="kd">var</span> <span class="nv">roles</span> <span class="k">by</span> <span class="n">UserDoc</span><span class="p">.</span><span class="na">roles</span><span class="p">.</span><span class="na">source</span><span class="p">(</span><span class="o">::</span><span class="n">RoleDocSource</span><span class="p">).</span><span class="na">required</span><span class="p">().</span><span class="na">list</span><span class="p">()</span>
+    <span class="c1">// id and login fields must be present</span>
+    <span class="kd">var</span> <span class="nv">id</span><span class="p">:</span> <span class="kt">Int</span> <span class="k">by</span> <span class="n">UserDoc</span><span class="p">.</span><span class="na">id</span><span class="p">.</span><span class="na">required</span><span class="p">()</span>
+    <span class="kd">var</span> <span class="nv">login</span><span class="p">:</span> <span class="kt">String</span> <span class="k">by</span> <span class="n">UserDoc</span><span class="p">.</span><span class="na">login</span><span class="p">.</span><span class="na">required</span><span class="p">()</span>
+
+    <span class="c1">// If groups field is missing or null default value will be used</span>
+    <span class="kd">var</span> <span class="nv">groups</span><span class="p">:</span> <span class="n">List</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span> <span class="k">by</span> <span class="n">UserDoc</span><span class="p">.</span><span class="na">groups</span><span class="p">.</span><span class="na">required</span><span class="p">().</span><span class="na">list</span><span class="p">().</span><span class="na">default</span> <span class="p">{</span> <span class="n">emptyList</span><span class="p">()</span> <span class="p">}</span>
+
+    <span class="c1">// Optional list of a required RoleDocSource instances</span>
+    <span class="kd">var</span> <span class="nv">roles</span><span class="p">:</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">RoleDocSource</span><span class="o">&gt;?</span> <span class="k">by</span> <span class="n">UserDoc</span><span class="p">.</span><span class="na">roles</span><span class="p">.</span><span class="na">source</span><span class="p">(</span><span class="o">::</span><span class="n">RoleDocSource</span><span class="p">).</span><span class="na">required</span><span class="p">().</span><span class="na">list</span><span class="p">()</span>
 <span class="p">}</span>
+
+<span class="kd">val</span> <span class="nv">nobody</span> <span class="o">=</span> <span class="n">UserDocSource</span><span class="p">().</span><span class="na">apply</span> <span class="p">{</span>
+    <span class="n">id</span> <span class="o">=</span> <span class="m">65535</span>
+    <span class="n">login</span> <span class="o">=</span> <span class="s">&quot;nobody&quot;</span>
+<span class="p">}</span>
+
+<span class="kd">val</span> <span class="nv">nobodyHasGroups</span> <span class="o">=</span> <span class="n">nobody</span><span class="p">.</span><span class="na">groups</span><span class="p">.</span><span class="na">isEmpty</span><span class="p">()</span>
 
 <span class="kd">val</span> <span class="nv">root</span> <span class="o">=</span> <span class="n">UserDocSource</span><span class="p">().</span><span class="na">apply</span> <span class="p">{</span>
     <span class="n">id</span> <span class="o">=</span> <span class="m">0</span>
@@ -486,11 +500,9 @@ See more info at <a href="https://github.com/anti-social/elasticmagic-kt/issues/
     <span class="p">)</span>
 <span class="p">}</span>
 
-<span class="c1">// Int</span>
-<span class="kd">val</span> <span class="nv">rootId</span> <span class="o">=</span> <span class="n">root</span><span class="p">.</span><span class="na">id</span>
+<span class="kd">val</span> <span class="nv">rootId</span><span class="p">:</span> <span class="kt">Int</span> <span class="o">=</span> <span class="n">root</span><span class="p">.</span><span class="na">id</span>
 
-<span class="c1">// List&lt;String&gt;?</span>
-<span class="kd">val</span> <span class="nv">rootPermissions</span> <span class="o">=</span> <span class="n">root</span><span class="p">.</span><span class="na">roles</span>
+<span class="kd">val</span> <span class="nv">rootPermissions</span><span class="p">:</span> <span class="n">List</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;?</span> <span class="o">=</span> <span class="n">root</span><span class="p">.</span><span class="na">roles</span>
     <span class="o">?.</span><span class="na">flatMap</span> <span class="p">{</span>
         <span class="nb">it</span><span class="p">.</span><span class="na">permissions</span>
     <span class="p">}</span>
