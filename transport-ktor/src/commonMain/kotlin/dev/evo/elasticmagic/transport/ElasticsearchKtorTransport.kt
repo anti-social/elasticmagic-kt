@@ -98,10 +98,12 @@ class ElasticsearchKtorTransport(
                 } else {
                     ContentType.Application.Json
                 }
-                this.body = ByteArrayContent(
-                    requestEncoder.toByteArray(),
-                    contentType
-                )
+                if (ktorHttpMethod != HttpMethod.Head) {
+                    this.body = ByteArrayContent(
+                        requestEncoder.toByteArray(),
+                        contentType
+                    )
+                }
             }
         }
         return processResponse(response)
