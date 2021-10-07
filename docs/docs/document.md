@@ -1,6 +1,6 @@
 # Document (aka mapping)
 
-Roughly speaking [Document](https://anti-social.github.io/elasticmagic-kt/api/latest/elasticmagic/dev.evo.elasticmagic/-document/index.html)
+Roughly speaking [Document](https://anti-social.github.io/elasticmagic-kt/api/latest/elasticmagic/dev.evo.elasticmagic.doc/-document/index.html)
 represents Elasticsearch's mapping. However, it is possible to merge multiple documents into 
 a single mapping.
 
@@ -13,7 +13,7 @@ Read more about
 
 ### General way
 
-You can use [field](https://anti-social.github.io/elasticmagic-kt/api/latest/elasticmagic/dev.evo.elasticmagic/-field-set/field.html)
+You can use [field](https://anti-social.github.io/elasticmagic-kt/api/latest/elasticmagic/dev.evo.elasticmagic.doc/-field-set/field.html)
 method to describe a field in a document:
 
 ```kotlin
@@ -36,11 +36,11 @@ You don't need to import all those field types:
 ```
 
 Full list of available shortcuts can be found 
-[here](https://anti-social.github.io/elasticmagic-kt/api/latest/elasticmagic/dev.evo.elasticmagic/-base-document/index.html)
+[here](https://anti-social.github.io/elasticmagic-kt/api/latest/elasticmagic/dev.evo.elasticmagic.doc/-base-document/index.html)
 
 ### Sub fields
 
-It is possible to define [sub-fields](https://anti-social.github.io/elasticmagic-kt/api/latest/elasticmagic/dev.evo.elasticmagic/-sub-fields/index.html)
+It is possible to define [sub-fields](https://anti-social.github.io/elasticmagic-kt/api/latest/elasticmagic/dev.evo.elasticmagic.doc/-sub-fields/index.html)
 for any simple field:
 
 ```kotlin
@@ -91,7 +91,7 @@ in a sub-document can have its own source value:
 Read more:
 
   * [Elasticsearch object type](https://www.elastic.co/guide/en/elasticsearch/reference/current/object.html)
-  * [Object API](https://anti-social.github.io/elasticmagic-kt/api/latest/elasticmagic/dev.evo.elasticmagic/-base-document/obj.html)
+  * [Object API](https://anti-social.github.io/elasticmagic-kt/api/latest/elasticmagic/dev.evo.elasticmagic.doc/-base-document/obj.html)
 
 ### Nested
 
@@ -109,7 +109,7 @@ a `moderator` role with `article` permission and `view` role with `order` permis
 Read more:
   
   * [Elasticsearch nested type](https://www.elastic.co/guide/en/elasticsearch/reference/current/nested.html)
-  * [Nested API](https://anti-social.github.io/elasticmagic-kt/api/latest/elasticmagic/dev.evo.elasticmagic/-base-document/nested.html)
+  * [Nested API](https://anti-social.github.io/elasticmagic-kt/api/latest/elasticmagic/dev.evo.elasticmagic.doc/-base-document/nested.html)
 
 ## Parent-child relationship
 
@@ -124,7 +124,7 @@ Parent/child relationship allows you to define a link between documents inside a
 Read more:
   
   * [Elasticsearch join type](https://www.elastic.co/guide/en/elasticsearch/reference/current/parent-join.html)
-  * [Join API](https://anti-social.github.io/elasticmagic-kt/api/latest/elasticmagic/dev.evo.elasticmagic/-field-set/join.html)
+  * [Join API](https://anti-social.github.io/elasticmagic-kt/api/latest/elasticmagic/dev.evo.elasticmagic.doc/-field-set/join.html)
 
 ### Meta fields
 
@@ -142,7 +142,7 @@ will throw `routing_missing_exceptions`.
 ### Merge multiple documents
 
 To create mapping for multiple documents you can use
-[mergeDocuments](https://anti-social.github.io/elasticmagic-kt/api/latest/elasticmagic/dev.evo.elasticmagic/merge-documents.html)
+[mergeDocuments](https://anti-social.github.io/elasticmagic-kt/api/latest/elasticmagic/dev.evo.elasticmagic.doc/merge-documents.html)
 function. Documents that are merged should not contradict each other.
 
 ```kotlin

@@ -1,6 +1,7 @@
 # Document source
 
-Document source represents an Elasticsearch document in Kotlin. Document source is
+[Document source](https://anti-social.github.io/elasticmagic-kt/api/latest/elasticmagic/dev.evo.elasticmagic.doc/-doc-source/index.html)
+represents an Elasticsearch document in Kotlin. Document source is
 responsible for data serialization/deserialization. For example, almost all
 Elasticsearch data types can be multi-valued and a mapping doesn't reflect that fact.
 But in our programs we want to operate with concrete types, as we work differently with
