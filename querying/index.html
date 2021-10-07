@@ -301,6 +301,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#cloning" class="md-nav__link">
+    Cloning
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#filtering" class="md-nav__link">
     Filtering
   </a>
@@ -389,6 +396,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#cloning" class="md-nav__link">
+    Cloning
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#filtering" class="md-nav__link">
     Filtering
   </a>
@@ -442,6 +456,8 @@
 
 <span class="kd">object</span> <span class="nc">UserDoc</span> <span class="p">:</span> <span class="n">Document</span><span class="p">()</span> <span class="p">{</span>
     <span class="kd">val</span> <span class="nv">id</span> <span class="k">by</span> <span class="n">int</span><span class="p">()</span>
+    <span class="kd">val</span> <span class="nv">isActive</span> <span class="k">by</span> <span class="n">boolean</span><span class="p">(</span><span class="s">&quot;is_active&quot;</span><span class="p">)</span>
+    <span class="kd">val</span> <span class="nv">groups</span> <span class="k">by</span> <span class="n">keyword</span><span class="p">()</span>
     <span class="kd">val</span> <span class="nv">rating</span> <span class="k">by</span> <span class="n">float</span><span class="p">()</span>
     <span class="kd">val</span> <span class="nv">about</span> <span class="k">by</span> <span class="n">text</span><span class="p">()</span>
 <span class="p">}</span>
@@ -453,7 +469,7 @@
 <span class="k">import</span> <span class="nn">dev.evo.elasticmagic.FunctionScore</span>
 <span class="k">import</span> <span class="nn">dev.evo.elasticmagic.SearchQuery</span>
 
-<span class="kd">var</span> <span class="nv">q1</span> <span class="o">=</span> <span class="n">SearchQuery</span><span class="p">(</span>
+<span class="kd">var</span> <span class="nv">q</span> <span class="o">=</span> <span class="n">SearchQuery</span><span class="p">(</span>
     <span class="n">FunctionScore</span><span class="p">(</span>
         <span class="n">UserDoc</span><span class="p">.</span><span class="na">about</span><span class="p">.</span><span class="na">match</span><span class="p">(</span><span class="s">&quot;fake&quot;</span><span class="p">),</span>
         <span class="n">listOf</span><span class="p">(</span>
@@ -471,7 +487,7 @@
 <span class="k">import</span> <span class="nn">dev.evo.elasticmagic.Bool</span>
 <span class="k">import</span> <span class="nn">dev.evo.elasticmagic.FunctionScore</span>
 
-<span class="kd">val</span> <span class="nv">q2</span> <span class="o">=</span> <span class="n">q1</span><span class="p">.</span><span class="na">query</span><span class="p">(</span>
+<span class="kd">val</span> <span class="nv">q2</span> <span class="o">=</span> <span class="n">q</span><span class="p">.</span><span class="na">query</span><span class="p">(</span>
     <span class="n">FunctionScore</span><span class="p">(</span>
         <span class="n">Bool</span><span class="p">.</span><span class="na">should</span><span class="p">(</span>
             <span class="n">UserDoc</span><span class="p">.</span><span class="na">about</span><span class="p">.</span><span class="na">match</span><span class="p">(</span><span class="s">&quot;fake&quot;</span><span class="p">),</span>
@@ -486,10 +502,188 @@
     <span class="p">)</span>
 <span class="p">)</span>
 </code></pre></div>
+<h2 id="cloning">Cloning<a class="headerlink" href="#cloning" title="Permanent link">&para;</a></h2>
+<p>In the last example <code>q</code> and <code>q2</code> variables point to the same object. For efficiency all
+<code>SearchQuery</code> methods modify current instance and return it for chaining method calls.</p>
+<p>If you want to get independent query instance you should clone it explicitly:</p>
+<div class="highlight"><pre><span></span><code><span class="k">package</span> <span class="nn">samples.querying</span>
+
+<span class="kd">val</span> <span class="nv">clonedQuery</span> <span class="o">=</span> <span class="n">q</span><span class="p">.</span><span class="na">clone</span><span class="p">()</span>
+    <span class="p">.</span><span class="na">query</span><span class="p">(</span><span class="n">UserDoc</span><span class="p">.</span><span class="na">about</span><span class="p">.</span><span class="na">match</span><span class="p">(</span><span class="s">&quot;fake&quot;</span><span class="p">))</span>
+</code></pre></div>
+<p>Now you can modify <code>clonedQuery</code> without touching its ancestor <code>q</code>.</p>
 <h2 id="filtering">Filtering<a class="headerlink" href="#filtering" title="Permanent link">&para;</a></h2>
+<p>Using <a href="https://anti-social.github.io/elasticmagic-kt/api/latest/elasticmagic/dev.evo.elasticmagic/-base-search-query/filter.html">filter</a>
+method you can filter your query. All filters passed to the <code>filter</code> method will be combined
+using <code>AND</code> operation.</p>
+<div class="highlight"><pre><span></span><code><span class="k">package</span> <span class="nn">samples.querying</span>
+
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.Bool</span>
+
+<span class="c1">// Select only active users that id is not equal 0</span>
+<span class="kd">val</span> <span class="nv">activeUsersQuery</span> <span class="o">=</span> <span class="n">q</span>
+    <span class="p">.</span><span class="na">filter</span><span class="p">(</span><span class="n">UserDoc</span><span class="p">.</span><span class="na">isActive</span><span class="p">.</span><span class="na">eq</span><span class="p">(</span><span class="kc">true</span><span class="p">))</span>
+    <span class="p">.</span><span class="na">filter</span><span class="p">(</span><span class="n">UserDoc</span><span class="p">.</span><span class="na">id</span><span class="p">.</span><span class="na">ne</span><span class="p">(</span><span class="m">0</span><span class="p">))</span>
+
+<span class="c1">// The same as above</span>
+<span class="kd">val</span> <span class="nv">activeUsersQuery2</span> <span class="o">=</span> <span class="n">q</span>
+    <span class="p">.</span><span class="na">filter</span><span class="p">(</span>
+        <span class="n">UserDoc</span><span class="p">.</span><span class="na">isActive</span><span class="p">.</span><span class="na">eq</span><span class="p">(</span><span class="kc">true</span><span class="p">),</span>
+        <span class="n">UserDoc</span><span class="p">.</span><span class="na">id</span><span class="p">.</span><span class="na">ne</span><span class="p">(</span><span class="m">0</span><span class="p">)</span>
+    <span class="p">)</span>
+
+<span class="c1">// If you need one condition OR another use Bool.should expression.</span>
+<span class="c1">// In the following example we select non-active users OR &quot;fake&quot; users</span>
+<span class="kd">val</span> <span class="nv">activeUsersQuery3</span> <span class="o">=</span> <span class="n">q</span>
+    <span class="p">.</span><span class="na">filter</span><span class="p">(</span>
+        <span class="n">Bool</span><span class="p">.</span><span class="na">should</span><span class="p">(</span>
+            <span class="n">UserDoc</span><span class="p">.</span><span class="na">isActive</span><span class="p">.</span><span class="na">ne</span><span class="p">(</span><span class="kc">true</span><span class="p">),</span>
+            <span class="n">UserDoc</span><span class="p">.</span><span class="na">about</span><span class="p">.</span><span class="na">match</span><span class="p">(</span><span class="s">&quot;fake&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+</code></pre></div>
+<p>See <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/query-filter-context.html">Query Filter Context</a></p>
 <h2 id="sorting">Sorting<a class="headerlink" href="#sorting" title="Permanent link">&para;</a></h2>
+<p><a href="https://anti-social.github.io/elasticmagic-kt/api/latest/elasticmagic/dev.evo.elasticmagic/-base-search-query/sort.html">sort</a>
+method has 2 flavors:</p>
+<ul>
+<li>a shortcut that accepts document fields</li>
+<li>and full-featured version accepting <a href="https://anti-social.github.io/elasticmagic-kt/api/latest/elasticmagic/dev.evo.elasticmagic/-sort/index.html">Sort</a>
+  expressions</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="k">package</span> <span class="nn">samples.querying</span>
+
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.Sort</span>
+
+<span class="c1">// Sort by user id with ascending order</span>
+<span class="kd">val</span> <span class="nv">sortedByIdQuery</span> <span class="o">=</span> <span class="n">q</span><span class="p">.</span><span class="na">sort</span><span class="p">(</span><span class="n">UserDoc</span><span class="p">.</span><span class="na">id</span><span class="p">)</span>
+
+<span class="c1">// Sort by user id descending</span>
+<span class="kd">val</span> <span class="nv">sortedByIdDescQuery</span> <span class="o">=</span> <span class="n">q</span><span class="p">.</span><span class="na">sort</span><span class="p">(</span><span class="n">UserDoc</span><span class="p">.</span><span class="na">id</span><span class="p">.</span><span class="na">desc</span><span class="p">())</span>
+
+<span class="c1">// Sort by several criteria</span>
+<span class="kd">val</span> <span class="nv">multipleSortedQuery</span> <span class="o">=</span> <span class="n">q</span><span class="p">.</span><span class="na">sort</span><span class="p">(</span><span class="n">UserDoc</span><span class="p">.</span><span class="na">isActive</span><span class="p">.</span><span class="na">desc</span><span class="p">(),</span> <span class="n">UserDoc</span><span class="p">.</span><span class="na">id</span><span class="p">.</span><span class="na">asc</span><span class="p">())</span>
+
+<span class="c1">// Use Sort explicitly to customize sort behaviour</span>
+<span class="kd">val</span> <span class="nv">sortedByRatingQuery</span> <span class="o">=</span> <span class="n">q</span><span class="p">.</span><span class="na">sort</span><span class="p">(</span><span class="n">Sort</span><span class="p">(</span><span class="n">UserDoc</span><span class="p">.</span><span class="na">rating</span><span class="p">,</span> <span class="n">missing</span> <span class="o">=</span> <span class="n">Sort</span><span class="p">.</span><span class="na">Missing</span><span class="p">.</span><span class="na">First</span><span class="p">))</span>
+</code></pre></div>
+<p>See:</p>
+<ul>
+<li><a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/sort-search-results.html">Sort Search Results</a></li>
+</ul>
 <h2 id="aggregations">Aggregations<a class="headerlink" href="#aggregations" title="Permanent link">&para;</a></h2>
+<p>Use <a href="https://anti-social.github.io/elasticmagic-kt/api/latest/elasticmagic/dev.evo.elasticmagic/-base-search-query/aggs.html">aggs</a>
+method to define aggregations:</p>
+<div class="highlight"><pre><span></span><code><span class="k">package</span> <span class="nn">samples.querying</span>
+
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.AvgAgg</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.HistogramAgg</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.TermsAgg</span>
+
+<span class="c1">// Build aggregations by groups and calculate average rating as well as</span>
+<span class="c1">// build histogram by rating for every group</span>
+<span class="kd">val</span> <span class="nv">ratingHistogramQuery</span> <span class="o">=</span> <span class="n">q</span><span class="p">.</span><span class="na">aggs</span><span class="p">(</span>
+    <span class="s">&quot;groups&quot;</span> <span class="n">to</span> <span class="n">TermsAgg</span><span class="p">(</span>
+        <span class="n">UserDoc</span><span class="p">.</span><span class="na">groups</span><span class="p">,</span>
+        <span class="n">aggs</span> <span class="o">=</span> <span class="n">mapOf</span><span class="p">(</span>
+            <span class="s">&quot;avg_rating&quot;</span> <span class="n">to</span> <span class="n">AvgAgg</span><span class="p">(</span><span class="n">UserDoc</span><span class="p">.</span><span class="na">rating</span><span class="p">),</span>
+            <span class="s">&quot;rating_histogram&quot;</span> <span class="n">to</span> <span class="n">HistogramAgg</span><span class="p">(</span>
+                <span class="n">UserDoc</span><span class="p">.</span><span class="na">rating</span><span class="p">,</span> <span class="n">interval</span> <span class="o">=</span> <span class="m">10.0</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+</code></pre></div>
+<p>See <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations.html">Search Aggregations</a></p>
 <h2 id="query-nodes">Query Nodes<a class="headerlink" href="#query-nodes" title="Permanent link">&para;</a></h2>
+<p>Sometimes you don't know final form of your query when creating it. For such a usecase it is
+possible to modify parts of the query after creation using special query expressions and
+<a href="https://anti-social.github.io/elasticmagic-kt/api/latest/elasticmagic/dev.evo.elasticmagic/-base-search-query/query-node.html">queryNode</a>
+method:</p>
+<div class="highlight"><pre><span></span><code><span class="k">package</span> <span class="nn">samples.querying</span>
+
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.BaseDocSource</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.Bool</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.DisMaxNode</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.BoundField</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.Document</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.FunctionScore</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.FunctionScoreNode</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.NodeHandle</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.SearchQuery</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.SubDocument</span>
+
+<span class="k">import</span> <span class="nn">kotlin.random.Random</span>
+
+<span class="kd">class</span> <span class="nc">TranslationDoc</span><span class="p">(</span><span class="n">field</span><span class="p">:</span> <span class="n">BoundField</span><span class="o">&lt;</span><span class="n">BaseDocSource</span><span class="o">&gt;</span><span class="p">)</span> <span class="p">:</span> <span class="n">SubDocument</span><span class="p">(</span><span class="n">field</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">val</span> <span class="nv">en</span> <span class="k">by</span> <span class="n">text</span><span class="p">()</span>
+    <span class="kd">val</span> <span class="nv">de</span> <span class="k">by</span> <span class="n">text</span><span class="p">()</span>
+    <span class="kd">val</span> <span class="nv">ru</span> <span class="k">by</span> <span class="n">text</span><span class="p">()</span>
+<span class="p">}</span>
+
+<span class="kd">object</span> <span class="nc">QuestionDoc</span> <span class="p">:</span> <span class="n">Document</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">val</span> <span class="nv">title</span> <span class="k">by</span> <span class="n">obj</span><span class="p">(</span><span class="o">::</span><span class="n">TranslationDoc</span><span class="p">)</span>
+    <span class="kd">val</span> <span class="nv">text</span> <span class="k">by</span> <span class="n">obj</span><span class="p">(</span><span class="o">::</span><span class="n">TranslationDoc</span><span class="p">)</span>
+    <span class="kd">val</span> <span class="nv">rating</span> <span class="k">by</span> <span class="n">float</span><span class="p">()</span>
+    <span class="kd">val</span> <span class="nv">votes</span> <span class="k">by</span> <span class="n">int</span><span class="p">()</span>
+<span class="p">}</span>
+
+<span class="kd">val</span> <span class="nv">scoringHandle</span> <span class="o">=</span> <span class="n">NodeHandle</span><span class="o">&lt;</span><span class="n">FunctionScoreNode</span><span class="o">&gt;</span><span class="p">()</span>
+<span class="kd">val</span> <span class="nv">langHandle</span> <span class="o">=</span> <span class="n">NodeHandle</span><span class="o">&lt;</span><span class="n">DisMaxNode</span><span class="o">&gt;</span><span class="p">()</span>
+
+<span class="kd">val</span> <span class="nv">searchTerm</span> <span class="o">=</span> <span class="s">&quot;hello world&quot;</span>
+<span class="kd">val</span> <span class="nv">skeletonQuery</span> <span class="o">=</span> <span class="n">SearchQuery</span><span class="p">(</span>
+    <span class="n">FunctionScoreNode</span><span class="p">(</span>
+        <span class="n">scoringHandle</span><span class="p">,</span>
+        <span class="n">DisMaxNode</span><span class="p">(</span>
+            <span class="n">langHandle</span><span class="p">,</span>
+            <span class="n">queries</span> <span class="o">=</span> <span class="n">listOf</span><span class="p">(</span>
+                <span class="n">Bool</span><span class="p">.</span><span class="na">should</span><span class="p">(</span>
+                    <span class="n">QuestionDoc</span><span class="p">.</span><span class="na">title</span><span class="p">.</span><span class="na">en</span><span class="p">.</span><span class="na">match</span><span class="p">(</span><span class="n">searchTerm</span><span class="p">),</span>
+                    <span class="n">QuestionDoc</span><span class="p">.</span><span class="na">text</span><span class="p">.</span><span class="na">en</span><span class="p">.</span><span class="na">match</span><span class="p">(</span><span class="n">searchTerm</span><span class="p">),</span>
+                <span class="p">)</span>
+            <span class="p">),</span>
+        <span class="p">),</span>
+        <span class="n">functions</span> <span class="o">=</span> <span class="n">listOf</span><span class="p">(</span>
+            <span class="n">FunctionScore</span><span class="p">.</span><span class="na">FieldValueFactor</span><span class="p">(</span><span class="n">QuestionDoc</span><span class="p">.</span><span class="na">rating</span><span class="p">),</span>
+        <span class="p">),</span>
+        <span class="n">scoreMode</span> <span class="o">=</span> <span class="n">FunctionScore</span><span class="p">.</span><span class="na">ScoreMode</span><span class="p">.</span><span class="na">MULTIPLY</span><span class="p">,</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+
+<span class="kd">val</span> <span class="nv">boostByNumberOfVotes</span> <span class="o">=</span> <span class="n">Random</span><span class="p">.</span><span class="na">nextBoolean</span><span class="p">()</span>
+<span class="kd">var</span> <span class="nv">boostedQuery</span> <span class="o">=</span> <span class="k">if</span> <span class="p">(</span><span class="n">boostByNumberOfVotes</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">skeletonQuery</span><span class="p">.</span><span class="na">queryNode</span><span class="p">(</span><span class="n">scoringHandle</span><span class="p">)</span> <span class="p">{</span> <span class="n">node</span> <span class="o">-&gt;</span>
+        <span class="n">node</span><span class="p">.</span><span class="na">functions</span> <span class="o">+=</span> <span class="n">listOf</span><span class="p">(</span>
+            <span class="n">FunctionScore</span><span class="p">.</span><span class="na">Weight</span><span class="p">(</span>
+                <span class="m">1.1</span><span class="p">,</span>
+                <span class="n">filter</span> <span class="o">=</span> <span class="n">QuestionDoc</span><span class="p">.</span><span class="na">votes</span><span class="p">.</span><span class="na">range</span><span class="p">(</span><span class="n">gte</span> <span class="o">=</span> <span class="m">10</span><span class="p">,</span> <span class="n">lt</span> <span class="o">=</span> <span class="m">50</span><span class="p">)</span>
+            <span class="p">),</span>
+            <span class="n">FunctionScore</span><span class="p">.</span><span class="na">Weight</span><span class="p">(</span>
+                <span class="m">1.5</span><span class="p">,</span>
+                <span class="n">filter</span> <span class="o">=</span> <span class="n">QuestionDoc</span><span class="p">.</span><span class="na">votes</span><span class="p">.</span><span class="na">gte</span><span class="p">(</span><span class="m">50</span><span class="p">)</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="n">skeletonQuery</span>
+<span class="p">}</span>
+
+<span class="kd">val</span> <span class="nv">additionalLanguages</span> <span class="o">=</span> <span class="n">listOf</span><span class="p">(</span><span class="s">&quot;de&quot;</span><span class="p">,</span> <span class="s">&quot;ru&quot;</span><span class="p">)</span>
+<span class="kd">val</span> <span class="nv">userLang</span> <span class="o">=</span> <span class="n">additionalLanguages</span><span class="o">[</span><span class="n">Random</span><span class="p">.</span><span class="na">nextInt</span><span class="p">(</span><span class="n">additionalLanguages</span><span class="p">.</span><span class="na">size</span><span class="p">)</span><span class="o">]</span>
+<span class="kd">val</span> <span class="nv">additionalLangFields</span> <span class="o">=</span> <span class="n">listOfNotNull</span><span class="p">(</span><span class="n">QuestionDoc</span><span class="p">.</span><span class="na">title</span><span class="o">[</span><span class="n">userLang</span><span class="o">]</span><span class="p">,</span> <span class="n">QuestionDoc</span><span class="p">.</span><span class="na">text</span><span class="o">[</span><span class="n">userLang</span><span class="o">]</span><span class="p">)</span>
+<span class="kd">val</span> <span class="nv">langQuery</span> <span class="o">=</span> <span class="k">if</span> <span class="p">(</span><span class="n">additionalLangFields</span><span class="p">.</span><span class="na">isNotEmpty</span><span class="p">())</span> <span class="p">{</span>
+    <span class="n">boostedQuery</span><span class="p">.</span><span class="na">queryNode</span><span class="p">(</span><span class="n">langHandle</span><span class="p">)</span> <span class="p">{</span> <span class="n">node</span> <span class="o">-&gt;</span>
+        <span class="n">node</span><span class="p">.</span><span class="na">queries</span><span class="p">.</span><span class="na">add</span><span class="p">(</span>
+            <span class="n">Bool</span><span class="p">.</span><span class="na">should</span><span class="p">(</span>
+                <span class="o">*</span><span class="n">additionalLangFields</span><span class="p">.</span><span class="na">map</span> <span class="p">{</span> <span class="nb">it</span><span class="p">.</span><span class="na">match</span><span class="p">(</span><span class="n">searchTerm</span><span class="p">)</span> <span class="p">}.</span><span class="na">toTypedArray</span><span class="p">()</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="n">boostedQuery</span>
+<span class="p">}</span>
+</code></pre></div>
                 
               
               
