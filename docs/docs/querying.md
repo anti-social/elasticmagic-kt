@@ -22,6 +22,8 @@ Also it is possible to replace existing query using a `query` method:
 --8<-- "../samples/src/main/kotlin/samples/querying/QueryMethod.kt"
 ```
 
+See full list of available [query expressions](https://anti-social.github.io/elasticmagic-kt/api/latest/elasticmagic/dev.evo.elasticmagic.query/index.html).
+
 ## Cloning
 
 In the last example `q` and `q2` variables point to the same object. For efficiency all
