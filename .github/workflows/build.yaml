@@ -132,7 +132,7 @@ jobs:
       run: |
         set -eux
         # JS integration tests are not working at the moment
-        ./gradlew :integ-tests:check -x :integ-tests:jsNodeTest $GRADLE_ARGS
+        ./gradlew :integ-tests:check $GRADLE_ARGS
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v2
