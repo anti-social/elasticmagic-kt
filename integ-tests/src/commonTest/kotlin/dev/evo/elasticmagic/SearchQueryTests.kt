@@ -1,5 +1,11 @@
 package dev.evo.elasticmagic
 
+import dev.evo.elasticmagic.aggs.HistogramAgg
+import dev.evo.elasticmagic.aggs.HistogramAggResult
+import dev.evo.elasticmagic.aggs.NestedAgg
+import dev.evo.elasticmagic.aggs.SingleBucketAggResult
+import dev.evo.elasticmagic.aggs.TermsAgg
+import dev.evo.elasticmagic.aggs.TermsAggResult
 import io.kotest.matchers.doubles.shouldBeLessThan
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe

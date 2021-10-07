@@ -1,6 +1,6 @@
 package dev.evo.elasticmagic.compile
 
-import dev.evo.elasticmagic.AggregationResult
+import dev.evo.elasticmagic.aggs.AggregationResult
 import dev.evo.elasticmagic.BaseDocSource
 import dev.evo.elasticmagic.BaseSearchQuery
 import dev.evo.elasticmagic.Bool

@@ -1,5 +1,6 @@
 package dev.evo.elasticmagic
 
+import dev.evo.elasticmagic.aggs.Aggregation
 import dev.evo.elasticmagic.serde.Deserializer
 
 data class FieldFormat(

@@ -1,5 +1,8 @@
 package dev.evo.elasticmagic
 
+import dev.evo.elasticmagic.aggs.TermBucket
+import dev.evo.elasticmagic.aggs.TermsAgg
+import dev.evo.elasticmagic.aggs.TermsAggResult
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.shouldBe
 

@@ -1,5 +1,13 @@
-package dev.evo.elasticmagic
+package dev.evo.elasticmagic.aggs
 
+import dev.evo.elasticmagic.Expression
+import dev.evo.elasticmagic.FieldOperations
+import dev.evo.elasticmagic.NamedExpression
+import dev.evo.elasticmagic.Params
+import dev.evo.elasticmagic.QueryExpression
+import dev.evo.elasticmagic.Script
+import dev.evo.elasticmagic.Sort
+import dev.evo.elasticmagic.ToValue
 import dev.evo.elasticmagic.compile.SearchQueryCompiler
 import dev.evo.elasticmagic.serde.Deserializer
 import dev.evo.elasticmagic.serde.Serializer
@@ -830,7 +838,7 @@ data class RangeAgg(
     override fun processBucketResult(
         bucketObj: Deserializer.ObjectCtx,
         bucketKey: String?
-    ): RangeBucket  {
+    ): RangeBucket {
         return RangeBucket(
             key = bucketKey ?: bucketObj.string("key"),
             docCount = bucketObj.long("doc_count"),
@@ -926,7 +934,7 @@ data class DateRangeAgg(
     override fun processBucketResult(
         bucketObj: Deserializer.ObjectCtx,
         bucketKey: String?
-    ): DateRangeBucket  {
+    ): DateRangeBucket {
         return DateRangeBucket(
             key = bucketKey ?: bucketObj.string("key"),
             docCount = bucketObj.long("doc_count"),

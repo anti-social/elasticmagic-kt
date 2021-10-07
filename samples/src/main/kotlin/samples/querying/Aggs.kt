@@ -1,8 +1,8 @@
 package samples.querying
 
-import dev.evo.elasticmagic.AvgAgg
-import dev.evo.elasticmagic.HistogramAgg
-import dev.evo.elasticmagic.TermsAgg
+import dev.evo.elasticmagic.aggs.AvgAgg
+import dev.evo.elasticmagic.aggs.HistogramAgg
+import dev.evo.elasticmagic.aggs.TermsAgg
 
 // Build aggregations by groups and calculate average rating as well as
 // build histogram by rating for every group
