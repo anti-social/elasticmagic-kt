@@ -69,7 +69,10 @@ var boostedQuery = if (boostByNumberOfVotes) {
 
 val additionalLanguages = listOf("de", "ru")
 val userLang = additionalLanguages[Random.nextInt(additionalLanguages.size)]
-val additionalLangFields = listOfNotNull(QuestionDoc.title[userLang], QuestionDoc.text[userLang])
+val additionalLangFields = listOfNotNull(
+    QuestionDoc.title[userLang],
+    QuestionDoc.text[userLang],
+)
 val langQuery = if (additionalLangFields.isNotEmpty()) {
     boostedQuery.queryNode(langHandle) { node ->
         node.queries.add(
