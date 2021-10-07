@@ -158,8 +158,13 @@ tasks.dokkaHtml {
 
 mkdocs {
     sourcesDir = "docs"
-
     publish.docPath = ""
+
+    val abbrevRegex = "-\\d+-g.*".toRegex()
+    val lastReleasedVersion = abbrevRegex.replace(version.toString(), "")
+    extras = mapOf(
+        "version" to lastReleasedVersion
+    )
 }
 
 tasks.getByName("mkdocsBuild").dependsOn(":samples:compileKotlin")

@@ -19,10 +19,10 @@ theme:
   feature:
     tabs: false
 
-#plugins:
-#  - search
-#    Required for variables support (https://github.com/rosscdh/mkdocs-markdownextradata-plugin)
-#  - markdownextradata
+plugins:
+  - search
+  # Required for variables support (https://github.com/rosscdh/mkdocs-markdownextradata-plugin)
+  - markdownextradata
 
 #extra:
 #  palette:
