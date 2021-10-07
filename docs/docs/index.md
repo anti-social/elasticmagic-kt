@@ -12,9 +12,6 @@ Elasticmagic implements advanced type awareness DSL for Kotlin to construct Elas
 
 Add following dependencies in your `build.gradle.kts` script:
 
-!!! TODO
-    At the moment artifacts are not yet published on maven central. Stay tuned   
-
 ```kotlin
 repositories {
     mavenCentral()
