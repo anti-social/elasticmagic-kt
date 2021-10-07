@@ -184,7 +184,7 @@ open class ObjectType<V: BaseDocSource> : FieldType<V> {
     override val name = "object"
 
     override fun serialize(v: V): Map<String, Any?> {
-        return v.getSource()
+        return v.toSource()
     }
 
     override fun deserialize(v: Any, valueFactory: (() -> V)?): V {
@@ -194,7 +194,7 @@ open class ObjectType<V: BaseDocSource> : FieldType<V> {
         return when (v) {
             is Map<*, *> -> {
                 valueFactory().apply {
-                    setSource(v)
+                    fromSource(v)
                 }
             }
             else -> throw IllegalArgumentException(
