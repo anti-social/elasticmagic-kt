@@ -554,7 +554,7 @@
                 
                 
                 <h1 id="document-aka-mapping">Document (aka mapping)<a class="headerlink" href="#document-aka-mapping" title="Permanent link">&para;</a></h1>
-<p>Roughly speaking <a href="https://anti-social.github.io/elasticmagic-kt/api/latest/elasticmagic/dev.evo.elasticmagic/-document/index.html">Document</a>
+<p>Roughly speaking <a href="https://anti-social.github.io/elasticmagic-kt/api/latest/elasticmagic/dev.evo.elasticmagic.doc/-document/index.html">Document</a>
 represents Elasticsearch's mapping. However, it is possible to merge multiple documents into 
 a single mapping.</p>
 <p>It is convenient to describe <code>Document</code> subclasses as singleton objects.</p>
@@ -562,7 +562,7 @@ a single mapping.</p>
 <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-types.html">Elasticsearch mapping types</a></p>
 <h2 id="simple-fields">Simple fields<a class="headerlink" href="#simple-fields" title="Permanent link">&para;</a></h2>
 <h3 id="general-way">General way<a class="headerlink" href="#general-way" title="Permanent link">&para;</a></h3>
-<p>You can use <a href="https://anti-social.github.io/elasticmagic-kt/api/latest/elasticmagic/dev.evo.elasticmagic/-field-set/field.html">field</a>
+<p>You can use <a href="https://anti-social.github.io/elasticmagic-kt/api/latest/elasticmagic/dev.evo.elasticmagic.doc/-field-set/field.html">field</a>
 method to describe a field in a document:</p>
 <div class="highlight"><pre><span></span><code><span class="k">package</span> <span class="nn">samples.document.field</span>
 
@@ -610,9 +610,9 @@ You don't need to import all those field types:</p>
 <span class="p">}</span>
 </code></pre></div>
 <p>Full list of available shortcuts can be found 
-<a href="https://anti-social.github.io/elasticmagic-kt/api/latest/elasticmagic/dev.evo.elasticmagic/-base-document/index.html">here</a></p>
+<a href="https://anti-social.github.io/elasticmagic-kt/api/latest/elasticmagic/dev.evo.elasticmagic.doc/-base-document/index.html">here</a></p>
 <h3 id="sub-fields">Sub fields<a class="headerlink" href="#sub-fields" title="Permanent link">&para;</a></h3>
-<p>It is possible to define <a href="https://anti-social.github.io/elasticmagic-kt/api/latest/elasticmagic/dev.evo.elasticmagic/-sub-fields/index.html">sub-fields</a>
+<p>It is possible to define <a href="https://anti-social.github.io/elasticmagic-kt/api/latest/elasticmagic/dev.evo.elasticmagic.doc/-sub-fields/index.html">sub-fields</a>
 for any simple field:</p>
 <div class="highlight"><pre><span></span><code><span class="k">package</span> <span class="nn">samples.document.subfields</span>
 
@@ -704,7 +704,7 @@ in a sub-document can have its own source value:</p>
 <p>Read more:</p>
 <ul>
 <li><a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/object.html">Elasticsearch object type</a></li>
-<li><a href="https://anti-social.github.io/elasticmagic-kt/api/latest/elasticmagic/dev.evo.elasticmagic/-base-document/obj.html">Object API</a></li>
+<li><a href="https://anti-social.github.io/elasticmagic-kt/api/latest/elasticmagic/dev.evo.elasticmagic.doc/-base-document/obj.html">Object API</a></li>
 </ul>
 <h3 id="nested">Nested<a class="headerlink" href="#nested" title="Permanent link">&para;</a></h3>
 <p>Using nested type it you can work with sub-documents independently. 
@@ -746,7 +746,7 @@ a <code>moderator</code> role with <code>article</code> permission and <code>vie
 <p>Read more:</p>
 <ul>
 <li><a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/nested.html">Elasticsearch nested type</a></li>
-<li><a href="https://anti-social.github.io/elasticmagic-kt/api/latest/elasticmagic/dev.evo.elasticmagic/-base-document/nested.html">Nested API</a></li>
+<li><a href="https://anti-social.github.io/elasticmagic-kt/api/latest/elasticmagic/dev.evo.elasticmagic.doc/-base-document/nested.html">Nested API</a></li>
 </ul>
 <h2 id="parent-child-relationship">Parent-child relationship<a class="headerlink" href="#parent-child-relationship" title="Permanent link">&para;</a></h2>
 <p>Parent/child relationship allows you to define a link between documents inside an index.</p>
@@ -773,7 +773,7 @@ a <code>moderator</code> role with <code>article</code> permission and <code>vie
 <p>Read more:</p>
 <ul>
 <li><a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/parent-join.html">Elasticsearch join type</a></li>
-<li><a href="https://anti-social.github.io/elasticmagic-kt/api/latest/elasticmagic/dev.evo.elasticmagic/-field-set/join.html">Join API</a></li>
+<li><a href="https://anti-social.github.io/elasticmagic-kt/api/latest/elasticmagic/dev.evo.elasticmagic.doc/-field-set/join.html">Join API</a></li>
 </ul>
 <h3 id="meta-fields">Meta fields<a class="headerlink" href="#meta-fields" title="Permanent link">&para;</a></h3>
 <p>Elasticsearch document has some <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-fields.html">metadata fields</a>.
@@ -798,7 +798,7 @@ field required and keep only <code>name</code> field in document source:</p>
 will throw <code>routing_missing_exceptions</code>.</p>
 <h3 id="merge-multiple-documents">Merge multiple documents<a class="headerlink" href="#merge-multiple-documents" title="Permanent link">&para;</a></h3>
 <p>To create mapping for multiple documents you can use
-<a href="https://anti-social.github.io/elasticmagic-kt/api/latest/elasticmagic/dev.evo.elasticmagic/merge-documents.html">mergeDocuments</a>
+<a href="https://anti-social.github.io/elasticmagic-kt/api/latest/elasticmagic/dev.evo.elasticmagic.doc/merge-documents.html">mergeDocuments</a>
 function. Documents that are merged should not contradict each other.</p>
 <div class="highlight"><pre><span></span><code><span class="k">package</span> <span class="nn">samples.document.join</span>
 
