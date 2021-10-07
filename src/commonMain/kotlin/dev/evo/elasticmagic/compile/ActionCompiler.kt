@@ -84,13 +84,13 @@ class ActionSourceCompiler(
     private fun visit(ctx: Serializer.ObjectCtx, action: Action<*>) {
         when (action) {
             is IndexAction<*> -> {
-                visit(ctx, action.source.getSource())
+                visit(ctx, action.source.toSource())
             }
             is UpdateAction<*> -> {
                 val source = action.source
                 if (source.upsert != null) {
                     ctx.obj("upsert") {
-                        visit(this, source.upsert.getSource())
+                        visit(this, source.upsert.toSource())
                     }
                 }
                 ctx.fieldIfNotNull("detect_noop", source.detectNoop)
@@ -98,7 +98,7 @@ class ActionSourceCompiler(
                 when (source) {
                     is UpdateSource.WithDoc<*> -> {
                         ctx.obj("doc") {
-                            visit(this, source.doc.getSource())
+                            visit(this, source.doc.toSource())
                         }
                         ctx.fieldIfNotNull("doc_as_upsert", source.docAsUpsert)
                     }

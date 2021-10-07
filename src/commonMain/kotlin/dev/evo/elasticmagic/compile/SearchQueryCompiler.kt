@@ -222,7 +222,7 @@ open class SearchQueryCompiler(
     ): SearchHit<S> {
         val source = rawHit.objOrNull("_source")?.let { rawSource ->
             preparedSearchQuery.sourceFactory(rawHit).apply {
-                setSource(rawSource.toMap())
+                fromSource(rawSource.toMap())
             }
         }
         val rawSort = rawHit.arrayOrNull("sort")

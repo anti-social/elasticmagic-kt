@@ -9,9 +9,9 @@ typealias RawSource = Map<*, *>
 fun emptySource(): Map<Nothing, Nothing> = emptyMap()
 
 abstract class BaseDocSource {
-    abstract fun getSource(): Map<String, Any?>
+    abstract fun toSource(): Map<String, Any?>
 
-    abstract fun setSource(rawSource: RawSource)
+    abstract fun fromSource(rawSource: RawSource)
 
     fun withActionMeta(
         id: String,
@@ -119,7 +119,7 @@ open class DocSource : BaseDocSource() {
         }
     }
 
-    override fun getSource(): Map<String, Any?> {
+    override fun toSource(): Map<String, Any?> {
         val source = mutableMapOf<String, Any?>()
         for (fieldProperty in fieldProps) {
             fieldProperty.checkRequired()
@@ -130,7 +130,7 @@ open class DocSource : BaseDocSource() {
         return source
     }
 
-    override fun setSource(rawSource: RawSource) {
+    override fun fromSource(rawSource: RawSource) {
         clearSource()
         for ((fieldName, rawValue) in rawSource) {
             setFieldValue(fieldName as String, rawValue)
@@ -138,7 +138,7 @@ open class DocSource : BaseDocSource() {
         fieldProps.forEach(FieldValueProperty<*>::checkRequired)
     }
 
-    fun clearSource() {
+    private fun clearSource() {
         fieldProps.map(FieldValueProperty<*>::clear)
     }
 
@@ -467,7 +467,7 @@ class DynDocSource private constructor(
     private var source: MutableMap<String, Any?> = mutableMapOf()
 
     init {
-        setSource(rawSource)
+        fromSource(rawSource)
     }
 
     constructor() : this(emptyMap<Any?, Any?>())
@@ -481,7 +481,7 @@ class DynDocSource private constructor(
     private object DynSourceSerde {
         fun serialize(value: Any?): Any? {
             return when (value) {
-                is DynDocSource -> value.getSource()
+                is DynDocSource -> value.toSource()
                 is List<*> -> value.map(::serialize)
                 null -> null
                 else -> value
@@ -498,7 +498,7 @@ class DynDocSource private constructor(
         }
     }
 
-    override fun getSource(): Map<String, Any?> {
+    override fun toSource(): Map<String, Any?> {
         val rawSource = mutableMapOf<String, Any?>()
         for ((fieldName, sourceValue) in source) {
             rawSource[fieldName] = DynSourceSerde.serialize(sourceValue)
@@ -506,7 +506,7 @@ class DynDocSource private constructor(
         return rawSource
     }
 
-    override fun setSource(rawSource: RawSource) {
+    override fun fromSource(rawSource: RawSource) {
         clearSource()
         for ((fieldName, fieldValue) in rawSource) {
             source[fieldName as String] = DynSourceSerde.deserialize(fieldName, fieldValue, prefix)
