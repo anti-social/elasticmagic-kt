@@ -9,7 +9,7 @@ import io.kotest.matchers.types.shouldBeInstanceOf
 
 import kotlin.test.Test
 
-class SourceTests {
+class DocSourceTests {
     object OrderDoc : Document() {
         class UserOpinionDoc(field: DocSourceField) : SubDocument(field) {
             val rating by float("rank")

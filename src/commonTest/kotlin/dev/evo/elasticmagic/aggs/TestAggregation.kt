@@ -8,6 +8,7 @@ import dev.evo.elasticmagic.serde.Deserializer
 import dev.evo.elasticmagic.serde.StdDeserializer
 import dev.evo.elasticmagic.serde.StdSerializer
 
+@Suppress("UnnecessaryAbstractClass")
 abstract class TestAggregation {
     protected val serializer = object : StdSerializer() {
         override fun objToString(obj: Map<String, Any?>): String {
