@@ -3,7 +3,7 @@ package samples.querying
 import dev.evo.elasticmagic.Bool
 import dev.evo.elasticmagic.FunctionScore
 
-val q2 = q1.query(
+val q2 = q.query(
     FunctionScore(
         Bool.should(
             UserDoc.about.match("fake"),
