@@ -1,12 +1,12 @@
 package samples.document.nested
 
-import dev.evo.elasticmagic.BaseDocSource
+import dev.evo.elasticmagic.doc.BaseDocSource
 import dev.evo.elasticmagic.query.Bool
-import dev.evo.elasticmagic.BoundField
-import dev.evo.elasticmagic.Document
+import dev.evo.elasticmagic.doc.BoundField
+import dev.evo.elasticmagic.doc.Document
 import dev.evo.elasticmagic.query.Nested
 import dev.evo.elasticmagic.SearchQuery
-import dev.evo.elasticmagic.SubDocument
+import dev.evo.elasticmagic.doc.SubDocument
 
 class RoleDoc(field: BoundField<BaseDocSource>) : SubDocument(field) {
     val name by keyword()

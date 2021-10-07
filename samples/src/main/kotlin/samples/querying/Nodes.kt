@@ -1,15 +1,15 @@
 package samples.querying
 
-import dev.evo.elasticmagic.BaseDocSource
+import dev.evo.elasticmagic.doc.BaseDocSource
 import dev.evo.elasticmagic.query.Bool
 import dev.evo.elasticmagic.query.DisMaxNode
-import dev.evo.elasticmagic.BoundField
-import dev.evo.elasticmagic.Document
+import dev.evo.elasticmagic.doc.BoundField
+import dev.evo.elasticmagic.doc.Document
 import dev.evo.elasticmagic.query.FunctionScore
 import dev.evo.elasticmagic.query.FunctionScoreNode
 import dev.evo.elasticmagic.query.NodeHandle
 import dev.evo.elasticmagic.SearchQuery
-import dev.evo.elasticmagic.SubDocument
+import dev.evo.elasticmagic.doc.SubDocument
 
 import kotlin.random.Random
 

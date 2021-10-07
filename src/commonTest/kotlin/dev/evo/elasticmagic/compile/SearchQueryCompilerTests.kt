@@ -1,11 +1,11 @@
 package dev.evo.elasticmagic.compile
 
-import dev.evo.elasticmagic.BaseDocSource
+import dev.evo.elasticmagic.doc.BaseDocSource
 import dev.evo.elasticmagic.query.BoolNode
-import dev.evo.elasticmagic.BoundField
+import dev.evo.elasticmagic.doc.BoundField
 import dev.evo.elasticmagic.query.DisMax
 import dev.evo.elasticmagic.query.DisMaxNode
-import dev.evo.elasticmagic.Document
+import dev.evo.elasticmagic.doc.Document
 import dev.evo.elasticmagic.ElasticsearchVersion
 import dev.evo.elasticmagic.FieldFormat
 import dev.evo.elasticmagic.query.FunctionScore
@@ -17,11 +17,11 @@ import dev.evo.elasticmagic.query.Script
 import dev.evo.elasticmagic.SearchQuery
 import dev.evo.elasticmagic.SearchType
 import dev.evo.elasticmagic.query.Sort
-import dev.evo.elasticmagic.SubDocument
-import dev.evo.elasticmagic.FieldType
+import dev.evo.elasticmagic.doc.SubDocument
+import dev.evo.elasticmagic.doc.FieldType
 import dev.evo.elasticmagic.query.Ids
 import dev.evo.elasticmagic.query.QueryRescore
-import dev.evo.elasticmagic.RootFieldSet
+import dev.evo.elasticmagic.doc.RootFieldSet
 import dev.evo.elasticmagic.serde.StdSerializer
 
 import io.kotest.matchers.maps.shouldContainExactly

@@ -1,16 +1,16 @@
 package dev.evo.elasticmagic.compile
 
-import dev.evo.elasticmagic.BoundField
-import dev.evo.elasticmagic.DocSourceField
-import dev.evo.elasticmagic.Document
 import dev.evo.elasticmagic.ElasticsearchVersion
-import dev.evo.elasticmagic.KeywordType
 import dev.evo.elasticmagic.Params
-import dev.evo.elasticmagic.RuntimeFields
+import dev.evo.elasticmagic.doc.BoundField
+import dev.evo.elasticmagic.doc.DocSourceField
+import dev.evo.elasticmagic.doc.Document
+import dev.evo.elasticmagic.doc.KeywordType
+import dev.evo.elasticmagic.doc.RuntimeFields
+import dev.evo.elasticmagic.doc.SubDocument
+import dev.evo.elasticmagic.doc.SubFields
+import dev.evo.elasticmagic.doc.mergeDocuments
 import dev.evo.elasticmagic.query.Script
-import dev.evo.elasticmagic.SubDocument
-import dev.evo.elasticmagic.SubFields
-import dev.evo.elasticmagic.mergeDocuments
 import dev.evo.elasticmagic.serde.StdSerializer
 
 import io.kotest.matchers.maps.shouldContainExactly

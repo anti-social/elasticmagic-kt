@@ -1,8 +1,11 @@
-package dev.evo.elasticmagic
+package dev.evo.elasticmagic.doc
 
+import dev.evo.elasticmagic.Params
 import dev.evo.elasticmagic.query.Script
 import dev.evo.elasticmagic.query.ToValue
+
 import kotlinx.datetime.LocalDateTime
+
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 
@@ -576,14 +579,14 @@ open class MetaFields : RootFieldSet() {
         name: String, type: FieldType<V>, params: Params = Params()
     ) : BaseMetaField<V, BoundField<V>>(
         name, type, params,
-        { n, p, m -> BoundField(n, type, p, m)}
+        { n, p, m -> BoundField(n, type, p, m) }
     )
 
     class RoutingField(
         val required: Boolean? = null,
     ) : BaseMetaField<String, BoundRoutingField>(
         "_routing", KeywordType, Params("required" to required),
-        ::BoundRoutingField
+        MetaFields::BoundRoutingField
     )
 
     class BoundRoutingField(
@@ -594,7 +597,7 @@ open class MetaFields : RootFieldSet() {
         enabled: Boolean? = null,
     ) : BaseMetaField<String, BoundFieldNamesField>(
         "_field_names", KeywordType, Params("enabled" to enabled),
-        ::BoundFieldNamesField
+        MetaFields::BoundFieldNamesField
     )
 
     class BoundFieldNamesField(
@@ -611,7 +614,7 @@ open class MetaFields : RootFieldSet() {
         "_source",
         KeywordType,
         Params("enabled" to enabled, "includes" to includes, "excludes" to excludes),
-        ::BoundSourceField
+        MetaFields::BoundSourceField
     )
 
     class BoundSourceField(
@@ -622,7 +625,7 @@ open class MetaFields : RootFieldSet() {
         enabled: Boolean? = null,
     ) : BaseMetaField<Long, BoundSizeField>(
         "_size", LongType, Params("enabled" to enabled),
-        ::BoundSizeField
+        MetaFields::BoundSizeField
     )
 
     class BoundSizeField(

@@ -1,5 +1,12 @@
 package dev.evo.elasticmagic
 
+import dev.evo.elasticmagic.doc.CreateAction
+import dev.evo.elasticmagic.doc.DocSource
+import dev.evo.elasticmagic.doc.Document
+import dev.evo.elasticmagic.doc.Dynamic
+import dev.evo.elasticmagic.doc.IdentActionMeta
+import dev.evo.elasticmagic.doc.IndexAction
+import dev.evo.elasticmagic.doc.Refresh
 import io.kotest.matchers.shouldBe
 
 import kotlin.test.Test

@@ -1,4 +1,4 @@
-package dev.evo.elasticmagic
+package dev.evo.elasticmagic.doc
 
 import dev.evo.elasticmagic.serde.Deserializer
 import kotlin.properties.ReadWriteProperty
@@ -482,7 +482,7 @@ class DynDocSource private constructor(
         fun serialize(value: Any?): Any? {
             return when (value) {
                 is DynDocSource -> value.toSource()
-                is List<*> -> value.map(::serialize)
+                is List<*> -> value.map(DynSourceSerde::serialize)
                 null -> null
                 else -> value
             }

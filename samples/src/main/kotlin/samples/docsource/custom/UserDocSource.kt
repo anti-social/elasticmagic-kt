@@ -1,6 +1,6 @@
 package samples.docsource.custom
 
-import dev.evo.elasticmagic.DocSource
+import dev.evo.elasticmagic.doc.DocSource
 
 import samples.docsource.UserDoc
 

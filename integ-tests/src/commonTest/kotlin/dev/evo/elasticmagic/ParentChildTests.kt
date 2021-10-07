@@ -3,6 +3,13 @@ package dev.evo.elasticmagic
 import dev.evo.elasticmagic.aggs.TermBucket
 import dev.evo.elasticmagic.aggs.TermsAgg
 import dev.evo.elasticmagic.aggs.TermsAggResult
+import dev.evo.elasticmagic.doc.DocSource
+import dev.evo.elasticmagic.doc.DocSourceFactory
+import dev.evo.elasticmagic.doc.DocSourceWithMeta
+import dev.evo.elasticmagic.doc.Document
+import dev.evo.elasticmagic.doc.IdentActionMeta
+import dev.evo.elasticmagic.doc.Join
+import dev.evo.elasticmagic.doc.MetaFields
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.shouldBe
 

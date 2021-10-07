@@ -1,7 +1,7 @@
 package samples.document.meta
 
-import dev.evo.elasticmagic.Document
-import dev.evo.elasticmagic.MetaFields
+import dev.evo.elasticmagic.doc.Document
+import dev.evo.elasticmagic.doc.MetaFields
 
 object ProductDoc : Document() {
     val name by text()

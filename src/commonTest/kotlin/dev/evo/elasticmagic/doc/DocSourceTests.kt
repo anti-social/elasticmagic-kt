@@ -1,4 +1,4 @@
-package dev.evo.elasticmagic
+package dev.evo.elasticmagic.doc
 
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.maps.shouldContainExactly

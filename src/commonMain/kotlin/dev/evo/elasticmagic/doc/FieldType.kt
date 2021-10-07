@@ -1,5 +1,6 @@
-package dev.evo.elasticmagic
+package dev.evo.elasticmagic.doc
 
+import dev.evo.elasticmagic.Params
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone

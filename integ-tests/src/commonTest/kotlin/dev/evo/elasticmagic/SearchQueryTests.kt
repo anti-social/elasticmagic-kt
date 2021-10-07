@@ -6,6 +6,12 @@ import dev.evo.elasticmagic.aggs.NestedAgg
 import dev.evo.elasticmagic.aggs.SingleBucketAggResult
 import dev.evo.elasticmagic.aggs.TermsAgg
 import dev.evo.elasticmagic.aggs.TermsAggResult
+import dev.evo.elasticmagic.doc.BaseDocSource
+import dev.evo.elasticmagic.doc.BoundField
+import dev.evo.elasticmagic.doc.DocSource
+import dev.evo.elasticmagic.doc.Document
+import dev.evo.elasticmagic.doc.IdentDocSourceWithMeta
+import dev.evo.elasticmagic.doc.SubDocument
 import dev.evo.elasticmagic.query.Ids
 import dev.evo.elasticmagic.query.Nested
 import dev.evo.elasticmagic.query.Sort

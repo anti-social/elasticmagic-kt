@@ -1,4 +1,4 @@
-package dev.evo.elasticmagic
+package dev.evo.elasticmagic.doc
 
 import dev.evo.elasticmagic.query.Bool
 import dev.evo.elasticmagic.query.Exists

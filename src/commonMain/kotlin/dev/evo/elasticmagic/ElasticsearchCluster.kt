@@ -6,10 +6,15 @@ import dev.evo.elasticmagic.compile.CompilerSet
 import dev.evo.elasticmagic.compile.CreateIndexRequest
 import dev.evo.elasticmagic.compile.UpdateMappingRequest
 import dev.evo.elasticmagic.compile.usingIndex
+import dev.evo.elasticmagic.doc.Action
+import dev.evo.elasticmagic.doc.BaseDocSource
+import dev.evo.elasticmagic.doc.Document
+import dev.evo.elasticmagic.doc.Refresh
 import dev.evo.elasticmagic.serde.Serde
 import dev.evo.elasticmagic.transport.ElasticsearchException
 import dev.evo.elasticmagic.transport.ElasticsearchTransport
 import dev.evo.elasticmagic.transport.Method
+
 import kotlinx.coroutines.CompletableDeferred
 
 internal typealias Parameters = Map<String, List<String>>

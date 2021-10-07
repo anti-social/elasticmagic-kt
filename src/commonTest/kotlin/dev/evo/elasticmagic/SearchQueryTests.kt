@@ -1,5 +1,6 @@
 package dev.evo.elasticmagic
 
+import dev.evo.elasticmagic.doc.Document
 import dev.evo.elasticmagic.query.FunctionScore
 import dev.evo.elasticmagic.query.FunctionScoreNode
 import dev.evo.elasticmagic.query.NodeHandle

@@ -1,8 +1,8 @@
 package samples.document.subfields
 
-import dev.evo.elasticmagic.BoundField
-import dev.evo.elasticmagic.Document
-import dev.evo.elasticmagic.SubFields
+import dev.evo.elasticmagic.doc.BoundField
+import dev.evo.elasticmagic.doc.Document
+import dev.evo.elasticmagic.doc.SubFields
 
 class AboutSubFields(field: BoundField<String>) : SubFields<String>(field) {
     val sort by keyword(normalizer = "lowercase")

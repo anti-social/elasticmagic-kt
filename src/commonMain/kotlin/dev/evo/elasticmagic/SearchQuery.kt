@@ -1,6 +1,9 @@
 package dev.evo.elasticmagic
 
 import dev.evo.elasticmagic.aggs.Aggregation
+import dev.evo.elasticmagic.doc.BaseDocSource
+import dev.evo.elasticmagic.doc.DynDocSource
+import dev.evo.elasticmagic.doc.FieldOperations
 import dev.evo.elasticmagic.query.NodeHandle
 import dev.evo.elasticmagic.query.QueryExpression
 import dev.evo.elasticmagic.query.QueryExpressionNode
