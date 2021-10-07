@@ -6,6 +6,9 @@ import dev.evo.elasticmagic.aggs.NestedAgg
 import dev.evo.elasticmagic.aggs.SingleBucketAggResult
 import dev.evo.elasticmagic.aggs.TermsAgg
 import dev.evo.elasticmagic.aggs.TermsAggResult
+import dev.evo.elasticmagic.query.Ids
+import dev.evo.elasticmagic.query.Nested
+import dev.evo.elasticmagic.query.Sort
 import io.kotest.matchers.doubles.shouldBeLessThan
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
@@ -248,12 +251,14 @@ class SearchQueryTests : ElasticsearchTestBase("test-search-query") {
             karlssonsJam, karlssonsBestDonuts, karlssonsJustDonuts, littleBrotherDogStuff
         )) {
             val searchResult = SearchQuery(::OrderDocSource)
-                .sort(Sort(
+                .sort(
+                    Sort(
                     OrderDoc.items.quantity,
                     order = Sort.Order.DESC,
                     mode = Sort.Mode.SUM,
                     nested = Sort.Nested(OrderDoc.items)
-                ))
+                )
+                )
                 .execute(index)
 
             searchResult.totalHits shouldBe 4

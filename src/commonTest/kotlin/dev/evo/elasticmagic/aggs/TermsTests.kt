@@ -1,6 +1,6 @@
 package dev.evo.elasticmagic.aggs
 
-import dev.evo.elasticmagic.Sort
+import dev.evo.elasticmagic.query.Sort
 
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.maps.shouldContainExactly

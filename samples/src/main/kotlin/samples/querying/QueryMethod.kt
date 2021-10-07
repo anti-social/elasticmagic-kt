@@ -1,7 +1,7 @@
 package samples.querying
 
-import dev.evo.elasticmagic.Bool
-import dev.evo.elasticmagic.FunctionScore
+import dev.evo.elasticmagic.query.Bool
+import dev.evo.elasticmagic.query.FunctionScore
 
 val q2 = q.query(
     FunctionScore(

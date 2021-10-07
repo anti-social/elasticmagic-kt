@@ -1,5 +1,15 @@
 package dev.evo.elasticmagic
 
+import dev.evo.elasticmagic.query.Bool
+import dev.evo.elasticmagic.query.Exists
+import dev.evo.elasticmagic.query.Match
+import dev.evo.elasticmagic.query.QueryExpression
+import dev.evo.elasticmagic.query.Range
+import dev.evo.elasticmagic.query.Sort
+import dev.evo.elasticmagic.query.Term
+import dev.evo.elasticmagic.query.Terms
+import dev.evo.elasticmagic.query.ToValue
+
 interface Named : ToValue {
     fun getFieldName(): String
 

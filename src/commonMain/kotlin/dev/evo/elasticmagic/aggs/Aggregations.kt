@@ -1,8 +1,8 @@
 package dev.evo.elasticmagic.aggs
 
-import dev.evo.elasticmagic.Expression
+import dev.evo.elasticmagic.query.Expression
 import dev.evo.elasticmagic.FieldOperations
-import dev.evo.elasticmagic.NamedExpression
+import dev.evo.elasticmagic.query.NamedExpression
 import dev.evo.elasticmagic.compile.SearchQueryCompiler
 import dev.evo.elasticmagic.serde.Deserializer
 import dev.evo.elasticmagic.serde.Serializer
@@ -11,12 +11,12 @@ sealed class AggValue : Expression {
     data class Field(val field: FieldOperations) : AggValue() {
         override fun clone() = copy()
     }
-    data class Script(val script: dev.evo.elasticmagic.Script) : AggValue() {
+    data class Script(val script: dev.evo.elasticmagic.query.Script) : AggValue() {
         override fun clone() = copy()
     }
     data class ValueScript(
         val field: FieldOperations,
-        val script: dev.evo.elasticmagic.Script,
+        val script: dev.evo.elasticmagic.query.Script,
     ) : AggValue() {
         override fun clone() = copy()
     }

@@ -1,5 +1,7 @@
-package dev.evo.elasticmagic
+package dev.evo.elasticmagic.query
 
+import dev.evo.elasticmagic.FieldOperations
+import dev.evo.elasticmagic.Params
 import dev.evo.elasticmagic.compile.SearchQueryCompiler
 import dev.evo.elasticmagic.serde.Serializer
 
@@ -820,11 +822,11 @@ data class Sort(
 
     sealed class By {
         class Field(val field: FieldOperations) : By()
-        class Script(val type: String, val script: dev.evo.elasticmagic.Script) : By()
+        class Script(val type: String, val script: dev.evo.elasticmagic.query.Script) : By()
 
         companion object {
             internal operator fun invoke(
-                field: FieldOperations?, scriptType: String?, script: dev.evo.elasticmagic.Script?
+                field: FieldOperations?, scriptType: String?, script: dev.evo.elasticmagic.query.Script?
             ): By {
                 return when {
                     field != null && script != null -> throw IllegalArgumentException(

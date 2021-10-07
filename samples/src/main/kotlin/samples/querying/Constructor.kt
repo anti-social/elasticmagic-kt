@@ -1,6 +1,6 @@
 package samples.querying
 
-import dev.evo.elasticmagic.FunctionScore
+import dev.evo.elasticmagic.query.FunctionScore
 import dev.evo.elasticmagic.SearchQuery
 
 var q = SearchQuery(

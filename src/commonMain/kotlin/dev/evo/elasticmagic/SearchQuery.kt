@@ -1,6 +1,14 @@
 package dev.evo.elasticmagic
 
 import dev.evo.elasticmagic.aggs.Aggregation
+import dev.evo.elasticmagic.query.NodeHandle
+import dev.evo.elasticmagic.query.QueryExpression
+import dev.evo.elasticmagic.query.QueryExpressionNode
+import dev.evo.elasticmagic.query.Rescore
+import dev.evo.elasticmagic.query.Script
+import dev.evo.elasticmagic.query.Sort
+import dev.evo.elasticmagic.query.ToValue
+import dev.evo.elasticmagic.query.collect
 import dev.evo.elasticmagic.serde.Deserializer
 
 data class FieldFormat(

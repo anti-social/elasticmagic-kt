@@ -7,7 +7,7 @@ import dev.evo.elasticmagic.ElasticsearchVersion
 import dev.evo.elasticmagic.KeywordType
 import dev.evo.elasticmagic.Params
 import dev.evo.elasticmagic.RuntimeFields
-import dev.evo.elasticmagic.Script
+import dev.evo.elasticmagic.query.Script
 import dev.evo.elasticmagic.SubDocument
 import dev.evo.elasticmagic.SubFields
 import dev.evo.elasticmagic.mergeDocuments

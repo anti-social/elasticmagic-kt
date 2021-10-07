@@ -1,5 +1,7 @@
 package dev.evo.elasticmagic
 
+import dev.evo.elasticmagic.query.Script
+import dev.evo.elasticmagic.query.ToValue
 import kotlinx.datetime.LocalDateTime
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty

@@ -1,5 +1,8 @@
 package dev.evo.elasticmagic
 
+import dev.evo.elasticmagic.query.FunctionScore
+import dev.evo.elasticmagic.query.FunctionScoreNode
+import dev.evo.elasticmagic.query.NodeHandle
 import io.kotest.matchers.shouldBe
 
 import kotlin.test.Test

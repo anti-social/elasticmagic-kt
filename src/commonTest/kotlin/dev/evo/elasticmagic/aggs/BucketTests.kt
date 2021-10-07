@@ -1,7 +1,7 @@
 package dev.evo.elasticmagic.aggs
 
-import dev.evo.elasticmagic.Bool
-import dev.evo.elasticmagic.MatchAll
+import dev.evo.elasticmagic.query.Bool
+import dev.evo.elasticmagic.query.MatchAll
 
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.maps.shouldContainExactly

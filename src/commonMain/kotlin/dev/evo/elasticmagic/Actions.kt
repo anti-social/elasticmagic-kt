@@ -1,5 +1,8 @@
 package dev.evo.elasticmagic
 
+import dev.evo.elasticmagic.query.Script
+import dev.evo.elasticmagic.query.ToValue
+
 enum class Refresh : ToValue {
     TRUE, FALSE, WAIT_FOR;
 

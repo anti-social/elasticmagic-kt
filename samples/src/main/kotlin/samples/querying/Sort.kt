@@ -1,6 +1,6 @@
 package samples.querying
 
-import dev.evo.elasticmagic.Sort
+import dev.evo.elasticmagic.query.Sort
 
 // Sort by user id with ascending order
 val sortedByIdQuery = q.sort(UserDoc.id)

@@ -1,5 +1,6 @@
 package dev.evo.elasticmagic
 
+import dev.evo.elasticmagic.query.Script
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.maps.shouldContainExactly
 import io.kotest.matchers.nulls.shouldBeNull

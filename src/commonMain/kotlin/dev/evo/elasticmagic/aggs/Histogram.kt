@@ -1,6 +1,6 @@
 package dev.evo.elasticmagic.aggs
 
-import dev.evo.elasticmagic.Expression
+import dev.evo.elasticmagic.query.Expression
 import dev.evo.elasticmagic.FieldOperations
 import dev.evo.elasticmagic.Params
 import dev.evo.elasticmagic.compile.SearchQueryCompiler
