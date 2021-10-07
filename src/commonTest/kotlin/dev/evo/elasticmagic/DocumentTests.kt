@@ -267,21 +267,21 @@ class DocumentTests {
         val answerDoc = AnswerDoc()
 
         val mergedDoc = mergeDocuments(opinionDoc, answerDoc)
-        mergedDoc.getFieldByName("text") shouldBeSameInstanceAs opinionDoc.text
-        mergedDoc.getFieldByName("opinionId") shouldBeSameInstanceAs answerDoc.opinionId
+        mergedDoc["text"] shouldBeSameInstanceAs opinionDoc.text
+        mergedDoc["opinionId"] shouldBeSameInstanceAs answerDoc.opinionId
 
-        val mergedUserDoc = mergedDoc.getFieldByName("user")
+        val mergedUserDoc = mergedDoc["user"]
             .shouldBeInstanceOf<SubDocumentField>()
             .subDocument
-        mergedUserDoc.getFieldByName("phone") shouldBeSameInstanceAs opinionDoc.user.phone
-        mergedUserDoc.getFieldByName("companyId") shouldBeSameInstanceAs answerDoc.user.companyId
+        mergedUserDoc["phone"] shouldBeSameInstanceAs opinionDoc.user.phone
+        mergedUserDoc["companyId"] shouldBeSameInstanceAs answerDoc.user.companyId
 
-        val opinionTitleSubFields = mergedUserDoc.getFieldByName("title")
+        val opinionTitleSubFields = mergedUserDoc["title"]
             .shouldBeInstanceOf<SubFieldsField>()
             .subFields
         // val opinionTitleFields = opinionTitleSubFields.getFieldsByName()
-        opinionTitleSubFields.getFieldByName("sort") shouldBeSameInstanceAs opinionDoc.user.title.sort
-        opinionTitleSubFields.getFieldByName("autocomplete") shouldBeSameInstanceAs answerDoc.user.title.autocomplete
+        opinionTitleSubFields["sort"] shouldBeSameInstanceAs opinionDoc.user.title.sort
+        opinionTitleSubFields["autocomplete"] shouldBeSameInstanceAs answerDoc.user.title.autocomplete
     }
 
     @Test
@@ -307,16 +307,16 @@ class DocumentTests {
         val companyDoc = CompanyDoc()
 
         val mergedDoc = mergeDocuments(userDoc, companyDoc)
-        val firstNameFields = mergedDoc.getFieldByName("first_name")
+        val firstNameFields = mergedDoc["first_name"]
             .shouldBeInstanceOf<SubFieldsField>()
             .subFields
-        firstNameFields.getFieldByName("sort") shouldBeSameInstanceAs userDoc.firstName.sort
-        firstNameFields.getFieldByName("autocomplete").shouldBeNull()
-        val lastNameFields = mergedDoc.getFieldByName("last_name")
+        firstNameFields["sort"] shouldBeSameInstanceAs userDoc.firstName.sort
+        firstNameFields["autocomplete"].shouldBeNull()
+        val lastNameFields = mergedDoc["last_name"]
             .shouldBeInstanceOf<SubFieldsField>()
             .subFields
-        lastNameFields.getFieldByName("sort").shouldBeNull()
-        lastNameFields.getFieldByName("autocomplete") shouldBeSameInstanceAs companyDoc.lastName.autocomplete
+        lastNameFields["sort"].shouldBeNull()
+        lastNameFields["autocomplete"] shouldBeSameInstanceAs companyDoc.lastName.autocomplete
     }
 
     @Test
@@ -353,8 +353,8 @@ class DocumentTests {
         val companyDoc = CompanyDoc()
 
         val mergedDoc = mergeDocuments(userDoc, companyDoc)
-        mergedDoc.getFieldByName("name") shouldBeSameInstanceAs userDoc.name
-        mergedDoc.getFieldByName("company_name") shouldBeSameInstanceAs companyDoc.name
+        mergedDoc["name"] shouldBeSameInstanceAs userDoc.name
+        mergedDoc["company_name"] shouldBeSameInstanceAs companyDoc.name
     }
 
     @Test
@@ -476,7 +476,7 @@ class DocumentTests {
         }
 
         val mergedDoc = mergeDocuments(userDoc, companyDoc)
-        val fullNameField = mergedDoc.runtime.getFieldByName("fullName").shouldNotBeNull()
+        val fullNameField = mergedDoc.runtime["fullName"].shouldNotBeNull()
         fullNameField shouldBeSameInstanceAs userDoc.runtime.fullName
     }
 

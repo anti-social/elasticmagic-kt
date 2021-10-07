@@ -129,6 +129,7 @@ abstract class FieldSet : Named {
     private val fields: ArrayList<AnyField> = arrayListOf()
     private val fieldsByName: HashMap<String, Int> = hashMapOf()
 
+    // TODO: consider to make it public
     internal fun addField(field: AnyField) {
         val existingFieldIx = fieldsByName[field.getFieldName()]
         if (existingFieldIx != null) {
@@ -139,11 +140,11 @@ abstract class FieldSet : Named {
         }
     }
 
-    internal fun getAllFields(): List<AnyField> {
+    fun getAllFields(): List<AnyField> {
         return fields.toList()
     }
 
-    internal fun getFieldByName(name: String): AnyField? {
+    operator fun get(name: String): AnyField? {
         return fields[fieldsByName[name] ?: return null]
     }
 
@@ -797,13 +798,13 @@ private fun checkMetaFields(
 ) {
     val expectedFieldNames = expectedMetaFields.getAllFields().map(AnyField::getFieldName)
     for (expectedFieldName in expectedFieldNames) {
-        requireNotNull(metaFields.getFieldByName(expectedFieldName)) {
+        requireNotNull(metaFields[expectedFieldName]) {
             "$expectedDocName has meta field $expectedFieldName but $docName does not"
         }
     }
     for (metaField in metaFields.getAllFields()) {
         val metaFieldName = metaField.getFieldName()
-        val expectedMetaField = expectedMetaFields.getFieldByName(metaFieldName)
+        val expectedMetaField = expectedMetaFields[metaFieldName]
         requireNotNull(expectedMetaField) {
             "$docName has meta field $metaFieldName but $expectedDocName does not"
         }
