@@ -7,6 +7,16 @@ interface ToValue {
     fun toValue(): Any
 }
 
+interface Named : ToValue {
+    fun getFieldName(): String
+
+    fun getQualifiedFieldName(): String
+
+    override fun toValue(): String {
+        return getQualifiedFieldName()
+    }
+}
+
 interface Expression : SearchQueryCompiler.Visitable {
     fun clone(): Expression
 

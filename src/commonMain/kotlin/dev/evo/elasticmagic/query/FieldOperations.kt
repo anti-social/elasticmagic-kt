@@ -1,24 +1,4 @@
-package dev.evo.elasticmagic.doc
-
-import dev.evo.elasticmagic.query.Bool
-import dev.evo.elasticmagic.query.Exists
-import dev.evo.elasticmagic.query.Match
-import dev.evo.elasticmagic.query.QueryExpression
-import dev.evo.elasticmagic.query.Range
-import dev.evo.elasticmagic.query.Sort
-import dev.evo.elasticmagic.query.Term
-import dev.evo.elasticmagic.query.Terms
-import dev.evo.elasticmagic.query.ToValue
-
-interface Named : ToValue {
-    fun getFieldName(): String
-
-    fun getQualifiedFieldName(): String
-
-    override fun toValue(): String {
-        return getQualifiedFieldName()
-    }
-}
+package dev.evo.elasticmagic.query
 
 /**
  * Holds field operations shortcuts.

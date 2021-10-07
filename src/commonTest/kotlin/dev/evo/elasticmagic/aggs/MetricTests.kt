@@ -1,6 +1,6 @@
 package dev.evo.elasticmagic.aggs
 
-import dev.evo.elasticmagic.doc.FieldOperations
+import dev.evo.elasticmagic.query.FieldOperations
 import dev.evo.elasticmagic.query.Script
 import dev.evo.elasticmagic.serde.platform
 import dev.evo.elasticmagic.serde.Platform

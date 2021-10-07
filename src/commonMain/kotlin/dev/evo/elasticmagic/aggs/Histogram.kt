@@ -1,7 +1,7 @@
 package dev.evo.elasticmagic.aggs
 
 import dev.evo.elasticmagic.query.Expression
-import dev.evo.elasticmagic.doc.FieldOperations
+import dev.evo.elasticmagic.query.FieldOperations
 import dev.evo.elasticmagic.Params
 import dev.evo.elasticmagic.compile.SearchQueryCompiler
 import dev.evo.elasticmagic.serde.Deserializer

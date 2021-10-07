@@ -1,6 +1,5 @@
 package dev.evo.elasticmagic.query
 
-import dev.evo.elasticmagic.doc.FieldOperations
 import dev.evo.elasticmagic.Params
 import dev.evo.elasticmagic.compile.SearchQueryCompiler
 import dev.evo.elasticmagic.serde.Serializer

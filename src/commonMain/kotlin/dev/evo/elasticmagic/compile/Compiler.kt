@@ -2,7 +2,7 @@ package dev.evo.elasticmagic.compile
 
 import dev.evo.elasticmagic.ElasticsearchVersion
 import dev.evo.elasticmagic.Parameters
-import dev.evo.elasticmagic.doc.Named
+import dev.evo.elasticmagic.query.Named
 import dev.evo.elasticmagic.serde.Deserializer
 import dev.evo.elasticmagic.serde.Serializer.ArrayCtx
 import dev.evo.elasticmagic.serde.Serializer.ObjectCtx
