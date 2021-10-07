@@ -452,7 +452,7 @@
 <p>In these samples we will utilize following document:</p>
 <div class="highlight"><pre><span></span><code><span class="k">package</span> <span class="nn">samples.querying</span>
 
-<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.Document</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.doc.Document</span>
 
 <span class="kd">object</span> <span class="nc">UserDoc</span> <span class="p">:</span> <span class="n">Document</span><span class="p">()</span> <span class="p">{</span>
     <span class="kd">val</span> <span class="nv">id</span> <span class="k">by</span> <span class="n">int</span><span class="p">()</span>
@@ -466,7 +466,7 @@
 <p>You can pass a query to <code>SearchQuery</code> directly via its constructor:</p>
 <div class="highlight"><pre><span></span><code><span class="k">package</span> <span class="nn">samples.querying</span>
 
-<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.FunctionScore</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.query.FunctionScore</span>
 <span class="k">import</span> <span class="nn">dev.evo.elasticmagic.SearchQuery</span>
 
 <span class="kd">var</span> <span class="nv">q</span> <span class="o">=</span> <span class="n">SearchQuery</span><span class="p">(</span>
@@ -484,8 +484,8 @@
 <p>Also it is possible to replace existing query using a <code>query</code> method: </p>
 <div class="highlight"><pre><span></span><code><span class="k">package</span> <span class="nn">samples.querying</span>
 
-<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.Bool</span>
-<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.FunctionScore</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.query.Bool</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.query.FunctionScore</span>
 
 <span class="kd">val</span> <span class="nv">q2</span> <span class="o">=</span> <span class="n">q</span><span class="p">.</span><span class="na">query</span><span class="p">(</span>
     <span class="n">FunctionScore</span><span class="p">(</span>
@@ -518,7 +518,7 @@ method you can filter your query. All filters passed to the <code>filter</code> 
 using <code>AND</code> operation.</p>
 <div class="highlight"><pre><span></span><code><span class="k">package</span> <span class="nn">samples.querying</span>
 
-<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.Bool</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.query.Bool</span>
 
 <span class="c1">// Select only active users that id is not equal 0</span>
 <span class="kd">val</span> <span class="nv">activeUsersQuery</span> <span class="o">=</span> <span class="n">q</span>
@@ -553,7 +553,7 @@ method has 2 flavors:</p>
 </ul>
 <div class="highlight"><pre><span></span><code><span class="k">package</span> <span class="nn">samples.querying</span>
 
-<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.Sort</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.query.Sort</span>
 
 <span class="c1">// Sort by user id with ascending order</span>
 <span class="kd">val</span> <span class="nv">sortedByIdQuery</span> <span class="o">=</span> <span class="n">q</span><span class="p">.</span><span class="na">sort</span><span class="p">(</span><span class="n">UserDoc</span><span class="p">.</span><span class="na">id</span><span class="p">)</span>
@@ -576,9 +576,9 @@ method has 2 flavors:</p>
 method to define aggregations:</p>
 <div class="highlight"><pre><span></span><code><span class="k">package</span> <span class="nn">samples.querying</span>
 
-<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.AvgAgg</span>
-<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.HistogramAgg</span>
-<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.TermsAgg</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.aggs.AvgAgg</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.aggs.HistogramAgg</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.aggs.TermsAgg</span>
 
 <span class="c1">// Build aggregations by groups and calculate average rating as well as</span>
 <span class="c1">// build histogram by rating for every group</span>
@@ -602,16 +602,16 @@ possible to modify parts of the query after creation using special query express
 method:</p>
 <div class="highlight"><pre><span></span><code><span class="k">package</span> <span class="nn">samples.querying</span>
 
-<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.BaseDocSource</span>
-<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.Bool</span>
-<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.DisMaxNode</span>
-<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.BoundField</span>
-<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.Document</span>
-<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.FunctionScore</span>
-<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.FunctionScoreNode</span>
-<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.NodeHandle</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.doc.BaseDocSource</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.query.Bool</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.query.DisMaxNode</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.doc.BoundField</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.doc.Document</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.query.FunctionScore</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.query.FunctionScoreNode</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.query.NodeHandle</span>
 <span class="k">import</span> <span class="nn">dev.evo.elasticmagic.SearchQuery</span>
-<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.SubDocument</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.doc.SubDocument</span>
 
 <span class="k">import</span> <span class="nn">kotlin.random.Random</span>
 

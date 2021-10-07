@@ -406,10 +406,10 @@ See more info at <a href="https://github.com/anti-social/elasticmagic-kt/issues/
 <p>Suppose we have following <code>Document</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="k">package</span> <span class="nn">samples.docsource</span>
 
-<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.BaseDocSource</span>
-<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.BoundField</span>
-<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.Document</span>
-<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.SubDocument</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.doc.BaseDocSource</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.doc.BoundField</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.doc.Document</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.doc.SubDocument</span>
 
 <span class="kd">class</span> <span class="nc">RoleDoc</span><span class="p">(</span><span class="n">field</span><span class="p">:</span> <span class="n">BoundField</span><span class="o">&lt;</span><span class="n">BaseDocSource</span><span class="o">&gt;</span><span class="p">)</span> <span class="p">:</span> <span class="n">SubDocument</span><span class="p">(</span><span class="n">field</span><span class="p">)</span> <span class="p">{</span>
     <span class="kd">val</span> <span class="nv">name</span> <span class="k">by</span> <span class="n">keyword</span><span class="p">()</span>
@@ -427,8 +427,8 @@ See more info at <a href="https://github.com/anti-social/elasticmagic-kt/issues/
 <p>The most simple way to work with source documents is just to use <code>DynDocSource</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="k">package</span> <span class="nn">samples.docsource.dynamic</span>
 
-<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.DynDocSource</span>
-<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.list</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.doc.DynDocSource</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.doc.list</span>
 
 <span class="k">import</span> <span class="nn">samples.docsource.UserDoc</span>
 
@@ -458,7 +458,7 @@ See more info at <a href="https://github.com/anti-social/elasticmagic-kt/issues/
 <p>This is the recommended way. You can explicitly specify document source:</p>
 <div class="highlight"><pre><span></span><code><span class="k">package</span> <span class="nn">samples.docsource.custom</span>
 
-<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.DocSource</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.doc.DocSource</span>
 
 <span class="k">import</span> <span class="nn">samples.docsource.UserDoc</span>
 

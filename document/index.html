@@ -566,11 +566,11 @@ a single mapping.</p>
 method to describe a field in a document:</p>
 <div class="highlight"><pre><span></span><code><span class="k">package</span> <span class="nn">samples.document.field</span>
 
-<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.Document</span>
-<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.BooleanType</span>
-<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.IntType</span>
-<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.KeywordType</span>
-<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.TextType</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.doc.Document</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.doc.BooleanType</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.doc.IntType</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.doc.KeywordType</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.doc.TextType</span>
 
 <span class="kd">object</span> <span class="nc">UserDoc</span> <span class="p">:</span> <span class="n">Document</span><span class="p">()</span> <span class="p">{</span>
     <span class="c1">// It is possible to pass field options via shortcuts like `index`</span>
@@ -600,7 +600,7 @@ method to describe a field in a document:</p>
 You don't need to import all those field types:</p>
 <div class="highlight"><pre><span></span><code><span class="k">package</span> <span class="nn">samples.document.shortcuts</span>
 
-<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.Document</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.doc.Document</span>
 
 <span class="kd">object</span> <span class="nc">UserDoc</span> <span class="p">:</span> <span class="n">Document</span><span class="p">()</span> <span class="p">{</span>
     <span class="kd">val</span> <span class="nv">id</span> <span class="k">by</span> <span class="n">int</span><span class="p">(</span><span class="n">index</span> <span class="o">=</span> <span class="kc">false</span><span class="p">,</span> <span class="n">store</span> <span class="o">=</span> <span class="kc">true</span><span class="p">)</span>
@@ -616,9 +616,9 @@ You don't need to import all those field types:</p>
 for any simple field:</p>
 <div class="highlight"><pre><span></span><code><span class="k">package</span> <span class="nn">samples.document.subfields</span>
 
-<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.BoundField</span>
-<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.Document</span>
-<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.SubFields</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.doc.BoundField</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.doc.Document</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.doc.SubFields</span>
 
 <span class="kd">class</span> <span class="nc">AboutSubFields</span><span class="p">(</span><span class="n">field</span><span class="p">:</span> <span class="n">BoundField</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span><span class="p">)</span> <span class="p">:</span> <span class="n">SubFields</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span><span class="p">(</span><span class="n">field</span><span class="p">)</span> <span class="p">{</span>
     <span class="kd">val</span> <span class="nv">sort</span> <span class="k">by</span> <span class="n">keyword</span><span class="p">(</span><span class="n">normalizer</span> <span class="o">=</span> <span class="s">&quot;lowercase&quot;</span><span class="p">)</span>
@@ -643,9 +643,9 @@ for any simple field:</p>
 </div>
 <div class="highlight"><pre><span></span><code><span class="k">package</span> <span class="nn">samples.document.subfields.mistake</span>
 
-<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.BoundField</span>
-<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.Document</span>
-<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.SubFields</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.doc.BoundField</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.doc.Document</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.doc.SubFields</span>
 
 <span class="kd">class</span> <span class="nc">AboutSubFields</span><span class="p">(</span><span class="n">field</span><span class="p">:</span> <span class="n">BoundField</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span><span class="p">)</span> <span class="p">:</span> <span class="n">SubFields</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span><span class="p">(</span><span class="n">field</span><span class="p">)</span> <span class="p">{</span>
     <span class="kd">val</span> <span class="nv">sort</span> <span class="k">by</span> <span class="n">keyword</span><span class="p">(</span><span class="n">normalizer</span> <span class="o">=</span> <span class="s">&quot;lowercase&quot;</span><span class="p">)</span>
@@ -679,11 +679,11 @@ Caused by: java.lang.IllegalStateException: Field [description] has already been
 in a sub-document can have its own source value:</p>
 <div class="highlight"><pre><span></span><code><span class="k">package</span> <span class="nn">samples.document.`object`</span>
 
-<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.BaseDocSource</span>
-<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.BoundField</span>
-<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.Document</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.doc.BaseDocSource</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.doc.BoundField</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.doc.Document</span>
 <span class="k">import</span> <span class="nn">dev.evo.elasticmagic.SearchQuery</span>
-<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.SubDocument</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.doc.SubDocument</span>
 
 <span class="kd">class</span> <span class="nc">GroupDoc</span><span class="p">(</span><span class="n">field</span><span class="p">:</span> <span class="n">BoundField</span><span class="o">&lt;</span><span class="n">BaseDocSource</span><span class="o">&gt;</span><span class="p">)</span> <span class="p">:</span> <span class="n">SubDocument</span><span class="p">(</span><span class="n">field</span><span class="p">)</span> <span class="p">{</span>
     <span class="kd">val</span> <span class="nv">id</span> <span class="k">by</span> <span class="n">int</span><span class="p">()</span>
@@ -712,13 +712,13 @@ In the example below we find all users that have a <code>moderator</code> role w
 <code>article</code> and <code>order</code> permissions:</p>
 <div class="highlight"><pre><span></span><code><span class="k">package</span> <span class="nn">samples.document.nested</span>
 
-<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.BaseDocSource</span>
-<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.Bool</span>
-<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.BoundField</span>
-<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.Document</span>
-<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.Nested</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.doc.BaseDocSource</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.query.Bool</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.doc.BoundField</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.doc.Document</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.query.Nested</span>
 <span class="k">import</span> <span class="nn">dev.evo.elasticmagic.SearchQuery</span>
-<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.SubDocument</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.doc.SubDocument</span>
 
 <span class="kd">class</span> <span class="nc">RoleDoc</span><span class="p">(</span><span class="n">field</span><span class="p">:</span> <span class="n">BoundField</span><span class="o">&lt;</span><span class="n">BaseDocSource</span><span class="o">&gt;</span><span class="p">)</span> <span class="p">:</span> <span class="n">SubDocument</span><span class="p">(</span><span class="n">field</span><span class="p">)</span> <span class="p">{</span>
     <span class="kd">val</span> <span class="nv">name</span> <span class="k">by</span> <span class="n">keyword</span><span class="p">()</span>
@@ -753,7 +753,7 @@ a <code>moderator</code> role with <code>article</code> permission and <code>vie
 <h3 id="join-field">Join field<a class="headerlink" href="#join-field" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><span class="k">package</span> <span class="nn">samples.document.join</span>
 
-<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.Document</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.doc.Document</span>
 
 <span class="kd">abstract</span> <span class="kd">class</span> <span class="nc">BaseQADoc</span> <span class="p">:</span> <span class="n">Document</span><span class="p">()</span> <span class="p">{</span>
     <span class="kd">val</span> <span class="nv">id</span> <span class="k">by</span> <span class="n">int</span><span class="p">()</span>
@@ -781,8 +781,8 @@ Some of those fields can be customized. In following example we make a value for
 field required and keep only <code>name</code> field in document source:</p>
 <div class="highlight"><pre><span></span><code><span class="k">package</span> <span class="nn">samples.document.meta</span>
 
-<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.Document</span>
-<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.MetaFields</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.doc.Document</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.doc.MetaFields</span>
 
 <span class="kd">object</span> <span class="nc">ProductDoc</span> <span class="p">:</span> <span class="n">Document</span><span class="p">()</span> <span class="p">{</span>
     <span class="kd">val</span> <span class="nv">name</span> <span class="k">by</span> <span class="n">text</span><span class="p">()</span>
@@ -802,7 +802,7 @@ will throw <code>routing_missing_exceptions</code>.</p>
 function. Documents that are merged should not contradict each other.</p>
 <div class="highlight"><pre><span></span><code><span class="k">package</span> <span class="nn">samples.document.join</span>
 
-<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.mergeDocuments</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.doc.mergeDocuments</span>
 
 <span class="kd">val</span> <span class="nv">QAMapping</span> <span class="o">=</span> <span class="n">mergeDocuments</span><span class="p">(</span><span class="n">QuestionDoc</span><span class="p">,</span> <span class="n">AnswerDoc</span><span class="p">)</span>
 </code></pre></div>
