@@ -1,7 +1,8 @@
-package dev.evo.elasticmagic
+package dev.evo.elasticmagic.doc
 
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
+
 import kotlinx.datetime.LocalDateTime
 
 import kotlin.test.Test

@@ -1,7 +1,7 @@
 package dev.evo.elasticmagic.compile
 
 import dev.evo.elasticmagic.CreateIndexResult
-import dev.evo.elasticmagic.Document
+import dev.evo.elasticmagic.doc.Document
 import dev.evo.elasticmagic.ElasticsearchVersion
 import dev.evo.elasticmagic.Parameters
 import dev.evo.elasticmagic.Params

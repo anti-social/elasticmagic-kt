@@ -1,10 +1,10 @@
 package samples.started
 
-import dev.evo.elasticmagic.DynDocSource
+import dev.evo.elasticmagic.doc.DynDocSource
 import dev.evo.elasticmagic.SearchQuery
 import dev.evo.elasticmagic.SearchQueryResult
-import dev.evo.elasticmagic.TermsAgg
-import dev.evo.elasticmagic.TermsAggResult
+import dev.evo.elasticmagic.aggs.TermsAgg
+import dev.evo.elasticmagic.aggs.TermsAggResult
 
 fun printUsers(result: SearchQueryResult<DynDocSource>) {
     println("Found: ${result.totalHits} users")

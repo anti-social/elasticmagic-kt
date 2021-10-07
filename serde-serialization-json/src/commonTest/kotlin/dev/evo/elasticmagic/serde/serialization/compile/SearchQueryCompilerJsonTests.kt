@@ -1,6 +1,6 @@
 package dev.evo.elasticmagic.serde.serialization.compile
 
-import dev.evo.elasticmagic.Document
+import dev.evo.elasticmagic.doc.Document
 import dev.evo.elasticmagic.ElasticsearchVersion
 import dev.evo.elasticmagic.SearchQuery
 import dev.evo.elasticmagic.compile.SearchQueryCompiler

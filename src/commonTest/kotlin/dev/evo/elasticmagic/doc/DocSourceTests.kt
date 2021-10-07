@@ -1,4 +1,4 @@
-package dev.evo.elasticmagic
+package dev.evo.elasticmagic.doc
 
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.maps.shouldContainExactly
@@ -9,7 +9,7 @@ import io.kotest.matchers.types.shouldBeInstanceOf
 
 import kotlin.test.Test
 
-class SourceTests {
+class DocSourceTests {
     object OrderDoc : Document() {
         class UserOpinionDoc(field: DocSourceField) : SubDocument(field) {
             val rating by float("rank")

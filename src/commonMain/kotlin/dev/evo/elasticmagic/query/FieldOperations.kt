@@ -1,14 +1,4 @@
-package dev.evo.elasticmagic
-
-interface Named : ToValue {
-    fun getFieldName(): String
-
-    fun getQualifiedFieldName(): String
-
-    override fun toValue(): String {
-        return getQualifiedFieldName()
-    }
-}
+package dev.evo.elasticmagic.query
 
 /**
  * Holds field operations shortcuts.

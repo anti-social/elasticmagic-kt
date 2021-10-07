@@ -1,5 +1,10 @@
 package dev.evo.elasticmagic
 
+import dev.evo.elasticmagic.aggs.AggregationResult
+import dev.evo.elasticmagic.doc.ActionMeta
+import dev.evo.elasticmagic.doc.BaseDocSource
+import dev.evo.elasticmagic.doc.IdentActionMeta
+
 data class SearchQueryResult<S: BaseDocSource>(
     val rawResult: Map<String, Any?>?,
     val took: Long,

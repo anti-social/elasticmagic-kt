@@ -1,7 +1,7 @@
 package samples.docsource.dynamic
 
-import dev.evo.elasticmagic.DynDocSource
-import dev.evo.elasticmagic.list
+import dev.evo.elasticmagic.doc.DynDocSource
+import dev.evo.elasticmagic.doc.list
 
 import samples.docsource.UserDoc
 

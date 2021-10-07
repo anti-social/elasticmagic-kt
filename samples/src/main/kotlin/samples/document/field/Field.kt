@@ -1,10 +1,10 @@
 package samples.document.field
 
-import dev.evo.elasticmagic.Document
-import dev.evo.elasticmagic.BooleanType
-import dev.evo.elasticmagic.IntType
-import dev.evo.elasticmagic.KeywordType
-import dev.evo.elasticmagic.TextType
+import dev.evo.elasticmagic.doc.Document
+import dev.evo.elasticmagic.doc.BooleanType
+import dev.evo.elasticmagic.doc.IntType
+import dev.evo.elasticmagic.doc.KeywordType
+import dev.evo.elasticmagic.doc.TextType
 
 object UserDoc : Document() {
     // It is possible to pass field options via shortcuts like `index`

@@ -1,13 +1,13 @@
 package dev.evo.elasticmagic.compile
 
-import dev.evo.elasticmagic.Action
+import dev.evo.elasticmagic.doc.Action
 import dev.evo.elasticmagic.BulkError
 import dev.evo.elasticmagic.BulkItem
 import dev.evo.elasticmagic.BulkOpType
 import dev.evo.elasticmagic.BulkResult
 import dev.evo.elasticmagic.ElasticsearchVersion
 import dev.evo.elasticmagic.Params
-import dev.evo.elasticmagic.Refresh
+import dev.evo.elasticmagic.doc.Refresh
 import dev.evo.elasticmagic.serde.Deserializer
 import dev.evo.elasticmagic.serde.Serializer
 import dev.evo.elasticmagic.serde.toMap

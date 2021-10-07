@@ -1,5 +1,20 @@
 package dev.evo.elasticmagic
 
+import dev.evo.elasticmagic.aggs.HistogramAgg
+import dev.evo.elasticmagic.aggs.HistogramAggResult
+import dev.evo.elasticmagic.aggs.NestedAgg
+import dev.evo.elasticmagic.aggs.SingleBucketAggResult
+import dev.evo.elasticmagic.aggs.TermsAgg
+import dev.evo.elasticmagic.aggs.TermsAggResult
+import dev.evo.elasticmagic.doc.BaseDocSource
+import dev.evo.elasticmagic.doc.BoundField
+import dev.evo.elasticmagic.doc.DocSource
+import dev.evo.elasticmagic.doc.Document
+import dev.evo.elasticmagic.doc.IdentDocSourceWithMeta
+import dev.evo.elasticmagic.doc.SubDocument
+import dev.evo.elasticmagic.query.Ids
+import dev.evo.elasticmagic.query.Nested
+import dev.evo.elasticmagic.query.Sort
 import io.kotest.matchers.doubles.shouldBeLessThan
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
@@ -242,12 +257,14 @@ class SearchQueryTests : ElasticsearchTestBase("test-search-query") {
             karlssonsJam, karlssonsBestDonuts, karlssonsJustDonuts, littleBrotherDogStuff
         )) {
             val searchResult = SearchQuery(::OrderDocSource)
-                .sort(Sort(
+                .sort(
+                    Sort(
                     OrderDoc.items.quantity,
                     order = Sort.Order.DESC,
                     mode = Sort.Mode.SUM,
                     nested = Sort.Nested(OrderDoc.items)
-                ))
+                )
+                )
                 .execute(index)
 
             searchResult.totalHits shouldBe 4

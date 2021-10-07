@@ -1,5 +1,12 @@
 package dev.evo.elasticmagic
 
+import dev.evo.elasticmagic.doc.Action
+import dev.evo.elasticmagic.doc.DeleteAction
+import dev.evo.elasticmagic.doc.DocSourceAndMeta
+import dev.evo.elasticmagic.doc.Document
+import dev.evo.elasticmagic.doc.IndexAction
+import dev.evo.elasticmagic.doc.Refresh
+import dev.evo.elasticmagic.doc.mergeDocuments
 import dev.evo.elasticmagic.serde.serialization.JsonSerde
 import dev.evo.elasticmagic.transport.ElasticsearchException
 import dev.evo.elasticmagic.transport.ElasticsearchKtorTransport

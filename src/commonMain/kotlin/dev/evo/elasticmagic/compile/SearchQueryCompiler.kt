@@ -1,15 +1,15 @@
 package dev.evo.elasticmagic.compile
 
-import dev.evo.elasticmagic.AggregationResult
-import dev.evo.elasticmagic.BaseDocSource
+import dev.evo.elasticmagic.aggs.AggregationResult
+import dev.evo.elasticmagic.doc.BaseDocSource
 import dev.evo.elasticmagic.BaseSearchQuery
-import dev.evo.elasticmagic.Bool
+import dev.evo.elasticmagic.query.Bool
 import dev.evo.elasticmagic.ElasticsearchVersion
-import dev.evo.elasticmagic.Expression
+import dev.evo.elasticmagic.query.Expression
 import dev.evo.elasticmagic.PreparedSearchQuery
 import dev.evo.elasticmagic.SearchHit
 import dev.evo.elasticmagic.SearchQueryResult
-import dev.evo.elasticmagic.ToValue
+import dev.evo.elasticmagic.query.ToValue
 import dev.evo.elasticmagic.serde.Deserializer
 import dev.evo.elasticmagic.serde.Serializer
 import dev.evo.elasticmagic.serde.Serializer.ArrayCtx

@@ -1,10 +1,10 @@
 package samples.document.`object`
 
-import dev.evo.elasticmagic.BaseDocSource
-import dev.evo.elasticmagic.BoundField
-import dev.evo.elasticmagic.Document
+import dev.evo.elasticmagic.doc.BaseDocSource
+import dev.evo.elasticmagic.doc.BoundField
+import dev.evo.elasticmagic.doc.Document
 import dev.evo.elasticmagic.SearchQuery
-import dev.evo.elasticmagic.SubDocument
+import dev.evo.elasticmagic.doc.SubDocument
 
 class GroupDoc(field: BoundField<BaseDocSource>) : SubDocument(field) {
     val id by int()

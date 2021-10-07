@@ -1,6 +1,6 @@
 package samples.document.join
 
-import dev.evo.elasticmagic.Document
+import dev.evo.elasticmagic.doc.Document
 
 abstract class BaseQADoc : Document() {
     val id by int()

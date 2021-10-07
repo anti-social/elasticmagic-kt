@@ -1,16 +1,16 @@
 package dev.evo.elasticmagic.compile
 
-import dev.evo.elasticmagic.AnyField
-import dev.evo.elasticmagic.BaseDocument
-import dev.evo.elasticmagic.Document
+import dev.evo.elasticmagic.doc.AnyField
+import dev.evo.elasticmagic.doc.BaseDocument
+import dev.evo.elasticmagic.doc.Document
 import dev.evo.elasticmagic.ElasticsearchVersion
-import dev.evo.elasticmagic.Expression
-import dev.evo.elasticmagic.FieldSet
-import dev.evo.elasticmagic.MetaFields
-import dev.evo.elasticmagic.RuntimeFields
-import dev.evo.elasticmagic.SubDocumentField
-import dev.evo.elasticmagic.SubFieldsField
-import dev.evo.elasticmagic.ToValue
+import dev.evo.elasticmagic.query.Expression
+import dev.evo.elasticmagic.doc.FieldSet
+import dev.evo.elasticmagic.doc.MetaFields
+import dev.evo.elasticmagic.doc.RuntimeFields
+import dev.evo.elasticmagic.doc.SubDocumentField
+import dev.evo.elasticmagic.doc.SubFieldsField
+import dev.evo.elasticmagic.query.ToValue
 import dev.evo.elasticmagic.serde.Serializer
 import dev.evo.elasticmagic.serde.Serializer.ArrayCtx
 import dev.evo.elasticmagic.serde.Serializer.ObjectCtx
