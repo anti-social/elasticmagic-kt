@@ -1,47 +1,12 @@
-package dev.evo.elasticmagic
+package dev.evo.elasticmagic.aggs
 
-import dev.evo.elasticmagic.aggs.AggRange
-import dev.evo.elasticmagic.aggs.AggValue
-import dev.evo.elasticmagic.aggs.Aggregation
-import dev.evo.elasticmagic.aggs.AggregationResult
-import dev.evo.elasticmagic.aggs.AvgAgg
-import dev.evo.elasticmagic.aggs.BaseTermsAgg
-import dev.evo.elasticmagic.aggs.BucketsOrder
-import dev.evo.elasticmagic.aggs.CardinalityAgg
-import dev.evo.elasticmagic.aggs.DateHistogramAgg
-import dev.evo.elasticmagic.aggs.DateRangeAgg
-import dev.evo.elasticmagic.aggs.ExtendedStatsAgg
-import dev.evo.elasticmagic.aggs.ExtendedStatsAggResult
-import dev.evo.elasticmagic.aggs.FilterAgg
-import dev.evo.elasticmagic.aggs.FiltersAgg
-import dev.evo.elasticmagic.aggs.GlobalAgg
-import dev.evo.elasticmagic.aggs.HistogramAgg
-import dev.evo.elasticmagic.aggs.HistogramBounds
-import dev.evo.elasticmagic.aggs.MaxAgg
-import dev.evo.elasticmagic.aggs.MedianAbsoluteDeviationAgg
-import dev.evo.elasticmagic.aggs.MinAgg
-import dev.evo.elasticmagic.aggs.RangeAgg
-import dev.evo.elasticmagic.aggs.RangeAggResult
-import dev.evo.elasticmagic.aggs.RangeBucket
-import dev.evo.elasticmagic.aggs.SignificantTermBucket
-import dev.evo.elasticmagic.aggs.SignificantTermsAgg
-import dev.evo.elasticmagic.aggs.SignificantTermsAggResult
-import dev.evo.elasticmagic.aggs.SingleDoubleValueAgg
-import dev.evo.elasticmagic.aggs.SingleLongValueAgg
-import dev.evo.elasticmagic.aggs.SingleValueMetricAggResult
-import dev.evo.elasticmagic.aggs.StatsAgg
-import dev.evo.elasticmagic.aggs.SumAgg
-import dev.evo.elasticmagic.aggs.TermBucket
-import dev.evo.elasticmagic.aggs.TermsAgg
-import dev.evo.elasticmagic.aggs.TermsAggResult
-import dev.evo.elasticmagic.aggs.ValueCountAgg
-import dev.evo.elasticmagic.aggs.WeightedAvgAgg
-import dev.evo.elasticmagic.compile.SearchQueryCompiler
-import dev.evo.elasticmagic.serde.Deserializer
+import dev.evo.elasticmagic.Bool
+import dev.evo.elasticmagic.FieldOperations
+import dev.evo.elasticmagic.MatchAll
+import dev.evo.elasticmagic.Script
+import dev.evo.elasticmagic.Sort
 import dev.evo.elasticmagic.serde.platform
 import dev.evo.elasticmagic.serde.Platform
-import dev.evo.elasticmagic.serde.StdDeserializer
-import dev.evo.elasticmagic.serde.StdSerializer
 
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.data.forAll
@@ -53,46 +18,14 @@ import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.maps.shouldContainExactly
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
+
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 
 import kotlin.test.Test
 
-class AggregationTests {
-    private val serializer = object : StdSerializer() {
-        override fun objToString(obj: Map<String, Any?>): String {
-            TODO("not implemented")
-        }
-    }
-    private val deserializer = object : StdDeserializer() {
-        override fun objFromStringOrNull(data: String): Deserializer.ObjectCtx? {
-            TODO("not implemented")
-        }
 
-    }
-    private val compiler = SearchQueryCompiler(
-        ElasticsearchVersion(6, 0, 0),
-    )
-
-    private fun Expression.compile(): Map<String, *> {
-        return serializer.buildObj {
-            compiler.visit(this, this@compile)
-        }
-    }
-
-    private fun <A: Aggregation<R>, R: AggregationResult> process(
-        agg: A, rawResult: Map<String, Any?>
-    ): R {
-        return agg.processResult(deserializer.wrapObj(rawResult))
-    }
-
-    object MovieDoc : Document() {
-        val genre by keyword()
-        val rating by float()
-        val numRatings by int("num_ratings")
-        val releaseDate by date("release_date")
-    }
-
+class AggregationTests : BaseTestAggregation() {
     @Test
     fun min_max_avg_sum() {
         table<String, (FieldOperations, Any?) -> SingleDoubleValueAgg>(
@@ -207,12 +140,14 @@ class AggregationTests {
                 missing = 0.0,
             ),
             weight = WeightedAvgAgg.ValueSource(
-                AggValue.Script(Script(
-                    "doc[params.rating_field].value + 1",
-                    params = mapOf(
-                        "rating_field" to MovieDoc.numRatings
+                AggValue.Script(
+                    Script(
+                        "doc[params.rating_field].value + 1",
+                        params = mapOf(
+                            "rating_field" to MovieDoc.numRatings
+                        )
                     )
-                )),
+                ),
             ),
         )
         agg.compile() shouldContainExactly mapOf(
