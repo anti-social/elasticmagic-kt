@@ -4,17 +4,31 @@ import dev.evo.elasticmagic.DocSource
 
 import samples.docsource.UserDoc
 
+// Explicit types are specified for clarity. You can totally omit them
+
 class RoleDocSource : DocSource() {
-    var name by UserDoc.roles.name.required()
-    var permissions by UserDoc.roles.permissions.required().list().required()
+    var name: String by UserDoc.roles.name.required()
+    var permissions: List<String> by UserDoc.roles.permissions.required().list().required()
 }
 
 class UserDocSource : DocSource() {
-    var id by UserDoc.id.required()
-    var login by UserDoc.login.required()
-    var groups by UserDoc.groups.required().list().required()
-    var roles by UserDoc.roles.source(::RoleDocSource).required().list()
+    // id and login fields must be present
+    var id: Int by UserDoc.id.required()
+    var login: String by UserDoc.login.required()
+
+    // If groups field is missing or null default value will be used
+    var groups: List<String> by UserDoc.groups.required().list().default { emptyList() }
+
+    // Optional list of a required RoleDocSource instances
+    var roles: List<RoleDocSource>? by UserDoc.roles.source(::RoleDocSource).required().list()
 }
+
+val nobody = UserDocSource().apply {
+    id = 65535
+    login = "nobody"
+}
+
+val nobodyHasGroups = nobody.groups.isEmpty()
 
 val root = UserDocSource().apply {
     id = 0
@@ -28,11 +42,9 @@ val root = UserDocSource().apply {
     )
 }
 
-// Int
-val rootId = root.id
+val rootId: Int = root.id
 
-// List<String>?
-val rootPermissions = root.roles
+val rootPermissions: List<String>? = root.roles
     ?.flatMap {
         it.permissions
     }
