@@ -21,7 +21,7 @@ fun Project.configureMultiplatform(
         }
 
         if (configureJs) {
-            js(LEGACY) {
+            js(IR) {
                 nodejs()
 
                 compilations.all {
