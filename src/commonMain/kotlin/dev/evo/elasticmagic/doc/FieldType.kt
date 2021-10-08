@@ -1,14 +1,16 @@
 package dev.evo.elasticmagic.doc
 
 import dev.evo.elasticmagic.Params
+
 import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
 
-class ValueDeserializationException(value: Any, type: String) :
-    IllegalArgumentException("Cannot deserialize $value to $type")
+class ValueDeserializationException(value: Any, type: String, cause: Throwable? = null) :
+    IllegalArgumentException("Cannot deserialize $value to $type", cause)
 
 interface FieldType<V> {
     val name: String
@@ -97,54 +99,109 @@ object TextType : StringType() {
     override val name = "text"
 }
 
-object DateTimeType : FieldType<LocalDateTime> {
+abstract class BaseDateTimeType<V> : FieldType<V> {
     override val name = "date"
 
-    @Suppress("MaxLineLength")
-    private val DATETIME_REGEX =
-        "(\\d{4})(?:-(\\d{2}))?(?:-(\\d{2}))?(?:T(\\d{2})?(?::(\\d{2}))?(?::(\\d{2}))?(?:\\.(\\d{1,9}))?(?:Z)?)?".toRegex()
+    protected abstract val dateTypeName: String
 
-    override fun serialize(v: LocalDateTime): Any {
-        return v.toInstant(TimeZone.UTC).toString()
+    companion object {
+        private val DATETIME_REGEX = Regex(
+            // Date
+            "(\\d{4})(?:-(\\d{2}))?(?:-(\\d{2}))?" +
+            "(?:T" +
+                // Time
+                "(\\d{2})?(?::(\\d{2}))?(?::(\\d{2}))?(?:\\.(\\d{1,9}))?" +
+                // Timezone
+                "(?:Z|([+-]\\d{2}(?::?\\d{2})?))?" +
+            ")?"
+        )
+
     }
 
-    override fun deserialize(v: Any, valueFactory: (() -> LocalDateTime)?) = when (v) {
-        is String -> {
-            parseDateWithOptionalTime(v)
-        }
-        is Number -> {
-            try {
-                parseDateWithOptionalTime(v.toString())
-            } catch (ex: ValueDeserializationException) {
-                Instant.fromEpochMilliseconds(v.toLong()).toLocalDateTime(TimeZone.UTC)
+    private fun fail(v: Any, cause: Throwable? = null): Nothing {
+        throw ValueDeserializationException(v, dateTypeName, cause)
+    }
+
+    internal fun parse(v: Any): Instant {
+        return try {
+            parseDateWithOptionalTime(v.toString())
+        } catch (ex: ValueDeserializationException) {
+            if (v is Number) {
+                Instant.fromEpochMilliseconds(v.toLong())
+            } else {
+                throw ex
             }
         }
-        else -> throw ValueDeserializationException(v, "LocalDateTime")
     }
 
     @Suppress("MagicNumber")
-    private fun parseDateWithOptionalTime(v: String): LocalDateTime {
-        val datetimeMatch = DATETIME_REGEX.matchEntire(v)
-            ?: throw ValueDeserializationException(v, "LocalDateTime")
-        val (year, month, day, hour, minute, second, msRaw) = datetimeMatch.destructured
+    internal fun parseDateWithOptionalTime(v: String): Instant {
+        val datetimeMatch = DATETIME_REGEX.matchEntire(v) ?: fail(v)
+        val (year, month, day, hour, minute, second, msRaw, tz) = datetimeMatch.destructured
         val ms = when (msRaw.length) {
             0 -> msRaw
             in 1..2 -> msRaw.padEnd(3, '0')
             else -> msRaw.substring(0, 3)
         }
-        return LocalDateTime(
-            year.toInt(),
-            month.toIntIfNotEmpty(1),
-            day.toIntIfNotEmpty(1),
-            hour.toIntIfNotEmpty(0),
-            minute.toIntIfNotEmpty(0),
-            second.toIntIfNotEmpty(0),
-            ms.toIntIfNotEmpty(0) * 1000_000
-        )
+        val timeZone = if (tz.isNotEmpty()) {
+            TimeZone.of(tz)
+        } else {
+            TimeZone.UTC
+        }
+        try {
+            return LocalDateTime(
+                year.toInt(),
+                month.toIntIfNotEmpty(1),
+                day.toIntIfNotEmpty(1),
+                hour.toIntIfNotEmpty(0),
+                minute.toIntIfNotEmpty(0),
+                second.toIntIfNotEmpty(0),
+                ms.toIntIfNotEmpty(0) * 1000_000
+            )
+                .toInstant(timeZone)
+        } catch (ex: IllegalArgumentException) {
+            fail(v, ex)
+        }
     }
 
     private fun String.toIntIfNotEmpty(default: Int): Int {
         return if (isEmpty()) default else toInt()
+    }
+}
+
+object InstantType : BaseDateTimeType<Instant>() {
+    override val dateTypeName = "Instant"
+
+    override fun serialize(v: Instant): Any {
+        return v.toString()
+    }
+
+    override fun deserialize(v: Any, valueFactory: (() -> Instant)?): Instant = parse(v)
+}
+
+object DateTimeType : BaseDateTimeType<LocalDateTime>() {
+    override val dateTypeName = "LocalDateTime"
+
+    override fun serialize(v: LocalDateTime): Any {
+        return v.toInstant(TimeZone.UTC).toString()
+    }
+
+    override fun deserialize(v: Any, valueFactory: (() -> LocalDateTime)?): LocalDateTime {
+        return parse(v).toLocalDateTime(TimeZone.UTC)
+    }
+}
+
+object DateType : BaseDateTimeType<LocalDate>() {
+    override val name = "date"
+
+    override val dateTypeName = "LocalDate"
+
+    override fun serialize(v: LocalDate): Any {
+        return v.toString()
+    }
+
+    override fun deserialize(v: Any, valueFactory: (() -> LocalDate)?): LocalDate {
+        return parse(v).toLocalDateTime(TimeZone.UTC).date
     }
 }
 
