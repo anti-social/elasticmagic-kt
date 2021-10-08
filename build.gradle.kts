@@ -96,6 +96,11 @@ allprojects {
             }
         }
 
+        tasks.register("listConfigurations") {
+            println("Available configurations:")
+            configurations.names.forEach { println("- $it") }
+        }
+
         val detektConfig = "$rootDir/detekt.yml"
         val detektOthers = tasks.register<io.gitlab.arturbosch.detekt.Detekt>("detektOthers") {
             config.from(detektConfig)
@@ -107,7 +112,7 @@ allprojects {
                 "nativeTest/**/*.kt",
             )
         }
-        val detekt = tasks.getByName<io.gitlab.arturbosch.detekt.Detekt>("detekt") {
+        val detektJvm = tasks.getByName<io.gitlab.arturbosch.detekt.Detekt>("detekt") {
             config.from(detektConfig)
             source = fileTree("$projectDir/src").apply {
                 include(
@@ -123,10 +128,11 @@ allprojects {
                 configurations.getByName("jvmTestCompileClasspath"),
             )
             jvmTarget = Versions.jvmTarget.toString()
-
-            dependsOn(detektOthers)
         }
-        tasks.getByName("check").dependsOn(detekt)
+        val detektAll = tasks.register("detektAll") {
+            dependsOn(detektJvm, detektOthers)
+        }
+        tasks.getByName("check").dependsOn(detektAll)
     }
 }
 
