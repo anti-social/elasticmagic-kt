@@ -134,9 +134,6 @@ configureMultiplatform()
 
 configure<KotlinMultiplatformExtension> {
     sourceSets {
-        all {
-            languageSettings.useExperimentalAnnotation("kotlin.ExperimentalStdlibApi")
-        }
         val commonMain by getting {
             dependencies {
                 api(project(":elasticmagic-serde"))
