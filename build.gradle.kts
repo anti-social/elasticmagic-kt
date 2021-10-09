@@ -145,7 +145,11 @@ configure<KotlinMultiplatformExtension> {
                 api(project(":elasticmagic-serde"))
                 api(project(":elasticmagic-transport"))
                 implementation(Libs.kotlinxCoroutines("core"))
-                api(Libs.kotlinxDatetime())
+            }
+        }
+        val commonTest by getting {
+            dependencies {
+                api(project(":elasticmagic-kotlinx-datetime"))
             }
         }
     }

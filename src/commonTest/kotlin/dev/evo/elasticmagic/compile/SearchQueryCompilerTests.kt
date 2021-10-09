@@ -11,6 +11,7 @@ import dev.evo.elasticmagic.doc.Document
 import dev.evo.elasticmagic.doc.FieldType
 import dev.evo.elasticmagic.doc.RootFieldSet
 import dev.evo.elasticmagic.doc.SubDocument
+import dev.evo.elasticmagic.doc.datetime
 import dev.evo.elasticmagic.doc.serErr
 import dev.evo.elasticmagic.query.BoolNode
 import dev.evo.elasticmagic.query.DisMax
@@ -73,7 +74,7 @@ class SearchQueryCompilerTests {
     @Test
     fun fieldTypeSerialization() {
         val userDoc = object : Document() {
-            val lastLoggedAt by date()
+            val lastLoggedAt by datetime()
         }
 
         val compiled = compile(

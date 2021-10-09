@@ -9,6 +9,7 @@ import dev.evo.elasticmagic.doc.KeywordType
 import dev.evo.elasticmagic.doc.RuntimeFields
 import dev.evo.elasticmagic.doc.SubDocument
 import dev.evo.elasticmagic.doc.SubFields
+import dev.evo.elasticmagic.doc.datetime
 import dev.evo.elasticmagic.doc.mergeDocuments
 import dev.evo.elasticmagic.query.Script
 import dev.evo.elasticmagic.serde.StdSerializer
@@ -139,7 +140,7 @@ class MappingCompilerTests {
     fun testRuntimeFields() {
         val logDoc = object : Document() {
             // TODO: Replace with date field
-            val timestamp by date("@timestamp")
+            val timestamp by datetime("@timestamp")
 
             override val runtime = object : RuntimeFields() {
                 val dayOfWeek by runtime(

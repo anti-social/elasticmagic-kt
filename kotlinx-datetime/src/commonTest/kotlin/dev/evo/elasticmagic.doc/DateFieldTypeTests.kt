@@ -10,7 +10,7 @@ import kotlinx.datetime.toInstant
 
 import kotlin.test.Test
 
-class FieldTypeTests {
+class DateFieldTypeTests {
     @Test
     fun instantSerialize() {
         InstantType.serialize(
