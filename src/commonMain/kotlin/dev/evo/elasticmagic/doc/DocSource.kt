@@ -681,6 +681,8 @@ internal object AnyFieldType : FieldType<Any> {
     override val name: String
         get() = throw IllegalStateException("Should not be used in mappings")
 
+    override fun serializeTerm(v: Any?): Any = v ?: serErr(v)
+
     override fun deserialize(v: Any, valueFactory: (() -> Any)?): Any {
         return v
     }
@@ -689,6 +691,8 @@ internal object AnyFieldType : FieldType<Any> {
 internal object DynDocSourceFieldType : FieldType<DynDocSource> {
     override val name: String
         get() = throw IllegalStateException("Should not be used in mappings")
+
+    override fun serializeTerm(v: Any?): Any = serErr(v)
 
     override fun deserialize(v: Any, valueFactory: (() -> DynDocSource)?): DynDocSource {
         return when (v) {

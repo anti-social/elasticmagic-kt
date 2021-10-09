@@ -1,9 +1,17 @@
 package dev.evo.elasticmagic.query
 
+import dev.evo.elasticmagic.doc.FieldType
+
 /**
  * Holds field operations shortcuts.
  */
 interface FieldOperations : Named {
+    fun getFieldType(): FieldType<*>
+
+    fun serializeTerm(v: Any?): Any? {
+        return getFieldType().serializeTerm(v)
+    }
+
     fun eq(term: Any?): QueryExpression {
         if (term == null) {
             return Bool.mustNot(Exists(this))

@@ -23,11 +23,9 @@ enum class Dynamic : ToValue {
 
 /**
  * Represents field of any type in an Elasticsearch document.
- * See [FieldSet.getAllFields] and [FieldSet.getFieldsByName] methods.
+ * See [FieldSet.getAllFields] and [FieldSet.get] methods.
  */
 interface AnyField : FieldOperations {
-    fun getFieldType(): FieldType<*>
-
     fun getMappingParams(): Params
 
     fun getParent(): Named
@@ -107,9 +105,9 @@ class BoundJoinField(
 ) : BoundField<Join>(name, type, Params(params, "relations" to relations), parent, ignored) {
 
     inner class Parent(private val name: String) : FieldOperations {
-        override fun getFieldName(): String {
-            return name
-        }
+        override fun getFieldType(): FieldType<*> = KeywordType
+
+        override fun getFieldName(): String = name
 
         override fun getQualifiedFieldName(): String {
             return "${this@BoundJoinField.getQualifiedFieldName()}#$name"
@@ -505,7 +503,7 @@ abstract class SubDocument(
 
     override fun getQualifiedFieldName(): String = field.getQualifiedFieldName()
 
-    fun getFieldType(): FieldType<BaseDocSource> = field.getFieldType()
+    override fun getFieldType(): FieldType<BaseDocSource> = field.getFieldType()
 
     fun getParent(): FieldSet = field.getParent()
 
