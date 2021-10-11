@@ -175,7 +175,6 @@ $dokka.location:dev.evo.elasticmagic.aggs/DateHistogramBucket/DateHistogramBucke
 $dokka.location:dev.evo.elasticmagic.aggs/DateHistogramBucket/aggs/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.aggs/-date-histogram-bucket/aggs.html
 $dokka.location:dev.evo.elasticmagic.aggs/DateHistogramBucket/docCount/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.aggs/-date-histogram-bucket/doc-count.html
 $dokka.location:dev.evo.elasticmagic.aggs/DateHistogramBucket/key/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.aggs/-date-histogram-bucket/key.html
-$dokka.location:dev.evo.elasticmagic.aggs/DateHistogramBucket/keyAsDatetime/#kotlinx.datetime.TimeZone/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.aggs/-date-histogram-bucket/key-as-datetime.html
 $dokka.location:dev.evo.elasticmagic.aggs/DateHistogramBucket/keyAsString/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.aggs/-date-histogram-bucket/key-as-string.html
 $dokka.location:dev.evo.elasticmagic.aggs/DateRangeAgg.Companion///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.aggs/-date-range-agg/-companion/index.html
 $dokka.location:dev.evo.elasticmagic.aggs/DateRangeAgg.Companion/simpleRanges/#dev.evo.elasticmagic.query.FieldOperations#kotlin.collections.List[kotlin.Pair[kotlin.String?,kotlin.String?]]#kotlin.String?#kotlin.String?#kotlin.collections.Map[kotlin.String,dev.evo.elasticmagic.aggs.Aggregation[*]]#kotlin.collections.Map[kotlin.String,kotlin.Any]/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.aggs/-date-range-agg/-companion/simple-ranges.html
@@ -198,11 +197,9 @@ $dokka.location:dev.evo.elasticmagic.aggs/DateRangeBucket/DateRangeBucket/#kotli
 $dokka.location:dev.evo.elasticmagic.aggs/DateRangeBucket/aggs/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.aggs/-date-range-bucket/aggs.html
 $dokka.location:dev.evo.elasticmagic.aggs/DateRangeBucket/docCount/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.aggs/-date-range-bucket/doc-count.html
 $dokka.location:dev.evo.elasticmagic.aggs/DateRangeBucket/from/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.aggs/-date-range-bucket/from.html
-$dokka.location:dev.evo.elasticmagic.aggs/DateRangeBucket/fromAsDatetime/#kotlinx.datetime.TimeZone/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.aggs/-date-range-bucket/from-as-datetime.html
 $dokka.location:dev.evo.elasticmagic.aggs/DateRangeBucket/fromAsString/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.aggs/-date-range-bucket/from-as-string.html
 $dokka.location:dev.evo.elasticmagic.aggs/DateRangeBucket/key/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.aggs/-date-range-bucket/key.html
 $dokka.location:dev.evo.elasticmagic.aggs/DateRangeBucket/to/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.aggs/-date-range-bucket/to.html
-$dokka.location:dev.evo.elasticmagic.aggs/DateRangeBucket/toAsDatetime/#kotlinx.datetime.TimeZone/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.aggs/-date-range-bucket/to-as-datetime.html
 $dokka.location:dev.evo.elasticmagic.aggs/DateRangeBucket/toAsString/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.aggs/-date-range-bucket/to-as-string.html
 $dokka.location:dev.evo.elasticmagic.aggs/ExtendedStatsAgg///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.aggs/-extended-stats-agg/index.html
 $dokka.location:dev.evo.elasticmagic.aggs/ExtendedStatsAgg/ExtendedStatsAgg/#dev.evo.elasticmagic.aggs.AggValue#kotlin.Any?#kotlin.String?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.aggs/-extended-stats-agg/-extended-stats-agg.html
@@ -607,10 +604,12 @@ $dokka.location:dev.evo.elasticmagic.compile/UpdateMappingRequest/writeIndexOnly
 $dokka.location:dev.evo.elasticmagic.doc////PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/index.html
 $dokka.location:dev.evo.elasticmagic.doc//ActionMeta/#kotlin.String?#kotlin.String?#kotlin.Long?#kotlin.Long?#kotlin.Long?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-action-meta.html
 $dokka.location:dev.evo.elasticmagic.doc//IdentActionMeta/#kotlin.String#kotlin.String?#kotlin.Long?#kotlin.Long?#kotlin.Long?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-ident-action-meta.html
+$dokka.location:dev.evo.elasticmagic.doc//deErr/#kotlin.Any#kotlin.String#kotlin.Throwable?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/de-err.html
 $dokka.location:dev.evo.elasticmagic.doc//emptySource/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/empty-source.html
 $dokka.location:dev.evo.elasticmagic.doc//list/dev.evo.elasticmagic.doc.BoundField[TypeParam(bounds=[kotlin.Any?])]#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/list.html
 $dokka.location:dev.evo.elasticmagic.doc//list/dev.evo.elasticmagic.doc.SubDocument#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/list.html
 $dokka.location:dev.evo.elasticmagic.doc//mergeDocuments/#kotlin.Array[dev.evo.elasticmagic.doc.Document]/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/merge-documents.html
+$dokka.location:dev.evo.elasticmagic.doc//serErr/#kotlin.Any?#kotlin.Throwable?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/ser-err.html
 $dokka.location:dev.evo.elasticmagic.doc/Action///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-action/index.html
 $dokka.location:dev.evo.elasticmagic.doc/Action/concurrencyControl/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-action/concurrency-control.html
 $dokka.location:dev.evo.elasticmagic.doc/Action/meta/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-action/meta.html
@@ -624,7 +623,6 @@ $dokka.location:dev.evo.elasticmagic.doc/ActionMeta/seqNo/#/PointingToDeclaratio
 $dokka.location:dev.evo.elasticmagic.doc/ActionMeta/version/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-action-meta/version.html
 $dokka.location:dev.evo.elasticmagic.doc/ActionSource///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-action-source/index.html
 $dokka.location:dev.evo.elasticmagic.doc/AnyField///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-any-field/index.html
-$dokka.location:dev.evo.elasticmagic.doc/AnyField/getFieldType/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-any-field/get-field-type.html
 $dokka.location:dev.evo.elasticmagic.doc/AnyField/getMappingParams/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-any-field/get-mapping-params.html
 $dokka.location:dev.evo.elasticmagic.doc/AnyField/getParent/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-any-field/get-parent.html
 $dokka.location:dev.evo.elasticmagic.doc/AnyField/isIgnored/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-any-field/is-ignored.html
@@ -646,6 +644,7 @@ $dokka.location:dev.evo.elasticmagic.doc/BaseDocument/subFields/dev.evo.elasticm
 $dokka.location:dev.evo.elasticmagic.doc/BooleanType///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-boolean-type/index.html
 $dokka.location:dev.evo.elasticmagic.doc/BooleanType/deserialize/#kotlin.Any#kotlin.Function0[kotlin.Boolean]?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-boolean-type/deserialize.html
 $dokka.location:dev.evo.elasticmagic.doc/BooleanType/name/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-boolean-type/name.html
+$dokka.location:dev.evo.elasticmagic.doc/BooleanType/serializeTerm/#kotlin.Any?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-boolean-type/serialize-term.html
 $dokka.location:dev.evo.elasticmagic.doc/BoundField///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-bound-field/index.html
 $dokka.location:dev.evo.elasticmagic.doc/BoundField/BoundField/#kotlin.String#dev.evo.elasticmagic.doc.FieldType[TypeParam(bounds=[kotlin.Any?])]#kotlin.collections.Map[kotlin.String,kotlin.Any]#dev.evo.elasticmagic.doc.FieldSet#kotlin.Boolean/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-bound-field/-bound-field.html
 $dokka.location:dev.evo.elasticmagic.doc/BoundField/equals/#kotlin.Any?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-bound-field/equals.html
@@ -659,6 +658,7 @@ $dokka.location:dev.evo.elasticmagic.doc/BoundField/isIgnored/#/PointingToDeclar
 $dokka.location:dev.evo.elasticmagic.doc/BoundJoinField.Parent///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-bound-join-field/-parent/index.html
 $dokka.location:dev.evo.elasticmagic.doc/BoundJoinField.Parent/Parent/#kotlin.String/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-bound-join-field/-parent/-parent.html
 $dokka.location:dev.evo.elasticmagic.doc/BoundJoinField.Parent/getFieldName/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-bound-join-field/-parent/get-field-name.html
+$dokka.location:dev.evo.elasticmagic.doc/BoundJoinField.Parent/getFieldType/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-bound-join-field/-parent/get-field-type.html
 $dokka.location:dev.evo.elasticmagic.doc/BoundJoinField.Parent/getQualifiedFieldName/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-bound-join-field/-parent/get-qualified-field-name.html
 $dokka.location:dev.evo.elasticmagic.doc/BoundJoinField///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-bound-join-field/index.html
 $dokka.location:dev.evo.elasticmagic.doc/BoundJoinField/BoundJoinField/#kotlin.String#dev.evo.elasticmagic.doc.FieldType[dev.evo.elasticmagic.doc.Join]#kotlin.collections.Map[kotlin.String,kotlin.collections.List[kotlin.String]]#kotlin.collections.Map[kotlin.String,kotlin.Any]#dev.evo.elasticmagic.doc.FieldSet#kotlin.Boolean/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-bound-join-field/-bound-join-field.html
@@ -681,10 +681,6 @@ $dokka.location:dev.evo.elasticmagic.doc/ConcurrencyControl/value/#/PointingToDe
 $dokka.location:dev.evo.elasticmagic.doc/CreateAction///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-create-action/index.html
 $dokka.location:dev.evo.elasticmagic.doc/CreateAction/CreateAction/#dev.evo.elasticmagic.doc.ActionMeta#TypeParam(bounds=[dev.evo.elasticmagic.doc.BaseDocSource])#kotlin.String?#dev.evo.elasticmagic.doc.ConcurrencyControl?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-create-action/-create-action.html
 $dokka.location:dev.evo.elasticmagic.doc/CreateAction/name/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-create-action/name.html
-$dokka.location:dev.evo.elasticmagic.doc/DateTimeType///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-date-time-type/index.html
-$dokka.location:dev.evo.elasticmagic.doc/DateTimeType/deserialize/#kotlin.Any#kotlin.Function0[kotlinx.datetime.LocalDateTime]?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-date-time-type/deserialize.html
-$dokka.location:dev.evo.elasticmagic.doc/DateTimeType/name/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-date-time-type/name.html
-$dokka.location:dev.evo.elasticmagic.doc/DateTimeType/serialize/#kotlinx.datetime.LocalDateTime/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-date-time-type/serialize.html
 $dokka.location:dev.evo.elasticmagic.doc/DeleteAction///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-delete-action/index.html
 $dokka.location:dev.evo.elasticmagic.doc/DeleteAction/DeleteAction/#dev.evo.elasticmagic.doc.IdentActionMeta#dev.evo.elasticmagic.doc.ConcurrencyControl?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-delete-action/-delete-action.html
 $dokka.location:dev.evo.elasticmagic.doc/DeleteAction/concurrencyControl/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-delete-action/concurrency-control.html
@@ -740,6 +736,7 @@ $dokka.location:dev.evo.elasticmagic.doc/Document/runtime/#/PointingToDeclaratio
 $dokka.location:dev.evo.elasticmagic.doc/DoubleType///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-double-type/index.html
 $dokka.location:dev.evo.elasticmagic.doc/DoubleType/deserialize/#kotlin.Any#kotlin.Function0[kotlin.Double]?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-double-type/deserialize.html
 $dokka.location:dev.evo.elasticmagic.doc/DoubleType/name/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-double-type/name.html
+$dokka.location:dev.evo.elasticmagic.doc/DoubleType/serializeTerm/#kotlin.Any?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-double-type/serialize-term.html
 $dokka.location:dev.evo.elasticmagic.doc/DynDocSource///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-dyn-doc-source/index.html
 $dokka.location:dev.evo.elasticmagic.doc/DynDocSource/DynDocSource/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-dyn-doc-source/-dyn-doc-source.html
 $dokka.location:dev.evo.elasticmagic.doc/DynDocSource/DynDocSource/#kotlin.Function1[dev.evo.elasticmagic.doc.DynDocSource,kotlin.Unit]/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-dyn-doc-source/-dyn-doc-source.html
@@ -782,7 +779,6 @@ $dokka.location:dev.evo.elasticmagic.doc/FieldSet.JoinField/relations/#/Pointing
 $dokka.location:dev.evo.elasticmagic.doc/FieldSet///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-field-set/index.html
 $dokka.location:dev.evo.elasticmagic.doc/FieldSet/FieldSet/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-field-set/-field-set.html
 $dokka.location:dev.evo.elasticmagic.doc/FieldSet/boolean/#kotlin.String?#kotlin.Boolean?#kotlin.Boolean?#kotlin.Boolean?#kotlin.collections.Map[kotlin.String,kotlin.Any]?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-field-set/boolean.html
-$dokka.location:dev.evo.elasticmagic.doc/FieldSet/date/#kotlin.String?#kotlin.Boolean?#kotlin.Boolean?#kotlin.Boolean?#kotlin.collections.Map[kotlin.String,kotlin.Any]?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-field-set/date.html
 $dokka.location:dev.evo.elasticmagic.doc/FieldSet/double/#kotlin.String?#kotlin.Boolean?#kotlin.Boolean?#kotlin.Boolean?#kotlin.collections.Map[kotlin.String,kotlin.Any]?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-field-set/double.html
 $dokka.location:dev.evo.elasticmagic.doc/FieldSet/field/#dev.evo.elasticmagic.doc.FieldType[TypeParam(bounds=[kotlin.Any?])]#kotlin.Boolean?#kotlin.Boolean?#kotlin.Boolean?#kotlin.collections.Map[kotlin.String,kotlin.Any]?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-field-set/field.html
 $dokka.location:dev.evo.elasticmagic.doc/FieldSet/field/#kotlin.String?#dev.evo.elasticmagic.doc.FieldType[TypeParam(bounds=[kotlin.Any?])]#kotlin.Boolean?#kotlin.Boolean?#kotlin.Boolean?#kotlin.collections.Map[kotlin.String,kotlin.Any]?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-field-set/field.html
@@ -798,9 +794,11 @@ $dokka.location:dev.evo.elasticmagic.doc/FieldType///PointingToDeclaration/elas
 $dokka.location:dev.evo.elasticmagic.doc/FieldType/deserialize/#kotlin.Any#kotlin.Function0[TypeParam(bounds=[kotlin.Any?])]?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-field-type/deserialize.html
 $dokka.location:dev.evo.elasticmagic.doc/FieldType/name/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-field-type/name.html
 $dokka.location:dev.evo.elasticmagic.doc/FieldType/serialize/#TypeParam(bounds=[kotlin.Any?])/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-field-type/serialize.html
+$dokka.location:dev.evo.elasticmagic.doc/FieldType/serializeTerm/#kotlin.Any?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-field-type/serialize-term.html
 $dokka.location:dev.evo.elasticmagic.doc/FloatType///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-float-type/index.html
 $dokka.location:dev.evo.elasticmagic.doc/FloatType/deserialize/#kotlin.Any#kotlin.Function0[kotlin.Float]?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-float-type/deserialize.html
 $dokka.location:dev.evo.elasticmagic.doc/FloatType/name/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-float-type/name.html
+$dokka.location:dev.evo.elasticmagic.doc/FloatType/serializeTerm/#kotlin.Any?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-float-type/serialize-term.html
 $dokka.location:dev.evo.elasticmagic.doc/IdentActionMeta///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-ident-action-meta/index.html
 $dokka.location:dev.evo.elasticmagic.doc/IdentActionMeta/id/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-ident-action-meta/id.html
 $dokka.location:dev.evo.elasticmagic.doc/IdentDocSourceWithMeta///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-ident-doc-source-with-meta/index.html
@@ -817,6 +815,7 @@ $dokka.location:dev.evo.elasticmagic.doc/IndexAction/source/#/PointingToDeclarat
 $dokka.location:dev.evo.elasticmagic.doc/IntType///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-int-type/index.html
 $dokka.location:dev.evo.elasticmagic.doc/IntType/deserialize/#kotlin.Any#kotlin.Function0[kotlin.Int]?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-int-type/deserialize.html
 $dokka.location:dev.evo.elasticmagic.doc/IntType/name/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-int-type/name.html
+$dokka.location:dev.evo.elasticmagic.doc/IntType/serializeTerm/#kotlin.Any?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-int-type/serialize-term.html
 $dokka.location:dev.evo.elasticmagic.doc/Join///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-join/index.html
 $dokka.location:dev.evo.elasticmagic.doc/Join/Join/#kotlin.String#kotlin.String?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-join/-join.html
 $dokka.location:dev.evo.elasticmagic.doc/Join/name/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-join/name.html
@@ -825,11 +824,13 @@ $dokka.location:dev.evo.elasticmagic.doc/JoinType///PointingToDeclaration/elast
 $dokka.location:dev.evo.elasticmagic.doc/JoinType/deserialize/#kotlin.Any#kotlin.Function0[dev.evo.elasticmagic.doc.Join]?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-join-type/deserialize.html
 $dokka.location:dev.evo.elasticmagic.doc/JoinType/name/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-join-type/name.html
 $dokka.location:dev.evo.elasticmagic.doc/JoinType/serialize/#dev.evo.elasticmagic.doc.Join/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-join-type/serialize.html
+$dokka.location:dev.evo.elasticmagic.doc/JoinType/serializeTerm/#kotlin.Any?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-join-type/serialize-term.html
 $dokka.location:dev.evo.elasticmagic.doc/KeywordType///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-keyword-type/index.html
 $dokka.location:dev.evo.elasticmagic.doc/KeywordType/name/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-keyword-type/name.html
 $dokka.location:dev.evo.elasticmagic.doc/LongType///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-long-type/index.html
 $dokka.location:dev.evo.elasticmagic.doc/LongType/deserialize/#kotlin.Any#kotlin.Function0[kotlin.Long]?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-long-type/deserialize.html
 $dokka.location:dev.evo.elasticmagic.doc/LongType/name/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-long-type/name.html
+$dokka.location:dev.evo.elasticmagic.doc/LongType/serializeTerm/#kotlin.Any?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-long-type/serialize-term.html
 $dokka.location:dev.evo.elasticmagic.doc/MetaFields.BaseMetaField///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-meta-fields/-base-meta-field/index.html
 $dokka.location:dev.evo.elasticmagic.doc/MetaFields.BaseMetaField/BaseMetaField/#kotlin.String#dev.evo.elasticmagic.doc.FieldType[TypeParam(bounds=[kotlin.Any?])]#kotlin.collections.Map[kotlin.String,kotlin.Any]#kotlin.Function3[kotlin.String,kotlin.collections.Map[kotlin.String,kotlin.Any],dev.evo.elasticmagic.doc.MetaFields,TypeParam(bounds=[dev.evo.elasticmagic.doc.AnyField])]/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-meta-fields/-base-meta-field/-base-meta-field.html
 $dokka.location:dev.evo.elasticmagic.doc/MetaFields.BaseMetaField/provideDelegate/#dev.evo.elasticmagic.doc.MetaFields#kotlin.reflect.KProperty[*]/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-meta-fields/-base-meta-field/provide-delegate.html
@@ -872,11 +873,13 @@ $dokka.location:dev.evo.elasticmagic.doc/ObjectType/ObjectType/#/PointingToDecla
 $dokka.location:dev.evo.elasticmagic.doc/ObjectType/deserialize/#kotlin.Any#kotlin.Function0[TypeParam(bounds=[dev.evo.elasticmagic.doc.BaseDocSource])]?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-object-type/deserialize.html
 $dokka.location:dev.evo.elasticmagic.doc/ObjectType/name/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-object-type/name.html
 $dokka.location:dev.evo.elasticmagic.doc/ObjectType/serialize/#TypeParam(bounds=[dev.evo.elasticmagic.doc.BaseDocSource])/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-object-type/serialize.html
+$dokka.location:dev.evo.elasticmagic.doc/ObjectType/serializeTerm/#kotlin.Any?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-object-type/serialize-term.html
 $dokka.location:dev.evo.elasticmagic.doc/OptionalListType///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-optional-list-type/index.html
 $dokka.location:dev.evo.elasticmagic.doc/OptionalListType/OptionalListType/#dev.evo.elasticmagic.doc.FieldType[TypeParam(bounds=[kotlin.Any?])]/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-optional-list-type/-optional-list-type.html
 $dokka.location:dev.evo.elasticmagic.doc/OptionalListType/deserialize/#kotlin.Any#kotlin.Function0[kotlin.collections.List[TypeParam(bounds=[kotlin.Any?])?]]?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-optional-list-type/deserialize.html
 $dokka.location:dev.evo.elasticmagic.doc/OptionalListType/name/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-optional-list-type/name.html
 $dokka.location:dev.evo.elasticmagic.doc/OptionalListType/serialize/#kotlin.collections.List[TypeParam(bounds=[kotlin.Any?])?]/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-optional-list-type/serialize.html
+$dokka.location:dev.evo.elasticmagic.doc/OptionalListType/serializeTerm/#kotlin.Any?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-optional-list-type/serialize-term.html
 $dokka.location:dev.evo.elasticmagic.doc/OptionalListType/type/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-optional-list-type/type.html
 $dokka.location:dev.evo.elasticmagic.doc/Refresh.FALSE///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-refresh/-f-a-l-s-e/index.html
 $dokka.location:dev.evo.elasticmagic.doc/Refresh.FALSE/name/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-refresh/-f-a-l-s-e/name.html
@@ -894,6 +897,7 @@ $dokka.location:dev.evo.elasticmagic.doc/RequiredListType/RequiredListType/#dev.
 $dokka.location:dev.evo.elasticmagic.doc/RequiredListType/deserialize/#kotlin.Any#kotlin.Function0[kotlin.collections.List[TypeParam(bounds=[kotlin.Any?])]]?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-required-list-type/deserialize.html
 $dokka.location:dev.evo.elasticmagic.doc/RequiredListType/name/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-required-list-type/name.html
 $dokka.location:dev.evo.elasticmagic.doc/RequiredListType/serialize/#kotlin.collections.List[TypeParam(bounds=[kotlin.Any?])]/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-required-list-type/serialize.html
+$dokka.location:dev.evo.elasticmagic.doc/RequiredListType/serializeTerm/#kotlin.Any?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-required-list-type/serialize-term.html
 $dokka.location:dev.evo.elasticmagic.doc/RequiredListType/type/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-required-list-type/type.html
 $dokka.location:dev.evo.elasticmagic.doc/RootFieldSet.Companion///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-root-field-set/-companion/index.html
 $dokka.location:dev.evo.elasticmagic.doc/RootFieldSet///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-root-field-set/index.html
@@ -914,10 +918,12 @@ $dokka.location:dev.evo.elasticmagic.doc/SourceType/SourceType/#dev.evo.elasticm
 $dokka.location:dev.evo.elasticmagic.doc/SourceType/deserialize/#kotlin.Any#kotlin.Function0[TypeParam(bounds=[dev.evo.elasticmagic.doc.BaseDocSource])]?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-source-type/deserialize.html
 $dokka.location:dev.evo.elasticmagic.doc/SourceType/name/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-source-type/name.html
 $dokka.location:dev.evo.elasticmagic.doc/SourceType/serialize/#TypeParam(bounds=[dev.evo.elasticmagic.doc.BaseDocSource])/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-source-type/serialize.html
+$dokka.location:dev.evo.elasticmagic.doc/SourceType/serializeTerm/#kotlin.Any?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-source-type/serialize-term.html
 $dokka.location:dev.evo.elasticmagic.doc/SourceType/type/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-source-type/type.html
 $dokka.location:dev.evo.elasticmagic.doc/StringType///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-string-type/index.html
 $dokka.location:dev.evo.elasticmagic.doc/StringType/StringType/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-string-type/-string-type.html
 $dokka.location:dev.evo.elasticmagic.doc/StringType/deserialize/#kotlin.Any#kotlin.Function0[kotlin.String]?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-string-type/deserialize.html
+$dokka.location:dev.evo.elasticmagic.doc/StringType/serializeTerm/#kotlin.Any?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-string-type/serialize-term.html
 $dokka.location:dev.evo.elasticmagic.doc/SubDocument.UnboundSubDocument///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-sub-document/-unbound-sub-document/index.html
 $dokka.location:dev.evo.elasticmagic.doc/SubDocument.UnboundSubDocument/UnboundSubDocument/#kotlin.String?#dev.evo.elasticmagic.doc.ObjectType[dev.evo.elasticmagic.doc.BaseDocSource]#kotlin.collections.Map[kotlin.String,kotlin.Any]#kotlin.Function1[dev.evo.elasticmagic.doc.BoundField[dev.evo.elasticmagic.doc.BaseDocSource],TypeParam(bounds=[dev.evo.elasticmagic.doc.SubDocument])]/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-sub-document/-unbound-sub-document/-unbound-sub-document.html
 $dokka.location:dev.evo.elasticmagic.doc/SubDocument.UnboundSubDocument/provideDelegate/#dev.evo.elasticmagic.doc.BaseDocument#kotlin.reflect.KProperty[*]/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-sub-document/-unbound-sub-document/provide-delegate.html
@@ -958,7 +964,9 @@ $dokka.location:dev.evo.elasticmagic.doc/UpdateSource///PointingToDeclaration/e
 $dokka.location:dev.evo.elasticmagic.doc/UpdateSource/detectNoop/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-update-source/detect-noop.html
 $dokka.location:dev.evo.elasticmagic.doc/UpdateSource/upsert/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-update-source/upsert.html
 $dokka.location:dev.evo.elasticmagic.doc/ValueDeserializationException///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-value-deserialization-exception/index.html
-$dokka.location:dev.evo.elasticmagic.doc/ValueDeserializationException/ValueDeserializationException/#kotlin.Any#kotlin.String/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-value-deserialization-exception/-value-deserialization-exception.html
+$dokka.location:dev.evo.elasticmagic.doc/ValueDeserializationException/ValueDeserializationException/#kotlin.Any#kotlin.String#kotlin.Throwable?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-value-deserialization-exception/-value-deserialization-exception.html
+$dokka.location:dev.evo.elasticmagic.doc/ValueSerializationException///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-value-serialization-exception/index.html
+$dokka.location:dev.evo.elasticmagic.doc/ValueSerializationException/ValueSerializationException/#kotlin.Any?#kotlin.Throwable?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-value-serialization-exception/-value-serialization-exception.html
 $dokka.location:dev.evo.elasticmagic.query////PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.query/index.html
 $dokka.location:dev.evo.elasticmagic.query/Bool.Companion///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.query/-bool/-companion/index.html
 $dokka.location:dev.evo.elasticmagic.query/Bool.Companion/filter/#kotlin.Array[dev.evo.elasticmagic.query.QueryExpression]/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.query/-bool/-companion/filter.html
@@ -1031,6 +1039,7 @@ $dokka.location:dev.evo.elasticmagic.query/FieldOperations/asc/#/PointingToDecla
 $dokka.location:dev.evo.elasticmagic.query/FieldOperations/contains/#kotlin.collections.List[kotlin.Any]/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.query/-field-operations/contains.html
 $dokka.location:dev.evo.elasticmagic.query/FieldOperations/desc/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.query/-field-operations/desc.html
 $dokka.location:dev.evo.elasticmagic.query/FieldOperations/eq/#kotlin.Any?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.query/-field-operations/eq.html
+$dokka.location:dev.evo.elasticmagic.query/FieldOperations/getFieldType/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.query/-field-operations/get-field-type.html
 $dokka.location:dev.evo.elasticmagic.query/FieldOperations/gt/#kotlin.Any?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.query/-field-operations/gt.html
 $dokka.location:dev.evo.elasticmagic.query/FieldOperations/gte/#kotlin.Any?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.query/-field-operations/gte.html
 $dokka.location:dev.evo.elasticmagic.query/FieldOperations/lt/#kotlin.Any?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.query/-field-operations/lt.html
@@ -1038,6 +1047,7 @@ $dokka.location:dev.evo.elasticmagic.query/FieldOperations/lte/#kotlin.Any?/Poin
 $dokka.location:dev.evo.elasticmagic.query/FieldOperations/match/#kotlin.String/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.query/-field-operations/match.html
 $dokka.location:dev.evo.elasticmagic.query/FieldOperations/ne/#kotlin.Any?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.query/-field-operations/ne.html
 $dokka.location:dev.evo.elasticmagic.query/FieldOperations/range/#kotlin.Any?#kotlin.Any?#kotlin.Any?#kotlin.Any?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.query/-field-operations/range.html
+$dokka.location:dev.evo.elasticmagic.query/FieldOperations/serializeTerm/#kotlin.Any?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.query/-field-operations/serialize-term.html
 $dokka.location:dev.evo.elasticmagic.query/FunctionScore.BoostMode.AVG///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.query/-function-score/-boost-mode/-a-v-g/index.html
 $dokka.location:dev.evo.elasticmagic.query/FunctionScore.BoostMode.AVG/name/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.query/-function-score/-boost-mode/-a-v-g/name.html
 $dokka.location:dev.evo.elasticmagic.query/FunctionScore.BoostMode.AVG/ordinal/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.query/-function-score/-boost-mode/-a-v-g/ordinal.html
