@@ -8,8 +8,12 @@ import dev.evo.elasticmagic.doc.FieldType
 interface FieldOperations<T> : Named {
     fun getFieldType(): FieldType<*, T>
 
-    fun serializeTerm(v: T?): Any? {
+    fun serializeTerm(v: T): Any {
         return getFieldType().serializeTerm(v)
+    }
+
+    fun deserializeTerm(v: Any): T {
+        TODO("return getFieldType().deserializeTerm(v)")
     }
 
     fun eq(term: T?): QueryExpression {

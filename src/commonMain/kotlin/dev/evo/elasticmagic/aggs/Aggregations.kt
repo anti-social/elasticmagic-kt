@@ -4,22 +4,36 @@ import dev.evo.elasticmagic.query.Expression
 import dev.evo.elasticmagic.query.FieldOperations
 import dev.evo.elasticmagic.query.NamedExpression
 import dev.evo.elasticmagic.compile.SearchQueryCompiler
+import dev.evo.elasticmagic.doc.FieldType
 import dev.evo.elasticmagic.serde.Deserializer
 import dev.evo.elasticmagic.serde.Serializer
 
 sealed class AggValue<T> : Expression {
     data class Field<T>(val field: FieldOperations<T>) : AggValue<T>() {
         override fun clone() = copy()
+        override fun getValueType(): FieldType<*, T> = field.getFieldType()
     }
-    data class Script<T>(val script: dev.evo.elasticmagic.query.Script) : AggValue<T>() {
-        override fun clone() = copy()
-    }
-    data class ValueScript<T>(
-        val field: FieldOperations<T>,
+    data class Script<T>(
         val script: dev.evo.elasticmagic.query.Script,
+        val type: FieldType<*, T>,
     ) : AggValue<T>() {
         override fun clone() = copy()
+        override fun getValueType(): FieldType<*, T> = type
     }
+    data class ValueScript<T>(
+        val field: FieldOperations<*>,
+        val script: dev.evo.elasticmagic.query.Script,
+        val type: FieldType<*, T>,
+    ) : AggValue<T>() {
+        override fun clone() = copy()
+        override fun getValueType(): FieldType<*, T> = type
+    }
+
+    abstract fun getValueType(): FieldType<*, T>
+
+    fun serializeTerm(v: T): Any = getValueType().serializeTerm(v)
+
+    fun deserializeTerm(v: Any): T = getValueType().deserializeTerm(v)
 
     override fun accept(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
         when (this) {

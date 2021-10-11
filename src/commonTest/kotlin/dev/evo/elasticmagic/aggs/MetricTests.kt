@@ -1,11 +1,12 @@
 package dev.evo.elasticmagic.aggs
 
+import dev.evo.elasticmagic.doc.FloatType
 import dev.evo.elasticmagic.query.FieldOperations
 import dev.evo.elasticmagic.query.Script
 import dev.evo.elasticmagic.serde.platform
 import dev.evo.elasticmagic.serde.Platform
-import io.kotest.assertions.throwables.shouldThrow
 
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.data.forAll
 import io.kotest.data.headers
 import io.kotest.data.row
@@ -137,7 +138,8 @@ class MetricTests : TestAggregation() {
                         params = mapOf(
                             "rating_field" to MovieDoc.numRatings
                         )
-                    )
+                    ),
+                    FloatType,
                 ),
             ),
         )

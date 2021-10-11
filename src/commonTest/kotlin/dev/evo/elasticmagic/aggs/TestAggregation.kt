@@ -1,10 +1,10 @@
 package dev.evo.elasticmagic.aggs
 
-import dev.evo.elasticmagic.doc.Document
-import dev.evo.elasticmagic.doc.datetime
 import dev.evo.elasticmagic.ElasticsearchVersion
 import dev.evo.elasticmagic.query.Expression
 import dev.evo.elasticmagic.compile.SearchQueryCompiler
+import dev.evo.elasticmagic.doc.Document
+import dev.evo.elasticmagic.doc.date
 import dev.evo.elasticmagic.serde.Deserializer
 import dev.evo.elasticmagic.serde.StdDeserializer
 import dev.evo.elasticmagic.serde.StdSerializer
@@ -42,6 +42,6 @@ abstract class TestAggregation {
         val genre by keyword()
         val rating by float()
         val numRatings by int("num_ratings")
-        val releaseDate by datetime("release_date")
+        val releaseDate by date("release_date")
     }
 }

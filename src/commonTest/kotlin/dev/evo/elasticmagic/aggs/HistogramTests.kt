@@ -7,6 +7,7 @@ import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.maps.shouldContainExactly
 import io.kotest.matchers.shouldBe
+import kotlinx.datetime.LocalDate
 
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
@@ -111,69 +112,69 @@ class HistogramTests : TestAggregation() {
         }
     }
 
-    // @Test
-    // fun dateHistogram() {
-    //     DateHistogramAgg(
-    //         MovieDoc.releaseDate,
-    //         interval = DateHistogramAgg.Interval.Calendar("1y"),
-    //         offset = "1m",
-    //         minDocCount = 1,
-    //         missing = "1970-01-01",
-    //         format = "YYYY",
-    //         order = listOf(BucketsOrder("_count", Sort.Order.DESC)),
-    //         extendedBounds = HistogramBounds.to("2030-01-01"),
-    //         hardBounds = HistogramBounds.from("2000-01-01"),
-    //     ).let { agg ->
-    //         agg.compile() shouldContainExactly mapOf(
-    //             "date_histogram" to mapOf(
-    //                 "field" to "release_date",
-    //                 "calendar_interval" to "1y",
-    //                 "offset" to "1m",
-    //                 "min_doc_count" to 1L,
-    //                 "missing" to "1970-01-01",
-    //                 "format" to "YYYY",
-    //                 "order" to mapOf(
-    //                     "_count" to "desc"
-    //                 ),
-    //                 "extended_bounds" to mapOf(
-    //                     "max" to "2030-01-01",
-    //                 ),
-    //                 "hard_bounds" to mapOf(
-    //                     "min" to "2000-01-01",
-    //                 )
-    //             )
-    //         )
-    //
-    //         shouldThrow<IllegalStateException> {
-    //             process(agg, emptyMap())
-    //         }
-    //         process(
-    //             agg,
-    //             mapOf(
-    //                 "buckets" to listOf(
-    //                     mapOf(
-    //                         "key" to 1388534460000L,
-    //                         "key_as_string" to "2014",
-    //                         "doc_count" to 1,
-    //                     ),
-    //                     mapOf(
-    //                         "key" to 1420070460000L,
-    //                         "key_as_string" to "2015",
-    //                         "doc_count" to 0,
-    //                     )
-    //                 )
-    //             )
-    //         ).let { res ->
-    //             res.buckets.shouldHaveSize(2)
-    //             res.buckets[0].key shouldBe 1388534460000L
-    //             res.buckets[0].keyAsString shouldBe "2014"
-    //             res.buckets[0].docCount shouldBe 1L
-    //             res.buckets[0].keyAsDatetime(TimeZone.UTC) shouldBe LocalDateTime(2014, 1, 1, 0, 1)
-    //             res.buckets[1].key shouldBe 1420070460000L
-    //             res.buckets[1].keyAsString shouldBe "2015"
-    //             res.buckets[1].docCount shouldBe 0L
-    //             res.buckets[1].keyAsDatetime(TimeZone.UTC) shouldBe LocalDateTime(2015, 1, 1, 0, 1)
-    //         }
-    //     }
-    // }
+    @Test
+    fun dateHistogram() {
+        DateHistogramAgg(
+            MovieDoc.releaseDate,
+            interval = DateHistogramAgg.Interval.Calendar(CalendarInterval.YEAR),
+            offset = FixedInterval.Minutes(1),
+            minDocCount = 1,
+            missing = LocalDate(1970, 1, 1),
+            format = "YYYY",
+            order = listOf(BucketsOrder("_count", Sort.Order.DESC)),
+            extendedBounds = HistogramBounds.to(LocalDate(2030, 1, 1)),
+            hardBounds = HistogramBounds.from(LocalDate(2000, 1, 1)),
+        ).let { agg ->
+            agg.compile() shouldContainExactly mapOf(
+                "date_histogram" to mapOf(
+                    "field" to "release_date",
+                    "calendar_interval" to "year",
+                    "offset" to "1m",
+                    "min_doc_count" to 1L,
+                    "missing" to "1970-01-01",
+                    "format" to "YYYY",
+                    "order" to mapOf(
+                        "_count" to "desc"
+                    ),
+                    "extended_bounds" to mapOf(
+                        "max" to "2030-01-01",
+                    ),
+                    "hard_bounds" to mapOf(
+                        "min" to "2000-01-01",
+                    )
+                )
+            )
+
+            shouldThrow<IllegalStateException> {
+                process(agg, emptyMap())
+            }
+            process(
+                agg,
+                mapOf(
+                    "buckets" to listOf(
+                        mapOf(
+                            "key" to 1388534460000L,
+                            "key_as_string" to "2014",
+                            "doc_count" to 1,
+                        ),
+                        mapOf(
+                            "key" to 1420070460000L,
+                            "key_as_string" to "2015",
+                            "doc_count" to 0,
+                        )
+                    )
+                )
+            ).let { res ->
+                res.buckets.shouldHaveSize(2)
+                res.buckets[0].key shouldBe 1388534460000L
+                res.buckets[0].keyAsString shouldBe "2014"
+                res.buckets[0].keyAsDatetime shouldBe LocalDate(2014, 1, 1)
+                res.buckets[0].docCount shouldBe 1L
+                res.buckets[1].key shouldBe 1420070460000L
+                res.buckets[1].keyAsString shouldBe "2015"
+                res.buckets[1].keyAsDatetime shouldBe LocalDate(2015, 1, 1)
+                res.buckets[1].docCount shouldBe 0L
+            }
+        }
+    }
 }

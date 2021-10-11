@@ -681,18 +681,18 @@ internal object AnyFieldType : FieldType<Any, Any> {
     override val name: String
         get() = throw IllegalStateException("Should not be used in mappings")
 
-    override fun serializeTerm(v: Any?): Any = v ?: serErr(v)
-
     override fun deserialize(v: Any, valueFactory: (() -> Any)?): Any {
         return v
     }
+
+    override fun serializeTerm(v: Any): Any = serErr(v)
+
+    override fun deserializeTerm(v: Any): Any = v
 }
 
 internal object DynDocSourceFieldType : FieldType<DynDocSource, Nothing> {
     override val name: String
         get() = throw IllegalStateException("Should not be used in mappings")
-
-    override fun serializeTerm(v: Nothing?): Any = serErr(v)
 
     override fun deserialize(v: Any, valueFactory: (() -> DynDocSource)?): DynDocSource {
         return when (v) {
@@ -701,5 +701,13 @@ internal object DynDocSourceFieldType : FieldType<DynDocSource, Nothing> {
                 "DynDocSource object expected but was ${v::class.simpleName}"
             )
         }
+    }
+
+    override fun serializeTerm(v: Nothing): Nothing {
+        throw IllegalStateException("Unreachable")
+    }
+
+    override fun deserializeTerm(v: Any): Nothing {
+        throw IllegalStateException("Unreachable")
     }
 }

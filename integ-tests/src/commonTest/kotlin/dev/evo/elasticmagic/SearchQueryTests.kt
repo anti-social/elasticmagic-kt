@@ -24,19 +24,20 @@ import io.kotest.matchers.shouldBe
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.toInstant
 
 import kotlin.test.Test
 
 object OrderDoc : Document() {
-    class User(field: BoundField<BaseDocSource>) : SubDocument(field) {
+    class User(field: BoundField<BaseDocSource, Nothing>) : SubDocument(field) {
         val id by int()
         val name by text()
         val phone by keyword()
         val rating by float()
     }
 
-    class CartItem(field: BoundField<BaseDocSource>) : SubDocument(field) {
+    class CartItem(field: BoundField<BaseDocSource, Nothing>) : SubDocument(field) {
         val productId by long("product_id")
         val productName by text("product_name")
         val productPrice by float("product_price")
@@ -254,7 +255,7 @@ class SearchQueryTests : ElasticsearchTestBase("test-search-query") {
             karlssonsJam, karlssonsBestDonuts, karlssonsJustDonuts, littleBrotherDogStuff
         )) {
             val searchResult = SearchQuery(::OrderDocSource)
-                .filter(OrderDoc.dateCreated.lt(LocalDate(2020, 1, 1)))
+                .filter(OrderDoc.dateCreated.lt(LocalDate(2020, 1, 1).atStartOfDayIn(TimeZone.UTC)))
                 .execute(index)
 
             searchResult.totalHits shouldBe 1
@@ -353,7 +354,7 @@ class SearchQueryTests : ElasticsearchTestBase("test-search-query") {
                         aggs = mapOf(
                             "item_price_hist" to HistogramAgg(
                                 OrderDoc.items.productPrice,
-                                interval = 1.0,
+                                interval = 1.0F,
                                 minDocCount = 1,
                             )
                         )

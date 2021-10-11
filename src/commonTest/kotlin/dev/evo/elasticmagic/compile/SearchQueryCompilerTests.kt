@@ -38,11 +38,13 @@ class AnyField(name: String) : BoundField<Any, Any>(
         override val name: String
             get() = throw IllegalStateException("Fake field type cannot be used in mapping")
 
-        override fun serializeTerm(v: Any?): Any = v ?: serErr(v)
-
         override fun deserialize(v: Any, valueFactory: (() -> Any)?): Any {
             return v
         }
+
+        override fun serializeTerm(v: Any): Any = v
+
+        override fun deserializeTerm(v: Any): Any = deserialize(v)
     },
     Params(),
     RootFieldSet

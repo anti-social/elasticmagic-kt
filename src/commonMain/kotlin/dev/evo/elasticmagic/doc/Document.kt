@@ -328,7 +328,7 @@ abstract class FieldSet : Named {
         operator fun provideDelegate(
             thisRef: FieldSet, prop: KProperty<*>
         ): ReadOnlyProperty<FieldSet, BoundField<V, T>> {
-            val field = BoundField<V, T>(
+            val field = BoundField(
                 name ?: prop.name,
                 type,
                 params,

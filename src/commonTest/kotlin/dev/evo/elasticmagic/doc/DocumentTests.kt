@@ -101,13 +101,15 @@ class DocumentTests {
         val myType = object : FieldType<String, String> {
             override val name = "mine"
 
-            override fun serializeTerm(v: String?): Any {
+            override fun serializeTerm(v: String): Any {
                 return "me"
             }
 
             override fun deserialize(v: Any, valueFactory: (() -> String)?): String {
                 return v.toString()
             }
+
+            override fun deserializeTerm(v: Any): String = deserialize(v)
         }
 
         val userDoc = object : Document() {

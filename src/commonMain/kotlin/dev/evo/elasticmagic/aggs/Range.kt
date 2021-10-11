@@ -31,14 +31,20 @@ abstract class BaseRangeAgg<T, R: AggregationResult, B> : BucketAggregation<R>()
         ctx.array("ranges") {
             for ((from, to, key) in ranges) {
                 obj {
-                    fieldIfNotNull("from", from)
-                    fieldIfNotNull("to", to)
+                    from?.let { from ->
+                        field("from", value.serializeTerm(from))
+                    }
+                    to?.let { to ->
+                        field("to", value.serializeTerm(to))
+                    }
                     fieldIfNotNull("key", key)
                 }
             }
         }
         ctx.fieldIfNotNull("format", format)
-        ctx.fieldIfNotNull("missing", missing)
+        missing?.let { missing ->
+            ctx.field("missing", value.serializeTerm(missing))
+        }
         // ctx.fieldIfNotNull("keyed", keyed)
         if (params.isNotEmpty()) {
             compiler.visit(ctx, params)
@@ -157,82 +163,88 @@ data class RangeAgg<T: Number>(
     }
 }
 
-data class DateRangeAggResult(
-    override val buckets: List<DateRangeBucket>,
-) : BucketAggResult<DateRangeBucket>()
+data class DateRangeAggResult<T>(
+    override val buckets: List<DateRangeBucket<T>>,
+) : BucketAggResult<DateRangeBucket<T>>()
 
-data class DateRangeBucket(
+data class DateRangeBucket<T>(
     override val key: String,
     override val docCount: Long,
     val from: Double? = null,
     val fromAsString: String? = null,
+    val fromAsDatetime: T? = null,
     val to: Double? = null,
     val toAsString: String? = null,
+    val toAsDatetime: T? = null,
     override val aggs: Map<String, AggregationResult> = emptyMap(),
 ) : KeyedBucket<String>()
 
-// data class DateRangeAgg(
-//     override val value: AggValue,
-//     override val ranges: List<AggRange<String>>,
-//     override val format: String? = null,
-//     override val missing: String? = null,
-//     override val params: Params = Params(),
-//     override val aggs: Map<String, Aggregation<*>> = emptyMap(),
-// ) : BaseRangeAgg<String, DateRangeAggResult, DateRangeBucket>() {
-//     override val name = "date_range"
-//
-//     constructor(
-//         field: FieldOperations,
-//         ranges: List<AggRange<String>>,
-//         format: String? = null,
-//         missing: String? = null,
-//         params: Params = Params(),
-//         aggs: Map<String, Aggregation<*>> = emptyMap(),
-//     ) : this(
-//         AggValue.Field(field),
-//         ranges = ranges,
-//         format = format,
-//         missing = missing,
-//         params = params,
-//         aggs = aggs,
-//     )
-//
-//     companion object {
-//         fun simpleRanges(
-//             field: FieldOperations,
-//             ranges: List<Pair<String?, String?>>,
-//             format: String? = null,
-//             missing: String? = null,
-//             aggs: Map<String, Aggregation<*>> = emptyMap(),
-//             params: Params = Params(),
-//         ): DateRangeAgg {
-//             return DateRangeAgg(
-//                 AggValue.Field(field),
-//                 ranges = ranges.map { AggRange(it.first, it.second) },
-//                 format = format,
-//                 missing = missing,
-//                 params = params,
-//                 aggs = aggs,
-//             )
-//         }
-//     }
-//
-//     override fun clone() = copy()
-//
-//     override fun makeRangeResult(buckets: List<DateRangeBucket>) = DateRangeAggResult(buckets)
-//
-//     override fun processBucketResult(
-//         bucketObj: Deserializer.ObjectCtx,
-//         bucketKey: String?
-//     ): DateRangeBucket {
-//         return DateRangeBucket(
-//             key = bucketKey ?: bucketObj.string("key"),
-//             docCount = bucketObj.long("doc_count"),
-//             from = bucketObj.doubleOrNull("from"),
-//             fromAsString = bucketObj.stringOrNull("from_as_string"),
-//             to = bucketObj.doubleOrNull("to"),
-//             toAsString = bucketObj.stringOrNull("to_as_string"),
-//             aggs = processSubAggs(bucketObj),
-//         )
-//     }
-// }
+data class DateRangeAgg<T>(
+    override val value: AggValue<T>,
+    override val ranges: List<AggRange<T>>,
+    override val format: String? = null,
+    override val missing: T? = null,
+    override val params: Params = Params(),
+    override val aggs: Map<String, Aggregation<*>> = emptyMap(),
+) : BaseRangeAgg<T, DateRangeAggResult<T>, DateRangeBucket<T>>() {
+    override val name = "date_range"
+
+    constructor(
+        field: FieldOperations<T>,
+        ranges: List<AggRange<T>>,
+        format: String? = null,
+        missing: T? = null,
+        params: Params = Params(),
+        aggs: Map<String, Aggregation<*>> = emptyMap(),
+    ) : this(
+        AggValue.Field(field),
+        ranges = ranges,
+        format = format,
+        missing = missing,
+        params = params,
+        aggs = aggs,
+    )
+
+    companion object {
+        fun <T> simpleRanges(
+            field: FieldOperations<T>,
+            ranges: List<Pair<T?, T?>>,
+            format: String? = null,
+            missing: T? = null,
+            aggs: Map<String, Aggregation<*>> = emptyMap(),
+            params: Params = Params(),
+        ): DateRangeAgg<T> {
+            return DateRangeAgg(
+                AggValue.Field(field),
+                ranges = ranges.map { AggRange(it.first, it.second) },
+                format = format,
+                missing = missing,
+                params = params,
+                aggs = aggs,
+            )
+        }
+    }
+
+    override fun clone() = copy()
+
+    override fun makeRangeResult(buckets: List<DateRangeBucket<T>>) = DateRangeAggResult(buckets)
+
+    override fun processBucketResult(
+        bucketObj: Deserializer.ObjectCtx,
+        bucketKey: String?
+    ): DateRangeBucket<T> {
+        val fromAsString = bucketObj.stringOrNull("from_as_string")
+        val toAsString = bucketObj.stringOrNull("to_as_string")
+        return DateRangeBucket(
+            key = bucketKey ?: bucketObj.string("key"),
+            docCount = bucketObj.long("doc_count"),
+            from = bucketObj.doubleOrNull("from"),
+            fromAsString = fromAsString,
+            fromAsDatetime = fromAsString?.let(value::deserializeTerm),
+            to = bucketObj.doubleOrNull("to"),
+            toAsString = toAsString,
+            toAsDatetime = toAsString?.let(value::deserializeTerm),
+            aggs = processSubAggs(bucketObj),
+        )
+    }
+}
