@@ -1,31 +1,34 @@
 package dev.evo.elasticmagic.compile
 
-import dev.evo.elasticmagic.doc.BaseDocSource
-import dev.evo.elasticmagic.query.BoolNode
-import dev.evo.elasticmagic.doc.BoundField
-import dev.evo.elasticmagic.query.DisMax
-import dev.evo.elasticmagic.query.DisMaxNode
-import dev.evo.elasticmagic.doc.Document
 import dev.evo.elasticmagic.ElasticsearchVersion
 import dev.evo.elasticmagic.FieldFormat
-import dev.evo.elasticmagic.query.FunctionScore
-import dev.evo.elasticmagic.query.FunctionScoreNode
-import dev.evo.elasticmagic.query.MultiMatch
-import dev.evo.elasticmagic.query.NodeHandle
 import dev.evo.elasticmagic.Params
-import dev.evo.elasticmagic.query.Script
 import dev.evo.elasticmagic.SearchQuery
 import dev.evo.elasticmagic.SearchType
-import dev.evo.elasticmagic.query.Sort
-import dev.evo.elasticmagic.doc.SubDocument
+import dev.evo.elasticmagic.doc.BaseDocSource
+import dev.evo.elasticmagic.doc.BoundField
+import dev.evo.elasticmagic.doc.Document
 import dev.evo.elasticmagic.doc.FieldType
-import dev.evo.elasticmagic.query.Ids
-import dev.evo.elasticmagic.query.QueryRescore
 import dev.evo.elasticmagic.doc.RootFieldSet
+import dev.evo.elasticmagic.doc.SubDocument
+import dev.evo.elasticmagic.doc.datetime
+import dev.evo.elasticmagic.doc.serErr
+import dev.evo.elasticmagic.query.BoolNode
+import dev.evo.elasticmagic.query.DisMax
+import dev.evo.elasticmagic.query.DisMaxNode
+import dev.evo.elasticmagic.query.FunctionScore
+import dev.evo.elasticmagic.query.FunctionScoreNode
+import dev.evo.elasticmagic.query.Ids
+import dev.evo.elasticmagic.query.MultiMatch
+import dev.evo.elasticmagic.query.NodeHandle
+import dev.evo.elasticmagic.query.Script
+import dev.evo.elasticmagic.query.Sort
+import dev.evo.elasticmagic.query.QueryRescore
 import dev.evo.elasticmagic.serde.StdSerializer
 
 import io.kotest.matchers.maps.shouldContainExactly
 import io.kotest.matchers.nulls.shouldNotBeNull
+import kotlinx.datetime.LocalDateTime
 
 import kotlin.test.Test
 
@@ -34,6 +37,8 @@ class AnyField(name: String) : BoundField<Any>(
     object : FieldType<Any> {
         override val name: String
             get() = throw IllegalStateException("Fake field type cannot be used in mapping")
+
+        override fun serializeTerm(v: Any?): Any = v ?: serErr(v)
 
         override fun deserialize(v: Any, valueFactory: (() -> Any)?): Any {
             return v
@@ -65,6 +70,26 @@ class SearchQueryCompilerTests {
         val params: Params,
         val body: Map<String, Any?>,
     )
+
+    @Test
+    fun fieldTypeSerialization() {
+        val userDoc = object : Document() {
+            val lastLoggedAt by datetime()
+        }
+
+        val compiled = compile(
+            SearchQuery(userDoc.lastLoggedAt.gt(LocalDateTime(2020, 12, 31, 23, 0)))
+        )
+        compiled.body shouldContainExactly mapOf(
+            "query" to mapOf(
+                "range" to mapOf(
+                    "lastLoggedAt" to mapOf(
+                        "gt" to "2020-12-31T23:00:00Z"
+                    )
+                )
+            )
+        )
+    }
 
     @Test
     fun testEmpty() {

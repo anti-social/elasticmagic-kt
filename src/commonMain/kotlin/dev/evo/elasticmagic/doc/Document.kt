@@ -6,8 +6,6 @@ import dev.evo.elasticmagic.query.Named
 import dev.evo.elasticmagic.query.Script
 import dev.evo.elasticmagic.query.ToValue
 
-import kotlinx.datetime.LocalDateTime
-
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 
@@ -23,11 +21,9 @@ enum class Dynamic : ToValue {
 
 /**
  * Represents field of any type in an Elasticsearch document.
- * See [FieldSet.getAllFields] and [FieldSet.getFieldsByName] methods.
+ * See [FieldSet.getAllFields] and [FieldSet.get] methods.
  */
 interface AnyField : FieldOperations {
-    fun getFieldType(): FieldType<*>
-
     fun getMappingParams(): Params
 
     fun getParent(): Named
@@ -107,9 +103,9 @@ class BoundJoinField(
 ) : BoundField<Join>(name, type, Params(params, "relations" to relations), parent, ignored) {
 
     inner class Parent(private val name: String) : FieldOperations {
-        override fun getFieldName(): String {
-            return name
-        }
+        override fun getFieldType(): FieldType<*> = KeywordType
+
+        override fun getFieldName(): String = name
 
         override fun getQualifiedFieldName(): String {
             return "${this@BoundJoinField.getQualifiedFieldName()}#$name"
@@ -256,21 +252,6 @@ abstract class FieldSet : Named {
     ): Field<Double> {
         return field(
             name, DoubleType,
-            docValues = docValues,
-            index = index,
-            store = store,
-            params = params,
-        )
-    }
-    fun date(
-        name: String? = null,
-        docValues: Boolean? = null,
-        index: Boolean? = null,
-        store: Boolean? = null,
-        params: Params? = null,
-    ): Field<LocalDateTime> {
-        return field(
-            name, DateTimeType,
             docValues = docValues,
             index = index,
             store = store,
@@ -505,7 +486,7 @@ abstract class SubDocument(
 
     override fun getQualifiedFieldName(): String = field.getQualifiedFieldName()
 
-    fun getFieldType(): FieldType<BaseDocSource> = field.getFieldType()
+    override fun getFieldType(): FieldType<BaseDocSource> = field.getFieldType()
 
     fun getParent(): FieldSet = field.getParent()
 

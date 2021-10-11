@@ -18,11 +18,11 @@ data class Term(
     ) {
         if (boost != null) {
             ctx.obj(field.getQualifiedFieldName()) {
-                field("value", term)
+                field("value", field.serializeTerm(term))
                 field("boost", boost)
             }
         } else {
-            ctx.field(field.getQualifiedFieldName(), term)
+            ctx.field(field.getQualifiedFieldName(), field.serializeTerm(term))
         }
     }
 }
@@ -41,7 +41,9 @@ data class Terms(
         compiler: SearchQueryCompiler
     ) {
         ctx.array(field.getQualifiedFieldName()) {
-            compiler.visit(this, terms)
+            for (term in terms) {
+                value(field.serializeTerm(term))
+            }
         }
         if (boost != null) {
             ctx.field("boost", boost)
@@ -95,16 +97,16 @@ data class Range(
     ) {
         ctx.obj(field.getQualifiedFieldName()) {
             if (gt != null) {
-                field("gt", gt)
+                field("gt", field.serializeTerm(gt))
             }
             if (gte != null) {
-                field("gte", gte)
+                field("gte", field.serializeTerm(gte))
             }
             if (lt != null) {
-                field("lt", lt)
+                field("lt", field.serializeTerm(lt))
             }
             if (lte != null) {
-                field("lte", lte)
+                field("lte", field.serializeTerm(lte))
             }
         }
     }

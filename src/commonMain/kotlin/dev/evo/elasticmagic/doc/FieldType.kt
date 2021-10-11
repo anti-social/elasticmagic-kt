@@ -1,17 +1,23 @@
 package dev.evo.elasticmagic.doc
 
 import dev.evo.elasticmagic.Params
-import kotlinx.datetime.Instant
-import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toInstant
-import kotlinx.datetime.toLocalDateTime
 
-class ValueDeserializationException(value: Any, type: String) :
-    IllegalArgumentException("Cannot deserialize $value to $type")
+class ValueSerializationException(value: Any?, cause: Throwable? = null) :
+    IllegalArgumentException("Cannot serialize [$value]", cause)
+
+fun serErr(v: Any?, cause: Throwable? = null): Nothing =
+    throw ValueSerializationException(v, cause)
+
+class ValueDeserializationException(value: Any, type: String, cause: Throwable? = null) :
+    IllegalArgumentException("Cannot deserialize [$value] to [$type]", cause)
+
+fun deErr(v: Any, type: String, cause: Throwable? = null): Nothing =
+    throw ValueDeserializationException(v, type, cause)
 
 interface FieldType<V> {
     val name: String
+
+    fun serializeTerm(v: Any?): Any?
 
     fun serialize(v: V): Any {
         return v as Any
@@ -28,6 +34,18 @@ abstract class NumberType<V: Number> : FieldType<V>
 object IntType : NumberType<Int>() {
     override val name = "integer"
 
+    override fun serializeTerm(v: Any?): Any = when (v) {
+        is Int -> v
+        is Long -> {
+            if (v in Int.MIN_VALUE..Int.MAX_VALUE) {
+                v
+            } else {
+                serErr(v)
+            }
+        }
+        else -> serErr(v)
+    }
+
     override fun deserialize(v: Any, valueFactory: (() -> Int)?) = when(v) {
         is Int -> v
         is Long -> v.toInt()
@@ -39,6 +57,12 @@ object IntType : NumberType<Int>() {
 object LongType : NumberType<Long>() {
     override val name = "long"
 
+    override fun serializeTerm(v: Any?): Any = when (v) {
+        is Long -> v
+        is Int -> v
+        else -> serErr(v)
+    }
+
     override fun deserialize(v: Any, valueFactory: (() -> Long)?) = when(v) {
         is Int -> v.toLong()
         is Long -> v
@@ -49,6 +73,12 @@ object LongType : NumberType<Long>() {
 
 object FloatType : NumberType<Float>() {
     override val name = "float"
+
+    override fun serializeTerm(v: Any?): Any = when (v) {
+        is Float -> v
+        is Number -> v
+        else -> serErr(v)
+    }
 
     override fun deserialize(v: Any, valueFactory: (() -> Float)?) = when(v) {
         is Int -> v.toFloat()
@@ -63,6 +93,12 @@ object FloatType : NumberType<Float>() {
 object DoubleType : NumberType<Double>() {
     override val name = "double"
 
+    override fun serializeTerm(v: Any?): Any = when (v) {
+        is Double -> v
+        is Number -> v
+        else -> serErr(v)
+    }
+
     override fun deserialize(v: Any, valueFactory: (() -> Double)?) = when(v) {
         is Int -> v.toDouble()
         is Long -> v.toDouble()
@@ -76,6 +112,8 @@ object DoubleType : NumberType<Double>() {
 object BooleanType : FieldType<Boolean> {
     override val name = "boolean"
 
+    override fun serializeTerm(v: Any?): Any = v as? Boolean ?: serErr(v)
+
     override fun deserialize(v: Any, valueFactory: (() -> Boolean)?) = when(v) {
         is Boolean -> v
         is String -> v.toBoolean()
@@ -84,6 +122,13 @@ object BooleanType : FieldType<Boolean> {
 }
 
 abstract class StringType : FieldType<String> {
+    override fun serializeTerm(v: Any?): Any = when (v) {
+        is CharSequence -> v
+        is Number -> v
+        is Boolean -> v
+        else -> serErr(v)
+    }
+
     override fun deserialize(v: Any, valueFactory: (() -> String)?): String {
         return v.toString()
     }
@@ -97,57 +142,6 @@ object TextType : StringType() {
     override val name = "text"
 }
 
-object DateTimeType : FieldType<LocalDateTime> {
-    override val name = "date"
-
-    @Suppress("MaxLineLength")
-    private val DATETIME_REGEX =
-        "(\\d{4})(?:-(\\d{2}))?(?:-(\\d{2}))?(?:T(\\d{2})?(?::(\\d{2}))?(?::(\\d{2}))?(?:\\.(\\d{1,9}))?(?:Z)?)?".toRegex()
-
-    override fun serialize(v: LocalDateTime): Any {
-        return v.toInstant(TimeZone.UTC).toString()
-    }
-
-    override fun deserialize(v: Any, valueFactory: (() -> LocalDateTime)?) = when (v) {
-        is String -> {
-            parseDateWithOptionalTime(v)
-        }
-        is Number -> {
-            try {
-                parseDateWithOptionalTime(v.toString())
-            } catch (ex: ValueDeserializationException) {
-                Instant.fromEpochMilliseconds(v.toLong()).toLocalDateTime(TimeZone.UTC)
-            }
-        }
-        else -> throw ValueDeserializationException(v, "LocalDateTime")
-    }
-
-    @Suppress("MagicNumber")
-    private fun parseDateWithOptionalTime(v: String): LocalDateTime {
-        val datetimeMatch = DATETIME_REGEX.matchEntire(v)
-            ?: throw ValueDeserializationException(v, "LocalDateTime")
-        val (year, month, day, hour, minute, second, msRaw) = datetimeMatch.destructured
-        val ms = when (msRaw.length) {
-            0 -> msRaw
-            in 1..2 -> msRaw.padEnd(3, '0')
-            else -> msRaw.substring(0, 3)
-        }
-        return LocalDateTime(
-            year.toInt(),
-            month.toIntIfNotEmpty(1),
-            day.toIntIfNotEmpty(1),
-            hour.toIntIfNotEmpty(0),
-            minute.toIntIfNotEmpty(0),
-            second.toIntIfNotEmpty(0),
-            ms.toIntIfNotEmpty(0) * 1000_000
-        )
-    }
-
-    private fun String.toIntIfNotEmpty(default: Int): Int {
-        return if (isEmpty()) default else toInt()
-    }
-}
-
 data class Join(
     val name: String,
     val parent: String? = null,
@@ -155,6 +149,8 @@ data class Join(
 
 object JoinType : FieldType<Join> {
     override val name = "join"
+
+    override fun serializeTerm(v: Any?): Any = KeywordType.serializeTerm(v)
 
     override fun serialize(v: Join): Any {
         if (v.parent != null) {
@@ -183,6 +179,9 @@ object JoinType : FieldType<Join> {
 
 open class ObjectType<V: BaseDocSource> : FieldType<V> {
     override val name = "object"
+
+    // TODO: Find out type safe solution
+    override fun serializeTerm(v: Any?): Any = serErr(v)
 
     override fun serialize(v: V): Map<String, Any?> {
         return v.toSource()
@@ -215,6 +214,8 @@ open class SourceType<V: BaseDocSource>(
 ) : FieldType<V> {
     override val name = type.name
 
+    override fun serializeTerm(v: Any?): Any = serErr(v)
+
     override fun serialize(v: V): Any {
         return type.serialize(v)
     }
@@ -227,6 +228,8 @@ open class SourceType<V: BaseDocSource>(
 
 class OptionalListType<V>(val type: FieldType<V>) : FieldType<List<V?>> {
     override val name get() = type.name
+
+    override fun serializeTerm(v: Any?): Any = serErr(v)
 
     override fun serialize(v: List<V?>): Any {
         return v.map { w ->
@@ -256,6 +259,8 @@ class OptionalListType<V>(val type: FieldType<V>) : FieldType<List<V?>> {
 
 class RequiredListType<V>(val type: FieldType<V>) : FieldType<List<V>> {
     override val name get() = type.name
+
+    override fun serializeTerm(v: Any?): Any = serErr(v)
 
     override fun serialize(v: List<V>): Any {
         return v.map(type::serialize)

@@ -5,11 +5,13 @@ kotlin {
         val commonTest by getting {
             dependencies {
                 implementation(project(":"))
-                api(project(":elasticmagic-serde-serialization-json"))
-                api(project(":elasticmagic-transport-ktor"))
+                implementation(project(":elasticmagic-serde-serialization-json"))
+                implementation(project(":elasticmagic-transport-ktor"))
+                implementation(project(":elasticmagic-kotlinx-datetime"))
 
                 implementation(Libs.kotlinxCoroutines("core"))
                 implementation(Libs.ktorClient("core"))
+                implementation(Libs.kotlinxDatetime())
             }
         }
 

@@ -7,11 +7,6 @@ import dev.evo.elasticmagic.compile.SearchQueryCompiler
 import dev.evo.elasticmagic.serde.Deserializer
 import dev.evo.elasticmagic.serde.Serializer
 
-import kotlinx.datetime.Instant
-import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
-
 data class HistogramBounds<T>(
     val min: T?,
     val max: T?,
@@ -270,8 +265,4 @@ data class DateHistogramBucket(
     override val docCount: Long,
     override val aggs: Map<String, AggregationResult>,
     val keyAsString: String?,
-) : KeyedBucket<Long>() {
-    fun keyAsDatetime(timeZone: TimeZone): LocalDateTime {
-        return Instant.fromEpochMilliseconds(key).toLocalDateTime(timeZone)
-    }
-}
+) : KeyedBucket<Long>()

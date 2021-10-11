@@ -6,11 +6,6 @@ import dev.evo.elasticmagic.compile.SearchQueryCompiler
 import dev.evo.elasticmagic.serde.Deserializer
 import dev.evo.elasticmagic.serde.Serializer
 
-import kotlinx.datetime.Instant
-import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
-
 data class AggRange<T>(
     val from: T? = null,
     val to: T? = null,
@@ -174,23 +169,7 @@ data class DateRangeBucket(
     val to: Double? = null,
     val toAsString: String? = null,
     override val aggs: Map<String, AggregationResult> = emptyMap(),
-) : KeyedBucket<String>() {
-    fun fromAsDatetime(timeZone: TimeZone): LocalDateTime? {
-        return if (from != null) {
-            Instant.fromEpochMilliseconds(from.toLong()).toLocalDateTime(timeZone)
-        } else {
-            null
-        }
-    }
-
-    fun toAsDatetime(timeZone: TimeZone): LocalDateTime? {
-        return if (to != null) {
-            Instant.fromEpochMilliseconds(to.toLong()).toLocalDateTime(timeZone)
-        } else {
-            null
-        }
-    }
-}
+) : KeyedBucket<String>()
 
 data class DateRangeAgg(
     override val value: AggValue,

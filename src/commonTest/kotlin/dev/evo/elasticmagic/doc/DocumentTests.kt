@@ -100,6 +100,11 @@ class DocumentTests {
     fun testCustomFieldType() {
         val myType = object : FieldType<String> {
             override val name = "mine"
+
+            override fun serializeTerm(v: Any?): Any {
+                return "me"
+            }
+
             override fun deserialize(v: Any, valueFactory: (() -> String)?): String {
                 return v.toString()
             }
