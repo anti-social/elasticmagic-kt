@@ -14,10 +14,10 @@ class ValueDeserializationException(value: Any, type: String, cause: Throwable? 
 fun deErr(v: Any, type: String, cause: Throwable? = null): Nothing =
     throw ValueDeserializationException(v, type, cause)
 
-interface FieldType<V> {
+interface FieldType<V, T> {
     val name: String
 
-    fun serializeTerm(v: Any?): Any?
+    fun serializeTerm(v: T?): Any?
 
     fun serialize(v: V): Any {
         return v as Any
@@ -29,20 +29,20 @@ interface FieldType<V> {
     ): V
 }
 
-abstract class NumberType<V: Number> : FieldType<V>
+abstract class NumberType<V: Number, T> : FieldType<V, T>
 
-object IntType : NumberType<Int>() {
+object IntType : NumberType<Int, Int>() {
     override val name = "integer"
 
-    override fun serializeTerm(v: Any?): Any = when (v) {
+    override fun serializeTerm(v: Int?): Any = when (v) {
         is Int -> v
-        is Long -> {
-            if (v in Int.MIN_VALUE..Int.MAX_VALUE) {
-                v
-            } else {
-                serErr(v)
-            }
-        }
+        // is Long -> {
+        //     if (v in Int.MIN_VALUE..Int.MAX_VALUE) {
+        //         v
+        //     } else {
+        //         serErr(v)
+        //     }
+        // }
         else -> serErr(v)
     }
 
@@ -54,12 +54,12 @@ object IntType : NumberType<Int>() {
     }
 }
 
-object LongType : NumberType<Long>() {
+object LongType : NumberType<Long, Long>() {
     override val name = "long"
 
-    override fun serializeTerm(v: Any?): Any = when (v) {
+    override fun serializeTerm(v: Long?): Any = when (v) {
         is Long -> v
-        is Int -> v
+        // is Int -> v
         else -> serErr(v)
     }
 
@@ -71,12 +71,12 @@ object LongType : NumberType<Long>() {
     }
 }
 
-object FloatType : NumberType<Float>() {
+object FloatType : NumberType<Float, Float>() {
     override val name = "float"
 
-    override fun serializeTerm(v: Any?): Any = when (v) {
+    override fun serializeTerm(v: Float?): Any = when (v) {
         is Float -> v
-        is Number -> v
+        // is Number -> v
         else -> serErr(v)
     }
 
@@ -90,10 +90,10 @@ object FloatType : NumberType<Float>() {
     }
 }
 
-object DoubleType : NumberType<Double>() {
+object DoubleType : NumberType<Double, Double>() {
     override val name = "double"
 
-    override fun serializeTerm(v: Any?): Any = when (v) {
+    override fun serializeTerm(v: Double?): Any = when (v) {
         is Double -> v
         is Number -> v
         else -> serErr(v)
@@ -109,10 +109,10 @@ object DoubleType : NumberType<Double>() {
     }
 }
 
-object BooleanType : FieldType<Boolean> {
+object BooleanType : FieldType<Boolean, Boolean> {
     override val name = "boolean"
 
-    override fun serializeTerm(v: Any?): Any = v as? Boolean ?: serErr(v)
+    override fun serializeTerm(v: Boolean?): Any = v ?: serErr(v)
 
     override fun deserialize(v: Any, valueFactory: (() -> Boolean)?) = when(v) {
         is Boolean -> v
@@ -121,11 +121,11 @@ object BooleanType : FieldType<Boolean> {
     }
 }
 
-abstract class StringType : FieldType<String> {
-    override fun serializeTerm(v: Any?): Any = when (v) {
-        is CharSequence -> v
-        is Number -> v
-        is Boolean -> v
+abstract class StringType : FieldType<String, String> {
+    override fun serializeTerm(v: String?): Any = when (v) {
+        is String -> v
+        // is Number -> v
+        // is Boolean -> v
         else -> serErr(v)
     }
 
@@ -147,10 +147,10 @@ data class Join(
     val parent: String? = null,
 )
 
-object JoinType : FieldType<Join> {
+object JoinType : FieldType<Join, String> {
     override val name = "join"
 
-    override fun serializeTerm(v: Any?): Any = KeywordType.serializeTerm(v)
+    override fun serializeTerm(v: String?): Any = KeywordType.serializeTerm(v)
 
     override fun serialize(v: Join): Any {
         if (v.parent != null) {
@@ -177,11 +177,11 @@ object JoinType : FieldType<Join> {
     }
 }
 
-open class ObjectType<V: BaseDocSource> : FieldType<V> {
+open class ObjectType<V: BaseDocSource> : FieldType<V, Nothing> {
     override val name = "object"
 
     // TODO: Find out type safe solution
-    override fun serializeTerm(v: Any?): Any = serErr(v)
+    override fun serializeTerm(v: Nothing?): Any = serErr(v)
 
     override fun serialize(v: V): Map<String, Any?> {
         return v.toSource()
@@ -209,12 +209,12 @@ class NestedType<V: BaseDocSource> : ObjectType<V>() {
 }
 
 open class SourceType<V: BaseDocSource>(
-    val type: FieldType<BaseDocSource>,
+    val type: FieldType<BaseDocSource, Nothing>,
     private val sourceFactory: () -> V
-) : FieldType<V> {
+) : FieldType<V, Nothing> {
     override val name = type.name
 
-    override fun serializeTerm(v: Any?): Any = serErr(v)
+    override fun serializeTerm(v: Nothing?): Any = serErr(v)
 
     override fun serialize(v: V): Any {
         return type.serialize(v)
@@ -226,10 +226,10 @@ open class SourceType<V: BaseDocSource>(
     }
 }
 
-class OptionalListType<V>(val type: FieldType<V>) : FieldType<List<V?>> {
+class OptionalListType<V, T>(val type: FieldType<V, T>) : FieldType<List<V?>, T> {
     override val name get() = type.name
 
-    override fun serializeTerm(v: Any?): Any = serErr(v)
+    override fun serializeTerm(v: T?): Any = serErr(v)
 
     override fun serialize(v: List<V?>): Any {
         return v.map { w ->
@@ -257,10 +257,10 @@ class OptionalListType<V>(val type: FieldType<V>) : FieldType<List<V?>> {
     }
 }
 
-class RequiredListType<V>(val type: FieldType<V>) : FieldType<List<V>> {
+class RequiredListType<V, T>(val type: FieldType<V, T>) : FieldType<List<V>, T> {
     override val name get() = type.name
 
-    override fun serializeTerm(v: Any?): Any = serErr(v)
+    override fun serializeTerm(v: T?): Any = serErr(v)
 
     override fun serialize(v: List<V>): Any {
         return v.map(type::serialize)

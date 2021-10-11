@@ -32,9 +32,9 @@ import kotlinx.datetime.LocalDateTime
 
 import kotlin.test.Test
 
-class AnyField(name: String) : BoundField<Any>(
+class AnyField(name: String) : BoundField<Any, Any>(
     name,
-    object : FieldType<Any> {
+    object : FieldType<Any, Any> {
         override val name: String
             get() = throw IllegalStateException("Fake field type cannot be used in mapping")
 
@@ -107,7 +107,7 @@ class SearchQueryCompilerTests {
 
         val query = SearchQuery()
             .filter(userDoc.status.eq(0))
-            .filter(userDoc.rank.gte(90.0))
+            .filter(userDoc.rank.gte(90.0F))
             .filter(userDoc.opinionsCount.gt(5))
 
         val compiled = compile(query)
@@ -123,7 +123,7 @@ class SearchQueryCompilerTests {
                         mapOf(
                             "range" to mapOf(
                                 "rank" to mapOf(
-                                    "gte" to 90.0
+                                    "gte" to 90.0F
                                 )
                             )
                         ),
@@ -142,11 +142,11 @@ class SearchQueryCompilerTests {
 
     @Test
     fun testFilteredQuery() {
-        class OpinionDoc(field: BoundField<BaseDocSource>) : SubDocument(field) {
+        class OpinionDoc(field: BoundField<BaseDocSource, Nothing>) : SubDocument(field) {
             val count by int()
         }
 
-        class CompanyDoc(field: BoundField<BaseDocSource>) : SubDocument(field) {
+        class CompanyDoc(field: BoundField<BaseDocSource, Nothing>) : SubDocument(field) {
             val name by text()
             val opinion by obj(::OpinionDoc)
         }

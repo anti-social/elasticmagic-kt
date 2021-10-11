@@ -192,7 +192,7 @@ open class DocSource : BaseDocSource() {
             }
     }
 
-    operator fun <V> BoundField<V>.provideDelegate(
+    operator fun <V> BoundField<V, *>.provideDelegate(
         thisRef: DocSource, property: KProperty<*>
     ): ReadWriteProperty<DocSource, V?> {
         return OptionalValueProperty(
@@ -203,19 +203,19 @@ open class DocSource : BaseDocSource() {
             }
     }
 
-    fun <V> BoundField<V>.required(): RequiredListableValueDelegate<V> {
+    fun <V> BoundField<V, *>.required(): RequiredListableValueDelegate<V> {
         return RequiredListableValueDelegate(
             getFieldName(), getFieldType()
         )
     }
 
-    fun <V> BoundField<V>.list(): OptionalValueDelegate<List<V?>> {
+    fun <V> BoundField<V, *>.list(): OptionalValueDelegate<List<V?>> {
         return OptionalValueDelegate(
             getFieldName(), OptionalListType(getFieldType())
         )
     }
 
-    fun <V> BoundField<V>.default(defaultValue: () -> V): OptionalValueDelegateWithDefault<V> {
+    fun <V> BoundField<V, *>.default(defaultValue: () -> V): OptionalValueDelegateWithDefault<V> {
         return OptionalValueDelegateWithDefault(
             getFieldName(), getFieldType(), defaultValue
         )
@@ -241,7 +241,7 @@ open class DocSource : BaseDocSource() {
 
     open class OptionalValueDelegate<V>(
         protected val fieldName: String,
-        protected val fieldType: FieldType<V>,
+        protected val fieldType: FieldType<V, *>,
     ) {
         operator fun provideDelegate(
             thisRef: DocSource, property: KProperty<*>
@@ -261,7 +261,7 @@ open class DocSource : BaseDocSource() {
 
     class OptionalValueDelegateWithDefault<V>(
         private val fieldName: String,
-        private val fieldType: FieldType<V>,
+        private val fieldType: FieldType<V, *>,
         private val defaultValue: () -> V,
     ) {
         operator fun provideDelegate(
@@ -275,7 +275,7 @@ open class DocSource : BaseDocSource() {
 
     class OptionalListableValueDelegate<V>(
         fieldName: String,
-        fieldType: FieldType<V>,
+        fieldType: FieldType<V, *>,
     ) : OptionalValueDelegate<V>(fieldName, fieldType) {
         override fun required(): RequiredListableValueDelegate<V> {
             return RequiredListableValueDelegate(fieldName, fieldType)
@@ -290,7 +290,7 @@ open class DocSource : BaseDocSource() {
 
     open class RequiredValueDelegate<V>(
         protected val fieldName: String,
-        protected val fieldType: FieldType<V>,
+        protected val fieldType: FieldType<V, *>,
     ) {
         operator fun provideDelegate(
             thisRef: DocSource, property: KProperty<*>
@@ -305,7 +305,7 @@ open class DocSource : BaseDocSource() {
 
     class RequiredListableValueDelegate<V>(
         fieldName: String,
-        fieldType: FieldType<V>,
+        fieldType: FieldType<V, *>,
     ) : RequiredValueDelegate<V>(fieldName, fieldType) {
         fun list(): OptionalValueDelegate<List<V>> {
             return OptionalValueDelegate(
@@ -337,7 +337,7 @@ open class DocSource : BaseDocSource() {
 
     private sealed class FieldValueProperty<V>(
         val name: String,
-        val type: FieldType<V>,
+        val type: FieldType<V, *>,
         protected val fieldValue: FieldValue<V>,
     ) {
         abstract val isInitialized: Boolean
@@ -353,7 +353,7 @@ open class DocSource : BaseDocSource() {
 
     private class OptionalValueProperty<V>(
         fieldName: String,
-        fieldType: FieldType<V>,
+        fieldType: FieldType<V, *>,
     ) :
         FieldValueProperty<V>(fieldName, fieldType, FieldValue()),
         ReadWriteProperty<DocSource, V?>
@@ -385,7 +385,7 @@ open class DocSource : BaseDocSource() {
 
     private class DefaultValueProperty<V>(
         fieldName: String,
-        fieldType: FieldType<V>,
+        fieldType: FieldType<V, *>,
         val defaultValue: () -> V,
     ) :
         FieldValueProperty<V>(fieldName, fieldType, FieldValue()),
@@ -423,7 +423,7 @@ open class DocSource : BaseDocSource() {
 
     private class RequiredValueProperty<V>(
         fieldName: String,
-        fieldType: FieldType<V>,
+        fieldType: FieldType<V, *>,
     ) :
         FieldValueProperty<V>(fieldName, fieldType, FieldValue()),
         ReadWriteProperty<DocSource, V>
@@ -614,7 +614,7 @@ class DynDocSource private constructor(
         return getFieldValue(name.split('.'), AnyFieldType::deserialize)
     }
 
-    operator fun <V> get(field: BoundField<V>): V? {
+    operator fun <V> get(field: BoundField<V, *>): V? {
         val fieldType = field.getFieldType()
         val path = checkPathStartsWithPrefix(
             field.getQualifiedFieldName().split('.')
@@ -633,7 +633,7 @@ class DynDocSource private constructor(
         return setFieldValue(name.split('.'), value, AnyFieldType::serialize)
     }
 
-    operator fun <V> set(field: BoundField<V>, value: V?) {
+    operator fun <V> set(field: BoundField<V, *>, value: V?) {
         val fieldType = field.getFieldType()
         val path = checkPathStartsWithPrefix(
             field.getQualifiedFieldName().split('.')
@@ -653,8 +653,8 @@ class DynDocSource private constructor(
     }
 }
 
-fun <V> BoundField<V>.list(): BoundField<List<V?>> {
-    return object : BoundField<List<V?>>(
+fun <V, T> BoundField<V, T>.list(): BoundField<List<V?>, T> {
+    return object : BoundField<List<V?>, T>(
         getFieldName(),
         OptionalListType(getFieldType()),
         getMappingParams(),
@@ -666,9 +666,9 @@ fun <V> BoundField<V>.list(): BoundField<List<V?>> {
     }
 }
 
-fun SubDocument.list(): BoundField<List<DynDocSource?>> {
+fun SubDocument.list(): BoundField<List<DynDocSource?>, Nothing> {
     val listType = OptionalListType(DynDocSourceFieldType)
-    return object : BoundField<List<DynDocSource?>>(
+    return object : BoundField<List<DynDocSource?>, Nothing>(
         getFieldName(), listType, emptyMap(), getParent()
     ) {
         override fun getQualifiedFieldName(): String {
@@ -677,7 +677,7 @@ fun SubDocument.list(): BoundField<List<DynDocSource?>> {
     }
 }
 
-internal object AnyFieldType : FieldType<Any> {
+internal object AnyFieldType : FieldType<Any, Any> {
     override val name: String
         get() = throw IllegalStateException("Should not be used in mappings")
 
@@ -688,11 +688,11 @@ internal object AnyFieldType : FieldType<Any> {
     }
 }
 
-internal object DynDocSourceFieldType : FieldType<DynDocSource> {
+internal object DynDocSourceFieldType : FieldType<DynDocSource, Nothing> {
     override val name: String
         get() = throw IllegalStateException("Should not be used in mappings")
 
-    override fun serializeTerm(v: Any?): Any = serErr(v)
+    override fun serializeTerm(v: Nothing?): Any = serErr(v)
 
     override fun deserialize(v: Any, valueFactory: (() -> DynDocSource)?): DynDocSource {
         return when (v) {

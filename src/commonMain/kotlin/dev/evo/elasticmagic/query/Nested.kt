@@ -4,7 +4,7 @@ import dev.evo.elasticmagic.compile.SearchQueryCompiler
 import dev.evo.elasticmagic.serde.Serializer
 
 data class Nested(
-    val path: FieldOperations,
+    val path: FieldOperations<Nothing>,
     val query: QueryExpression,
     val scoreMode: ScoreMode? = null,
     val ignoreUnmapped: Boolean? = null,

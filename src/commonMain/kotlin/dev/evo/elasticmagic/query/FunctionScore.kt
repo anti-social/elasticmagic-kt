@@ -111,8 +111,8 @@ data class FunctionScore(
         }
     }
 
-    data class FieldValueFactor(
-        val field: FieldOperations,
+    data class FieldValueFactor<T>(
+        val field: FieldOperations<T>,
         val factor: Double? = null,
         val missing: Double? = null,
         val modifier: String? = null,
@@ -164,7 +164,7 @@ data class FunctionScore(
 
     data class RandomScore(
         val seed: Any? = null,
-        val field: FieldOperations? = null,
+        val field: FieldOperations<*>? = null,
         override val filter: QueryExpression? = null,
     ) : Function() {
         override fun clone() = copy()

@@ -8,15 +8,15 @@ import dev.evo.elasticmagic.compile.SearchQueryCompiler
 import dev.evo.elasticmagic.serde.Deserializer
 import dev.evo.elasticmagic.serde.Serializer
 
-abstract class BaseTermsAgg<R: AggregationResult> : BucketAggregation<R>() {
-    abstract val value: AggValue
+abstract class BaseTermsAgg<T, R: AggregationResult> : BucketAggregation<R>() {
+    abstract val value: AggValue<T>
     abstract val size: Int?
     abstract val shardSize: Int?
     abstract val minDocCount: Int?
     abstract val shardMinDocCount: Int?
     abstract val include: Include?
     abstract val exclude: Exclude?
-    abstract val missing: Any?
+    abstract val missing: T?
     abstract val order: List<BucketsOrder>
     abstract val collectMode: CollectMode?
     abstract val executionHint: ExecutionHint?
@@ -89,33 +89,33 @@ abstract class BaseTermsAgg<R: AggregationResult> : BucketAggregation<R>() {
     }
 }
 
-data class TermsAgg(
-    override val value: AggValue,
+data class TermsAgg<T>(
+    override val value: AggValue<T>,
     override val size: Int? = null,
     override val shardSize: Int? = null,
     override val minDocCount: Int? = null,
     override val shardMinDocCount: Int? = null,
     override val include: Include? = null,
     override val exclude: Exclude? = null,
-    override val missing: Any? = null,
+    override val missing: T? = null,
     override val order: List<BucketsOrder> = emptyList(),
     override val collectMode: CollectMode? = null,
     override val executionHint: ExecutionHint? = null,
     val showTermDocCountError: Boolean? = null,
     override val params: Params = Params(),
     override val aggs: Map<String, Aggregation<*>> = emptyMap(),
-) : BaseTermsAgg<TermsAggResult>() {
+) : BaseTermsAgg<T, TermsAggResult>() {
     override val name = "terms"
 
     constructor(
-        field: FieldOperations,
+        field: FieldOperations<T>,
         size: Int? = null,
         shardSize: Int? = null,
         minDocCount: Int? = null,
         shardMinDocCount: Int? = null,
         include: Include? = null,
         exclude: Exclude? = null,
-        missing: Any? = null,
+        missing: T? = null,
         order: List<BucketsOrder> = emptyList(),
         collectMode: CollectMode? = null,
         executionHint: ExecutionHint? = null,
@@ -182,33 +182,33 @@ data class TermBucket(
     override val aggs: Map<String, AggregationResult> = emptyMap(),
 ) : KeyedBucket<Any>()
 
-data class SignificantTermsAgg(
-    override val value: AggValue,
+data class SignificantTermsAgg<T>(
+    override val value: AggValue<T>,
     override val size: Int? = null,
     override val shardSize: Int? = null,
     override val minDocCount: Int? = null,
     override val shardMinDocCount: Int? = null,
     override val include: Include? = null,
     override val exclude: Exclude? = null,
-    override val missing: Any? = null,
+    override val missing: T? = null,
     override val order: List<BucketsOrder> = emptyList(),
     override val collectMode: CollectMode? = null,
     override val executionHint: ExecutionHint? = null,
     val backgroundFilter: QueryExpression? = null,
     override val params: Params = Params(),
     override val aggs: Map<String, Aggregation<*>> = emptyMap(),
-) : BaseTermsAgg<SignificantTermsAggResult>() {
+) : BaseTermsAgg<T, SignificantTermsAggResult>() {
     override val name = "significant_terms"
 
     constructor(
-        field: FieldOperations,
+        field: FieldOperations<T>,
         size: Int? = null,
         shardSize: Int? = null,
         minDocCount: Int? = null,
         shardMinDocCount: Int? = null,
         include: Include? = null,
         exclude: Exclude? = null,
-        missing: Any? = null,
+        missing: T? = null,
         order: List<BucketsOrder> = emptyList(),
         collectMode: CollectMode? = null,
         executionHint: ExecutionHint? = null,

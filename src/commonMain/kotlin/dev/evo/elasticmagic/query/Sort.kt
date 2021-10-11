@@ -15,7 +15,7 @@ data class Sort(
     val nested: Nested? = null,
 ) : Expression {
     constructor(
-        field: FieldOperations? = null,
+        field: FieldOperations<*>? = null,
         scriptType: String? = null,
         script: Script? = null,
         order: Order? = null,
@@ -35,12 +35,12 @@ data class Sort(
     )
 
     sealed class By {
-        class Field(val field: FieldOperations) : By()
+        class Field(val field: FieldOperations<*>) : By()
         class Script(val type: String, val script: dev.evo.elasticmagic.query.Script) : By()
 
         companion object {
             internal operator fun invoke(
-                field: FieldOperations?, scriptType: String?, script: dev.evo.elasticmagic.query.Script?
+                field: FieldOperations<*>?, scriptType: String?, script: dev.evo.elasticmagic.query.Script?
             ): By {
                 return when {
                     field != null && script != null -> throw IllegalArgumentException(
@@ -98,7 +98,7 @@ data class Sort(
     }
 
     data class Nested(
-        val path: FieldOperations,
+        val path: FieldOperations<Nothing>,
         val filter: QueryExpression? = null,
         val maxChildren: Int? = null,
         val nested: Nested? = null,

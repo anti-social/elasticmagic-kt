@@ -18,7 +18,7 @@ data class AggRange<T>(
 }
 
 abstract class BaseRangeAgg<T, R: AggregationResult, B> : BucketAggregation<R>() {
-    abstract val value: AggValue
+    abstract val value: AggValue<T>
     abstract val ranges: List<AggRange<T>>
     abstract val format: String?
     abstract val missing: T?
@@ -91,21 +91,21 @@ data class RangeBucket(
     override val aggs: Map<String, AggregationResult> = emptyMap(),
 ) : KeyedBucket<String>()
 
-data class RangeAgg(
-    override val value: AggValue,
-    override val ranges: List<AggRange<Double>>,
+data class RangeAgg<T: Number>(
+    override val value: AggValue<T>,
+    override val ranges: List<AggRange<T>>,
     override val format: String? = null,
-    override val missing: Double? = null,
+    override val missing: T? = null,
     override val params: Params = Params(),
     override val aggs: Map<String, Aggregation<*>> = emptyMap(),
-) : BaseRangeAgg<Double, RangeAggResult, RangeBucket>() {
+) : BaseRangeAgg<T, RangeAggResult, RangeBucket>() {
     override val name = "range"
 
     constructor(
-        field: FieldOperations,
-        ranges: List<AggRange<Double>>,
+        field: FieldOperations<T>,
+        ranges: List<AggRange<T>>,
         format: String? = null,
-        missing: Double? = null,
+        missing: T? = null,
         params: Params = Params(),
         aggs: Map<String, Aggregation<*>> = emptyMap(),
     ) : this(
@@ -118,14 +118,14 @@ data class RangeAgg(
     )
 
     companion object {
-        fun simpleRanges(
-            field: FieldOperations,
-            ranges: List<Pair<Double?, Double?>>,
+        fun <T: Number> simpleRanges(
+            field: FieldOperations<T>,
+            ranges: List<Pair<T?, T?>>,
             format: String? = null,
-            missing: Double? = null,
+            missing: T? = null,
             aggs: Map<String, Aggregation<*>> = emptyMap(),
             params: Params = Params(),
-        ): RangeAgg {
+        ): RangeAgg<T> {
             return RangeAgg(
                 AggValue.Field(field),
                 ranges = ranges.map { AggRange(it.first, it.second) },
@@ -171,68 +171,68 @@ data class DateRangeBucket(
     override val aggs: Map<String, AggregationResult> = emptyMap(),
 ) : KeyedBucket<String>()
 
-data class DateRangeAgg(
-    override val value: AggValue,
-    override val ranges: List<AggRange<String>>,
-    override val format: String? = null,
-    override val missing: String? = null,
-    override val params: Params = Params(),
-    override val aggs: Map<String, Aggregation<*>> = emptyMap(),
-) : BaseRangeAgg<String, DateRangeAggResult, DateRangeBucket>() {
-    override val name = "date_range"
-
-    constructor(
-        field: FieldOperations,
-        ranges: List<AggRange<String>>,
-        format: String? = null,
-        missing: String? = null,
-        params: Params = Params(),
-        aggs: Map<String, Aggregation<*>> = emptyMap(),
-    ) : this(
-        AggValue.Field(field),
-        ranges = ranges,
-        format = format,
-        missing = missing,
-        params = params,
-        aggs = aggs,
-    )
-
-    companion object {
-        fun simpleRanges(
-            field: FieldOperations,
-            ranges: List<Pair<String?, String?>>,
-            format: String? = null,
-            missing: String? = null,
-            aggs: Map<String, Aggregation<*>> = emptyMap(),
-            params: Params = Params(),
-        ): DateRangeAgg {
-            return DateRangeAgg(
-                AggValue.Field(field),
-                ranges = ranges.map { AggRange(it.first, it.second) },
-                format = format,
-                missing = missing,
-                params = params,
-                aggs = aggs,
-            )
-        }
-    }
-
-    override fun clone() = copy()
-
-    override fun makeRangeResult(buckets: List<DateRangeBucket>) = DateRangeAggResult(buckets)
-
-    override fun processBucketResult(
-        bucketObj: Deserializer.ObjectCtx,
-        bucketKey: String?
-    ): DateRangeBucket {
-        return DateRangeBucket(
-            key = bucketKey ?: bucketObj.string("key"),
-            docCount = bucketObj.long("doc_count"),
-            from = bucketObj.doubleOrNull("from"),
-            fromAsString = bucketObj.stringOrNull("from_as_string"),
-            to = bucketObj.doubleOrNull("to"),
-            toAsString = bucketObj.stringOrNull("to_as_string"),
-            aggs = processSubAggs(bucketObj),
-        )
-    }
-}
+// data class DateRangeAgg(
+//     override val value: AggValue,
+//     override val ranges: List<AggRange<String>>,
+//     override val format: String? = null,
+//     override val missing: String? = null,
+//     override val params: Params = Params(),
+//     override val aggs: Map<String, Aggregation<*>> = emptyMap(),
+// ) : BaseRangeAgg<String, DateRangeAggResult, DateRangeBucket>() {
+//     override val name = "date_range"
+//
+//     constructor(
+//         field: FieldOperations,
+//         ranges: List<AggRange<String>>,
+//         format: String? = null,
+//         missing: String? = null,
+//         params: Params = Params(),
+//         aggs: Map<String, Aggregation<*>> = emptyMap(),
+//     ) : this(
+//         AggValue.Field(field),
+//         ranges = ranges,
+//         format = format,
+//         missing = missing,
+//         params = params,
+//         aggs = aggs,
+//     )
+//
+//     companion object {
+//         fun simpleRanges(
+//             field: FieldOperations,
+//             ranges: List<Pair<String?, String?>>,
+//             format: String? = null,
+//             missing: String? = null,
+//             aggs: Map<String, Aggregation<*>> = emptyMap(),
+//             params: Params = Params(),
+//         ): DateRangeAgg {
+//             return DateRangeAgg(
+//                 AggValue.Field(field),
+//                 ranges = ranges.map { AggRange(it.first, it.second) },
+//                 format = format,
+//                 missing = missing,
+//                 params = params,
+//                 aggs = aggs,
+//             )
+//         }
+//     }
+//
+//     override fun clone() = copy()
+//
+//     override fun makeRangeResult(buckets: List<DateRangeBucket>) = DateRangeAggResult(buckets)
+//
+//     override fun processBucketResult(
+//         bucketObj: Deserializer.ObjectCtx,
+//         bucketKey: String?
+//     ): DateRangeBucket {
+//         return DateRangeBucket(
+//             key = bucketKey ?: bucketObj.string("key"),
+//             docCount = bucketObj.long("doc_count"),
+//             from = bucketObj.doubleOrNull("from"),
+//             fromAsString = bucketObj.stringOrNull("from_as_string"),
+//             to = bucketObj.doubleOrNull("to"),
+//             toAsString = bucketObj.stringOrNull("to_as_string"),
+//             aggs = processSubAggs(bucketObj),
+//         )
+//     }
+// }

@@ -98,10 +98,10 @@ class DocumentTests {
 
     @Test
     fun testCustomFieldType() {
-        val myType = object : FieldType<String> {
+        val myType = object : FieldType<String, String> {
             override val name = "mine"
 
-            override fun serializeTerm(v: Any?): Any {
+            override fun serializeTerm(v: String?): Any {
                 return "me"
             }
 
@@ -155,7 +155,7 @@ class DocumentTests {
 
     @Test
     fun testSubFields() {
-        class NameFields<T>(field: BoundField<T>) : SubFields<T>(field) {
+        class NameFields<T>(field: BoundField<T, T>) : SubFields<T>(field) {
             val sort by keyword()
             val autocomplete by text()
         }
@@ -242,7 +242,7 @@ class DocumentTests {
 
     @Test
     fun testMergeDocuments() {
-        class OpinionNameFields<T>(field: BoundField<T>) : SubFields<T>(field) {
+        class OpinionNameFields<T>(field: BoundField<T, T>) : SubFields<T>(field) {
             val sort by keyword()
         }
 
@@ -258,7 +258,7 @@ class DocumentTests {
         }
         val opinionDoc = OpinionDoc()
 
-        class AnswerNameFields<T>(field: BoundField<T>) : SubFields<T>(field) {
+        class AnswerNameFields<T>(field: BoundField<T, T>) : SubFields<T>(field) {
             val autocomplete by text()
         }
 
@@ -279,13 +279,13 @@ class DocumentTests {
         mergedDoc["opinionId"] shouldBeSameInstanceAs answerDoc.opinionId
 
         val mergedUserDoc = mergedDoc["user"]
-            .shouldBeInstanceOf<SubDocumentField>()
+            .shouldBeInstanceOf<SubDocumentField<*>>()
             .subDocument
         mergedUserDoc["phone"] shouldBeSameInstanceAs opinionDoc.user.phone
         mergedUserDoc["companyId"] shouldBeSameInstanceAs answerDoc.user.companyId
 
         val opinionTitleSubFields = mergedUserDoc["title"]
-            .shouldBeInstanceOf<SubFieldsField>()
+            .shouldBeInstanceOf<SubFieldsField<*>>()
             .subFields
         // val opinionTitleFields = opinionTitleSubFields.getFieldsByName()
         opinionTitleSubFields["sort"] shouldBeSameInstanceAs opinionDoc.user.title.sort
@@ -294,7 +294,7 @@ class DocumentTests {
 
     @Test
     fun testMergeDocuments_subFields() {
-        class UserNameFields(field: BoundField<String>) : SubFields<String>(field) {
+        class UserNameFields(field: BoundField<String, String>) : SubFields<String>(field) {
             val sort by keyword()
         }
 
@@ -304,7 +304,7 @@ class DocumentTests {
         }
         val userDoc = UserDoc()
 
-        class CompanyNameFields(field: BoundField<String>) : SubFields<String>(field) {
+        class CompanyNameFields(field: BoundField<String, String>) : SubFields<String>(field) {
             val autocomplete by keyword()
         }
 
@@ -316,12 +316,12 @@ class DocumentTests {
 
         val mergedDoc = mergeDocuments(userDoc, companyDoc)
         val firstNameFields = mergedDoc["first_name"]
-            .shouldBeInstanceOf<SubFieldsField>()
+            .shouldBeInstanceOf<SubFieldsField<*>>()
             .subFields
         firstNameFields["sort"] shouldBeSameInstanceAs userDoc.firstName.sort
         firstNameFields["autocomplete"].shouldBeNull()
         val lastNameFields = mergedDoc["last_name"]
-            .shouldBeInstanceOf<SubFieldsField>()
+            .shouldBeInstanceOf<SubFieldsField<*>>()
             .subFields
         lastNameFields["sort"].shouldBeNull()
         lastNameFields["autocomplete"] shouldBeSameInstanceAs companyDoc.lastName.autocomplete
@@ -329,7 +329,7 @@ class DocumentTests {
 
     @Test
     fun testMergeDocuments_subFieldsWithDifferentTypes() {
-        class NameFields(field: BoundField<String>) : SubFields<String>(field) {
+        class NameFields(field: BoundField<String, String>) : SubFields<String>(field) {
             val sort by keyword()
         }
 

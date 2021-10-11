@@ -7,23 +7,23 @@ import dev.evo.elasticmagic.compile.SearchQueryCompiler
 import dev.evo.elasticmagic.serde.Deserializer
 import dev.evo.elasticmagic.serde.Serializer
 
-sealed class AggValue : Expression {
-    data class Field(val field: FieldOperations) : AggValue() {
+sealed class AggValue<T> : Expression {
+    data class Field<T>(val field: FieldOperations<T>) : AggValue<T>() {
         override fun clone() = copy()
     }
-    data class Script(val script: dev.evo.elasticmagic.query.Script) : AggValue() {
+    data class Script<T>(val script: dev.evo.elasticmagic.query.Script) : AggValue<T>() {
         override fun clone() = copy()
     }
-    data class ValueScript(
-        val field: FieldOperations,
+    data class ValueScript<T>(
+        val field: FieldOperations<T>,
         val script: dev.evo.elasticmagic.query.Script,
-    ) : AggValue() {
+    ) : AggValue<T>() {
         override fun clone() = copy()
     }
 
     override fun accept(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
         when (this) {
-            is Field -> ctx.field("field", field.getQualifiedFieldName())
+            is Field<*> -> ctx.field("field", field.getQualifiedFieldName())
             is Script -> ctx.obj("script") {
                 compiler.visit(this, script)
             }

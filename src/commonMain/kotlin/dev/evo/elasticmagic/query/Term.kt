@@ -3,9 +3,9 @@ package dev.evo.elasticmagic.query
 import dev.evo.elasticmagic.compile.SearchQueryCompiler
 import dev.evo.elasticmagic.serde.Serializer
 
-data class Term(
-    val field: FieldOperations,
-    val term: Any,
+data class Term<T>(
+    val field: FieldOperations<T>,
+    val term: T,
     val boost: Double? = null,
 ) : QueryExpression {
     override val name = "term"
@@ -27,9 +27,9 @@ data class Term(
     }
 }
 
-data class Terms(
-    val field: FieldOperations,
-    val terms: List<Any>,
+data class Terms<T>(
+    val field: FieldOperations<T>,
+    val terms: List<T>,
     val boost: Double? = null,
 ) : QueryExpression {
     override val name = "terms"
@@ -66,7 +66,7 @@ data class Ids(
 }
 
 data class Exists(
-    val field: FieldOperations,
+    val field: FieldOperations<*>,
 ) : QueryExpression {
     override val name = "exists"
 
@@ -80,12 +80,12 @@ data class Exists(
     }
 }
 
-data class Range(
-    val field: FieldOperations,
-    val gt: Any? = null,
-    val gte: Any? = null,
-    val lt: Any? = null,
-    val lte: Any? = null,
+data class Range<T>(
+    val field: FieldOperations<T>,
+    val gt: T? = null,
+    val gte: T? = null,
+    val lt: T? = null,
+    val lte: T? = null,
 ) : QueryExpression {
     override val name = "range"
 

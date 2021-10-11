@@ -23,7 +23,7 @@ enum class Dynamic : ToValue {
  * Represents field of any type in an Elasticsearch document.
  * See [FieldSet.getAllFields] and [FieldSet.get] methods.
  */
-interface AnyField : FieldOperations {
+interface AnyField<T> : FieldOperations<T> {
     fun getMappingParams(): Params
 
     fun getParent(): Named
@@ -39,13 +39,13 @@ interface AnyField : FieldOperations {
  * @param params - mapping parameters
  * @param parent - the [FieldSet] object to which the field is bound
  */
-open class BoundField<V>(
+open class BoundField<V, T>(
     private val name: String,
-    private val type: FieldType<V>,
+    private val type: FieldType<V, T>,
     private val params: Params,
     private val parent: FieldSet,
     private val ignored: Boolean = false,
-) : AnyField {
+) : AnyField<T> {
     private val qualifiedName = run {
         val parentQualifiedName = parent.getQualifiedFieldName()
         if (parentQualifiedName.isNotEmpty()) {
@@ -59,7 +59,7 @@ open class BoundField<V>(
 
     override fun getQualifiedFieldName(): String = qualifiedName
 
-    override fun getFieldType(): FieldType<V> = type
+    override fun getFieldType(): FieldType<V, T> = type
 
     override fun getMappingParams(): Params = params
 
@@ -68,7 +68,7 @@ open class BoundField<V>(
     override fun isIgnored(): Boolean = ignored
 
     override fun equals(other: Any?): Boolean {
-        if (other !is BoundField<*>) {
+        if (other !is BoundField<*, *>) {
             return false
         }
         return qualifiedName == other.qualifiedName &&
@@ -95,15 +95,15 @@ open class BoundField<V>(
  */
 class BoundJoinField(
     name: String,
-    type: FieldType<Join>,
+    type: FieldType<Join, String>,
     relations: Map<String, List<String>>,
     params: Params,
     parent: FieldSet,
     ignored: Boolean,
-) : BoundField<Join>(name, type, Params(params, "relations" to relations), parent, ignored) {
+) : BoundField<Join, String>(name, type, Params(params, "relations" to relations), parent, ignored) {
 
-    inner class Parent(private val name: String) : FieldOperations {
-        override fun getFieldType(): FieldType<*> = KeywordType
+    inner class Parent(private val name: String) : FieldOperations<String> {
+        override fun getFieldType(): FieldType<*, String> = KeywordType
 
         override fun getFieldName(): String = name
 
@@ -116,7 +116,7 @@ class BoundJoinField(
         Parent(parentFieldName)
     }
     
-    fun parent(name: String): FieldOperations {
+    fun parent(name: String): FieldOperations<String> {
         return parentFields[name]
             ?: throw IllegalArgumentException(
                 "Unknown parent relation: $name, possible relations: ${parentFields.keys}"
@@ -129,11 +129,11 @@ class BoundJoinField(
  * https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping.html
  */
 abstract class FieldSet : Named {
-    private val fields: ArrayList<AnyField> = arrayListOf()
+    private val fields: ArrayList<AnyField<*>> = arrayListOf()
     private val fieldsByName: HashMap<String, Int> = hashMapOf()
 
     // TODO: consider to make it public
-    internal fun addField(field: AnyField) {
+    internal fun addField(field: AnyField<*>) {
         val existingFieldIx = fieldsByName[field.getFieldName()]
         if (existingFieldIx != null) {
             fields[existingFieldIx] = field
@@ -143,22 +143,22 @@ abstract class FieldSet : Named {
         }
     }
 
-    fun getAllFields(): List<AnyField> {
+    fun getAllFields(): List<AnyField<*>> {
         return fields.toList()
     }
 
-    operator fun get(name: String): AnyField? {
+    operator fun get(name: String): AnyField<*>? {
         return fields[fieldsByName[name] ?: return null]
     }
 
-    fun <T> field(
+    fun <V, T> field(
         name: String?,
-        type: FieldType<T>,
+        type: FieldType<V, T>,
         docValues: Boolean? = null,
         index: Boolean? = null,
         store: Boolean? = null,
         params: Params? = null,
-    ): Field<T> {
+    ): Field<V, T> {
         @Suppress("NAME_SHADOWING")
         val params = Params(
             params,
@@ -168,13 +168,13 @@ abstract class FieldSet : Named {
         )
         return Field(name, type, params)
     }
-    fun <T> field(
-        type: FieldType<T>,
+    fun <V, T> field(
+        type: FieldType<V, T>,
         docValues: Boolean? = null,
         index: Boolean? = null,
         store: Boolean? = null,
         params: Params? = null,
-    ): Field<T> {
+    ): Field<V, T> {
         return field(
             null, type,
             docValues = docValues,
@@ -189,7 +189,7 @@ abstract class FieldSet : Named {
         index: Boolean? = null,
         store: Boolean? = null,
         params: Params? = null,
-    ): Field<Boolean> {
+    ): Field<Boolean, Boolean> {
         return field(
             name, BooleanType,
             docValues = docValues,
@@ -204,7 +204,7 @@ abstract class FieldSet : Named {
         index: Boolean? = null,
         store: Boolean? = null,
         params: Params? = null,
-    ): Field<Int> {
+    ): Field<Int, Int> {
         return field(
             name, IntType,
             docValues = docValues,
@@ -219,7 +219,7 @@ abstract class FieldSet : Named {
         index: Boolean? = null,
         store: Boolean? = null,
         params: Params? = null,
-    ): Field<Long> {
+    ): Field<Long, Long> {
         return field(
             name, LongType,
             docValues = docValues,
@@ -234,7 +234,7 @@ abstract class FieldSet : Named {
         index: Boolean? = null,
         store: Boolean? = null,
         params: Params? = null,
-    ): Field<Float> {
+    ): Field<Float, Float> {
         return field(
             name, FloatType,
             docValues = docValues,
@@ -249,7 +249,7 @@ abstract class FieldSet : Named {
         index: Boolean? = null,
         store: Boolean? = null,
         params: Params? = null,
-    ): Field<Double> {
+    ): Field<Double, Double> {
         return field(
             name, DoubleType,
             docValues = docValues,
@@ -265,7 +265,7 @@ abstract class FieldSet : Named {
         index: Boolean? = null,
         store: Boolean? = null,
         params: Params? = null,
-    ): Field<String> {
+    ): Field<String, String> {
         @Suppress("NAME_SHADOWING")
         val params = Params(
             params,
@@ -290,7 +290,7 @@ abstract class FieldSet : Named {
         analyzer: String? = null,
         searchAnalyzer: String? = null,
         params: Params? = null,
-    ): Field<String> {
+    ): Field<String, String> {
         @Suppress("NAME_SHADOWING")
         val params = Params(
             params,
@@ -319,16 +319,16 @@ abstract class FieldSet : Named {
         return JoinField(name, JoinType, relations, params = params)
     }
 
-    open class Field<V>(
+    open class Field<V, T>(
         val name: String?,
-        val type: FieldType<V>,
+        val type: FieldType<V, T>,
         val params: Params,
         val ignored: Boolean = false,
     ) {
         operator fun provideDelegate(
             thisRef: FieldSet, prop: KProperty<*>
-        ): ReadOnlyProperty<FieldSet, BoundField<V>> {
-            val field = BoundField(
+        ): ReadOnlyProperty<FieldSet, BoundField<V, T>> {
+            val field = BoundField<V, T>(
                 name ?: prop.name,
                 type,
                 params,
@@ -345,7 +345,7 @@ abstract class FieldSet : Named {
         type: JoinType,
         val relations: Map<String, List<String>>,
         params: Params,
-    ) : Field<Join>(name, type, params) {
+    ) : Field<Join, String>(name, type, params) {
         operator fun provideDelegate(
             thisRef: BaseDocument, prop: KProperty<*>
         ): ReadOnlyProperty<BaseDocument, BoundJoinField> {
@@ -367,18 +367,18 @@ abstract class FieldSet : Named {
  * Represents Elasticsearch multi-fields:
  * https://www.elastic.co/guide/en/elasticsearch/reference/7.10/multi-fields.html
  */
-open class SubFields<V>(private val field: BoundField<V>) : FieldSet() {
-    fun getBoundField(): BoundField<V> = field
+open class SubFields<V>(private val field: BoundField<V, V>) : FieldSet() {
+    fun getBoundField(): BoundField<V, V> = field
 
-    fun getFieldType(): FieldType<V> = field.getFieldType()
+    fun getFieldType(): FieldType<V, V> = field.getFieldType()
 
     override fun getFieldName(): String = field.getFieldName()
 
     override fun getQualifiedFieldName(): String = field.getQualifiedFieldName()
 
     class UnboundSubFields<V, F: SubFields<V>>(
-        private val unboundField: Field<V>,
-        private val subFieldsFactory: (BoundField<V>) -> F,
+        private val unboundField: Field<V, V>,
+        private val subFieldsFactory: (BoundField<V, V>) -> F,
     ) {
         operator fun provideDelegate(
             thisRef: BaseDocument, prop: KProperty<*>
@@ -401,22 +401,22 @@ open class SubFields<V>(private val field: BoundField<V>) : FieldSet() {
     }
 }
 
-internal open class WrapperField(val field: AnyField) : AnyField {
+internal open class WrapperField<T>(val field: AnyField<T>) : AnyField<T> {
     override fun getFieldName(): String = field.getFieldName()
     override fun getQualifiedFieldName(): String = field.getQualifiedFieldName()
-    override fun getFieldType(): FieldType<*> = field.getFieldType()
+    override fun getFieldType(): FieldType<*, T> = field.getFieldType()
     override fun getMappingParams(): Params = field.getMappingParams()
     override fun getParent(): Named = field.getParent()
     override fun isIgnored(): Boolean = field.isIgnored()
 }
 
-internal class SubFieldsField(
-    field: AnyField,
+internal class SubFieldsField<T>(
+    field: AnyField<T>,
     val subFields: SubFields<*>
-) : WrapperField(field)
+) : WrapperField<T>(field)
 
 abstract class BaseDocument : FieldSet() {
-    fun <V, F: SubFields<V>> Field<V>.subFields(factory: (BoundField<V>) -> F): SubFields.UnboundSubFields<V, F> {
+    fun <V, F: SubFields<V>> Field<V, V>.subFields(factory: (BoundField<V, V>) -> F): SubFields.UnboundSubFields<V, F> {
         return SubFields.UnboundSubFields(this, factory)
     }
 
@@ -471,7 +471,7 @@ abstract class BaseDocument : FieldSet() {
     }
 }
 
-typealias DocSourceField = BoundField<BaseDocSource>
+typealias DocSourceField = BoundField<BaseDocSource, Nothing>
 
 /**
  * Represents Elasticsearch sub-document.
@@ -479,14 +479,14 @@ typealias DocSourceField = BoundField<BaseDocSource>
 @Suppress("UnnecessaryAbstractClass")
 abstract class SubDocument(
     private val field: DocSourceField
-) : BaseDocument(), FieldOperations {
+) : BaseDocument(), FieldOperations<Nothing> {
     fun getBoundField(): DocSourceField = field
 
     override fun getFieldName(): String = field.getFieldName()
 
     override fun getQualifiedFieldName(): String = field.getQualifiedFieldName()
 
-    override fun getFieldType(): FieldType<BaseDocSource> = field.getFieldType()
+    override fun getFieldType(): FieldType<BaseDocSource, Nothing> = field.getFieldType()
 
     fun getParent(): FieldSet = field.getParent()
 
@@ -518,10 +518,10 @@ abstract class SubDocument(
     }
 }
 
-internal class SubDocumentField(
-    field: AnyField,
+internal class SubDocumentField<T>(
+    field: AnyField<T>,
     val subDocument: SubDocument
-) : WrapperField(field)
+) : WrapperField<T>(field)
 
 /**
  * Metadata fields:
@@ -541,10 +541,10 @@ open class MetaFields : RootFieldSet() {
     open val size by SizeField()
 
     @Suppress("UnnecessaryAbstractClass")
-    abstract class BaseMetaField<V, B: AnyField>(
-        name: String, type: FieldType<V>, params: Params = Params(),
+    abstract class BaseMetaField<V, B: AnyField<V>>(
+        name: String, type: FieldType<V, V>, params: Params = Params(),
         private val boundFieldFactory: (String, Params, MetaFields) -> B
-    ) : Field<V>(name, type, params) {
+    ) : Field<V, V>(name, type, params) {
         operator fun provideDelegate(
             thisRef: MetaFields, prop: KProperty<*>
         ): ReadOnlyProperty<MetaFields, B> {
@@ -559,8 +559,8 @@ open class MetaFields : RootFieldSet() {
     }
 
     open class MetaField<V>(
-        name: String, type: FieldType<V>, params: Params = Params()
-    ) : BaseMetaField<V, BoundField<V>>(
+        name: String, type: FieldType<V, V>, params: Params = Params()
+    ) : BaseMetaField<V, BoundField<V, V>>(
         name, type, params,
         { n, p, m -> BoundField(n, type, p, m) }
     )
@@ -574,7 +574,7 @@ open class MetaFields : RootFieldSet() {
 
     class BoundRoutingField(
         name: String, params: Params, parent: MetaFields
-    ) : BoundField<String>(name, KeywordType, params, parent)
+    ) : BoundField<String, String>(name, KeywordType, params, parent)
 
     class FieldNamesField(
         enabled: Boolean? = null,
@@ -585,7 +585,7 @@ open class MetaFields : RootFieldSet() {
 
     class BoundFieldNamesField(
         name: String, params: Params, parent: MetaFields
-    ) : BoundField<String>(name, KeywordType, params, parent)
+    ) : BoundField<String, String>(name, KeywordType, params, parent)
 
     // TODO: What type should the source field be?
     // TODO: Add constructor where `includes` & `excludes` arguments have type of `List<FieldOperations>`
@@ -602,7 +602,7 @@ open class MetaFields : RootFieldSet() {
 
     class BoundSourceField(
         name: String, params: Params, parent: MetaFields
-    ) : BoundField<String>(name, KeywordType, params, parent)
+    ) : BoundField<String, String>(name, KeywordType, params, parent)
 
     class SizeField(
         enabled: Boolean? = null,
@@ -613,7 +613,7 @@ open class MetaFields : RootFieldSet() {
 
     class BoundSizeField(
         name: String, params: Params, parent: MetaFields
-    ) : BoundField<Long>(name, LongType, params, parent)
+    ) : BoundField<Long, Long>(name, LongType, params, parent)
 }
 
 open class RuntimeFields : RootFieldSet() {
@@ -621,17 +621,17 @@ open class RuntimeFields : RootFieldSet() {
     val doc by Field("_doc", IntType, emptyMap(), ignored = true)
     val seqNo by Field("_seq_no", LongType, emptyMap(), ignored = true)
 
-    fun <V> runtime(name: String, type: FieldType<V>, script: Script): RuntimeField<V> {
+    fun <V> runtime(name: String, type: FieldType<V, V>, script: Script): RuntimeField<V> {
         return RuntimeField(name, type, script)
     }
 
-    fun <V> runtime(type: FieldType<V>, script: Script): RuntimeField<V> {
+    fun <V> runtime(type: FieldType<V, V>, script: Script): RuntimeField<V> {
         return RuntimeField(null, type, script)
     }
 
     class RuntimeField<V>(
-        name: String?, type: FieldType<V>, script: Script
-    ) : Field<V>(name, type, mapOf("script" to script))
+        name: String?, type: FieldType<V, V>, script: Script
+    ) : Field<V, V>(name, type, mapOf("script" to script))
 }
 
 @Suppress("UnnecessaryAbstractClass")
@@ -683,8 +683,8 @@ fun mergeDocuments(vararg docs: Document): Document {
     }
 }
 
-private fun mergeFieldSets(fieldSets: List<FieldSet>): List<AnyField> {
-    val mergedFields = mutableListOf<AnyField>()
+private fun mergeFieldSets(fieldSets: List<FieldSet>): List<AnyField<*>> {
+    val mergedFields = mutableListOf<AnyField<*>>()
     val mergedFieldsByName = mutableMapOf<String, Int>()
     for (fields in fieldSets) {
         for (field in fields.getAllFields()) {
@@ -733,7 +733,7 @@ private fun mergeFieldSets(fieldSets: List<FieldSet>): List<AnyField> {
     return mergedFields
 }
 
-private fun mergeSubFields(first: SubFieldsField?, second: SubFieldsField?): SubFieldsField {
+private fun mergeSubFields(first: SubFieldsField<*>?, second: SubFieldsField<*>?): SubFieldsField<*> {
     val firstSubFields = first?.subFields
     val secondSubFields = second?.subFields
 
@@ -745,7 +745,7 @@ private fun mergeSubFields(first: SubFieldsField?, second: SubFieldsField?): Sub
 
     // It is your responsibility to pass correct values when (de)-serializing
     @Suppress("UNCHECKED_CAST")
-    val mergedSubFields = object : SubFields<Any?>(templateField as BoundField<Any?>) {
+    val mergedSubFields = object : SubFields<Any?>(templateField as BoundField<Any?, Any?>) {
         init {
             mergeFieldSets(listOfNotNull(secondSubFields, firstSubFields))
                 .forEach(::addField)
@@ -759,7 +759,7 @@ private fun mergeSubFields(first: SubFieldsField?, second: SubFieldsField?): Sub
     )
 }
 
-private fun mergeSubDocuments(first: SubDocumentField, second: SubDocumentField): SubDocumentField {
+private fun mergeSubDocuments(first: SubDocumentField<*>, second: SubDocumentField<*>): SubDocumentField<*> {
     val firstSubDocument = first.subDocument
     val secondSubDocument = second.subDocument
 
@@ -784,7 +784,7 @@ private fun checkMetaFields(
     expectedDocName: String?,
     expectedMetaFields: MetaFields
 ) {
-    val expectedFieldNames = expectedMetaFields.getAllFields().map(AnyField::getFieldName)
+    val expectedFieldNames = expectedMetaFields.getAllFields().map(AnyField<*>::getFieldName)
     for (expectedFieldName in expectedFieldNames) {
         requireNotNull(metaFields[expectedFieldName]) {
             "$expectedDocName has meta field $expectedFieldName but $docName does not"
@@ -801,7 +801,7 @@ private fun checkMetaFields(
 }
 
 private fun checkFieldsIdentical(
-    field: AnyField, expected: AnyField,
+    field: AnyField<*>, expected: AnyField<*>,
 ) {
     val fieldName = field.getFieldName()
     val expectedName = expected.getFieldName()

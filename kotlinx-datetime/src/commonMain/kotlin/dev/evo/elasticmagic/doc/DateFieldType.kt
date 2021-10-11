@@ -7,7 +7,7 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
 
-abstract class BaseDateTimeType<V> : FieldType<V> {
+abstract class BaseDateTimeType<V> : FieldType<V, V> {
     override val name = "date"
 
     protected abstract val dateTypeName: String
@@ -26,7 +26,7 @@ abstract class BaseDateTimeType<V> : FieldType<V> {
 
     }
 
-    override fun serializeTerm(v: Any?): Any = when (v) {
+    override fun serializeTerm(v: V?): Any = when (v) {
         is Instant -> v.toString()
         is LocalDateTime -> v.toInstant(TimeZone.UTC).toString()
         is LocalDate -> v.toString()

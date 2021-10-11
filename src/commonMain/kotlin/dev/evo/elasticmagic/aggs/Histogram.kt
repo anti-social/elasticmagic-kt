@@ -24,8 +24,8 @@ data class HistogramBounds<T>(
     }
 }
 
-abstract class BaseHistogramAgg<T, R: AggregationResult, B> : BucketAggregation<R>() {
-    abstract val value: AggValue
+abstract class BaseHistogramAgg<T: Number, R: AggregationResult, B> : BucketAggregation<R>() {
+    abstract val value: AggValue<T>
     abstract val offset: T?
     abstract val minDocCount: Long?
     abstract val missing: T?
@@ -97,31 +97,31 @@ abstract class BaseHistogramAgg<T, R: AggregationResult, B> : BucketAggregation<
     protected abstract val makeHistogramResult: (List<B>) -> R
 }
 
-data class HistogramAgg(
-    override val value: AggValue,
-    val interval: Double,
-    override val offset: Double? = null,
+data class HistogramAgg<T: Number>(
+    override val value: AggValue<T>,
+    val interval: T,
+    override val offset: T? = null,
     override val minDocCount: Long? = null,
-    override val missing: Double? = null,
+    override val missing: T? = null,
     override val format: String? = null,
     override val order: List<BucketsOrder> = emptyList(),
-    override val extendedBounds: HistogramBounds<Double>? = null,
-    override val hardBounds: HistogramBounds<Double>? = null,
+    override val extendedBounds: HistogramBounds<T>? = null,
+    override val hardBounds: HistogramBounds<T>? = null,
     override val params: Params = Params(),
     override val aggs: Map<String, Aggregation<*>> = emptyMap(),
-) : BaseHistogramAgg<Double, HistogramAggResult, HistogramBucket>() {
+) : BaseHistogramAgg<T, HistogramAggResult, HistogramBucket>() {
     override val name = "histogram"
 
     constructor(
-        field: FieldOperations,
-        interval: Double,
-        offset: Double? = null,
+        field: FieldOperations<T>,
+        interval: T,
+        offset: T? = null,
         minDocCount: Long? = null,
-        missing: Double? = null,
+        missing: T? = null,
         format: String? = null,
         order: List<BucketsOrder> = emptyList(),
-        extendedBounds: HistogramBounds<Double>? = null,
-        hardBounds: HistogramBounds<Double>? = null,
+        extendedBounds: HistogramBounds<T>? = null,
+        hardBounds: HistogramBounds<T>? = null,
         params: Params = Params(),
         aggs: Map<String, Aggregation<*>> = emptyMap(),
     ) : this(
@@ -169,92 +169,92 @@ data class HistogramBucket(
     val keyAsString: String?,
 ) : KeyedBucket<Double>()
 
-data class DateHistogramAgg(
-    override val value: AggValue,
-    val interval: Interval,
-    override val offset: String? = null,
-    override val minDocCount: Long? = null,
-    // TODO: Should it be a LocalDateTime?
-    override val missing: String? = null,
-    override val format: String? = null,
-    override val order: List<BucketsOrder> = emptyList(),
-    // TODO: Should it be a HistogramBounds<LocalDateTime>?
-    override val extendedBounds: HistogramBounds<String>? = null,
-    override val hardBounds: HistogramBounds<String>? = null,
-    override val params: Params = Params(),
-    override val aggs: Map<String, Aggregation<*>> = emptyMap(),
-) : BaseHistogramAgg<String, DateHistogramAggResult, DateHistogramBucket>() {
-    override val name = "date_histogram"
-
-    constructor(
-        field: FieldOperations,
-        interval: Interval,
-        offset: String? = null,
-        minDocCount: Long? = null,
-        missing: String? = null,
-        format: String? = null,
-        order: List<BucketsOrder> = emptyList(),
-        extendedBounds: HistogramBounds<String>? = null,
-        hardBounds: HistogramBounds<String>? = null,
-        params: Params = Params(),
-        aggs: Map<String, Aggregation<*>> = emptyMap(),
-    ) : this(
-        AggValue.Field(field),
-        interval = interval,
-        offset = offset,
-        minDocCount = minDocCount,
-        missing = missing,
-        format = format,
-        order = order,
-        extendedBounds = extendedBounds,
-        hardBounds = hardBounds,
-        params = params,
-        aggs = aggs,
-    )
-
-    sealed class Interval : Expression {
-        abstract val name: String
-        abstract val interval: String
-
-        override fun accept(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
-            ctx.field(name, interval)
-        }
-
-        data class Auto(override val interval: String) : Interval() {
-            override val name: String = "interval"
-
-            override fun clone() = copy()
-        }
-        data class Calendar(override val interval: String) : Interval() {
-            override val name = "calendar_interval"
-
-            override fun clone() = copy()
-        }
-        data class Fixed(override val interval: String) : Interval() {
-            override val name = "fixed_interval"
-
-            override fun clone() = copy()
-        }
-    }
-
-    override fun clone() = copy()
-
-    override fun visit(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
-        compiler.visit(ctx, interval)
-        super.visit(ctx, compiler)
-    }
-
-    override fun processBucketResult(bucketObj: Deserializer.ObjectCtx): DateHistogramBucket {
-        return DateHistogramBucket(
-            key = bucketObj.long("key"),
-            docCount = bucketObj.long("doc_count"),
-            keyAsString = bucketObj.stringOrNull("key_as_string"),
-            aggs = processSubAggs(bucketObj)
-        )
-    }
-
-    override val makeHistogramResult = ::DateHistogramAggResult
-}
+// data class DateHistogramAgg(
+//     override val value: AggValue,
+//     val interval: Interval,
+//     override val offset: String? = null,
+//     override val minDocCount: Long? = null,
+//     // TODO: Should it be a LocalDateTime?
+//     override val missing: String? = null,
+//     override val format: String? = null,
+//     override val order: List<BucketsOrder> = emptyList(),
+//     // TODO: Should it be a HistogramBounds<LocalDateTime>?
+//     override val extendedBounds: HistogramBounds<String>? = null,
+//     override val hardBounds: HistogramBounds<String>? = null,
+//     override val params: Params = Params(),
+//     override val aggs: Map<String, Aggregation<*>> = emptyMap(),
+// ) : BaseHistogramAgg<String, DateHistogramAggResult, DateHistogramBucket>() {
+//     override val name = "date_histogram"
+//
+//     constructor(
+//         field: FieldOperations,
+//         interval: Interval,
+//         offset: String? = null,
+//         minDocCount: Long? = null,
+//         missing: String? = null,
+//         format: String? = null,
+//         order: List<BucketsOrder> = emptyList(),
+//         extendedBounds: HistogramBounds<String>? = null,
+//         hardBounds: HistogramBounds<String>? = null,
+//         params: Params = Params(),
+//         aggs: Map<String, Aggregation<*>> = emptyMap(),
+//     ) : this(
+//         AggValue.Field(field),
+//         interval = interval,
+//         offset = offset,
+//         minDocCount = minDocCount,
+//         missing = missing,
+//         format = format,
+//         order = order,
+//         extendedBounds = extendedBounds,
+//         hardBounds = hardBounds,
+//         params = params,
+//         aggs = aggs,
+//     )
+//
+//     sealed class Interval : Expression {
+//         abstract val name: String
+//         abstract val interval: String
+//
+//         override fun accept(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
+//             ctx.field(name, interval)
+//         }
+//
+//         data class Auto(override val interval: String) : Interval() {
+//             override val name: String = "interval"
+//
+//             override fun clone() = copy()
+//         }
+//         data class Calendar(override val interval: String) : Interval() {
+//             override val name = "calendar_interval"
+//
+//             override fun clone() = copy()
+//         }
+//         data class Fixed(override val interval: String) : Interval() {
+//             override val name = "fixed_interval"
+//
+//             override fun clone() = copy()
+//         }
+//     }
+//
+//     override fun clone() = copy()
+//
+//     override fun visit(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
+//         compiler.visit(ctx, interval)
+//         super.visit(ctx, compiler)
+//     }
+//
+//     override fun processBucketResult(bucketObj: Deserializer.ObjectCtx): DateHistogramBucket {
+//         return DateHistogramBucket(
+//             key = bucketObj.long("key"),
+//             docCount = bucketObj.long("doc_count"),
+//             keyAsString = bucketObj.stringOrNull("key_as_string"),
+//             aggs = processSubAggs(bucketObj)
+//         )
+//     }
+//
+//     override val makeHistogramResult = ::DateHistogramAggResult
+// }
 
 data class DateHistogramAggResult(
     override val buckets: List<DateHistogramBucket>,
