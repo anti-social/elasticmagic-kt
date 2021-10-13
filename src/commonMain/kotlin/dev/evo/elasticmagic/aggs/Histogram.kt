@@ -292,7 +292,6 @@ data class DateHistogramAgg<T>(
 
     override fun processBucketResult(bucketObj: Deserializer.ObjectCtx): DateHistogramBucket<T> {
         val key = bucketObj.long("key")
-        val deserializedKey = value.deserializeTerm(key)
         return DateHistogramBucket(
             key = key,
             keyAsString = bucketObj.stringOrNull("key_as_string"),

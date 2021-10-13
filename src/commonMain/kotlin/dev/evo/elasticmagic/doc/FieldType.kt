@@ -45,9 +45,18 @@ object IntType : NumberType<Int>() {
 
     override fun deserialize(v: Any, valueFactory: (() -> Int)?) = when(v) {
         is Int -> v
-        is Long -> v.toInt()
-        is String -> v.toInt()
-        else -> throw ValueDeserializationException(v, "Int")
+        is Long -> {
+            if (v > Int.MAX_VALUE || v < Int.MIN_VALUE) {
+                deErr(v, "Int")
+            }
+            v.toInt()
+        }
+        is String -> try {
+            v.toInt()
+        } catch (ex: NumberFormatException) {
+            deErr(v, "Int", ex)
+        }
+        else -> deErr(v, "Int")
     }
 }
 
@@ -57,8 +66,12 @@ object LongType : NumberType<Long>() {
     override fun deserialize(v: Any, valueFactory: (() -> Long)?) = when(v) {
         is Int -> v.toLong()
         is Long -> v
-        is String -> v.toLong()
-        else -> throw ValueDeserializationException(v, "Long")
+        is String -> try {
+            v.toLong()
+        } catch (ex: NumberFormatException) {
+            deErr(v, "Long", ex)
+        }
+        else -> deErr(v, "Long")
     }
 }
 
@@ -70,8 +83,12 @@ object FloatType : NumberType<Float>() {
         is Long -> v.toFloat()
         is Float -> v
         is Double -> v.toFloat()
-        is String -> v.toFloat()
-        else -> throw ValueDeserializationException(v, "Float")
+        is String -> try {
+            v.toFloat()
+        } catch (ex: NumberFormatException) {
+            deErr(v, "Float", ex)
+        }
+        else -> deErr(v, "Float")
     }
 }
 
@@ -83,8 +100,12 @@ object DoubleType : NumberType<Double>() {
         is Long -> v.toDouble()
         is Float -> v.toDouble()
         is Double -> v
-        is String -> v.toDouble()
-        else -> throw ValueDeserializationException(v, "Double")
+        is String -> try {
+            v.toDouble()
+        } catch (ex: NumberFormatException) {
+            deErr(v, "Double", ex)
+        }
+        else -> deErr(v, "Double")
     }
 }
 
@@ -94,7 +115,7 @@ object BooleanType : SimpleFieldType<Boolean>() {
     override fun deserialize(v: Any, valueFactory: (() -> Boolean)?) = when(v) {
         is Boolean -> v
         is String -> v.toBoolean()
-        else -> throw ValueDeserializationException(v, "Boolean")
+        else -> deErr(v, "Boolean")
     }
 }
 
@@ -176,6 +197,50 @@ abstract class BaseDateTimeType<V> : SimpleFieldType<V>() {
     }
 }
 
+data class Range<V>(
+    val gt: V? = null,
+    val gte: V? = null,
+    val lt: V? = null,
+    val lte: V? = null,
+)
+
+@Suppress("UnnecessaryAbstractClass")
+abstract class RangeType<V>(private val valueType: FieldType<V, V>) : FieldType<Range<V>, V> {
+    override val name = "${valueType.name}_range"
+
+    override fun serialize(v: Range<V>): Any {
+        return Params(
+            "gt" to v.gt,
+            "gte" to v.gte,
+            "lt" to v.lt,
+            "lte" to v.lte,
+        )
+    }
+
+    override fun deserialize(v: Any, valueFactory: (() -> Range<V>)?): Range<V> = when (v) {
+        is Map<*, *> -> {
+            val gt = v["gt"]?.let(valueType::deserialize)
+            val gte = v["gte"]?.let(valueType::deserialize)
+            val lt = v["lt"]?.let(valueType::deserialize)
+            val lte = v["lte"]?.let(valueType::deserialize)
+            Range(gt = gt, gte = gte, lt = lt, lte = lte)
+        }
+        else -> deErr(v, "Map")
+    }
+
+    override fun serializeTerm(v: V): Any = valueType.serializeTerm(v)
+
+    override fun deserializeTerm(v: Any): V = valueType.deserializeTerm(v)
+}
+
+object IntRangeType : RangeType<Int>(IntType)
+
+object LongRangeType : RangeType<Long>(LongType)
+
+object FloatRangeType : RangeType<Float>(FloatType)
+
+object DoubleRangeType : RangeType<Double>(DoubleType)
+
 data class Join(
     val name: String,
     val parent: String? = null,
@@ -202,9 +267,7 @@ object JoinType : FieldType<Join, String> {
                 val parent = v["parent"] as String?
                 Join(name, parent)
             }
-            else -> throw IllegalArgumentException(
-                "Join value must be String or Map but was: ${v::class}"
-            )
+            else -> deErr(v, "Join")
         }
     }
 

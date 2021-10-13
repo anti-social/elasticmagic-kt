@@ -8,7 +8,6 @@ import dev.evo.elasticmagic.SearchType
 import dev.evo.elasticmagic.doc.BaseDocSource
 import dev.evo.elasticmagic.doc.BoundField
 import dev.evo.elasticmagic.doc.Document
-import dev.evo.elasticmagic.doc.FieldType
 import dev.evo.elasticmagic.doc.RootFieldSet
 import dev.evo.elasticmagic.doc.SimpleFieldType
 import dev.evo.elasticmagic.doc.SubDocument
