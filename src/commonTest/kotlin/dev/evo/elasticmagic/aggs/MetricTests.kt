@@ -14,6 +14,7 @@ import io.kotest.data.table
 import io.kotest.matchers.maps.shouldContainExactly
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
+import kotlinx.datetime.LocalDate
 
 import kotlin.test.Test
 
@@ -58,6 +59,29 @@ class MetricTests : TestAggregation() {
             ).let { res ->
                 res.value shouldBe 1.1
                 res.valueAsString shouldBe "1.1"
+            }
+        }
+    }
+
+    @Test
+    fun min_booleanType() {
+        MinAgg(MovieDoc.isColored, missing = true).let { agg ->
+            agg.compile() shouldContainExactly mapOf(
+                "min" to mapOf(
+                    "field" to "is_colored",
+                    "missing" to true
+                )
+            )
+            agg.processResult(
+                deserializer.wrapObj(
+                    mapOf(
+                        "value" to 0.0,
+                        "value_as_string" to "false",
+                    )
+                )
+            ).let { res ->
+                res.value shouldBe 0.0
+                res.valueAsString shouldBe "false"
             }
         }
     }

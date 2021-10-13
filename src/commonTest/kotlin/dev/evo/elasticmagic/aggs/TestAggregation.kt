@@ -41,6 +41,7 @@ abstract class TestAggregation {
     protected object MovieDoc : Document() {
         val genre by keyword()
         val rating by float()
+        val isColored by boolean("is_colored")
         val numRatings by int("num_ratings")
         val releaseDate by date("release_date")
     }

@@ -42,7 +42,7 @@ abstract class SingleLongValueAgg<T> : NumericValueAgg<T, SingleValueMetricAggRe
     }
 }
 
-data class MinAgg<T: Number>(
+data class MinAgg<T>(
     override val value: AggValue<T>,
     override val missing: T? = null,
     val format: String? = null,
@@ -62,7 +62,7 @@ data class MinAgg<T: Number>(
     override fun clone() = copy()
 }
 
-data class MaxAgg<T: Number>(
+data class MaxAgg<T>(
     override val value: AggValue<T>,
     override val missing: T? = null,
     val format: String? = null,
@@ -82,7 +82,7 @@ data class MaxAgg<T: Number>(
     override fun clone() = copy()
 }
 
-data class AvgAgg<T: Number>(
+data class AvgAgg<T>(
     override val value: AggValue<T>,
     override val missing: T? = null,
     val format: String? = null,
@@ -102,14 +102,14 @@ data class AvgAgg<T: Number>(
     override fun clone() = copy()
 }
 
-data class WeightedAvgAgg<T: Number>(
+data class WeightedAvgAgg<T>(
     val value: ValueSource<T>,
     val weight: ValueSource<T>,
     val format: String? = null,
 ) : MetricAggregation<SingleValueMetricAggResult<Double>>() {
     override val name = "weighted_avg"
 
-    data class ValueSource<T: Number>(
+    data class ValueSource<T>(
         val value: AggValue<T>,
         val script: Script? = null,
         val missing: T? = null,
@@ -170,7 +170,7 @@ data class SumAgg<T: Number>(
     override fun clone() = copy()
 }
 
-data class MedianAbsoluteDeviationAgg<T: Number>(
+data class MedianAbsoluteDeviationAgg<T>(
     override val value: AggValue<T>,
     override val missing: T? = null,
 ) : SingleDoubleValueAgg<T>() {
@@ -221,7 +221,7 @@ data class CardinalityAgg<T>(
     override fun clone() = copy()
 }
 
-data class StatsAgg<T: Number>(
+data class StatsAgg<T>(
     override val value: AggValue<T>,
     override val missing: T? = null,
     val format: String? = null,
