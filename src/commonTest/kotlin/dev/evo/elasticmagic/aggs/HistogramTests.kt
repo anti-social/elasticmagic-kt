@@ -3,14 +3,12 @@ package dev.evo.elasticmagic.aggs
 import dev.evo.elasticmagic.query.Sort
 
 import io.kotest.assertions.throwables.shouldThrow
+import io.kotest.matchers.shouldBe
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.maps.shouldContainExactly
-import io.kotest.matchers.shouldBe
-import kotlinx.datetime.LocalDate
 
-import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.TimeZone
+import kotlinx.datetime.LocalDate
 
 import kotlin.test.Test
 

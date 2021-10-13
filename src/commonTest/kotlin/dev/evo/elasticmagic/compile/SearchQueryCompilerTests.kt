@@ -12,7 +12,6 @@ import dev.evo.elasticmagic.doc.FieldType
 import dev.evo.elasticmagic.doc.RootFieldSet
 import dev.evo.elasticmagic.doc.SubDocument
 import dev.evo.elasticmagic.doc.datetime
-import dev.evo.elasticmagic.doc.serErr
 import dev.evo.elasticmagic.query.BoolNode
 import dev.evo.elasticmagic.query.DisMax
 import dev.evo.elasticmagic.query.DisMaxNode
@@ -28,6 +27,7 @@ import dev.evo.elasticmagic.serde.StdSerializer
 
 import io.kotest.matchers.maps.shouldContainExactly
 import io.kotest.matchers.nulls.shouldNotBeNull
+
 import kotlinx.datetime.LocalDateTime
 
 import kotlin.test.Test
