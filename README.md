@@ -12,7 +12,7 @@ Read [User Guide](https://anti-social.github.io/elasticmagic-kt/document/)
 
 ## Features
 
-- Multiplatform (JVM and Native at the moment)
+- Multiplatform (JVM, Native and JS)
 - Only asynchronous API
 - No code generation (instead makes heavy use of kotlin delegates)
 - No reflection (only for delegates)
