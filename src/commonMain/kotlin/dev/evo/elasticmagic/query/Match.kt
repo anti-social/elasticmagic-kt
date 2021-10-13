@@ -5,7 +5,7 @@ import dev.evo.elasticmagic.compile.SearchQueryCompiler
 import dev.evo.elasticmagic.serde.Serializer
 
 data class Match(
-    val field: FieldOperations<*>,
+    val field: FieldOperations<String>,
     val query: String,
     val analyzer: String? = null,
     val minimumShouldMatch: Any? = null,
@@ -47,7 +47,7 @@ object MatchAll : QueryExpression {
 
 data class MultiMatch(
     val query: String,
-    val fields: List<FieldOperations<*>>,
+    val fields: List<FieldOperations<String>>,
     val type: Type? = null,
     val boost: Double? = null,
     val params: Params? = null,

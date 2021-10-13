@@ -34,8 +34,6 @@ interface FieldOperations<T> : Named {
         return Terms(this, terms)
     }
 
-    fun match(text: String): QueryExpression = Match(this, text)
-
     fun range(
         gt: T? = null, gte: T? = null, lt: T? = null, lte: T? = null
     ): QueryExpression = Range(this, gt = gt, gte = gte, lt = lt, lte = lte)
@@ -47,3 +45,5 @@ interface FieldOperations<T> : Named {
     fun asc(): Sort = Sort(this, order = Sort.Order.ASC)
     fun desc(): Sort = Sort(this, order = Sort.Order.DESC)
 }
+
+fun FieldOperations<String>.match(text: String): QueryExpression = Match(this, text)
