@@ -10,7 +10,34 @@ import kotlin.test.Test
 
 class FieldTypeTests {
     @Test
-    fun intRangeType() {
+    fun boolean() {
+        BooleanType.serialize(false) shouldBe false
+        BooleanType.serialize(true) shouldBe true
+
+        BooleanType.deserialize(false) shouldBe false
+        BooleanType.deserialize("true") shouldBe true
+        BooleanType.deserialize("false") shouldBe false
+        shouldThrow<ValueDeserializationException> {
+            BooleanType.deserialize("t")
+        }
+        shouldThrow<ValueDeserializationException> {
+            BooleanType.deserialize(1)
+        }
+
+        BooleanType.serializeTerm(false) shouldBe false
+        BooleanType.serializeTerm(true) shouldBe true
+
+        BooleanType.deserializeTerm(true) shouldBe true
+        BooleanType.deserializeTerm("true") shouldBe true
+        BooleanType.deserializeTerm("false") shouldBe false
+        BooleanType.deserializeTerm(0) shouldBe false
+        BooleanType.deserializeTerm(1) shouldBe true
+        BooleanType.deserializeTerm(0.0) shouldBe false
+        BooleanType.deserializeTerm(0.01) shouldBe true
+    }
+
+    @Test
+    fun intRange() {
         IntRangeType.serialize(Range(gte = 5, lte = 10))
             .shouldBeInstanceOf<Map<String, Any>>() shouldContainExactly mapOf(
                 "gte" to 5,
@@ -44,7 +71,7 @@ class FieldTypeTests {
     }
 
     @Test
-    fun longRangeType() {
+    fun longRange() {
         LongRangeType.serialize(Range(gte = 5, lte = 10))
             .shouldBeInstanceOf<Map<String, Any>>() shouldContainExactly mapOf(
                 "gte" to 5L,
@@ -80,7 +107,7 @@ class FieldTypeTests {
     }
 
     @Test
-    fun floatRangeType() {
+    fun floatRange() {
         FloatRangeType.serialize(Range(gte = 5.0F, lte = 10.0F))
             .shouldBeInstanceOf<Map<String, Any>>() shouldContainExactly mapOf(
                 "gte" to 5.0F,
@@ -114,7 +141,7 @@ class FieldTypeTests {
     }
 
     @Test
-    fun doubleRangeType() {
+    fun doubleRange() {
         DoubleRangeType.serialize(Range(gt = 5.0, gte = 5.0, lt = 20.0, lte = 10.0))
             .shouldBeInstanceOf<Map<String, Any>>() shouldContainExactly mapOf(
                 "gt" to 5.0,

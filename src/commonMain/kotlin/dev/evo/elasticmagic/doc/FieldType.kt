@@ -114,7 +114,19 @@ object BooleanType : SimpleFieldType<Boolean>() {
 
     override fun deserialize(v: Any, valueFactory: (() -> Boolean)?) = when(v) {
         is Boolean -> v
-        is String -> v.toBoolean()
+        "true" -> true
+        "false" -> false
+        else -> deErr(v, "Boolean")
+    }
+
+    override fun deserializeTerm(v: Any): Boolean = when (v) {
+        is Boolean -> v
+        "true" -> true
+        "false" -> false
+        is Int -> v != 0
+        is Long -> v != 0L
+        is Float -> v != 0.0F
+        is Double -> v != 0.0
         else -> deErr(v, "Boolean")
     }
 }
@@ -164,7 +176,7 @@ abstract class BaseDateTimeType<V> : SimpleFieldType<V>() {
     )
 
     private fun fail(v: Any, cause: Throwable? = null): Nothing {
-        throw ValueDeserializationException(v, dateTypeName, cause)
+        deErr(v, dateTypeName, cause)
     }
 
     @Suppress("MagicNumber")
