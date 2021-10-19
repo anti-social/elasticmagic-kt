@@ -1,6 +1,9 @@
 package dev.evo.elasticmagic.doc
 
+import dev.evo.elasticmagic.serde.Platform
+import dev.evo.elasticmagic.serde.platform
 import io.kotest.assertions.throwables.shouldThrow
+import io.kotest.matchers.booleans.shouldBeTrue
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.maps.shouldContainExactly
 import io.kotest.matchers.shouldNotBe
@@ -65,8 +68,12 @@ class FieldTypeTests {
         IntRangeType.serializeTerm(0) shouldBe 0
 
         IntRangeType.deserializeTerm(-1) shouldBe -1
-        shouldThrow<ValueDeserializationException> {
-            IntRangeType.deserializeTerm(-1.0)
+        if (platform == Platform.JS) {
+            IntRangeType.deserializeTerm(-1.0) shouldBe -1
+        } else {
+            shouldThrow<ValueDeserializationException> {
+                IntRangeType.deserializeTerm(-1.0)
+            }
         }
     }
 
@@ -86,8 +93,12 @@ class FieldTypeTests {
         LongRangeType.deserialize(mapOf("gt" to 1)) shouldBe Range(gt = 1L)
         LongRangeType.deserialize(mapOf("lt" to Long.MIN_VALUE)) shouldBe Range(lt = Long.MIN_VALUE)
         LongRangeType.deserialize(mapOf("lte" to "-1")) shouldBe Range(lte = -1L)
-        shouldThrow<ValueDeserializationException> {
-            LongRangeType.deserialize(mapOf("gte" to 1.0))
+        if (platform == Platform.JS) {
+            LongRangeType.deserialize(mapOf("gte" to 1.0)) shouldBe Range(gte = 1L)
+        } else {
+            shouldThrow<ValueDeserializationException> {
+                LongRangeType.deserialize(mapOf("gte" to 1.0))
+            }
         }
         shouldThrow<ValueDeserializationException> {
             LongRangeType.deserialize(mapOf("lte" to "max"))
@@ -98,8 +109,12 @@ class FieldTypeTests {
 
         LongRangeType.deserializeTerm(-1) shouldBe -1
         LongRangeType.deserializeTerm("0") shouldBe 0L
-        shouldThrow<ValueDeserializationException> {
-            LongRangeType.deserializeTerm(0.0)
+        if (platform == Platform.JS) {
+            LongRangeType.deserializeTerm(0.0) shouldBe 0
+        } else {
+            shouldThrow<ValueDeserializationException> {
+                LongRangeType.deserializeTerm(0.0)
+            }
         }
         shouldThrow<ValueDeserializationException> {
             LongRangeType.deserializeTerm("0.0")
@@ -121,9 +136,15 @@ class FieldTypeTests {
 
         FloatRangeType.deserialize(mapOf("gt" to 1)) shouldBe Range(gt = 1F)
         FloatRangeType.deserialize(mapOf("lt" to Int.MAX_VALUE.toFloat())) shouldBe
-                Range(lt = Int.MAX_VALUE.toFloat())
-        FloatRangeType.deserialize(mapOf("lt" to Int.MAX_VALUE.toFloat())) shouldBe
+            Range(lt = Int.MAX_VALUE.toFloat())
+        if (platform == Platform.JS) {
+            FloatRangeType.deserialize(mapOf("lt" to (Int.MAX_VALUE - 1).toFloat())) shouldBe
                 Range(lt = (Int.MAX_VALUE - 1).toFloat())
+
+        } else {
+            FloatRangeType.deserialize(mapOf("lt" to (Int.MAX_VALUE - 1).toFloat())) shouldBe
+                Range(lt = Int.MAX_VALUE.toFloat())
+        }
         FloatRangeType.deserialize(mapOf("lte" to "-1")) shouldBe Range(lte = -1F)
         FloatRangeType.deserialize(mapOf("gte" to "-1.1")) shouldBe Range(gte = -1.1F)
         shouldThrow<ValueDeserializationException> {
@@ -134,7 +155,7 @@ class FieldTypeTests {
 
         FloatRangeType.deserializeTerm(-1) shouldBe -1F
         FloatRangeType.deserializeTerm("0.0") shouldBe 0F
-        FloatRangeType.deserializeTerm("NaN") shouldBe Float.NaN
+        FloatRangeType.deserializeTerm("NaN").isNaN().shouldBeTrue()
         shouldThrow<ValueDeserializationException> {
             FloatRangeType.deserializeTerm("-Inf")
         }
