@@ -14,7 +14,6 @@ import io.kotest.data.table
 import io.kotest.matchers.maps.shouldContainExactly
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
-import kotlinx.datetime.LocalDate
 
 import kotlin.test.Test
 
