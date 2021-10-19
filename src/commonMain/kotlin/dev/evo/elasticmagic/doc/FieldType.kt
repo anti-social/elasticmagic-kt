@@ -175,33 +175,25 @@ abstract class BaseDateTimeType<V> : SimpleFieldType<V>() {
         val tz: String,
     )
 
-    private fun fail(v: Any, cause: Throwable? = null): Nothing {
-        deErr(v, dateTypeName, cause)
-    }
-
     @Suppress("MagicNumber")
     protected fun parseDateWithOptionalTime(v: String): DateTime {
-        val datetimeMatch = DATETIME_REGEX.matchEntire(v) ?: fail(v)
+        val datetimeMatch = DATETIME_REGEX.matchEntire(v) ?: deErr(v, dateTypeName)
         val (year, month, day, hour, minute, second, msRaw, tz) = datetimeMatch.destructured
         val ms = when (msRaw.length) {
             0 -> msRaw
             in 1..2 -> msRaw.padEnd(3, '0')
             else -> msRaw.substring(0, 3)
         }
-        try {
-            return DateTime(
-                year.toInt(),
-                month.toIntIfNotEmpty(1),
-                day.toIntIfNotEmpty(1),
-                hour.toIntIfNotEmpty(0),
-                minute.toIntIfNotEmpty(0),
-                second.toIntIfNotEmpty(0),
-                ms.toIntIfNotEmpty(0) * 1000_000,
-                tz,
-            )
-        } catch (ex: IllegalArgumentException) {
-            fail(v, ex)
-        }
+        return DateTime(
+            year.toInt(),
+            month.toIntIfNotEmpty(1),
+            day.toIntIfNotEmpty(1),
+            hour.toIntIfNotEmpty(0),
+            minute.toIntIfNotEmpty(0),
+            second.toIntIfNotEmpty(0),
+            ms.toIntIfNotEmpty(0) * 1000_000,
+            tz,
+        )
     }
 
     private fun String.toIntIfNotEmpty(default: Int): Int {

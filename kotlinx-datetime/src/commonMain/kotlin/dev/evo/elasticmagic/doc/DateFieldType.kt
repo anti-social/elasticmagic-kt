@@ -9,14 +9,14 @@ import kotlinx.datetime.toLocalDateTime
 
 abstract class BaseKotlinxDateTimeType<V> : BaseDateTimeType<V>() {
     protected fun parse(v: Any): Instant {
-        return try {
+        val err = try {
             val dt = parseDateWithOptionalTime(v.toString())
             val timeZone = if (dt.tz.isNotEmpty()) {
                 TimeZone.of(dt.tz)
             } else {
                 TimeZone.UTC
             }
-            LocalDateTime(
+            return LocalDateTime(
                 dt.year,
                 dt.month,
                 dt.day,
@@ -25,13 +25,21 @@ abstract class BaseKotlinxDateTimeType<V> : BaseDateTimeType<V>() {
                 dt.second,
                 dt.ms,
             ).toInstant(timeZone)
+        } catch (ex: IllegalArgumentException) {
+            ex
         } catch (ex: ValueDeserializationException) {
-            if (v is Number) {
-                Instant.fromEpochMilliseconds(v.toLong())
-            } else {
-                throw ex
-            }
+            ex
         }
+
+        if (v is Number) {
+            // Elasticsearch parses number 2015 as year
+            // but 20150 as milliseconds from epoch
+            return Instant.fromEpochMilliseconds(v.toLong())
+        }
+        if (err !is ValueDeserializationException) {
+            deErr(v, dateTypeName, err)
+        }
+        throw err
     }
 
     override fun serializeTerm(v: V) = serialize(v)
