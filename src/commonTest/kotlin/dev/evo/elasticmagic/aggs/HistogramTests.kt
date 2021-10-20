@@ -3,24 +3,23 @@ package dev.evo.elasticmagic.aggs
 import dev.evo.elasticmagic.query.Sort
 
 import io.kotest.assertions.throwables.shouldThrow
+import io.kotest.matchers.shouldBe
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.maps.shouldContainExactly
-import io.kotest.matchers.shouldBe
 
-import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.TimeZone
+import kotlinx.datetime.LocalDate
 
 import kotlin.test.Test
 
 class HistogramTests : TestAggregation() {
     @Test
     fun histogram() {
-        HistogramAgg(MovieDoc.rating, interval = 10.0).let { agg ->
+        HistogramAgg(MovieDoc.rating, interval = 10F).let { agg ->
             agg.compile() shouldContainExactly mapOf(
                 "histogram" to mapOf(
                     "field" to "rating",
-                    "interval" to 10.0,
+                    "interval" to 10.0F,
                 )
             )
 
@@ -66,16 +65,16 @@ class HistogramTests : TestAggregation() {
 
         HistogramAgg(
             MovieDoc.rating,
-            interval = 10.0,
-            offset = 25.0,
+            interval = 10.0F,
+            offset = 25.0F,
             minDocCount = 5,
-            missing = 0.0,
+            missing = 0.0F,
             order = listOf(
                 BucketsOrder("_count", Sort.Order.DESC),
                 BucketsOrder("stats.std_deviation", Sort.Order.ASC)
             ),
-            extendedBounds = HistogramBounds(-10.0, 110.0),
-            hardBounds = HistogramBounds(10.0, 90.0),
+            extendedBounds = HistogramBounds(-10.0F, 110.0F),
+            hardBounds = HistogramBounds(10.0F, 90.0F),
             aggs = mapOf(
                 "stats" to ExtendedStatsAgg(MovieDoc.rating)
             )
@@ -83,21 +82,21 @@ class HistogramTests : TestAggregation() {
             agg.compile() shouldContainExactly mapOf(
                 "histogram" to mapOf(
                     "field" to "rating",
-                    "interval" to 10.0,
-                    "offset" to 25.0,
+                    "interval" to 10.0F,
+                    "offset" to 25.0F,
                     "min_doc_count" to 5L,
-                    "missing" to 0.0,
+                    "missing" to 0.0F,
                     "order" to listOf(
                         mapOf("_count" to "desc"),
                         mapOf("stats.std_deviation" to "asc")
                     ),
                     "extended_bounds" to mapOf(
-                        "min" to -10.0,
-                        "max" to 110.0,
+                        "min" to -10.0F,
+                        "max" to 110.0F,
                     ),
                     "hard_bounds" to mapOf(
-                        "min" to 10.0,
-                        "max" to 90.0,
+                        "min" to 10.0F,
+                        "max" to 90.0F,
                     ),
                 ),
                 "aggs" to mapOf(
@@ -115,19 +114,19 @@ class HistogramTests : TestAggregation() {
     fun dateHistogram() {
         DateHistogramAgg(
             MovieDoc.releaseDate,
-            interval = DateHistogramAgg.Interval.Calendar("1y"),
-            offset = "1m",
+            interval = DateHistogramAgg.Interval.Calendar(CalendarInterval.YEAR),
+            offset = FixedInterval.Minutes(1),
             minDocCount = 1,
-            missing = "1970-01-01",
+            missing = LocalDate(1970, 1, 1),
             format = "YYYY",
             order = listOf(BucketsOrder("_count", Sort.Order.DESC)),
-            extendedBounds = HistogramBounds.to("2030-01-01"),
-            hardBounds = HistogramBounds.from("2000-01-01"),
+            extendedBounds = HistogramBounds.to(LocalDate(2030, 1, 1)),
+            hardBounds = HistogramBounds.from(LocalDate(2000, 1, 1)),
         ).let { agg ->
             agg.compile() shouldContainExactly mapOf(
                 "date_histogram" to mapOf(
                     "field" to "release_date",
-                    "calendar_interval" to "1y",
+                    "calendar_interval" to "year",
                     "offset" to "1m",
                     "min_doc_count" to 1L,
                     "missing" to "1970-01-01",
@@ -167,12 +166,12 @@ class HistogramTests : TestAggregation() {
                 res.buckets.shouldHaveSize(2)
                 res.buckets[0].key shouldBe 1388534460000L
                 res.buckets[0].keyAsString shouldBe "2014"
+                res.buckets[0].keyAsDatetime shouldBe LocalDate(2014, 1, 1)
                 res.buckets[0].docCount shouldBe 1L
-                res.buckets[0].keyAsDatetime(TimeZone.UTC) shouldBe LocalDateTime(2014, 1, 1, 0, 1)
                 res.buckets[1].key shouldBe 1420070460000L
                 res.buckets[1].keyAsString shouldBe "2015"
+                res.buckets[1].keyAsDatetime shouldBe LocalDate(2015, 1, 1)
                 res.buckets[1].docCount shouldBe 0L
-                res.buckets[1].keyAsDatetime(TimeZone.UTC) shouldBe LocalDateTime(2015, 1, 1, 0, 1)
             }
         }
     }

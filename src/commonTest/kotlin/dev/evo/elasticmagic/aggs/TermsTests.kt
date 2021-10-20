@@ -99,7 +99,7 @@ class TermsTests : TestAggregation() {
             order = listOf(BucketsOrder("_key", Sort.Order.ASC)),
             collectMode = BaseTermsAgg.CollectMode.BREADTH_FIRST,
             executionHint = BaseTermsAgg.ExecutionHint.GLOBAL_ORDINALS,
-            backgroundFilter = MovieDoc.rating.gte(10.0),
+            backgroundFilter = MovieDoc.rating.gte(10.0F),
             params = mapOf(
                 "unknown_parameter" to "test",
             ),
@@ -120,7 +120,7 @@ class TermsTests : TestAggregation() {
                 "execution_hint" to "global_ordinals",
                 "background_filter" to mapOf(
                     "range" to mapOf(
-                        "rating" to mapOf("gte" to 10.0)
+                        "rating" to mapOf("gte" to 10.0F)
                     )
                 ),
                 "unknown_parameter" to "test",

@@ -14,9 +14,9 @@ data class SingleValueMetricAggResult<T>(
     val valueAsString: String? = null,
 ) : AggregationResult
 
-abstract class NumericValueAgg<R: AggregationResult> : MetricAggregation<R>() {
-    abstract val value: AggValue
-    abstract val missing: Any?
+abstract class NumericValueAgg<T, R: AggregationResult> : MetricAggregation<R>() {
+    abstract val value: AggValue<T>
+    abstract val missing: T?
 
     override fun visit(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
         compiler.visit(ctx, value)
@@ -24,7 +24,7 @@ abstract class NumericValueAgg<R: AggregationResult> : MetricAggregation<R>() {
     }
 }
 
-abstract class SingleDoubleValueAgg : NumericValueAgg<SingleValueMetricAggResult<Double>>() {
+abstract class SingleDoubleValueAgg<T> : NumericValueAgg<T, SingleValueMetricAggResult<Double>>() {
     override fun processResult(obj: Deserializer.ObjectCtx): SingleValueMetricAggResult<Double> {
         return SingleValueMetricAggResult(
             obj.doubleOrNull("value"),
@@ -33,7 +33,7 @@ abstract class SingleDoubleValueAgg : NumericValueAgg<SingleValueMetricAggResult
     }
 }
 
-abstract class SingleLongValueAgg : NumericValueAgg<SingleValueMetricAggResult<Long>>() {
+abstract class SingleLongValueAgg<T> : NumericValueAgg<T, SingleValueMetricAggResult<Long>>() {
     override fun processResult(obj: Deserializer.ObjectCtx): SingleValueMetricAggResult<Long> {
         return SingleValueMetricAggResult(
             obj.long("value"),
@@ -42,16 +42,16 @@ abstract class SingleLongValueAgg : NumericValueAgg<SingleValueMetricAggResult<L
     }
 }
 
-data class MinAgg(
-    override val value: AggValue,
-    override val missing: Any? = null,
+data class MinAgg<T>(
+    override val value: AggValue<T>,
+    override val missing: T? = null,
     val format: String? = null,
-) : SingleDoubleValueAgg() {
+) : SingleDoubleValueAgg<T>() {
     override val name = "min"
 
     constructor(
-        field: FieldOperations,
-        missing: Any? = null,
+        field: FieldOperations<T>,
+        missing: T? = null,
         format: String? = null,
     ) : this(
         AggValue.Field(field),
@@ -62,16 +62,16 @@ data class MinAgg(
     override fun clone() = copy()
 }
 
-data class MaxAgg(
-    override val value: AggValue,
-    override val missing: Any? = null,
+data class MaxAgg<T>(
+    override val value: AggValue<T>,
+    override val missing: T? = null,
     val format: String? = null,
-) : SingleDoubleValueAgg() {
+) : SingleDoubleValueAgg<T>() {
     override val name = "max"
 
     constructor(
-        field: FieldOperations,
-        missing: Any? = null,
+        field: FieldOperations<T>,
+        missing: T? = null,
         format: String? = null,
     ) : this(
         AggValue.Field(field),
@@ -82,16 +82,16 @@ data class MaxAgg(
     override fun clone() = copy()
 }
 
-data class AvgAgg(
-    override val value: AggValue,
-    override val missing: Any? = null,
+data class AvgAgg<T>(
+    override val value: AggValue<T>,
+    override val missing: T? = null,
     val format: String? = null,
-) : SingleDoubleValueAgg() {
+) : SingleDoubleValueAgg<T>() {
     override val name = "avg"
 
     constructor(
-        field: FieldOperations,
-        missing: Any? = null,
+        field: FieldOperations<T>,
+        missing: T? = null,
         format: String? = null,
     ) : this(
         AggValue.Field(field),
@@ -102,23 +102,23 @@ data class AvgAgg(
     override fun clone() = copy()
 }
 
-data class WeightedAvgAgg(
-    val value: ValueSource,
-    val weight: ValueSource,
+data class WeightedAvgAgg<T>(
+    val value: ValueSource<T>,
+    val weight: ValueSource<T>,
     val format: String? = null,
 ) : MetricAggregation<SingleValueMetricAggResult<Double>>() {
     override val name = "weighted_avg"
 
-    data class ValueSource(
-        val value: AggValue,
+    data class ValueSource<T>(
+        val value: AggValue<T>,
         val script: Script? = null,
-        val missing: Any? = null,
+        val missing: T? = null,
     ) : Expression {
         override fun clone() = copy()
 
         constructor(
-            field: FieldOperations,
-            missing: Any? = null,
+            field: FieldOperations<T>,
+            missing: T? = null,
         ) : this(
             AggValue.Field(field),
             missing = missing,
@@ -150,16 +150,16 @@ data class WeightedAvgAgg(
     }
 }
 
-data class SumAgg(
-    override val value: AggValue,
-    override val missing: Any? = null,
+data class SumAgg<T: Number>(
+    override val value: AggValue<T>,
+    override val missing: T? = null,
     val format: String? = null,
-) : SingleDoubleValueAgg() {
+) : SingleDoubleValueAgg<T>() {
     override val name = "sum"
 
     constructor(
-        field: FieldOperations,
-        missing: Any? = null,
+        field: FieldOperations<T>,
+        missing: T? = null,
         format: String? = null,
     ) : this(
         AggValue.Field(field),
@@ -170,15 +170,15 @@ data class SumAgg(
     override fun clone() = copy()
 }
 
-data class MedianAbsoluteDeviationAgg(
-    override val value: AggValue,
-    override val missing: Any? = null,
-) : SingleDoubleValueAgg() {
+data class MedianAbsoluteDeviationAgg<T>(
+    override val value: AggValue<T>,
+    override val missing: T? = null,
+) : SingleDoubleValueAgg<T>() {
     override val name = "median_absolute_deviation"
 
     constructor(
-        field: FieldOperations,
-        missing: Any? = null,
+        field: FieldOperations<T>,
+        missing: T? = null,
     ) : this(
         AggValue.Field(field),
         missing = missing,
@@ -187,15 +187,15 @@ data class MedianAbsoluteDeviationAgg(
     override fun clone() = copy()
 }
 
-data class ValueCountAgg(
-    override val value: AggValue,
-    override val missing: Any? = null,
-) : SingleLongValueAgg() {
+data class ValueCountAgg<T>(
+    override val value: AggValue<T>,
+    override val missing: T? = null,
+) : SingleLongValueAgg<T>() {
     override val name = "value_count"
 
     constructor(
-        field: FieldOperations,
-        missing: Any? = null,
+        field: FieldOperations<T>,
+        missing: T? = null,
     ) : this(
         AggValue.Field(field),
         missing = missing,
@@ -204,15 +204,15 @@ data class ValueCountAgg(
     override fun clone() = copy()
 }
 
-data class CardinalityAgg(
-    override val value: AggValue,
-    override val missing: Any? = null,
-) : SingleLongValueAgg() {
+data class CardinalityAgg<T>(
+    override val value: AggValue<T>,
+    override val missing: T? = null,
+) : SingleLongValueAgg<T>() {
     override val name = "cardinality"
 
     constructor(
-        field: FieldOperations,
-        missing: Any? = null,
+        field: FieldOperations<T>,
+        missing: T? = null,
     ) : this(
         AggValue.Field(field),
         missing = missing,
@@ -221,16 +221,16 @@ data class CardinalityAgg(
     override fun clone() = copy()
 }
 
-data class StatsAgg(
-    override val value: AggValue,
-    override val missing: Any? = null,
+data class StatsAgg<T>(
+    override val value: AggValue<T>,
+    override val missing: T? = null,
     val format: String? = null,
-) : NumericValueAgg<StatsAggResult>() {
+) : NumericValueAgg<T, StatsAggResult>() {
     override val name = "stats"
 
     constructor(
-        field: FieldOperations,
-        missing: Any? = null,
+        field: FieldOperations<T>,
+        missing: T? = null,
         format: String? = null,
     ) : this(
         AggValue.Field(field),
@@ -267,16 +267,16 @@ data class StatsAggResult(
     val sumAsString: String?,
 ) : AggregationResult
 
-data class ExtendedStatsAgg(
-    override val value: AggValue,
-    override val missing: Any? = null,
+data class ExtendedStatsAgg<T>(
+    override val value: AggValue<T>,
+    override val missing: T? = null,
     val format: String? = null,
-) : NumericValueAgg<ExtendedStatsAggResult>() {
+) : NumericValueAgg<T, ExtendedStatsAggResult>() {
     override val name = "extended_stats"
 
     constructor(
-        field: FieldOperations,
-        missing: Any? = null,
+        field: FieldOperations<T>,
+        missing: T? = null,
         format: String? = null,
     ) : this(
         AggValue.Field(field),

@@ -18,7 +18,7 @@ data class AggRange<T>(
 }
 
 abstract class BaseRangeAgg<T, R: AggregationResult, B> : BucketAggregation<R>() {
-    abstract val value: AggValue
+    abstract val value: AggValue<T>
     abstract val ranges: List<AggRange<T>>
     abstract val format: String?
     abstract val missing: T?
@@ -31,14 +31,20 @@ abstract class BaseRangeAgg<T, R: AggregationResult, B> : BucketAggregation<R>()
         ctx.array("ranges") {
             for ((from, to, key) in ranges) {
                 obj {
-                    fieldIfNotNull("from", from)
-                    fieldIfNotNull("to", to)
+                    from?.let { from ->
+                        field("from", value.serializeTerm(from))
+                    }
+                    to?.let { to ->
+                        field("to", value.serializeTerm(to))
+                    }
                     fieldIfNotNull("key", key)
                 }
             }
         }
         ctx.fieldIfNotNull("format", format)
-        ctx.fieldIfNotNull("missing", missing)
+        missing?.let { missing ->
+            ctx.field("missing", value.serializeTerm(missing))
+        }
         // ctx.fieldIfNotNull("keyed", keyed)
         if (params.isNotEmpty()) {
             compiler.visit(ctx, params)
@@ -91,21 +97,21 @@ data class RangeBucket(
     override val aggs: Map<String, AggregationResult> = emptyMap(),
 ) : KeyedBucket<String>()
 
-data class RangeAgg(
-    override val value: AggValue,
-    override val ranges: List<AggRange<Double>>,
+data class RangeAgg<T: Number>(
+    override val value: AggValue<T>,
+    override val ranges: List<AggRange<T>>,
     override val format: String? = null,
-    override val missing: Double? = null,
+    override val missing: T? = null,
     override val params: Params = Params(),
     override val aggs: Map<String, Aggregation<*>> = emptyMap(),
-) : BaseRangeAgg<Double, RangeAggResult, RangeBucket>() {
+) : BaseRangeAgg<T, RangeAggResult, RangeBucket>() {
     override val name = "range"
 
     constructor(
-        field: FieldOperations,
-        ranges: List<AggRange<Double>>,
+        field: FieldOperations<T>,
+        ranges: List<AggRange<T>>,
         format: String? = null,
-        missing: Double? = null,
+        missing: T? = null,
         params: Params = Params(),
         aggs: Map<String, Aggregation<*>> = emptyMap(),
     ) : this(
@@ -118,14 +124,14 @@ data class RangeAgg(
     )
 
     companion object {
-        fun simpleRanges(
-            field: FieldOperations,
-            ranges: List<Pair<Double?, Double?>>,
+        fun <T: Number> simpleRanges(
+            field: FieldOperations<T>,
+            ranges: List<Pair<T?, T?>>,
             format: String? = null,
-            missing: Double? = null,
+            missing: T? = null,
             aggs: Map<String, Aggregation<*>> = emptyMap(),
             params: Params = Params(),
-        ): RangeAgg {
+        ): RangeAgg<T> {
             return RangeAgg(
                 AggValue.Field(field),
                 ranges = ranges.map { AggRange(it.first, it.second) },
@@ -157,35 +163,37 @@ data class RangeAgg(
     }
 }
 
-data class DateRangeAggResult(
-    override val buckets: List<DateRangeBucket>,
-) : BucketAggResult<DateRangeBucket>()
+data class DateRangeAggResult<T>(
+    override val buckets: List<DateRangeBucket<T>>,
+) : BucketAggResult<DateRangeBucket<T>>()
 
-data class DateRangeBucket(
+data class DateRangeBucket<T>(
     override val key: String,
     override val docCount: Long,
     val from: Double? = null,
     val fromAsString: String? = null,
+    val fromAsDatetime: T? = null,
     val to: Double? = null,
     val toAsString: String? = null,
+    val toAsDatetime: T? = null,
     override val aggs: Map<String, AggregationResult> = emptyMap(),
 ) : KeyedBucket<String>()
 
-data class DateRangeAgg(
-    override val value: AggValue,
-    override val ranges: List<AggRange<String>>,
+data class DateRangeAgg<T>(
+    override val value: AggValue<T>,
+    override val ranges: List<AggRange<T>>,
     override val format: String? = null,
-    override val missing: String? = null,
+    override val missing: T? = null,
     override val params: Params = Params(),
     override val aggs: Map<String, Aggregation<*>> = emptyMap(),
-) : BaseRangeAgg<String, DateRangeAggResult, DateRangeBucket>() {
+) : BaseRangeAgg<T, DateRangeAggResult<T>, DateRangeBucket<T>>() {
     override val name = "date_range"
 
     constructor(
-        field: FieldOperations,
-        ranges: List<AggRange<String>>,
+        field: FieldOperations<T>,
+        ranges: List<AggRange<T>>,
         format: String? = null,
-        missing: String? = null,
+        missing: T? = null,
         params: Params = Params(),
         aggs: Map<String, Aggregation<*>> = emptyMap(),
     ) : this(
@@ -198,14 +206,14 @@ data class DateRangeAgg(
     )
 
     companion object {
-        fun simpleRanges(
-            field: FieldOperations,
-            ranges: List<Pair<String?, String?>>,
+        fun <T> simpleRanges(
+            field: FieldOperations<T>,
+            ranges: List<Pair<T?, T?>>,
             format: String? = null,
-            missing: String? = null,
+            missing: T? = null,
             aggs: Map<String, Aggregation<*>> = emptyMap(),
             params: Params = Params(),
-        ): DateRangeAgg {
+        ): DateRangeAgg<T> {
             return DateRangeAgg(
                 AggValue.Field(field),
                 ranges = ranges.map { AggRange(it.first, it.second) },
@@ -219,19 +227,23 @@ data class DateRangeAgg(
 
     override fun clone() = copy()
 
-    override fun makeRangeResult(buckets: List<DateRangeBucket>) = DateRangeAggResult(buckets)
+    override fun makeRangeResult(buckets: List<DateRangeBucket<T>>) = DateRangeAggResult(buckets)
 
     override fun processBucketResult(
         bucketObj: Deserializer.ObjectCtx,
         bucketKey: String?
-    ): DateRangeBucket {
+    ): DateRangeBucket<T> {
+        val fromAsString = bucketObj.stringOrNull("from_as_string")
+        val toAsString = bucketObj.stringOrNull("to_as_string")
         return DateRangeBucket(
             key = bucketKey ?: bucketObj.string("key"),
             docCount = bucketObj.long("doc_count"),
             from = bucketObj.doubleOrNull("from"),
-            fromAsString = bucketObj.stringOrNull("from_as_string"),
+            fromAsString = fromAsString,
+            fromAsDatetime = fromAsString?.let(value::deserializeTerm),
             to = bucketObj.doubleOrNull("to"),
-            toAsString = bucketObj.stringOrNull("to_as_string"),
+            toAsString = toAsString,
+            toAsDatetime = toAsString?.let(value::deserializeTerm),
             aggs = processSubAggs(bucketObj),
         )
     }

@@ -40,7 +40,7 @@ class SearchQueryCompilerJsonTests {
 
         val query = SearchQuery()
             .filter(userDoc.status.eq(0))
-            .filter(userDoc.rank.gte(90.0))
+            .filter(userDoc.rank.gte(90.0F))
             .filter(userDoc.opinionsCount.gt(5))
 
         val res = compiler.compile(JsonSerializer, query.usingIndex("test"))

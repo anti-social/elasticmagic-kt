@@ -12,7 +12,7 @@ fun FieldSet.instant(
     index: Boolean? = null,
     store: Boolean? = null,
     params: Params? = null,
-): FieldSet.Field<Instant> {
+): FieldSet.Field<Instant, Instant> {
     return field(
         name, InstantType,
         docValues = docValues,
@@ -28,7 +28,7 @@ fun FieldSet.datetime(
     index: Boolean? = null,
     store: Boolean? = null,
     params: Params? = null,
-): FieldSet.Field<LocalDateTime> {
+): FieldSet.Field<LocalDateTime, LocalDateTime> {
     return field(
         name, DateTimeType,
         docValues = docValues,
@@ -44,7 +44,7 @@ fun FieldSet.date(
     index: Boolean? = null,
     store: Boolean? = null,
     params: Params? = null,
-): FieldSet.Field<LocalDate> {
+): FieldSet.Field<LocalDate, LocalDate> {
     return field(
         name, DateType,
         docValues = docValues,

@@ -126,11 +126,11 @@ class BucketTests : TestAggregation() {
             mapOf(
                 "comedies" to Bool.must(
                     MovieDoc.genre.eq("comedy"),
-                    MovieDoc.rating.gte(80),
+                    MovieDoc.rating.gte(80F),
                 ),
                 "horrors" to Bool.must(
                     MovieDoc.genre.eq("horror"),
-                    MovieDoc.rating.gte(90),
+                    MovieDoc.rating.gte(90F),
                 )
             ),
             otherBucketKey = "others",
@@ -146,7 +146,7 @@ class BucketTests : TestAggregation() {
                                         "term" to mapOf("genre" to "comedy")
                                     ),
                                     mapOf(
-                                        "range" to mapOf("rating" to mapOf("gte" to 80))
+                                        "range" to mapOf("rating" to mapOf("gte" to 80F))
                                     )
                                 )
                             )
@@ -158,7 +158,7 @@ class BucketTests : TestAggregation() {
                                         "term" to mapOf("genre" to "horror")
                                     ),
                                     mapOf(
-                                        "range" to mapOf("rating" to mapOf("gte" to 90))
+                                        "range" to mapOf("rating" to mapOf("gte" to 90F))
                                     )
                                 )
                             )

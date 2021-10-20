@@ -8,11 +8,10 @@ import dev.evo.elasticmagic.SearchType
 import dev.evo.elasticmagic.doc.BaseDocSource
 import dev.evo.elasticmagic.doc.BoundField
 import dev.evo.elasticmagic.doc.Document
-import dev.evo.elasticmagic.doc.FieldType
 import dev.evo.elasticmagic.doc.RootFieldSet
+import dev.evo.elasticmagic.doc.SimpleFieldType
 import dev.evo.elasticmagic.doc.SubDocument
 import dev.evo.elasticmagic.doc.datetime
-import dev.evo.elasticmagic.doc.serErr
 import dev.evo.elasticmagic.query.BoolNode
 import dev.evo.elasticmagic.query.DisMax
 import dev.evo.elasticmagic.query.DisMaxNode
@@ -25,24 +24,34 @@ import dev.evo.elasticmagic.query.Script
 import dev.evo.elasticmagic.query.Sort
 import dev.evo.elasticmagic.query.QueryRescore
 import dev.evo.elasticmagic.serde.StdSerializer
+import dev.evo.elasticmagic.query.match
 
 import io.kotest.matchers.maps.shouldContainExactly
 import io.kotest.matchers.nulls.shouldNotBeNull
+
 import kotlinx.datetime.LocalDateTime
 
 import kotlin.test.Test
 
-class AnyField(name: String) : BoundField<Any>(
+class AnyField(name: String) : BoundField<Any, Any>(
     name,
-    object : FieldType<Any> {
+    object : SimpleFieldType<Any>() {
         override val name: String
             get() = throw IllegalStateException("Fake field type cannot be used in mapping")
 
-        override fun serializeTerm(v: Any?): Any = v ?: serErr(v)
+        override fun deserialize(v: Any, valueFactory: (() -> Any)?) = v
+    },
+    Params(),
+    RootFieldSet
+)
 
-        override fun deserialize(v: Any, valueFactory: (() -> Any)?): Any {
-            return v
-        }
+class StringField(name: String) : BoundField<String, String>(
+    name,
+    object : SimpleFieldType<String>() {
+        override val name: String
+            get() = throw IllegalStateException("Fake field type cannot be used in mapping")
+
+        override fun deserialize(v: Any, valueFactory: (() -> String)?) = v.toString()
     },
     Params(),
     RootFieldSet
@@ -107,7 +116,7 @@ class SearchQueryCompilerTests {
 
         val query = SearchQuery()
             .filter(userDoc.status.eq(0))
-            .filter(userDoc.rank.gte(90.0))
+            .filter(userDoc.rank.gte(90.0F))
             .filter(userDoc.opinionsCount.gt(5))
 
         val compiled = compile(query)
@@ -123,7 +132,7 @@ class SearchQueryCompilerTests {
                         mapOf(
                             "range" to mapOf(
                                 "rank" to mapOf(
-                                    "gte" to 90.0
+                                    "gte" to 90.0F
                                 )
                             )
                         ),
@@ -142,11 +151,11 @@ class SearchQueryCompilerTests {
 
     @Test
     fun testFilteredQuery() {
-        class OpinionDoc(field: BoundField<BaseDocSource>) : SubDocument(field) {
+        class OpinionDoc(field: BoundField<BaseDocSource, Nothing>) : SubDocument(field) {
             val count by int()
         }
 
-        class CompanyDoc(field: BoundField<BaseDocSource>) : SubDocument(field) {
+        class CompanyDoc(field: BoundField<BaseDocSource, Nothing>) : SubDocument(field) {
             val name by text()
             val opinion by obj(::OpinionDoc)
         }
@@ -522,9 +531,9 @@ class SearchQueryCompilerTests {
         val query = SearchQuery(
             DisMax(
                 listOf(
-                    AnyField("name.en").match("Good morning"),
-                    AnyField("name.es").match("Buenos días"),
-                    AnyField("name.de").match("Guten Morgen"),
+                    StringField("name.en").match("Good morning"),
+                    StringField("name.es").match("Buenos días"),
+                    StringField("name.de").match("Guten Morgen"),
                 ),
                 tieBreaker = 0.5
             )
@@ -565,7 +574,7 @@ class SearchQueryCompilerTests {
 
         query.queryNode(LANG_HANDLE) { node ->
             node.queries.add(
-                AnyField("name.en").match("Good morning"),
+                StringField("name.en").match("Good morning"),
             )
         }
         compile(query).body shouldContainExactly mapOf(
@@ -579,7 +588,7 @@ class SearchQueryCompilerTests {
         query.queryNode(LANG_HANDLE) { node ->
             node.tieBreaker = 0.7
             node.queries.add(
-                AnyField("name.de").match("Guten Morgen"),
+                StringField("name.de").match("Guten Morgen"),
             )
         }
         compile(query).body shouldContainExactly mapOf(
@@ -777,7 +786,7 @@ class SearchQueryCompilerTests {
             node.functions.add(
                 FunctionScore.Weight(
                     1.5,
-                    filter = AnyField("name").match("test")
+                    filter = StringField("name").match("test")
                 )
             )
         }

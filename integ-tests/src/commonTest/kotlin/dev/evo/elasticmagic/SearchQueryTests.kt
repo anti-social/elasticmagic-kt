@@ -1,5 +1,8 @@
 package dev.evo.elasticmagic
 
+import dev.evo.elasticmagic.aggs.CalendarInterval
+import dev.evo.elasticmagic.aggs.DateHistogramAgg
+import dev.evo.elasticmagic.aggs.DateHistogramAggResult
 import dev.evo.elasticmagic.aggs.HistogramAgg
 import dev.evo.elasticmagic.aggs.HistogramAggResult
 import dev.evo.elasticmagic.aggs.NestedAgg
@@ -16,27 +19,31 @@ import dev.evo.elasticmagic.doc.instant
 import dev.evo.elasticmagic.query.Ids
 import dev.evo.elasticmagic.query.Nested
 import dev.evo.elasticmagic.query.Sort
+import dev.evo.elasticmagic.query.match
 
-import io.kotest.matchers.doubles.shouldBeLessThan
-import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.collections.shouldHaveSize
+import io.kotest.matchers.nulls.shouldNotBeNull
+import io.kotest.matchers.doubles.shouldBeLessThan
 
+import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.toInstant
 
 import kotlin.test.Test
 
 object OrderDoc : Document() {
-    class User(field: BoundField<BaseDocSource>) : SubDocument(field) {
+    class User(field: BoundField<BaseDocSource, Nothing>) : SubDocument(field) {
         val id by int()
         val name by text()
         val phone by keyword()
         val rating by float()
     }
 
-    class CartItem(field: BoundField<BaseDocSource>) : SubDocument(field) {
+    class CartItem(field: BoundField<BaseDocSource, Nothing>) : SubDocument(field) {
         val productId by long("product_id")
         val productName by text("product_name")
         val productPrice by float("product_price")
@@ -254,7 +261,7 @@ class SearchQueryTests : ElasticsearchTestBase("test-search-query") {
             karlssonsJam, karlssonsBestDonuts, karlssonsJustDonuts, littleBrotherDogStuff
         )) {
             val searchResult = SearchQuery(::OrderDocSource)
-                .filter(OrderDoc.dateCreated.lt(LocalDate(2020, 1, 1)))
+                .filter(OrderDoc.dateCreated.lt(LocalDate(2020, 1, 1).atStartOfDayIn(TimeZone.UTC)))
                 .execute(index)
 
             searchResult.totalHits shouldBe 1
@@ -329,7 +336,8 @@ class SearchQueryTests : ElasticsearchTestBase("test-search-query") {
                 .execute(index)
 
             searchResult.totalHits shouldBe 4
-            searchResult.maxScore ?: 0.0 shouldBe 0.0
+            // Elasticsearch 6.x has max score 0.0, but 7.x has null
+            (searchResult.maxScore ?: 0.0) shouldBe 0.0
             searchResult.hits.size shouldBe 0
 
             val statusesAgg = searchResult.agg<TermsAggResult>("statuses")
@@ -338,6 +346,43 @@ class SearchQueryTests : ElasticsearchTestBase("test-search-query") {
             statusesAgg.buckets[0].docCount shouldBe 3
             statusesAgg.buckets[1].key shouldBe 1
             statusesAgg.buckets[1].docCount shouldBe 1
+        }
+    }
+
+    @Test
+    fun agg_dateHistogram() = runTest {
+        withFixtures(OrderDoc, listOf(
+            karlssonsJam, karlssonsBestDonuts, karlssonsJustDonuts, littleBrotherDogStuff
+        )) {
+            val interval = if (index.cluster.getVersion().major == 7) {
+                DateHistogramAgg.Interval.Calendar(CalendarInterval.YEAR)
+            } else {
+                DateHistogramAgg.Interval.Legacy("1y")
+            }
+            val searchResult = SearchQuery(::OrderDocSource)
+                .aggs(
+                    "orders_by_year" to DateHistogramAgg(
+                        OrderDoc.dateCreated,
+                        interval = interval,
+                    ),
+                )
+                .size(0)
+                .execute(index)
+
+            val ordersByYear = searchResult.agg<DateHistogramAggResult<Instant>>("orders_by_year")
+            ordersByYear.buckets.shouldHaveSize(3)
+            ordersByYear.buckets[0].key shouldBe 1546300800000L
+            ordersByYear.buckets[0].keyAsString shouldBe "2019-01-01T00:00:00.000Z"
+            ordersByYear.buckets[0].keyAsDatetime shouldBe LocalDate(2019, 1, 1).atStartOfDayIn(TimeZone.UTC)
+            ordersByYear.buckets[0].docCount shouldBe 1
+            ordersByYear.buckets[1].key shouldBe 1577836800000L
+            ordersByYear.buckets[1].keyAsString shouldBe "2020-01-01T00:00:00.000Z"
+            ordersByYear.buckets[1].keyAsDatetime shouldBe LocalDate(2020, 1, 1).atStartOfDayIn(TimeZone.UTC)
+            ordersByYear.buckets[1].docCount shouldBe 2
+            ordersByYear.buckets[2].key shouldBe 1609459200000L
+            ordersByYear.buckets[2].keyAsString shouldBe "2021-01-01T00:00:00.000Z"
+            ordersByYear.buckets[2].keyAsDatetime shouldBe LocalDate(2021, 1, 1).atStartOfDayIn(TimeZone.UTC)
+            ordersByYear.buckets[2].docCount shouldBe 1
         }
     }
 
@@ -353,7 +398,7 @@ class SearchQueryTests : ElasticsearchTestBase("test-search-query") {
                         aggs = mapOf(
                             "item_price_hist" to HistogramAgg(
                                 OrderDoc.items.productPrice,
-                                interval = 1.0,
+                                interval = 1.0F,
                                 minDocCount = 1,
                             )
                         )

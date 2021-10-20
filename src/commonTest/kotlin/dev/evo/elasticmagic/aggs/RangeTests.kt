@@ -6,8 +6,7 @@ import io.kotest.matchers.maps.shouldContainExactly
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
 
-import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.TimeZone
+import kotlinx.datetime.LocalDate
 
 import kotlin.test.Test
 
@@ -17,22 +16,23 @@ class RangeTests : TestAggregation() {
         RangeAgg(
             MovieDoc.rating,
             ranges = listOf(
-                AggRange(null, 10.0),
-                AggRange(10.0, 50.0),
-                AggRange(50.0, null),
+                AggRange(null, 10.0F),
+                AggRange(10.0F, 50.0F),
+                AggRange(50.0F, null),
             )
         ).compile() shouldContainExactly mapOf(
             "range" to mapOf(
                 "field" to "rating",
                 "ranges" to listOf(
-                    mapOf("to" to 10.0),
-                    mapOf("from" to 10.0, "to" to 50.0),
-                    mapOf("from" to 50.0),
+                    mapOf("to" to 10.0F),
+                    mapOf("from" to 10.0F, "to" to 50.0F),
+                    mapOf("from" to 50.0F),
                 )
             )
         )
 
         val agg = RangeAgg(MovieDoc.rating, ranges = emptyList())
+
         shouldThrow<IllegalStateException> {
             process(agg, emptyMap())
         }
@@ -58,26 +58,25 @@ class RangeTests : TestAggregation() {
                     ),
                 )
             )
-        ) shouldBe RangeAggResult(
-            buckets = listOf(
-                RangeBucket(
-                    key = "*-10.0",
-                    docCount = 2,
-                    to = 10.0,
-                ),
-                RangeBucket(
-                    key = "10.0-50.0",
-                    docCount = 4,
-                    from = 10.0,
-                    to = 50.0,
-                ),
-                RangeBucket(
-                    key = "50.0-*",
-                    docCount = 0,
-                    from = 50.0,
-                ),
+        ).let { res ->
+            res.buckets.shouldHaveSize(3)
+            res.buckets[0] shouldBe RangeBucket(
+                key = "*-10.0",
+                docCount = 2,
+                to = 10.0,
             )
-        )
+            res.buckets[1] shouldBe RangeBucket(
+                key = "10.0-50.0",
+                docCount = 4,
+                from = 10.0,
+                to = 50.0,
+            )
+            res.buckets[2] shouldBe RangeBucket(
+                key = "50.0-*",
+                docCount = 0,
+                from = 50.0,
+            )
+        }
     }
 
     @Test
@@ -85,16 +84,16 @@ class RangeTests : TestAggregation() {
         DateRangeAgg(
             MovieDoc.releaseDate,
             ranges = listOf(
-                AggRange.to("2010-01-01"),
-                AggRange("2010-01-01", "2020-01-01"),
-                AggRange.from("2020-01-01"),
+                AggRange.to(LocalDate(2000, 1, 1)),
+                AggRange(LocalDate(2010, 1, 1), LocalDate(2020, 1, 1)),
+                AggRange.from(LocalDate(2020, 1, 1)),
             )
         ).let { agg ->
             agg.compile() shouldContainExactly mapOf(
                 "date_range" to mapOf(
                     "field" to "release_date",
                     "ranges" to listOf(
-                        mapOf("to" to "2010-01-01"),
+                        mapOf("to" to "2000-01-01"),
                         mapOf("from" to "2010-01-01", "to" to "2020-01-01"),
                         mapOf("from" to "2020-01-01"),
                     )
@@ -105,19 +104,19 @@ class RangeTests : TestAggregation() {
         DateRangeAgg(
             MovieDoc.releaseDate,
             ranges = listOf(
-                AggRange.to("2000-01-01", key = "old"),
-                AggRange("2000-01-01", "2022-01-01", key = "modern"),
-                AggRange.from("2022-01-01", key = "future"),
+                AggRange.to(LocalDate(2010, 1, 1), key = "old"),
+                AggRange(LocalDate(2010, 1, 1), LocalDate(2022, 1, 1), key = "modern"),
+                AggRange.from(LocalDate(2022, 1, 1), key = "future"),
             ),
             format = "YYYY-MM-dd",
-            missing = "1970-01-01",
+            missing = LocalDate(1970, 1, 1),
         ).let { agg ->
             agg.compile() shouldContainExactly mapOf(
                 "date_range" to mapOf(
                     "field" to "release_date",
                     "ranges" to listOf(
-                        mapOf("to" to "2000-01-01", "key" to "old"),
-                        mapOf("from" to "2000-01-01", "to" to "2022-01-01", "key" to "modern"),
+                        mapOf("to" to "2010-01-01", "key" to "old"),
+                        mapOf("from" to "2010-01-01", "to" to "2022-01-01", "key" to "modern"),
                         mapOf("from" to "2022-01-01", "key" to "future"),
                     ),
                     "format" to "YYYY-MM-dd",
@@ -160,28 +159,29 @@ class RangeTests : TestAggregation() {
                 old.key shouldBe "old"
                 old.from.shouldBeNull()
                 old.fromAsString.shouldBeNull()
-                old.fromAsDatetime(TimeZone.UTC).shouldBeNull()
+                old.fromAsDatetime.shouldBeNull()
                 old.to shouldBe 9.466848E11
+                // old.rawTo shouldBe 9.466848E11
                 old.toAsString shouldBe "2000-01-01"
-                old.toAsDatetime(TimeZone.UTC) shouldBe LocalDateTime(2000, 1, 1, 0, 0)
+                old.toAsDatetime shouldBe LocalDate(2000, 1, 1)
                 old.docCount shouldBe 100L
                 val modern = res.buckets[1]
                 modern.key shouldBe "modern"
                 modern.from shouldBe 9.466848E11
                 modern.fromAsString shouldBe "2000-01-01"
-                modern.fromAsDatetime(TimeZone.UTC) shouldBe LocalDateTime(2000, 1, 1, 0, 0)
+                modern.fromAsDatetime shouldBe LocalDate(2000, 1, 1)
                 modern.to shouldBe 1.6409952E12
                 modern.toAsString shouldBe "2022-01-01"
-                modern.toAsDatetime(TimeZone.UTC) shouldBe LocalDateTime(2022, 1, 1, 0, 0)
+                modern.toAsDatetime shouldBe LocalDate(2022, 1, 1)
                 modern.docCount shouldBe 47L
                 val future = res.buckets[2]
                 future.key shouldBe "future"
                 future.from shouldBe 1.6409952E12
                 future.fromAsString shouldBe "2022-01-01"
-                future.fromAsDatetime(TimeZone.UTC) shouldBe LocalDateTime(2022, 1, 1, 0, 0)
+                future.fromAsDatetime shouldBe LocalDate(2022, 1, 1)
                 future.to.shouldBeNull()
                 future.toAsString.shouldBeNull()
-                future.toAsDatetime(TimeZone.UTC).shouldBeNull()
+                future.toAsDatetime.shouldBeNull()
                 future.docCount shouldBe 1L
             }
         }

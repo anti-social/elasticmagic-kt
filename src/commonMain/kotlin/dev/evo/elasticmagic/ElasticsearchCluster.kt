@@ -79,13 +79,14 @@ class ElasticsearchCluster<OBJ>(
     private val compilers: CompilerSet? = null,
 ) : SerializableTransport<OBJ>(esTransport, serde) {
 
+    private val esVersion = CompletableDeferred<ElasticsearchVersion>()
     private val sniffedCompilers = CompletableDeferred<CompilerSet>()
 
     operator fun get(indexName: String): ElasticsearchIndex<OBJ> {
-        return ElasticsearchIndex(indexName, esTransport, serde, ::getCompilers)
+        return ElasticsearchIndex(indexName, esTransport, serde, this)
     }
 
-    suspend fun fetchVersion(): ElasticsearchVersion {
+    private suspend fun fetchVersion(): ElasticsearchVersion {
         val response = esTransport.request(
             Method.GET,"",
             contentType = serde.contentType
@@ -99,13 +100,21 @@ class ElasticsearchCluster<OBJ>(
         )
     }
 
+    suspend fun getVersion(): ElasticsearchVersion {
+        if (!esVersion.isCompleted) {
+            // Only first value will be set
+            esVersion.complete(fetchVersion())
+        }
+        return esVersion.await()
+    }
+
     suspend fun getCompilers(): CompilerSet {
         if (compilers != null) {
             return compilers
         }
         if (!sniffedCompilers.isCompleted) {
             // Only first value will be set
-            sniffedCompilers.complete(CompilerSet(fetchVersion()))
+            sniffedCompilers.complete(CompilerSet(getVersion()))
         }
         return sniffedCompilers.await()
     }
@@ -207,13 +216,13 @@ class ElasticsearchIndex<OBJ>(
     val name: String,
     esTransport: ElasticsearchTransport,
     serde: Serde<OBJ>,
-    private val getCompilers: suspend () -> CompilerSet
+    val cluster: ElasticsearchCluster<OBJ>,
 ) : SerializableTransport<OBJ>(esTransport, serde) {
 
     suspend fun <S : BaseDocSource> search(
         searchQuery: BaseSearchQuery<S, *>
     ): SearchQueryResult<S> {
-        val compiled = getCompilers().searchQuery.compile(
+        val compiled = cluster.getCompilers().searchQuery.compile(
             serde.serializer, searchQuery.usingIndex(name)
         )
         return request(compiled)
@@ -232,7 +241,7 @@ class ElasticsearchIndex<OBJ>(
             timeout = timeout,
             params = params,
         )
-        val compiled = getCompilers().bulk.compile(serde.serializer, bulk)
+        val compiled = cluster.getCompilers().bulk.compile(serde.serializer, bulk)
         val response = esTransport.request(
             compiled.method,
             compiled.path,

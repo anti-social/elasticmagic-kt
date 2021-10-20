@@ -43,7 +43,7 @@ class MappingCompilerTests {
 
     @Test
     fun testSubFields() {
-        class NameFields<V>(field: BoundField<V>) : SubFields<V>(field) {
+        class NameFields<V>(field: BoundField<V, V>) : SubFields<V>(field) {
             val sort by keyword(normalizer = "lowercase")
             val autocomplete by text(analyzer = "ngram")
         }

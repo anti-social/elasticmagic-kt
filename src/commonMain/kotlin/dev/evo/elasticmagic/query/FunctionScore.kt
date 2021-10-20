@@ -111,13 +111,29 @@ data class FunctionScore(
         }
     }
 
-    data class FieldValueFactor(
-        val field: FieldOperations,
+    data class FieldValueFactor<T> private constructor(
+        val field: FieldOperations<T>,
         val factor: Double? = null,
-        val missing: Double? = null,
+        val missing: T? = null,
         val modifier: String? = null,
         override val filter: QueryExpression? = null,
     ) : Function() {
+        companion object {
+            operator fun <T: Number> invoke(
+                field: FieldOperations<T>,
+                factor: Double? = null,
+                missing: T? = null,
+                modifier: String? = null,
+                filter: QueryExpression? = null,
+            ) = FieldValueFactor(
+                field,
+                factor = factor,
+                missing = missing,
+                modifier = modifier,
+                filter = filter,
+            )
+        }
+
         override fun clone() = copy()
 
         override fun reduce(): Expression {
@@ -134,7 +150,9 @@ data class FunctionScore(
                 ctx.obj("field_value_factor") {
                     field("field", field.getQualifiedFieldName())
                     fieldIfNotNull("factor", factor)
-                    fieldIfNotNull("missing", missing)
+                    missing?.let { missing ->
+                        field("missing", field.serializeTerm(missing))
+                    }
                     fieldIfNotNull("modifier", modifier)
                 }
             }
@@ -164,7 +182,7 @@ data class FunctionScore(
 
     data class RandomScore(
         val seed: Any? = null,
-        val field: FieldOperations? = null,
+        val field: FieldOperations<*>? = null,
         override val filter: QueryExpression? = null,
     ) : Function() {
         override fun clone() = copy()

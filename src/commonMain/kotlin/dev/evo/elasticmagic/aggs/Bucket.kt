@@ -143,7 +143,7 @@ data class FiltersBucket(
 ) : KeyedBucket<String>()
 
 data class NestedAgg(
-    val path: FieldOperations,
+    val path: FieldOperations<Nothing>,
     override val aggs: Map<String, Aggregation<*>>,
 ) : SingleBucketAggregation() {
     override val name = "nested"

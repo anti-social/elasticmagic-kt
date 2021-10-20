@@ -100,7 +100,7 @@ open class MappingCompiler(
         }
     }
 
-    private fun visit(ctx: ObjectCtx, field: AnyField) {
+    private fun visit(ctx: ObjectCtx, field: AnyField<*>) {
         ctx.field("type", field.getFieldType().name)
         visit(ctx, field.getMappingParams())
 

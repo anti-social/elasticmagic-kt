@@ -1,11 +1,12 @@
 package dev.evo.elasticmagic.aggs
 
+import dev.evo.elasticmagic.doc.FloatType
 import dev.evo.elasticmagic.query.FieldOperations
 import dev.evo.elasticmagic.query.Script
 import dev.evo.elasticmagic.serde.platform
 import dev.evo.elasticmagic.serde.Platform
-import io.kotest.assertions.throwables.shouldThrow
 
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.data.forAll
 import io.kotest.data.headers
 import io.kotest.data.row
@@ -19,7 +20,7 @@ import kotlin.test.Test
 class MetricTests : TestAggregation() {
     @Test
     fun min_max_avg_sum() {
-        table<String, (FieldOperations, Any?) -> SingleDoubleValueAgg>(
+        table<String, (FieldOperations<Float>, Float?) -> SingleDoubleValueAgg<Float>>(
             headers("aggName", "aggFn"),
             row("min", ::MinAgg),
             row("max", ::MaxAgg),
@@ -29,12 +30,12 @@ class MetricTests : TestAggregation() {
         ).forAll { aggName, aggFn ->
             val agg = aggFn(
                 MovieDoc.rating,
-                0.0,
+                0.0F,
             )
             agg.compile() shouldContainExactly mapOf(
                 aggName to mapOf(
                     "field" to "rating",
-                    "missing" to 0.0
+                    "missing" to 0.0F
                 )
             )
             agg.processResult(
@@ -62,8 +63,31 @@ class MetricTests : TestAggregation() {
     }
 
     @Test
+    fun min_booleanType() {
+        MinAgg(MovieDoc.isColored, missing = true).let { agg ->
+            agg.compile() shouldContainExactly mapOf(
+                "min" to mapOf(
+                    "field" to "is_colored",
+                    "missing" to true
+                )
+            )
+            agg.processResult(
+                deserializer.wrapObj(
+                    mapOf(
+                        "value" to 0.0,
+                        "value_as_string" to "false",
+                    )
+                )
+            ).let { res ->
+                res.value shouldBe 0.0
+                res.valueAsString shouldBe "false"
+            }
+        }
+    }
+
+    @Test
     fun valueCount_cardinality() {
-        table<String, (FieldOperations, Any?) -> SingleLongValueAgg>(
+        table<String, (FieldOperations<Int>, Int?) -> SingleLongValueAgg<Int>>(
             headers("aggName", "aggFn"),
             row("value_count", ::ValueCountAgg),
             row("cardinality", ::CardinalityAgg),
@@ -128,7 +152,7 @@ class MetricTests : TestAggregation() {
         val agg = WeightedAvgAgg(
             value = WeightedAvgAgg.ValueSource(
                 MovieDoc.rating,
-                missing = 0.0,
+                missing = 0.0F,
             ),
             weight = WeightedAvgAgg.ValueSource(
                 AggValue.Script(
@@ -137,7 +161,8 @@ class MetricTests : TestAggregation() {
                         params = mapOf(
                             "rating_field" to MovieDoc.numRatings
                         )
-                    )
+                    ),
+                    FloatType,
                 ),
             ),
         )
@@ -145,7 +170,7 @@ class MetricTests : TestAggregation() {
             "weighted_avg" to mapOf(
                 "value" to mapOf(
                     "field" to "rating",
-                    "missing" to 0.0,
+                    "missing" to 0.0F,
                 ),
                 "weight" to mapOf(
                     "script" to mapOf(
@@ -197,12 +222,12 @@ class MetricTests : TestAggregation() {
     fun stats() {
         val agg = StatsAgg(
             MovieDoc.rating,
-            missing = 0.0,
+            missing = 0.0F,
         )
         agg.compile() shouldContainExactly mapOf(
             "stats" to mapOf(
                 "field" to "rating",
-                "missing" to 0.0,
+                "missing" to 0.0F,
             )
         )
         shouldThrow<IllegalStateException> {
@@ -249,12 +274,12 @@ class MetricTests : TestAggregation() {
     fun extendedStats() {
         val agg = ExtendedStatsAgg(
             MovieDoc.rating,
-            missing = 0.0,
+            missing = 0.0F,
         )
         agg.compile() shouldContainExactly mapOf(
             "extended_stats" to mapOf(
                 "field" to "rating",
-                "missing" to 0.0,
+                "missing" to 0.0F,
             )
         )
         shouldThrow<IllegalStateException> {
