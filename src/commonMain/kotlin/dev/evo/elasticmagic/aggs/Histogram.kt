@@ -254,14 +254,6 @@ data class DateHistogramAgg<T>(
             ctx.field(name, intervalValue())
         }
 
-        data class Auto(val interval: String) : Interval() {
-            override val name: String = "interval"
-
-            override fun clone() = copy()
-
-            override fun intervalValue(): String = interval
-        }
-
         data class Calendar(val interval: CalendarInterval) : Interval() {
             override val name = "calendar_interval"
 
@@ -276,6 +268,14 @@ data class DateHistogramAgg<T>(
             override fun clone() = copy()
 
             override fun intervalValue() = interval.toValue()
+        }
+
+        data class Legacy(val interval: String) : Interval() {
+            override val name: String = "interval"
+
+            override fun clone() = copy()
+
+            override fun intervalValue(): String = interval
         }
     }
 

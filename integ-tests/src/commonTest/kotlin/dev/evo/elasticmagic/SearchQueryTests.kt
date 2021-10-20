@@ -337,7 +337,7 @@ class SearchQueryTests : ElasticsearchTestBase("test-search-query") {
 
             searchResult.totalHits shouldBe 4
             // Elasticsearch 6.x has max score 0.0, but 7.x has null
-            searchResult.maxScore ?: 0.0 shouldBe 0.0
+            (searchResult.maxScore ?: 0.0) shouldBe 0.0
             searchResult.hits.size shouldBe 0
 
             val statusesAgg = searchResult.agg<TermsAggResult>("statuses")
@@ -354,11 +354,16 @@ class SearchQueryTests : ElasticsearchTestBase("test-search-query") {
         withFixtures(OrderDoc, listOf(
             karlssonsJam, karlssonsBestDonuts, karlssonsJustDonuts, littleBrotherDogStuff
         )) {
+            val interval = if (index.cluster.getVersion().major == 7) {
+                DateHistogramAgg.Interval.Calendar(CalendarInterval.YEAR)
+            } else {
+                DateHistogramAgg.Interval.Legacy("1y")
+            }
             val searchResult = SearchQuery(::OrderDocSource)
                 .aggs(
                     "orders_by_year" to DateHistogramAgg(
                         OrderDoc.dateCreated,
-                        interval = DateHistogramAgg.Interval.Calendar(CalendarInterval.YEAR),
+                        interval = interval,
                     ),
                 )
                 .size(0)
