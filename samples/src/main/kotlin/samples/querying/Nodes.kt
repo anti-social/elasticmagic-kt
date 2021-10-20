@@ -9,11 +9,12 @@ import dev.evo.elasticmagic.query.FunctionScore
 import dev.evo.elasticmagic.query.FunctionScoreNode
 import dev.evo.elasticmagic.query.NodeHandle
 import dev.evo.elasticmagic.SearchQuery
+import dev.evo.elasticmagic.doc.AnyField
 import dev.evo.elasticmagic.doc.SubDocument
 
 import kotlin.random.Random
 
-class TranslationDoc(field: BoundField<BaseDocSource>) : SubDocument(field) {
+class TranslationDoc(field: BoundField<BaseDocSource, Nothing>) : SubDocument(field) {
     val en by text()
     val de by text()
     val ru by text()
@@ -69,9 +70,9 @@ var boostedQuery = if (boostByNumberOfVotes) {
 
 val additionalLanguages = listOf("de", "ru")
 val userLang = additionalLanguages[Random.nextInt(additionalLanguages.size)]
-val additionalLangFields = listOfNotNull(
-    QuestionDoc.title[userLang],
-    QuestionDoc.text[userLang],
+val additionalLangFields: List<AnyField<String>> = listOfNotNull(
+    QuestionDoc.title.getFieldByName(userLang),
+    QuestionDoc.text.getFieldByName(userLang),
 )
 val langQuery = if (additionalLangFields.isNotEmpty()) {
     boostedQuery.queryNode(langHandle) { node ->

@@ -6,7 +6,7 @@ import dev.evo.elasticmagic.doc.Document
 import dev.evo.elasticmagic.SearchQuery
 import dev.evo.elasticmagic.doc.SubDocument
 
-class GroupDoc(field: BoundField<BaseDocSource>) : SubDocument(field) {
+class GroupDoc(field: BoundField<BaseDocSource, Nothing>) : SubDocument(field) {
     val id by int()
     val name by keyword()
 }

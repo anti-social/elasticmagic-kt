@@ -151,6 +151,16 @@ abstract class FieldSet : Named {
         return fields[fieldsByName[name] ?: return null]
     }
 
+    inline fun <reified T> getFieldByName(name: String): AnyField<T> {
+        val field = this[name] ?: throw IllegalArgumentException("Missing field: [$name]")
+        val termType = T::class
+        if (field.getFieldType().termType != termType) {
+            throw IllegalArgumentException("Expected $name field should be of type ${termType.simpleName}")
+        }
+        @Suppress("UNCHECKED_CAST")
+        return field as AnyField<T>
+    }
+
     fun <V, T> field(
         name: String?,
         type: FieldType<V, T>,

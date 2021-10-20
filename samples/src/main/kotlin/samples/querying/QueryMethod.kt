@@ -12,7 +12,7 @@ val q2 = q.query(
         listOf(
             FunctionScore.FieldValueFactor(
                 UserDoc.rating,
-                missing = 0.0,
+                missing = 0.0F,
             )
         )
     )

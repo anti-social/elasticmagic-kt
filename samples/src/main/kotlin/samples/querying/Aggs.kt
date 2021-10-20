@@ -12,7 +12,7 @@ val ratingHistogramQuery = q.aggs(
         aggs = mapOf(
             "avg_rating" to AvgAgg(UserDoc.rating),
             "rating_histogram" to HistogramAgg(
-                UserDoc.rating, interval = 10.0
+                UserDoc.rating, interval = 10.0F
             ),
         )
     )

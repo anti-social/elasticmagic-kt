@@ -24,7 +24,6 @@ import dev.evo.elasticmagic.query.Script
 import dev.evo.elasticmagic.query.Sort
 import dev.evo.elasticmagic.query.QueryRescore
 import dev.evo.elasticmagic.serde.StdSerializer
-import dev.evo.elasticmagic.query.match
 
 import io.kotest.matchers.maps.shouldContainExactly
 import io.kotest.matchers.nulls.shouldNotBeNull
@@ -38,6 +37,7 @@ class AnyField(name: String) : BoundField<Any, Any>(
     object : SimpleFieldType<Any>() {
         override val name: String
             get() = throw IllegalStateException("Fake field type cannot be used in mapping")
+        override val termType = Any::class
 
         override fun deserialize(v: Any, valueFactory: (() -> Any)?) = v
     },
@@ -50,6 +50,7 @@ class StringField(name: String) : BoundField<String, String>(
     object : SimpleFieldType<String>() {
         override val name: String
             get() = throw IllegalStateException("Fake field type cannot be used in mapping")
+        override val termType = String::class
 
         override fun deserialize(v: Any, valueFactory: (() -> String)?) = v.toString()
     },

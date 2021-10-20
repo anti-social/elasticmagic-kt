@@ -37,7 +37,7 @@ abstract class BaseKotlinxDateTimeType<V> : BaseDateTimeType<V>() {
             return Instant.fromEpochMilliseconds(v.toLong())
         }
         if (err !is ValueDeserializationException) {
-            deErr(v, dateTypeName, err)
+            deErr(v, termType.simpleName ?: "<unknown>", err)
         }
         throw err
     }
@@ -46,7 +46,7 @@ abstract class BaseKotlinxDateTimeType<V> : BaseDateTimeType<V>() {
 }
 
 object InstantType : BaseKotlinxDateTimeType<Instant>() {
-    override val dateTypeName = "Instant"
+    override val termType = Instant::class
 
     override fun serialize(v: Instant) = v.toString()
 
@@ -54,7 +54,7 @@ object InstantType : BaseKotlinxDateTimeType<Instant>() {
 }
 
 object DateTimeType : BaseKotlinxDateTimeType<LocalDateTime>() {
-    override val dateTypeName = "LocalDateTime"
+    override val termType = LocalDateTime::class
 
     override fun serialize(v: LocalDateTime): Any {
         return v.toInstant(TimeZone.UTC).toString()
@@ -67,9 +67,7 @@ object DateTimeType : BaseKotlinxDateTimeType<LocalDateTime>() {
 }
 
 object DateType : BaseKotlinxDateTimeType<LocalDate>() {
-    override val name = "date"
-
-    override val dateTypeName = "LocalDate"
+    override val termType = LocalDate::class
 
     override fun serialize(v: LocalDate) = v.toString()
 

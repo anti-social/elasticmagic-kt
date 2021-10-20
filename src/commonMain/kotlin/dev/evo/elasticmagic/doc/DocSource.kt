@@ -1,6 +1,7 @@
 package dev.evo.elasticmagic.doc
 
 import dev.evo.elasticmagic.serde.Deserializer
+
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
@@ -680,6 +681,7 @@ fun SubDocument.list(): BoundField<List<DynDocSource?>, Nothing> {
 internal object AnyFieldType : FieldType<Any, Any> {
     override val name: String
         get() = throw IllegalStateException("Should not be used in mappings")
+    override val termType = Any::class
 
     override fun deserialize(v: Any, valueFactory: (() -> Any)?): Any {
         return v
@@ -693,6 +695,7 @@ internal object AnyFieldType : FieldType<Any, Any> {
 internal object DynDocSourceFieldType : FieldType<DynDocSource, Nothing> {
     override val name: String
         get() = throw IllegalStateException("Should not be used in mappings")
+    override val termType = Nothing::class
 
     override fun deserialize(v: Any, valueFactory: (() -> DynDocSource)?): DynDocSource {
         return when (v) {

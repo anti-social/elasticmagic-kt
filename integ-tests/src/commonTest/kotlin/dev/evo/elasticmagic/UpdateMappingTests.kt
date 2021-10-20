@@ -7,7 +7,6 @@ import dev.evo.elasticmagic.doc.Dynamic
 import dev.evo.elasticmagic.doc.IdentActionMeta
 import dev.evo.elasticmagic.doc.IndexAction
 import dev.evo.elasticmagic.doc.Refresh
-import dev.evo.elasticmagic.query.match
 
 import io.kotest.matchers.shouldBe
 

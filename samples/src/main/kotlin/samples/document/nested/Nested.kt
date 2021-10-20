@@ -8,7 +8,7 @@ import dev.evo.elasticmagic.query.Nested
 import dev.evo.elasticmagic.SearchQuery
 import dev.evo.elasticmagic.doc.SubDocument
 
-class RoleDoc(field: BoundField<BaseDocSource>) : SubDocument(field) {
+class RoleDoc(field: BoundField<BaseDocSource, Nothing>) : SubDocument(field) {
     val name by keyword()
     val permissions by keyword()
 }

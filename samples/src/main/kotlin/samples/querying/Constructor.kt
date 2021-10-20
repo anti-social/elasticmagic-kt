@@ -9,7 +9,7 @@ var q = SearchQuery(
         listOf(
             FunctionScore.FieldValueFactor(
                 UserDoc.rating,
-                missing = 0.0,
+                missing = 0.0F,
             )
         )
     )

@@ -5,7 +5,7 @@ import dev.evo.elasticmagic.doc.BoundField
 import dev.evo.elasticmagic.doc.Document
 import dev.evo.elasticmagic.doc.SubDocument
 
-class RoleDoc(field: BoundField<BaseDocSource>) : SubDocument(field) {
+class RoleDoc(field: BoundField<BaseDocSource, Nothing>) : SubDocument(field) {
     val name by keyword()
     val permissions by keyword()
 }
