@@ -620,7 +620,7 @@ for any simple field:</p>
 <span class="k">import</span> <span class="nn">dev.evo.elasticmagic.doc.Document</span>
 <span class="k">import</span> <span class="nn">dev.evo.elasticmagic.doc.SubFields</span>
 
-<span class="kd">class</span> <span class="nc">AboutSubFields</span><span class="p">(</span><span class="n">field</span><span class="p">:</span> <span class="n">BoundField</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span><span class="p">)</span> <span class="p">:</span> <span class="n">SubFields</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span><span class="p">(</span><span class="n">field</span><span class="p">)</span> <span class="p">{</span>
+<span class="kd">class</span> <span class="nc">AboutSubFields</span><span class="p">(</span><span class="n">field</span><span class="p">:</span> <span class="n">BoundField</span><span class="o">&lt;</span><span class="kt">String</span><span class="p">,</span> <span class="kt">String</span><span class="o">&gt;</span><span class="p">)</span> <span class="p">:</span> <span class="n">SubFields</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span><span class="p">(</span><span class="n">field</span><span class="p">)</span> <span class="p">{</span>
     <span class="kd">val</span> <span class="nv">sort</span> <span class="k">by</span> <span class="n">keyword</span><span class="p">(</span><span class="n">normalizer</span> <span class="o">=</span> <span class="s">&quot;lowercase&quot;</span><span class="p">)</span>
     <span class="kd">val</span> <span class="nv">autocomplete</span> <span class="k">by</span> <span class="n">text</span><span class="p">(</span><span class="n">analyzer</span> <span class="o">=</span> <span class="s">&quot;autocomplete&quot;</span><span class="p">)</span>
 <span class="p">}</span>
@@ -647,7 +647,7 @@ for any simple field:</p>
 <span class="k">import</span> <span class="nn">dev.evo.elasticmagic.doc.Document</span>
 <span class="k">import</span> <span class="nn">dev.evo.elasticmagic.doc.SubFields</span>
 
-<span class="kd">class</span> <span class="nc">AboutSubFields</span><span class="p">(</span><span class="n">field</span><span class="p">:</span> <span class="n">BoundField</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span><span class="p">)</span> <span class="p">:</span> <span class="n">SubFields</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span><span class="p">(</span><span class="n">field</span><span class="p">)</span> <span class="p">{</span>
+<span class="kd">class</span> <span class="nc">AboutSubFields</span><span class="p">(</span><span class="n">field</span><span class="p">:</span> <span class="n">BoundField</span><span class="o">&lt;</span><span class="kt">String</span><span class="p">,</span> <span class="kt">String</span><span class="o">&gt;</span><span class="p">)</span> <span class="p">:</span> <span class="n">SubFields</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span><span class="p">(</span><span class="n">field</span><span class="p">)</span> <span class="p">{</span>
     <span class="kd">val</span> <span class="nv">sort</span> <span class="k">by</span> <span class="n">keyword</span><span class="p">(</span><span class="n">normalizer</span> <span class="o">=</span> <span class="s">&quot;lowercase&quot;</span><span class="p">)</span>
 <span class="p">}</span>
 
@@ -685,7 +685,7 @@ in a sub-document can have its own source value:</p>
 <span class="k">import</span> <span class="nn">dev.evo.elasticmagic.SearchQuery</span>
 <span class="k">import</span> <span class="nn">dev.evo.elasticmagic.doc.SubDocument</span>
 
-<span class="kd">class</span> <span class="nc">GroupDoc</span><span class="p">(</span><span class="n">field</span><span class="p">:</span> <span class="n">BoundField</span><span class="o">&lt;</span><span class="n">BaseDocSource</span><span class="o">&gt;</span><span class="p">)</span> <span class="p">:</span> <span class="n">SubDocument</span><span class="p">(</span><span class="n">field</span><span class="p">)</span> <span class="p">{</span>
+<span class="kd">class</span> <span class="nc">GroupDoc</span><span class="p">(</span><span class="n">field</span><span class="p">:</span> <span class="n">BoundField</span><span class="o">&lt;</span><span class="n">BaseDocSource</span><span class="p">,</span> <span class="n">Nothing</span><span class="o">&gt;</span><span class="p">)</span> <span class="p">:</span> <span class="n">SubDocument</span><span class="p">(</span><span class="n">field</span><span class="p">)</span> <span class="p">{</span>
     <span class="kd">val</span> <span class="nv">id</span> <span class="k">by</span> <span class="n">int</span><span class="p">()</span>
     <span class="kd">val</span> <span class="nv">name</span> <span class="k">by</span> <span class="n">keyword</span><span class="p">()</span>
 <span class="p">}</span>
@@ -720,7 +720,7 @@ In the example below we find all users that have a <code>moderator</code> role w
 <span class="k">import</span> <span class="nn">dev.evo.elasticmagic.SearchQuery</span>
 <span class="k">import</span> <span class="nn">dev.evo.elasticmagic.doc.SubDocument</span>
 
-<span class="kd">class</span> <span class="nc">RoleDoc</span><span class="p">(</span><span class="n">field</span><span class="p">:</span> <span class="n">BoundField</span><span class="o">&lt;</span><span class="n">BaseDocSource</span><span class="o">&gt;</span><span class="p">)</span> <span class="p">:</span> <span class="n">SubDocument</span><span class="p">(</span><span class="n">field</span><span class="p">)</span> <span class="p">{</span>
+<span class="kd">class</span> <span class="nc">RoleDoc</span><span class="p">(</span><span class="n">field</span><span class="p">:</span> <span class="n">BoundField</span><span class="o">&lt;</span><span class="n">BaseDocSource</span><span class="p">,</span> <span class="n">Nothing</span><span class="o">&gt;</span><span class="p">)</span> <span class="p">:</span> <span class="n">SubDocument</span><span class="p">(</span><span class="n">field</span><span class="p">)</span> <span class="p">{</span>
     <span class="kd">val</span> <span class="nv">name</span> <span class="k">by</span> <span class="n">keyword</span><span class="p">()</span>
     <span class="kd">val</span> <span class="nv">permissions</span> <span class="k">by</span> <span class="n">keyword</span><span class="p">()</span>
 <span class="p">}</span>
