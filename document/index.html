@@ -590,6 +590,7 @@ method to describe a field in a document:</p>
 <div class="highlight"><pre><span></span><code><span class="k">package</span> <span class="nn">samples.document.field</span>
 
 <span class="k">import</span> <span class="nn">dev.evo.elasticmagic.SearchQuery</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.query.match</span>
 
 <span class="kd">val</span> <span class="nv">fakeAdmins</span> <span class="o">=</span> <span class="n">SearchQuery</span><span class="p">(</span><span class="n">UserDoc</span><span class="p">.</span><span class="na">about</span><span class="p">.</span><span class="na">match</span><span class="p">(</span><span class="s">&quot;fake&quot;</span><span class="p">))</span>
     <span class="p">.</span><span class="na">filter</span><span class="p">(</span><span class="n">UserDoc</span><span class="p">.</span><span class="na">isAdmin</span><span class="p">.</span><span class="na">eq</span><span class="p">(</span><span class="kc">true</span><span class="p">))</span>
@@ -633,6 +634,7 @@ for any simple field:</p>
 <div class="highlight"><pre><span></span><code><span class="k">package</span> <span class="nn">samples.document.subfields</span>
 
 <span class="k">import</span> <span class="nn">dev.evo.elasticmagic.SearchQuery</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.query.match</span>
 
 <span class="kd">val</span> <span class="nv">maybeNiceUsers</span> <span class="o">=</span> <span class="n">SearchQuery</span><span class="p">(</span><span class="n">UserDoc</span><span class="p">.</span><span class="na">about</span><span class="p">.</span><span class="na">autocomplete</span><span class="p">.</span><span class="na">match</span><span class="p">(</span><span class="s">&quot;nic&quot;</span><span class="p">))</span>
     <span class="p">.</span><span class="na">sort</span><span class="p">(</span><span class="n">UserDoc</span><span class="p">.</span><span class="na">about</span><span class="p">.</span><span class="na">sort</span><span class="p">)</span>

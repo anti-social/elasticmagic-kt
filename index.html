@@ -566,6 +566,7 @@ Use it on your own risk</p>
 <span class="k">import</span> <span class="nn">dev.evo.elasticmagic.SearchQueryResult</span>
 <span class="k">import</span> <span class="nn">dev.evo.elasticmagic.aggs.TermsAgg</span>
 <span class="k">import</span> <span class="nn">dev.evo.elasticmagic.aggs.TermsAggResult</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.query.match</span>
 
 <span class="kd">fun</span> <span class="nf">printUsers</span><span class="p">(</span><span class="n">result</span><span class="p">:</span> <span class="n">SearchQueryResult</span><span class="o">&lt;</span><span class="n">DynDocSource</span><span class="o">&gt;</span><span class="p">)</span> <span class="p">{</span>
     <span class="n">println</span><span class="p">(</span><span class="s">&quot;Found: </span><span class="si">${</span><span class="n">result</span><span class="p">.</span><span class="na">totalHits</span><span class="si">}</span><span class="s"> users&quot;</span><span class="p">)</span>

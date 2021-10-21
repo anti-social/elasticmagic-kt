@@ -1064,6 +1064,7 @@ $dokka.location:dev.evo.elasticmagic.doc/ValueDeserializationException/ValueDese
 $dokka.location:dev.evo.elasticmagic.doc/ValueSerializationException///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-value-serialization-exception/index.html
 $dokka.location:dev.evo.elasticmagic.doc/ValueSerializationException/ValueSerializationException/#kotlin.Any?#kotlin.Throwable?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.doc/-value-serialization-exception/-value-serialization-exception.html
 $dokka.location:dev.evo.elasticmagic.query////PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.query/index.html
+$dokka.location:dev.evo.elasticmagic.query//match/dev.evo.elasticmagic.query.FieldOperations[kotlin.String]#kotlin.String/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.query/match.html
 $dokka.location:dev.evo.elasticmagic.query/Bool.Companion///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.query/-bool/-companion/index.html
 $dokka.location:dev.evo.elasticmagic.query/Bool.Companion/filter/#kotlin.Array[dev.evo.elasticmagic.query.QueryExpression]/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.query/-bool/-companion/filter.html
 $dokka.location:dev.evo.elasticmagic.query/Bool.Companion/must/#kotlin.Array[dev.evo.elasticmagic.query.QueryExpression]/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.query/-bool/-companion/must.html
@@ -1141,7 +1142,6 @@ $dokka.location:dev.evo.elasticmagic.query/FieldOperations/gt/#TypeParam(bounds=
 $dokka.location:dev.evo.elasticmagic.query/FieldOperations/gte/#TypeParam(bounds=[kotlin.Any?])?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.query/-field-operations/gte.html
 $dokka.location:dev.evo.elasticmagic.query/FieldOperations/lt/#TypeParam(bounds=[kotlin.Any?])?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.query/-field-operations/lt.html
 $dokka.location:dev.evo.elasticmagic.query/FieldOperations/lte/#TypeParam(bounds=[kotlin.Any?])?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.query/-field-operations/lte.html
-$dokka.location:dev.evo.elasticmagic.query/FieldOperations/match/#kotlin.String/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.query/-field-operations/match.html
 $dokka.location:dev.evo.elasticmagic.query/FieldOperations/ne/#TypeParam(bounds=[kotlin.Any?])?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.query/-field-operations/ne.html
 $dokka.location:dev.evo.elasticmagic.query/FieldOperations/range/#TypeParam(bounds=[kotlin.Any?])?#TypeParam(bounds=[kotlin.Any?])?#TypeParam(bounds=[kotlin.Any?])?#TypeParam(bounds=[kotlin.Any?])?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.query/-field-operations/range.html
 $dokka.location:dev.evo.elasticmagic.query/FieldOperations/serializeTerm/#TypeParam(bounds=[kotlin.Any?])/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.query/-field-operations/serialize-term.html
@@ -1259,7 +1259,7 @@ $dokka.location:dev.evo.elasticmagic.query/Ids/name/#/PointingToDeclaration/ela
 $dokka.location:dev.evo.elasticmagic.query/Ids/values/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.query/-ids/values.html
 $dokka.location:dev.evo.elasticmagic.query/Ids/visit/#dev.evo.elasticmagic.serde.Serializer.ObjectCtx#dev.evo.elasticmagic.compile.SearchQueryCompiler/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.query/-ids/visit.html
 $dokka.location:dev.evo.elasticmagic.query/Match///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.query/-match/index.html
-$dokka.location:dev.evo.elasticmagic.query/Match/Match/#dev.evo.elasticmagic.query.FieldOperations[*]#kotlin.String#kotlin.String?#kotlin.Any?#kotlin.collections.Map[kotlin.String,kotlin.Any]?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.query/-match/-match.html
+$dokka.location:dev.evo.elasticmagic.query/Match/Match/#dev.evo.elasticmagic.query.FieldOperations[kotlin.String]#kotlin.String#kotlin.String?#kotlin.Any?#kotlin.collections.Map[kotlin.String,kotlin.Any]?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.query/-match/-match.html
 $dokka.location:dev.evo.elasticmagic.query/Match/analyzer/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.query/-match/analyzer.html
 $dokka.location:dev.evo.elasticmagic.query/Match/clone/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.query/-match/clone.html
 $dokka.location:dev.evo.elasticmagic.query/Match/field/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.query/-match/field.html
@@ -1290,7 +1290,7 @@ $dokka.location:dev.evo.elasticmagic.query/MultiMatch.Type.PHRASE_PREFIX/ordinal
 $dokka.location:dev.evo.elasticmagic.query/MultiMatch.Type///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.query/-multi-match/-type/index.html
 $dokka.location:dev.evo.elasticmagic.query/MultiMatch.Type/toValue/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.query/-multi-match/-type/to-value.html
 $dokka.location:dev.evo.elasticmagic.query/MultiMatch///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.query/-multi-match/index.html
-$dokka.location:dev.evo.elasticmagic.query/MultiMatch/MultiMatch/#kotlin.String#kotlin.collections.List[dev.evo.elasticmagic.query.FieldOperations[*]]#dev.evo.elasticmagic.query.MultiMatch.Type?#kotlin.Double?#kotlin.collections.Map[kotlin.String,kotlin.Any]?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.query/-multi-match/-multi-match.html
+$dokka.location:dev.evo.elasticmagic.query/MultiMatch/MultiMatch/#kotlin.String#kotlin.collections.List[dev.evo.elasticmagic.query.FieldOperations[kotlin.String]]#dev.evo.elasticmagic.query.MultiMatch.Type?#kotlin.Double?#kotlin.collections.Map[kotlin.String,kotlin.Any]?/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.query/-multi-match/-multi-match.html
 $dokka.location:dev.evo.elasticmagic.query/MultiMatch/boost/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.query/-multi-match/boost.html
 $dokka.location:dev.evo.elasticmagic.query/MultiMatch/clone/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.query/-multi-match/clone.html
 $dokka.location:dev.evo.elasticmagic.query/MultiMatch/fields/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.query/-multi-match/fields.html

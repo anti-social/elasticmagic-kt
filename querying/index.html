@@ -468,6 +468,7 @@
 
 <span class="k">import</span> <span class="nn">dev.evo.elasticmagic.query.FunctionScore</span>
 <span class="k">import</span> <span class="nn">dev.evo.elasticmagic.SearchQuery</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.query.match</span>
 
 <span class="kd">var</span> <span class="nv">q</span> <span class="o">=</span> <span class="n">SearchQuery</span><span class="p">(</span>
     <span class="n">FunctionScore</span><span class="p">(</span>
@@ -486,6 +487,7 @@
 
 <span class="k">import</span> <span class="nn">dev.evo.elasticmagic.query.Bool</span>
 <span class="k">import</span> <span class="nn">dev.evo.elasticmagic.query.FunctionScore</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.query.match</span>
 
 <span class="kd">val</span> <span class="nv">q2</span> <span class="o">=</span> <span class="n">q</span><span class="p">.</span><span class="na">query</span><span class="p">(</span>
     <span class="n">FunctionScore</span><span class="p">(</span>
@@ -509,6 +511,8 @@
 <p>If you want to get independent query instance you should clone it explicitly:</p>
 <div class="highlight"><pre><span></span><code><span class="k">package</span> <span class="nn">samples.querying</span>
 
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.query.match</span>
+
 <span class="kd">val</span> <span class="nv">clonedQuery</span> <span class="o">=</span> <span class="n">q</span><span class="p">.</span><span class="na">clone</span><span class="p">()</span>
     <span class="p">.</span><span class="na">query</span><span class="p">(</span><span class="n">UserDoc</span><span class="p">.</span><span class="na">about</span><span class="p">.</span><span class="na">match</span><span class="p">(</span><span class="s">&quot;fake&quot;</span><span class="p">))</span>
 </code></pre></div>
@@ -520,6 +524,7 @@ using <code>AND</code> operation.</p>
 <div class="highlight"><pre><span></span><code><span class="k">package</span> <span class="nn">samples.querying</span>
 
 <span class="k">import</span> <span class="nn">dev.evo.elasticmagic.query.Bool</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.query.match</span>
 
 <span class="c1">// Select only active users that id is not equal 0</span>
 <span class="kd">val</span> <span class="nv">activeUsersQuery</span> <span class="o">=</span> <span class="n">q</span>
@@ -603,17 +608,18 @@ possible to modify parts of the query after creation using special query express
 method:</p>
 <div class="highlight"><pre><span></span><code><span class="k">package</span> <span class="nn">samples.querying</span>
 
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.SearchQuery</span>
 <span class="k">import</span> <span class="nn">dev.evo.elasticmagic.doc.BaseDocSource</span>
-<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.query.Bool</span>
-<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.query.DisMaxNode</span>
 <span class="k">import</span> <span class="nn">dev.evo.elasticmagic.doc.BoundField</span>
 <span class="k">import</span> <span class="nn">dev.evo.elasticmagic.doc.Document</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.doc.AnyField</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.doc.SubDocument</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.query.Bool</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.query.DisMaxNode</span>
 <span class="k">import</span> <span class="nn">dev.evo.elasticmagic.query.FunctionScore</span>
 <span class="k">import</span> <span class="nn">dev.evo.elasticmagic.query.FunctionScoreNode</span>
 <span class="k">import</span> <span class="nn">dev.evo.elasticmagic.query.NodeHandle</span>
-<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.SearchQuery</span>
-<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.doc.AnyField</span>
-<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.doc.SubDocument</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.query.match</span>
 
 <span class="k">import</span> <span class="nn">kotlin.random.Random</span>
 
