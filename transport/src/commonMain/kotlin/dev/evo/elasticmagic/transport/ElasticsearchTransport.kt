@@ -42,7 +42,7 @@ class GzipEncoderFactory : RequestEncoderFactory {
     override val encoding = "gzip"
     override fun create() = GzipEncoder()
 }
-internal expect val isGzipEncoderImplemented: Boolean
+internal expect val isGzipSupported: Boolean
 expect class GzipEncoder() : RequestEncoder
 
 typealias RequestBodyBuilder = RequestEncoder.() -> Unit
@@ -57,7 +57,7 @@ abstract class ElasticsearchTransport(
     }
 
     protected val requestEncoderFactory: RequestEncoderFactory =
-        if (config.gzipRequests && isGzipEncoderImplemented) {
+        if (config.gzipRequests && isGzipSupported) {
             GzipEncoderFactory()
         } else {
             StringEncoderFactory()
