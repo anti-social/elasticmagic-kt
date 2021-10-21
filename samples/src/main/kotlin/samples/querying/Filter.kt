@@ -1,6 +1,7 @@
 package samples.querying
 
 import dev.evo.elasticmagic.query.Bool
+import dev.evo.elasticmagic.query.match
 
 // Select only active users that id is not equal 0
 val activeUsersQuery = q

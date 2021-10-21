@@ -2,6 +2,7 @@ package samples.querying
 
 import dev.evo.elasticmagic.query.FunctionScore
 import dev.evo.elasticmagic.SearchQuery
+import dev.evo.elasticmagic.query.match
 
 var q = SearchQuery(
     FunctionScore(

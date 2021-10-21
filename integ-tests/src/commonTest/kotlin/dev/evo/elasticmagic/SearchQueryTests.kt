@@ -19,6 +19,7 @@ import dev.evo.elasticmagic.doc.instant
 import dev.evo.elasticmagic.query.Ids
 import dev.evo.elasticmagic.query.Nested
 import dev.evo.elasticmagic.query.Sort
+import dev.evo.elasticmagic.query.match
 
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.collections.shouldHaveSize

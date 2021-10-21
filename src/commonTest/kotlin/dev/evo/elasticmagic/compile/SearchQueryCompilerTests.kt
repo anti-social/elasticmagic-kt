@@ -23,6 +23,7 @@ import dev.evo.elasticmagic.query.NodeHandle
 import dev.evo.elasticmagic.query.Script
 import dev.evo.elasticmagic.query.Sort
 import dev.evo.elasticmagic.query.QueryRescore
+import dev.evo.elasticmagic.query.match
 import dev.evo.elasticmagic.serde.StdSerializer
 
 import io.kotest.matchers.maps.shouldContainExactly
