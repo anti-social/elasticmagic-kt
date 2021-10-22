@@ -12,6 +12,7 @@ import dev.evo.elasticmagic.serde.Deserializer
 import dev.evo.elasticmagic.serde.Serializer
 import dev.evo.elasticmagic.serde.toMap
 import dev.evo.elasticmagic.toRequestParameters
+import dev.evo.elasticmagic.transport.Request
 import dev.evo.elasticmagic.transport.Method
 
 class BulkRequest(
@@ -29,13 +30,13 @@ class BulkCompiler(
     fun <OBJ> compile(
         serializer: Serializer<OBJ>,
         input: BulkRequest
-    ): Compiled<List<ActionCompiler.Compiled<OBJ>>, BulkResult> {
+    ): Request<List<ActionCompiler.Compiled<OBJ>>, BulkResult> {
         val params = Params(
             input.params,
             "refresh" to input.refresh?.toValue(),
             "timeout" to input.timeout,
         )
-        return Compiled(
+        return Request(
             method = Method.POST,
             path = "${input.indexName}/_bulk",
             parameters = params.toRequestParameters(),

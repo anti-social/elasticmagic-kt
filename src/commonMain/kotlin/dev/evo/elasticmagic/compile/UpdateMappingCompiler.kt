@@ -2,11 +2,12 @@ package dev.evo.elasticmagic.compile
 
 import dev.evo.elasticmagic.doc.Document
 import dev.evo.elasticmagic.ElasticsearchVersion
-import dev.evo.elasticmagic.Parameters
 import dev.evo.elasticmagic.UpdateMappingResult
 import dev.evo.elasticmagic.serde.Deserializer
 import dev.evo.elasticmagic.serde.Serializer
+import dev.evo.elasticmagic.transport.Request
 import dev.evo.elasticmagic.transport.Method
+import dev.evo.elasticmagic.transport.Parameters
 
 class UpdateMappingRequest(
     val indexName: String,
@@ -26,14 +27,14 @@ class UpdateMappingCompiler(
     fun <OBJ> compile(
         serializer: Serializer<OBJ>,
         input: UpdateMappingRequest
-    ): Compiled<OBJ, UpdateMappingResult> {
+    ): Request<OBJ, UpdateMappingResult> {
         val path = if (features.requiresMappingTypeName) {
             "${input.indexName}/_mapping/_doc"
         } else {
             "${input.indexName}/_mapping"
 
         }
-        return Compiled(
+        return Request(
             method = Method.PUT,
             path = path,
             parameters = Parameters(

@@ -15,7 +15,7 @@ import dev.evo.elasticmagic.transport.ElasticsearchKtorTransport
 abstract class ElasticsearchTestBase(indexName: String) : TestBase() {
     protected val esTransport = ElasticsearchKtorTransport(
         "http://localhost:9200",
-        deserializer = JsonSerde.deserializer,
+        serde = JsonSerde,
         engine = httpEngine
     )
     protected val cluster = ElasticsearchCluster(esTransport, JsonSerde)

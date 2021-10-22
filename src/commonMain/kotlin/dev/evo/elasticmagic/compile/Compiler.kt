@@ -1,20 +1,9 @@
 package dev.evo.elasticmagic.compile
 
 import dev.evo.elasticmagic.ElasticsearchVersion
-import dev.evo.elasticmagic.Parameters
 import dev.evo.elasticmagic.query.Named
-import dev.evo.elasticmagic.serde.Deserializer
 import dev.evo.elasticmagic.serde.Serializer.ArrayCtx
 import dev.evo.elasticmagic.serde.Serializer.ObjectCtx
-import dev.evo.elasticmagic.transport.Method
-
-class Compiled<B, R>(
-    val method: Method,
-    val path: String,
-    val parameters: Parameters,
-    val body: B?,
-    val processResult: (Deserializer.ObjectCtx) -> R,
-)
 
 @Suppress("UnnecessaryAbstractClass")
 abstract class BaseCompiler(

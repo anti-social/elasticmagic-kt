@@ -50,7 +50,7 @@ open class ElasticsearchException(msg: String) : Exception(msg) {
                 }
                 is TransportError.Simple -> trimText(error.error)
             }
-            return "${this::class.simpleName}(statusCode=${statusCode}, ${reason})"
+            return "${this::class.simpleName}(${statusCode}, \"${reason}\")"
         }
     }
     class Request(error: TransportError) : Transport(HTTP_BAD_REQUEST, error)
