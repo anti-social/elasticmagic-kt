@@ -16,7 +16,9 @@ class ActionCompiler(
     private val actionSourceCompiler: ActionSourceCompiler,
 ) : BaseCompiler(esVersion) {
 
-    data class Compiled<OBJ>(val header: OBJ, val source: OBJ?)
+    data class Compiled<OBJ>(val header: OBJ, val source: OBJ?) {
+        fun toList(): List<OBJ> = listOfNotNull(header, source)
+    }
 
     fun <OBJ> compile(serializer: Serializer<OBJ>, input: Action<*>): Compiled<OBJ> {
         return Compiled(

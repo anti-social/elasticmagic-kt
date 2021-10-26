@@ -1,5 +1,6 @@
 package dev.evo.elasticmagic
 
+import dev.evo.elasticmagic.compile.ActionCompiler
 import dev.evo.elasticmagic.compile.BulkRequest
 import dev.evo.elasticmagic.compile.CompilerSet
 import dev.evo.elasticmagic.compile.CreateIndexRequest
@@ -191,24 +192,14 @@ class ElasticsearchIndex<OBJ>(
             params = params,
         )
         val compiled = cluster.getCompilers().bulk.compile(serde.serializer, bulk)
-        val response = transport.request(
-            compiled.method,
-            compiled.path,
-            compiled.parameters,
-            contentType = "application/x-ndjson",
-        ) {
-            compiled.body?.let { body ->
-                for ((header, source) in body) {
-                    append(serde.serializer.objToString(header))
-                    append("\n")
-                    if (source != null) {
-                        append(serde.serializer.objToString(source))
-                        append("\n")
-                    }
-                }
-            }
-        }
-        val result = serde.deserializer.objFromString(response)
-        return compiled.processResult(result)
+        return transport.bulkRequest(
+            Request(
+                compiled.method,
+                compiled.path,
+                parameters = compiled.parameters,
+                body = compiled.body?.flatMap(ActionCompiler.Compiled<OBJ>::toList),
+                processResult = compiled.processResult,
+            )
+        )
     }
 }
