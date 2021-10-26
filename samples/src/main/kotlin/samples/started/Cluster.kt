@@ -8,7 +8,7 @@ import io.ktor.client.engine.cio.CIO
 
 val esTransport = ElasticsearchKtorTransport(
     "http://localhost:9200",
-    deserializer = JsonSerde.deserializer,
+    serde = JsonSerde,
     engine = CIO.create {}
 )
 val cluster = ElasticsearchCluster(esTransport, JsonSerde)
