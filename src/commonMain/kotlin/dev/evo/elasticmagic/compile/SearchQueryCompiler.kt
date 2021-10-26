@@ -16,6 +16,7 @@ import dev.evo.elasticmagic.serde.Serializer.ArrayCtx
 import dev.evo.elasticmagic.serde.Serializer.ObjectCtx
 import dev.evo.elasticmagic.serde.toMap
 import dev.evo.elasticmagic.toRequestParameters
+import dev.evo.elasticmagic.transport.Request
 import dev.evo.elasticmagic.transport.Method
 
 class SearchQueryWithIndex<S: BaseDocSource>(
@@ -39,12 +40,12 @@ open class SearchQueryCompiler(
 
     fun <OBJ, S: BaseDocSource> compile(
         serializer: Serializer<OBJ>, input: SearchQueryWithIndex<S>
-    ): Compiled<OBJ, SearchQueryResult<S>> {
+    ): Request<OBJ, SearchQueryResult<S>> {
         val searchQuery = input.searchQuery.prepare()
         val body = serializer.buildObj {
             visit(this, searchQuery)
         }
-        return Compiled(
+        return Request(
             method = Method.POST,
             path = "${input.indexName}/_search",
             parameters = searchQuery.params.toRequestParameters(),

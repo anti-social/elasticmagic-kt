@@ -1,7 +1,7 @@
 package dev.evo.elasticmagic.transport
 
 import dev.evo.elasticmagic.serde.DeserializationException
-import dev.evo.elasticmagic.serde.Deserializer
+import dev.evo.elasticmagic.serde.Serde
 
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.HttpClientEngine
@@ -16,13 +16,14 @@ import io.ktor.http.HttpMethod
 import io.ktor.http.Parameters
 import io.ktor.http.takeFrom
 
-class ElasticsearchKtorTransport(
+class ElasticsearchKtorTransport<OBJ>(
     baseUrl: String,
+    serde: Serde<OBJ>,
     engine: HttpClientEngine,
-    private val deserializer: Deserializer<*>,
     configure: Config.() -> Unit = {},
-) : ElasticsearchTransport(
+) : ElasticsearchTransport<OBJ>(
     baseUrl,
+    serde,
     Config().apply(configure),
 ) {
     private val client = HttpClient(engine) {
@@ -35,22 +36,6 @@ class ElasticsearchKtorTransport(
     companion object {
         private val HTTP_OK_CODES = 200..299
     }
-
-    // override suspend fun jsonRequest(
-    //     method: Method,
-    //     path: String,
-    //     parameters: Map<String, List<String>>?,
-    //     body: Serializer.ObjectCtx?
-    // ): Deserializer.ObjectCtx {
-    //     val response = if (body != null) {
-    //         request(method, path, parameters) {
-    //             append(JsonSerializer.objToString(body))
-    //         }
-    //     } else {
-    //         request(method, path, parameters, null)
-    //     }
-    //     return JsonDeserializer.objFromString(response)
-    // }
 
     @Suppress("NAME_SHADOWING")
     override suspend fun request(
@@ -116,7 +101,7 @@ class ElasticsearchKtorTransport(
             in HTTP_OK_CODES -> content
             else -> {
                 val jsonError = try {
-                    deserializer.objFromStringOrNull(content)
+                    serde.deserializer.objFromStringOrNull(content)
                 } catch (e: DeserializationException) {
                     null
                 }

@@ -3,11 +3,12 @@ package dev.evo.elasticmagic.compile
 import dev.evo.elasticmagic.CreateIndexResult
 import dev.evo.elasticmagic.doc.Document
 import dev.evo.elasticmagic.ElasticsearchVersion
-import dev.evo.elasticmagic.Parameters
 import dev.evo.elasticmagic.Params
 import dev.evo.elasticmagic.serde.Deserializer
 import dev.evo.elasticmagic.serde.Serializer
+import dev.evo.elasticmagic.transport.Request
 import dev.evo.elasticmagic.transport.Method
+import dev.evo.elasticmagic.transport.Parameters
 
 class CreateIndexRequest(
     val indexName: String,
@@ -28,8 +29,8 @@ class CreateIndexCompiler(
     fun <OBJ> compile(
         serializer: Serializer<OBJ>,
         input: CreateIndexRequest
-    ): Compiled<OBJ, CreateIndexResult> {
-        return Compiled(
+    ): Request<OBJ, CreateIndexResult> {
+        return Request(
             method = Method.PUT,
             path = input.indexName,
             parameters = Parameters(
