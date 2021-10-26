@@ -481,7 +481,7 @@ Use it on your own risk</p>
 
 <span class="kd">val</span> <span class="nv">esTransport</span> <span class="o">=</span> <span class="n">ElasticsearchKtorTransport</span><span class="p">(</span>
     <span class="s">&quot;http://localhost:9200&quot;</span><span class="p">,</span>
-    <span class="n">deserializer</span> <span class="o">=</span> <span class="n">JsonSerde</span><span class="p">.</span><span class="na">deserializer</span><span class="p">,</span>
+    <span class="n">serde</span> <span class="o">=</span> <span class="n">JsonSerde</span><span class="p">,</span>
     <span class="n">engine</span> <span class="o">=</span> <span class="n">CIO</span><span class="p">.</span><span class="na">create</span> <span class="p">{}</span>
 <span class="p">)</span>
 <span class="kd">val</span> <span class="nv">cluster</span> <span class="o">=</span> <span class="n">ElasticsearchCluster</span><span class="p">(</span><span class="n">esTransport</span><span class="p">,</span> <span class="n">JsonSerde</span><span class="p">)</span>
