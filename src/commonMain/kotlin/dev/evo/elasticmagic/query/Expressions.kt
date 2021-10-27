@@ -3,11 +3,11 @@ package dev.evo.elasticmagic.query
 import dev.evo.elasticmagic.compile.SearchQueryCompiler
 import dev.evo.elasticmagic.serde.Serializer
 
-interface ToValue {
-    fun toValue(): Any
+interface ToValue<T> {
+    fun toValue(): T
 }
 
-interface Named : ToValue {
+interface Named : ToValue<String> {
     fun getFieldName(): String
 
     fun getQualifiedFieldName(): String

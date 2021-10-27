@@ -13,7 +13,7 @@ import kotlin.reflect.KProperty
  * Controls dynamic field mapping setting.
  * See: https://www.elastic.co/guide/en/elasticsearch/reference/current/dynamic-field-mapping.html
  */
-enum class Dynamic : ToValue {
+enum class Dynamic : ToValue<String> {
     TRUE, FALSE, STRICT, RUNTIME;
 
     override fun toValue() = name.lowercase()

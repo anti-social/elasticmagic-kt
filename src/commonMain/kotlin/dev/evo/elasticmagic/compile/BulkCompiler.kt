@@ -15,7 +15,7 @@ import dev.evo.elasticmagic.toRequestParameters
 import dev.evo.elasticmagic.transport.Request
 import dev.evo.elasticmagic.transport.Method
 
-class BulkRequest(
+class PreparedBulk(
     val indexName: String,
     val actions: List<Action<*>>,
     val refresh: Refresh? = null,
@@ -27,10 +27,10 @@ class BulkCompiler(
     esVersion: ElasticsearchVersion,
     private val actionCompiler: ActionCompiler,
 ) : BaseCompiler(esVersion) {
-    fun <OBJ> compile(
-        serializer: Serializer<OBJ>,
-        input: BulkRequest
-    ): Request<List<ActionCompiler.Compiled<OBJ>>, BulkResult> {
+    fun compile(
+        serializer: Serializer,
+        input: PreparedBulk
+    ): Request<List<ActionCompiler.Compiled>, BulkResult> {
         val params = Params(
             input.params,
             "refresh" to input.refresh?.toValue(),

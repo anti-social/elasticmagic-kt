@@ -1,6 +1,6 @@
 package dev.evo.elasticmagic.serde
 
-abstract class StdDeserializer : Deserializer<Map<String, Any?>> {
+abstract class StdDeserializer : Deserializer {
     companion object {
         // We cannot distinguish double from int on JS platform
         private val isJs = platform == Platform.JS
@@ -87,7 +87,7 @@ abstract class StdDeserializer : Deserializer<Map<String, Any?>> {
         }
     }
 
-    protected class ObjectCtx(
+    class ObjectCtx(
         private val map: Map<*, *>,
     ) : Deserializer.ObjectCtx {
         override fun iterator(): ObjectIterator {
@@ -117,7 +117,7 @@ abstract class StdDeserializer : Deserializer<Map<String, Any?>> {
         }
     }
 
-    protected class ObjectIterator(
+    class ObjectIterator(
         val iter: Iterator<Map.Entry<*, *>>,
     ) : Deserializer.ObjectIterator {
         private var currentEntry: Map.Entry<*, *>? = null
@@ -178,7 +178,7 @@ abstract class StdDeserializer : Deserializer<Map<String, Any?>> {
         }
     }
 
-    protected class ArrayCtx(
+    class ArrayCtx(
         private val iter: Iterator<Any?>,
     ) : Deserializer.ArrayCtx {
         private var currentValue: Any? = null
@@ -191,7 +191,7 @@ abstract class StdDeserializer : Deserializer<Map<String, Any?>> {
             }
         }
 
-        fun getCurrentValue(): Any {
+        private fun getCurrentValue(): Any {
             return currentValue ?: throw IllegalStateException("hasNext must be called first")
         }
 
@@ -216,9 +216,5 @@ abstract class StdDeserializer : Deserializer<Map<String, Any?>> {
         override fun arrayOrNull(): Deserializer.ArrayCtx? {
             return coerceToList(getCurrentValue())?.let(StdDeserializer::ArrayCtx)
         }
-    }
-
-    override fun wrapObj(obj: Map<String, Any?>): Deserializer.ObjectCtx {
-        return ObjectCtx(obj)
     }
 }

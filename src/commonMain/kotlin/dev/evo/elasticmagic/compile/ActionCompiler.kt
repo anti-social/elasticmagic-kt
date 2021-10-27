@@ -1,10 +1,10 @@
 package dev.evo.elasticmagic.compile
 
+import dev.evo.elasticmagic.ElasticsearchVersion
 import dev.evo.elasticmagic.doc.Action
 import dev.evo.elasticmagic.doc.ActionMeta
 import dev.evo.elasticmagic.doc.ConcurrencyControl
 import dev.evo.elasticmagic.doc.DeleteAction
-import dev.evo.elasticmagic.ElasticsearchVersion
 import dev.evo.elasticmagic.doc.IndexAction
 import dev.evo.elasticmagic.doc.UpdateAction
 import dev.evo.elasticmagic.doc.UpdateSource
@@ -16,11 +16,11 @@ class ActionCompiler(
     private val actionSourceCompiler: ActionSourceCompiler,
 ) : BaseCompiler(esVersion) {
 
-    data class Compiled<OBJ>(val header: OBJ, val source: OBJ?) {
-        fun toList(): List<OBJ> = listOfNotNull(header, source)
+    data class Compiled(val header: Serializer.ObjectCtx, val source: Serializer.ObjectCtx?) {
+        fun toList(): List<Serializer.ObjectCtx> = listOfNotNull(header, source)
     }
 
-    fun <OBJ> compile(serializer: Serializer<OBJ>, input: Action<*>): Compiled<OBJ> {
+    fun compile(serializer: Serializer, input: Action<*>): Compiled {
         return Compiled(
             actionMetaCompiler.compile(serializer, input),
             actionSourceCompiler.compile(serializer, input)
@@ -32,8 +32,8 @@ class ActionMetaCompiler(
     esVersion: ElasticsearchVersion,
     val features: ElasticsearchFeatures,
 ) : BaseCompiler(esVersion) {
-    fun <OBJ> compile(serializer: Serializer<OBJ>, input: Action<*>): OBJ {
-        return serializer.buildObj {
+    fun compile(serializer: Serializer, input: Action<*>): Serializer.ObjectCtx {
+        return serializer.obj {
             visit(this, input)
         }
     }
@@ -74,11 +74,11 @@ class ActionSourceCompiler(
     esVersion: ElasticsearchVersion,
     private val searchQueryCompiler: SearchQueryCompiler,
 ) : BaseCompiler(esVersion) {
-    fun <OBJ> compile(serializer: Serializer<OBJ>, input: Action<*>): OBJ? {
+    fun compile(serializer: Serializer, input: Action<*>): Serializer.ObjectCtx? {
         if (input is DeleteAction) {
             return null
         }
-        return serializer.buildObj {
+        return serializer.obj {
             visit(this, input)
         }
     }

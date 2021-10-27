@@ -19,7 +19,7 @@ data class FieldFormat(
     val format: String? = null,
 )
 
-enum class SearchType : ToValue {
+enum class SearchType : ToValue<String> {
     QUERY_THEN_FETCH, DFS_QUERY_THEN_FETCH;
 
     override fun toValue() = name.lowercase()
@@ -175,7 +175,7 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
 
     fun searchParams(vararg params: Pair<String, Any?>): T = self {
         for ((key, rawValue) in params) {
-            val value = if (rawValue is ToValue) {
+            val value = if (rawValue is ToValue<*>) {
                 rawValue.toValue()
             } else {
                 rawValue
@@ -285,7 +285,7 @@ open class SearchQuery<S: BaseDocSource>(
         return cloned
     }
 
-    suspend fun execute(index: ElasticsearchIndex<*>): SearchQueryResult<S> {
+    suspend fun execute(index: ElasticsearchIndex): SearchQueryResult<S> {
         return index.search(this)
     }
 }

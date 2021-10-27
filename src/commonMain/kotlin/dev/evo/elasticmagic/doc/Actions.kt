@@ -3,13 +3,13 @@ package dev.evo.elasticmagic.doc
 import dev.evo.elasticmagic.query.Script
 import dev.evo.elasticmagic.query.ToValue
 
-enum class Refresh : ToValue {
+enum class Refresh : ToValue<String> {
     TRUE, FALSE, WAIT_FOR;
 
     override fun toValue() = name.lowercase()
 }
 
-enum class ConcurrencyControl(val value: String) : ToValue {
+enum class ConcurrencyControl(val value: String) : ToValue<String> {
     VERSION("external"), VERSION_GTE("external_gte"), SEQ_NO("seq_no");
 
     override fun toValue() = value

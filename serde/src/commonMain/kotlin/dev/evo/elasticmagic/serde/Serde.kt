@@ -1,9 +1,9 @@
 package dev.evo.elasticmagic.serde
 
-interface Serde<OBJ> {
+interface Serde {
     val contentType: String
 
-    val serializer: Serializer<OBJ>
+    val serializer: Serializer
 
-    val deserializer: Deserializer<OBJ>
+    val deserializer: Deserializer
 }

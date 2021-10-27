@@ -11,7 +11,7 @@ data class Nested(
 ) : QueryExpression {
     override val name = "nested"
 
-    enum class ScoreMode : ToValue {
+    enum class ScoreMode : ToValue<String> {
         AVG, MAX, MIN, NONE, SUM;
 
         override fun toValue() = name.lowercase()

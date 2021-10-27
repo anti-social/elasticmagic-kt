@@ -1,12 +1,15 @@
 package dev.evo.elasticmagic.transport
 
 import dev.evo.elasticmagic.serde.Deserializer
+import dev.evo.elasticmagic.serde.serialization.JsonDeserializer
 import dev.evo.elasticmagic.serde.serialization.JsonSerde
+import dev.evo.elasticmagic.serde.serialization.JsonSerializer
 import dev.evo.elasticmagic.serde.toMap
 
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.maps.shouldContainExactly
 import io.kotest.matchers.nulls.shouldBeNull
+import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldBeEmpty
 
@@ -111,9 +114,9 @@ class ElasticsearchKtorTransportTests {
                 )
             }
         )
-        val body = buildJsonObject {
-            putJsonObject("index") {
-                put("number_of_replicas", 2)
+        val body = JsonSerializer.obj {
+            obj("index") {
+                field("number_of_replicas", 2.toInt())
             }
         }
         val result = client.request(
@@ -165,10 +168,15 @@ class ElasticsearchKtorTransportTests {
                  request.method shouldBe HttpMethod.Post
                  request.url.encodedPath shouldBe "/_bulk"
                  request.body.contentType shouldBe ContentType("application", "x-ndjson")
-                 request.body.toByteArray().decodeToString() shouldBe (
-                     "{\"delete\":{\"_id\":\"123\",\"_index\":\"test\"}}\n"
-                 )
-                 val body = buildJsonObject {
+                 val rawBody = request.body.toByteArray().decodeToString()
+                 JsonDeserializer.objFromStringOrNull(rawBody)
+                     .shouldNotBeNull().toMap() shouldContainExactly mapOf(
+                         "delete" to mapOf(
+                             "_id" to "123",
+                             "_index" to "test",
+                         )
+                     )
+                 val respBody = buildJsonObject {
                      put("took", 7)
                      put("errors", false)
                      putJsonArray("items") {
@@ -183,14 +191,14 @@ class ElasticsearchKtorTransportTests {
                  }
 
                  respond(
-                     Json.encodeToString(body)
+                     Json.encodeToString(respBody)
                  )
              }
          )
-         val body = buildJsonObject {
-            putJsonObject("delete") {
-                put("_id", "123")
-                put("_index", "test")
+         val body = JsonSerializer.obj {
+            obj("delete") {
+                field("_id", "123")
+                field("_index", "test")
             }
         }
          val result = client.bulkRequest(

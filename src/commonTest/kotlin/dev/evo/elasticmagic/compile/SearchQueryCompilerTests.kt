@@ -1,5 +1,6 @@
 package dev.evo.elasticmagic.compile
 
+import dev.evo.elasticmagic.BaseTest
 import dev.evo.elasticmagic.ElasticsearchVersion
 import dev.evo.elasticmagic.FieldFormat
 import dev.evo.elasticmagic.Params
@@ -24,10 +25,9 @@ import dev.evo.elasticmagic.query.Script
 import dev.evo.elasticmagic.query.Sort
 import dev.evo.elasticmagic.query.QueryRescore
 import dev.evo.elasticmagic.query.match
-import dev.evo.elasticmagic.serde.StdSerializer
 
 import io.kotest.matchers.maps.shouldContainExactly
-import io.kotest.matchers.nulls.shouldNotBeNull
+import io.kotest.matchers.types.shouldBeInstanceOf
 
 import kotlinx.datetime.LocalDateTime
 
@@ -59,12 +59,7 @@ class StringField(name: String) : BoundField<String, String>(
     RootFieldSet
 )
 
-class SearchQueryCompilerTests {
-    private val serializer = object : StdSerializer() {
-        override fun objToString(obj: Map<String, Any?>): String {
-            TODO("not implemented")
-        }
-    }
+class SearchQueryCompilerTests : BaseTest() {
     private val compiler = SearchQueryCompiler(
         ElasticsearchVersion(6, 0, 0),
     )
@@ -73,7 +68,7 @@ class SearchQueryCompilerTests {
         val compiled = compiler.compile(serializer, query.usingIndex("test"))
         return CompiledSearchQuery(
             params = compiled.parameters,
-            body = compiled.body.shouldNotBeNull(),
+            body = compiled.body.shouldBeInstanceOf<TestSerializer.ObjectCtx>().toMap(),
         )
     }
 

@@ -8,6 +8,7 @@ import dev.evo.elasticmagic.compile.usingIndex
 import dev.evo.elasticmagic.serde.serialization.JsonSerializer
 
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.types.shouldBeInstanceOf
 
 import kotlinx.serialization.json.addJsonObject
 import kotlinx.serialization.json.buildJsonObject
@@ -27,7 +28,7 @@ class SearchQueryCompilerJsonTests {
         val compiled = compiler.compile(
             JsonSerializer, SearchQuery().usingIndex("test")
         )
-        compiled.body shouldBe buildJsonObject {}
+        compiled.body.shouldBeInstanceOf<JsonSerializer.ObjectCtx>().build() shouldBe buildJsonObject {}
     }
 
     @Test
@@ -44,7 +45,7 @@ class SearchQueryCompilerJsonTests {
             .filter(userDoc.opinionsCount.gt(5))
 
         val res = compiler.compile(JsonSerializer, query.usingIndex("test"))
-        res.body shouldBe buildJsonObject {
+        res.body.shouldBeInstanceOf<JsonSerializer.ObjectCtx>().build() shouldBe buildJsonObject {
             putJsonObject("query") {
                 putJsonObject("bool") {
                     putJsonArray("filter") {

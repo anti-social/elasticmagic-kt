@@ -10,7 +10,7 @@ import dev.evo.elasticmagic.transport.Request
 import dev.evo.elasticmagic.transport.Method
 import dev.evo.elasticmagic.transport.Parameters
 
-class CreateIndexRequest(
+class PreparedCreateIndex(
     val indexName: String,
     val settings: Params,
     val mapping: Document? = null,
@@ -26,10 +26,10 @@ class CreateIndexCompiler(
     val mappingCompiler: MappingCompiler,
 ) : BaseCompiler(esVersion) {
 
-    fun <OBJ> compile(
-        serializer: Serializer<OBJ>,
-        input: CreateIndexRequest
-    ): Request<OBJ, CreateIndexResult> {
+    fun compile(
+        serializer: Serializer,
+        input: PreparedCreateIndex
+    ): Request<Serializer.ObjectCtx, CreateIndexResult> {
         return Request(
             method = Method.PUT,
             path = input.indexName,
@@ -38,7 +38,7 @@ class CreateIndexCompiler(
                 "master_timeout" to input.masterTimeout,
                 "timeout" to input.timeout,
             ),
-            body = serializer.buildObj {
+            body = serializer.obj {
                 if (input.settings.isNotEmpty()) {
                     obj("settings") {
                         visit(this, input.settings)

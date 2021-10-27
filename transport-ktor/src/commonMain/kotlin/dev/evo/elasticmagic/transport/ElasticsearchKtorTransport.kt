@@ -16,12 +16,12 @@ import io.ktor.http.HttpMethod
 import io.ktor.http.Parameters
 import io.ktor.http.takeFrom
 
-class ElasticsearchKtorTransport<OBJ>(
+class ElasticsearchKtorTransport(
     baseUrl: String,
-    serde: Serde<OBJ>,
+    serde: Serde,
     engine: HttpClientEngine,
     configure: Config.() -> Unit = {},
-) : ElasticsearchTransport<OBJ>(
+) : ElasticsearchTransport(
     baseUrl,
     serde,
     Config().apply(configure),

@@ -1,9 +1,9 @@
 package dev.evo.elasticmagic.serde
 
-interface Serializer<OBJ> {
+interface Serializer {
     interface ObjectCtx {
         fun field(name: String, value: Int?)
-        fun fieldIfNotNull(name: String, value: Int?) {
+        fun fieldIfNotNull(name: String, value: Number?) {
             if (value != null) {
                 field(name, value)
             }
@@ -58,6 +58,8 @@ interface Serializer<OBJ> {
         }
         fun array(name: String, block: ArrayCtx.() -> Unit)
         fun obj(name: String, block: ObjectCtx.() -> Unit)
+
+        fun serialize(): String
     }
 
     interface ArrayCtx {
@@ -119,6 +121,5 @@ interface Serializer<OBJ> {
         fun obj(block: ObjectCtx.() -> Unit)
     }
 
-    fun buildObj(block: ObjectCtx.() -> Unit): OBJ
-    fun objToString(obj: OBJ): String
+    fun obj(block: ObjectCtx.() -> Unit): ObjectCtx
 }

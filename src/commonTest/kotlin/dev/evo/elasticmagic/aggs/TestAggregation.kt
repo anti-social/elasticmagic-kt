@@ -1,35 +1,25 @@
 package dev.evo.elasticmagic.aggs
 
+import dev.evo.elasticmagic.BaseTest
 import dev.evo.elasticmagic.ElasticsearchVersion
 import dev.evo.elasticmagic.query.Expression
 import dev.evo.elasticmagic.compile.SearchQueryCompiler
 import dev.evo.elasticmagic.doc.Document
 import dev.evo.elasticmagic.doc.date
-import dev.evo.elasticmagic.serde.Deserializer
-import dev.evo.elasticmagic.serde.StdDeserializer
-import dev.evo.elasticmagic.serde.StdSerializer
+
+import io.kotest.matchers.types.shouldBeInstanceOf
 
 @Suppress("UnnecessaryAbstractClass")
-abstract class TestAggregation {
-    protected val serializer = object : StdSerializer() {
-        override fun objToString(obj: Map<String, Any?>): String {
-            TODO("not implemented")
-        }
-    }
-    protected val deserializer = object : StdDeserializer() {
-        override fun objFromStringOrNull(data: String): Deserializer.ObjectCtx? {
-            TODO("not implemented")
-        }
-
-    }
+abstract class TestAggregation : BaseTest() {
     protected val compiler = SearchQueryCompiler(
         ElasticsearchVersion(6, 0, 0),
     )
 
-    protected fun Expression.compile(): Map<String, *> {
-        return serializer.buildObj {
+    protected fun Expression.compile(): Map<String, Any?> {
+        val obj = serializer.obj {
             compiler.visit(this, this@compile)
         }
+        return obj.shouldBeInstanceOf<TestSerializer.ObjectCtx>().toMap()
     }
 
     protected fun <A: Aggregation<R>, R: AggregationResult> process(

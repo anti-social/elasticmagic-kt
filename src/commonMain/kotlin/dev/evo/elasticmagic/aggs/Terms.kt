@@ -33,13 +33,13 @@ abstract class BaseTermsAgg<T, R: AggregationResult> : BucketAggregation<R>() {
         class Partition(val partition: Int, val numPartitions: Int) : Include()
     }
 
-    enum class CollectMode : ToValue {
+    enum class CollectMode : ToValue<String> {
         BREADTH_FIRST, DEPTH_FIRST;
 
         override fun toValue() = name.lowercase()
     }
 
-    enum class ExecutionHint : ToValue {
+    enum class ExecutionHint : ToValue<String> {
         MAP, GLOBAL_ORDINALS;
 
         override fun toValue() = name.lowercase()
