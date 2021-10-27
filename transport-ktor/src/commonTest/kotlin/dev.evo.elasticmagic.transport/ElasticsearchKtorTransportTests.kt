@@ -36,37 +36,6 @@ import kotlin.test.Test
 @ExperimentalStdlibApi
 class ElasticsearchKtorTransportTests {
     @Test
-    fun rawRequest() = runTest {
-        val client = ElasticsearchKtorTransport(
-            "http://example.com:9200",
-            JsonSerde,
-            MockEngine { request ->
-                request.method shouldBe HttpMethod.Get
-                request.url.encodedPath shouldBe "/_alias"
-
-                respond(
-                    """
-                    {
-                      "products_v1": {"aliases": {"products": {}}},
-                      "orders_v2": {"aliases": {"orders": {}, "shopping_carts": {}}}
-                    }
-                    """.trimIndent(),
-                    headers = headersOf(
-                        HttpHeaders.ContentType, ContentType.Application.Json.toString()
-                    )
-                )
-            }
-        )
-        val aliasesResp = client.request(Method.GET, "_alias")
-        aliasesResp shouldBe """
-            {
-              "products_v1": {"aliases": {"products": {}}},
-              "orders_v2": {"aliases": {"orders": {}, "shopping_carts": {}}}
-            }
-            """.trimIndent()
-    }
-
-    @Test
     fun headRequest() = runTest {
         val client = ElasticsearchKtorTransport(
             "http://example.com:9200",
@@ -239,7 +208,11 @@ class ElasticsearchKtorTransportTests {
         )
         val ex = shouldThrow<ElasticsearchException.GatewayTimeout> {
             client.request(
-                Method.POST, "products_v2/_forcemerge", mapOf("max_num_segments" to listOf("1"))
+                Request(
+                    Method.POST,
+                    "products_v2/_forcemerge",
+                    parameters = mapOf("max_num_segments" to listOf("1"))
+                )
             )
         }
         ex.statusCode shouldBe 504

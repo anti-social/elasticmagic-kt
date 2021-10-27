@@ -119,7 +119,7 @@ abstract class ElasticsearchTransport(
         }
 
     suspend fun <R> request(request: Request<Serializer.ObjectCtx, R>): R {
-        val response = request(
+        val response = doRequest(
             request.method,
             request.path,
             request.parameters,
@@ -137,7 +137,7 @@ abstract class ElasticsearchTransport(
     }
 
     suspend fun <R> bulkRequest(request: Request<List<Serializer.ObjectCtx>, R>): R {
-        val response = request(
+        val response = doRequest(
             request.method,
             request.path,
             request.parameters,
@@ -157,7 +157,7 @@ abstract class ElasticsearchTransport(
         return request.processResult(result)
     }
 
-    abstract suspend fun request(
+    protected abstract suspend fun doRequest(
         method: Method,
         path: String,
         parameters: Map<String, List<String>>? = null,

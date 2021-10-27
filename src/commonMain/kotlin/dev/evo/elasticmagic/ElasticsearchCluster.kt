@@ -37,11 +37,9 @@ class ElasticsearchCluster(
     }
 
     private suspend fun fetchVersion(): ElasticsearchVersion {
-        val response = transport.request(
-            Method.GET,"",
-            contentType = serde.contentType
+        val result = transport.request(
+            Request(Method.GET,"")
         )
-        val result = serde.deserializer.objFromString(response)
         val versionObj = result.obj("version")
         val rawEsVersion = versionObj.string("number")
         val (major, minor, patch) = rawEsVersion.split('.')

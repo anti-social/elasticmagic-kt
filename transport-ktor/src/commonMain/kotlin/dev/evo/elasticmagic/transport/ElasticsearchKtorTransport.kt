@@ -38,7 +38,7 @@ class ElasticsearchKtorTransport(
     }
 
     @Suppress("NAME_SHADOWING")
-    override suspend fun request(
+    override suspend fun doRequest(
         method: Method,
         path: String,
         parameters: Map<String, List<String>>?,
