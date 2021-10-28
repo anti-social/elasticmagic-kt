@@ -144,8 +144,7 @@ open class DocSource : BaseDocSource() {
     }
 
     private fun setFieldValue(name: String, value: Any?) {
-        val fieldProperty = fieldPropsByName[name]
-            ?: throw IllegalArgumentException("Unknown field name: $name")
+        val fieldProperty = fieldPropsByName[name] ?: return
         fieldProperty.deserialize(value)
     }
 

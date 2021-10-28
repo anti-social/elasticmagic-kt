@@ -308,6 +308,18 @@ class DocSourceTests {
     }
 
     @Test
+    fun ignoreExtraFields() {
+        class OrderDocSource : DocSource() {
+            var status by OrderDoc.status
+        }
+
+        val order = OrderDocSource()
+        order.fromSource(mapOf("status" to 0, "id" to 1))
+        order.status shouldBe 0
+        order.toSource() shouldContainExactly mapOf("status" to 0)
+    }
+
+    @Test
     fun optionalValue() {
         class OrderDocSource : DocSource() {
             var status by OrderDoc.status
