@@ -21,7 +21,7 @@ data class QueryRescore(
 ) : Rescore() {
     override val name = "query"
 
-    enum class ScoreMode : ToValue {
+    enum class ScoreMode : ToValue<String> {
         TOTAL, MULTIPLY, AVG, MAX, MIN;
 
         override fun toValue() = name.lowercase()

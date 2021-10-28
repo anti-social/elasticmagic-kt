@@ -21,12 +21,12 @@ data class FunctionScore(
 ) : FunctionScoreExpression {
     override val name = "function_score"
 
-    enum class ScoreMode : ToValue {
+    enum class ScoreMode : ToValue<String> {
         MULTIPLY, SUM, AVG, FIRST, MAX, MIN;
 
         override fun toValue() = name.lowercase()
     }
-    enum class BoostMode : ToValue {
+    enum class BoostMode : ToValue<String> {
         MULTIPLY, REPLACE, SUM, AVG, MAX, MIN;
 
         override fun toValue() = name.lowercase()

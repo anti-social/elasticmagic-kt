@@ -9,7 +9,7 @@ import dev.evo.elasticmagic.transport.Request
 import dev.evo.elasticmagic.transport.Method
 import dev.evo.elasticmagic.transport.Parameters
 
-class UpdateMappingRequest(
+class PreparedUpdateMapping(
     val indexName: String,
     val mapping: Document,
     val allowNoIndices: Boolean?,
@@ -24,10 +24,10 @@ class UpdateMappingCompiler(
     val features: ElasticsearchFeatures,
     private val mappingCompiler: MappingCompiler,
 ) : BaseCompiler(esVersion) {
-    fun <OBJ> compile(
-        serializer: Serializer<OBJ>,
-        input: UpdateMappingRequest
-    ): Request<OBJ, UpdateMappingResult> {
+    fun compile(
+        serializer: Serializer,
+        input: PreparedUpdateMapping
+    ): Request<Serializer.ObjectCtx, UpdateMappingResult> {
         val path = if (features.requiresMappingTypeName) {
             "${input.indexName}/_mapping/_doc"
         } else {
@@ -44,7 +44,7 @@ class UpdateMappingCompiler(
                 "master_timeout" to input.masterTimeout,
                 "timeout" to input.timeout,
             ),
-            body = serializer.buildObj {
+            body = serializer.obj {
                 mappingCompiler.visit(this, input.mapping)
             },
             processResult = ::processResult,

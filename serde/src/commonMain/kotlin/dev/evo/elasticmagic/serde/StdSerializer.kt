@@ -1,13 +1,17 @@
 package dev.evo.elasticmagic.serde
 
 abstract class StdSerializer(
-    private val mapFactory: () -> MutableMap<String, Any?> = ::HashMap,
-    private val arrayFactory: () -> MutableList<Any?> = ::ArrayList
-) : Serializer<Map<String, Any?>> {
+    private val objFactory: () -> StdSerializer.ObjectCtx,
+    private val arrayFactory: () -> StdSerializer.ArrayCtx,
+) : Serializer {
 
-    protected inner class ObjectCtx(
-        private val map: MutableMap<String, Any?>
+    abstract inner class ObjectCtx(
+        protected val map: MutableMap<String, Any?>
     ) : Serializer.ObjectCtx {
+        fun build(): Map<String, Any?> {
+            return map.toMap()
+        }
+
         override fun field(name: String, value: Int?) {
             map[name] = value
         }
@@ -33,21 +37,21 @@ abstract class StdSerializer(
         }
 
         override fun array(name: String, block: Serializer.ArrayCtx.() -> Unit) {
-            val childArray = arrayFactory()
-            ArrayCtx(childArray).block()
-            map[name] = childArray
+            map[name] = arrayFactory().apply(block).build()
         }
 
         override fun obj(name: String, block: Serializer.ObjectCtx.() -> Unit) {
-            val childMap = mapFactory()
-            ObjectCtx(childMap).block()
-            map[name] = childMap
+            map[name] = objFactory().apply(block).build()
         }
     }
 
-    protected inner class ArrayCtx(
-        private val array: MutableList<Any?>
+    open inner class ArrayCtx(
+        protected val array: MutableList<Any?>
     ) : Serializer.ArrayCtx {
+        fun build(): List<Any?> {
+            return array.toList()
+        }
+
         override fun value(v: Int?) {
             array.add(v)
         }
@@ -73,21 +77,15 @@ abstract class StdSerializer(
         }
 
         override fun array(block: Serializer.ArrayCtx.() -> Unit) {
-            val childArray = arrayFactory()
-            ArrayCtx(childArray).block()
-            array.add(childArray)
+            array.add(arrayFactory().apply(block).build())
         }
 
         override fun obj(block: Serializer.ObjectCtx.() -> Unit) {
-            val childMap = mapFactory()
-            ObjectCtx(childMap).block()
-            array.add(childMap)
+            array.add(objFactory().apply(block).build())
         }
     }
 
-    override fun buildObj(block: Serializer.ObjectCtx.() -> Unit): Map<String, Any?> {
-        val map = mapFactory()
-        ObjectCtx(map).block()
-        return map
+    override fun obj(block: Serializer.ObjectCtx.() -> Unit): Serializer.ObjectCtx {
+        return objFactory().apply(block)
     }
 }

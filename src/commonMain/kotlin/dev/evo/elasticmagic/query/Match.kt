@@ -54,7 +54,7 @@ data class MultiMatch(
 ) : QueryExpression {
     override val name = "multi_match"
 
-    enum class Type : ToValue {
+    enum class Type : ToValue<String> {
         BEST_FIELDS, MOST_FIELDS, CROSS_FIELDS, PHRASE, PHRASE_PREFIX;
 
         override fun toValue() = name.lowercase()

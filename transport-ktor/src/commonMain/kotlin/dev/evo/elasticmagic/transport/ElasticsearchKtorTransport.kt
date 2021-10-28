@@ -16,12 +16,12 @@ import io.ktor.http.HttpMethod
 import io.ktor.http.Parameters
 import io.ktor.http.takeFrom
 
-class ElasticsearchKtorTransport<OBJ>(
+class ElasticsearchKtorTransport(
     baseUrl: String,
-    serde: Serde<OBJ>,
+    serde: Serde,
     engine: HttpClientEngine,
     configure: Config.() -> Unit = {},
-) : ElasticsearchTransport<OBJ>(
+) : ElasticsearchTransport(
     baseUrl,
     serde,
     Config().apply(configure),
@@ -38,7 +38,7 @@ class ElasticsearchKtorTransport<OBJ>(
     }
 
     @Suppress("NAME_SHADOWING")
-    override suspend fun request(
+    override suspend fun doRequest(
         method: Method,
         path: String,
         parameters: Map<String, List<String>>?,
@@ -83,11 +83,9 @@ class ElasticsearchKtorTransport<OBJ>(
                 } else {
                     ContentType.Application.Json
                 }
-                if (ktorHttpMethod != HttpMethod.Head) {
-                    this.body = ByteArrayContent(
-                        requestEncoder.toByteArray(),
-                        contentType
-                    )
+                val content = requestEncoder.toByteArray()
+                if (content.isNotEmpty()) {
+                    this.body = ByteArrayContent(content, contentType)
                 }
             }
         }

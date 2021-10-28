@@ -18,7 +18,7 @@ import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.longOrNull
 
-sealed class JsonDeserializer : Deserializer<JsonObject> {
+sealed class JsonDeserializer : Deserializer {
     companion object : JsonDeserializer() {
         private fun coerceToAny(v: JsonElement): Any? {
             return when (v) {
@@ -38,7 +38,7 @@ sealed class JsonDeserializer : Deserializer<JsonObject> {
         }
     }
 
-    private class ObjectCtx(private val obj: JsonObject) : Deserializer.ObjectCtx {
+    class ObjectCtx(private val obj: JsonObject) : Deserializer.ObjectCtx {
         override fun anyOrNull(name: String): Any? {
             return obj[name]?.let(::coerceToAny)
         }
@@ -80,7 +80,7 @@ sealed class JsonDeserializer : Deserializer<JsonObject> {
         }
     }
 
-    private class ObjectIterator(
+    class ObjectIterator(
         private val iter: Iterator<Map.Entry<String, JsonElement>>
     ) : Deserializer.ObjectIterator {
         private var currentEntry: Map.Entry<String, JsonElement>? = null
@@ -153,7 +153,7 @@ sealed class JsonDeserializer : Deserializer<JsonObject> {
         }
     }
 
-    private class ArrayCtx(arr: JsonArray) : Deserializer.ArrayCtx {
+    class ArrayCtx(arr: JsonArray) : Deserializer.ArrayCtx {
         private val iter = arr.iterator()
         private var currentValue: JsonElement? = null
 
@@ -211,17 +211,13 @@ sealed class JsonDeserializer : Deserializer<JsonObject> {
         }
     }
 
-    override fun wrapObj(obj: JsonObject): Deserializer.ObjectCtx {
-        return ObjectCtx(obj)
-    }
-
     override fun objFromStringOrNull(data: String): Deserializer.ObjectCtx? {
         val jsonObj =  try {
             Json.decodeFromString(JsonElement.serializer(), data) as? JsonObject
         } catch (e: SerializationException) {
             throw DeserializationException("Cannot deserialize data", e)
         }
-        return jsonObj?.let(::wrapObj)
+        return jsonObj?.let(::ObjectCtx)
     }
 }
 

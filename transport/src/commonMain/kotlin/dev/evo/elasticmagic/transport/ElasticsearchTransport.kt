@@ -2,6 +2,7 @@ package dev.evo.elasticmagic.transport
 
 import dev.evo.elasticmagic.serde.Deserializer
 import dev.evo.elasticmagic.serde.Serde
+import dev.evo.elasticmagic.serde.Serializer
 
 enum class Method {
     GET, PUT, POST, DELETE, HEAD
@@ -34,7 +35,7 @@ fun parameterToString(v: Any?): String? {
     }
 }
 
-class Request<B, R>(
+class Request<out B, out R>(
     val method: Method,
     val path: String,
     val parameters: Parameters = emptyMap(),
@@ -101,9 +102,9 @@ expect class GzipEncoder() : RequestEncoder
 
 typealias RequestBodyBuilder = RequestEncoder.() -> Unit
 
-abstract class ElasticsearchTransport<OBJ>(
+abstract class ElasticsearchTransport(
     val baseUrl: String,
-    val serde: Serde<OBJ>,
+    val serde: Serde,
     config: Config,
 ) {
     class Config {
@@ -117,15 +118,15 @@ abstract class ElasticsearchTransport<OBJ>(
             StringEncoderFactory()
         }
 
-    suspend fun <R> request(request: Request<OBJ, R>): R {
-        val response = request(
+    suspend fun <R> request(request: Request<Serializer.ObjectCtx, R>): R {
+        val response = doRequest(
             request.method,
             request.path,
             request.parameters,
             contentType = serde.contentType,
         ) {
             if (request.body != null) {
-                append(serde.serializer.objToString(request.body))
+                append(request.body.serialize())
             }
         }
         // HEAD requests return empty response body
@@ -135,8 +136,8 @@ abstract class ElasticsearchTransport<OBJ>(
         return request.processResult(result)
     }
 
-    suspend fun <R> bulkRequest(request: Request<List<OBJ>, R>): R {
-        val response = request(
+    suspend fun <R> bulkRequest(request: Request<List<Serializer.ObjectCtx>, R>): R {
+        val response = doRequest(
             request.method,
             request.path,
             request.parameters,
@@ -144,7 +145,7 @@ abstract class ElasticsearchTransport<OBJ>(
         ) {
             if (request.body != null) {
                 for (row in request.body) {
-                    append(serde.serializer.objToString(row))
+                    append(row.serialize())
                     append("\n")
                 }
             }
@@ -156,7 +157,7 @@ abstract class ElasticsearchTransport<OBJ>(
         return request.processResult(result)
     }
 
-    abstract suspend fun request(
+    protected abstract suspend fun doRequest(
         method: Method,
         path: String,
         parameters: Map<String, List<String>>? = null,

@@ -38,22 +38,18 @@ class MetricTests : TestAggregation() {
                     "missing" to 0.0F
                 )
             )
-            agg.processResult(
-                deserializer.wrapObj(
-                    mapOf(
-                        "value" to null
-                    )
-                )
+            process(
+                agg,
+                mapOf("value" to null)
             ).let { res ->
                 res.value.shouldBeNull()
                 res.valueAsString.shouldBeNull()
             }
-            agg.processResult(
-                deserializer.wrapObj(
-                    mapOf(
-                        "value" to 1.1,
-                        "value_as_string" to "1.1",
-                    )
+            process(
+                agg,
+                mapOf(
+                    "value" to 1.1,
+                    "value_as_string" to "1.1",
                 )
             ).let { res ->
                 res.value shouldBe 1.1

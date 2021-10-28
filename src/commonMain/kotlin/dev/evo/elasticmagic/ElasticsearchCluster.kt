@@ -1,9 +1,10 @@
 package dev.evo.elasticmagic
 
-import dev.evo.elasticmagic.compile.BulkRequest
+import dev.evo.elasticmagic.compile.ActionCompiler
+import dev.evo.elasticmagic.compile.PreparedBulk
 import dev.evo.elasticmagic.compile.CompilerSet
-import dev.evo.elasticmagic.compile.CreateIndexRequest
-import dev.evo.elasticmagic.compile.UpdateMappingRequest
+import dev.evo.elasticmagic.compile.PreparedCreateIndex
+import dev.evo.elasticmagic.compile.PreparedUpdateMapping
 import dev.evo.elasticmagic.compile.usingIndex
 import dev.evo.elasticmagic.doc.Action
 import dev.evo.elasticmagic.doc.BaseDocSource
@@ -22,25 +23,23 @@ internal fun Params.toRequestParameters(): Parameters {
     return Parameters(*this.toList().toTypedArray())
 }
 
-class ElasticsearchCluster<OBJ>(
-    val transport: ElasticsearchTransport<OBJ>,
-    val serde: Serde<OBJ>,
+class ElasticsearchCluster(
+    val transport: ElasticsearchTransport,
+    val serde: Serde,
     private val compilers: CompilerSet? = null,
 ) {
 
     private val esVersion = CompletableDeferred<ElasticsearchVersion>()
     private val sniffedCompilers = CompletableDeferred<CompilerSet>()
 
-    operator fun get(indexName: String): ElasticsearchIndex<OBJ> {
+    operator fun get(indexName: String): ElasticsearchIndex {
         return ElasticsearchIndex(indexName, transport, serde, this)
     }
 
     private suspend fun fetchVersion(): ElasticsearchVersion {
-        val response = transport.request(
-            Method.GET,"",
-            contentType = serde.contentType
+        val result = transport.request(
+            Request(Method.GET,"")
         )
-        val result = serde.deserializer.objFromString(response)
         val versionObj = result.obj("version")
         val rawEsVersion = versionObj.string("number")
         val (major, minor, patch) = rawEsVersion.split('.')
@@ -77,7 +76,7 @@ class ElasticsearchCluster<OBJ>(
         masterTimeout: String? = null,
         timeout: String? = null
     ): CreateIndexResult {
-        val createIndex = CreateIndexRequest(
+        val createIndex = PreparedCreateIndex(
             indexName = indexName,
             settings = settings,
             mapping = mapping,
@@ -97,7 +96,7 @@ class ElasticsearchCluster<OBJ>(
         masterTimeout: String? = null,
         timeout: String? = null,
     ): DeleteIndexResult {
-        val request = Request<OBJ, DeleteIndexResult>(
+        val request = Request(
             method = Method.DELETE,
             path = indexName,
             parameters = Parameters(
@@ -120,7 +119,7 @@ class ElasticsearchCluster<OBJ>(
         allowNoIndices: Boolean? = null,
         ignoreUnavailable: Boolean? = null,
     ): Boolean {
-        val request = Request<OBJ, Boolean>(
+        val request = Request(
             method = Method.HEAD,
             path = indexName,
             parameters = Parameters(
@@ -146,7 +145,7 @@ class ElasticsearchCluster<OBJ>(
         masterTimeout: String? = null,
         timeout: String? = null,
     ): UpdateMappingResult {
-        val updateMapping = UpdateMappingRequest(
+        val updateMapping = PreparedUpdateMapping(
             indexName = indexName,
             mapping = mapping,
             allowNoIndices = allowNoIndices,
@@ -161,11 +160,11 @@ class ElasticsearchCluster<OBJ>(
     }
 }
 
-class ElasticsearchIndex<OBJ>(
+class ElasticsearchIndex(
     val name: String,
-    private val transport: ElasticsearchTransport<OBJ>,
-    private val serde: Serde<OBJ>,
-    val cluster: ElasticsearchCluster<OBJ>,
+    private val transport: ElasticsearchTransport,
+    private val serde: Serde,
+    val cluster: ElasticsearchCluster,
 ) {
 
     suspend fun <S : BaseDocSource> search(
@@ -183,7 +182,7 @@ class ElasticsearchIndex<OBJ>(
         timeout: String? = null,
         params: Params = Params(),
     ): BulkResult {
-        val bulk = BulkRequest(
+        val bulk = PreparedBulk(
             name,
             actions,
             refresh = refresh,
@@ -191,24 +190,14 @@ class ElasticsearchIndex<OBJ>(
             params = params,
         )
         val compiled = cluster.getCompilers().bulk.compile(serde.serializer, bulk)
-        val response = transport.request(
-            compiled.method,
-            compiled.path,
-            compiled.parameters,
-            contentType = "application/x-ndjson",
-        ) {
-            compiled.body?.let { body ->
-                for ((header, source) in body) {
-                    append(serde.serializer.objToString(header))
-                    append("\n")
-                    if (source != null) {
-                        append(serde.serializer.objToString(source))
-                        append("\n")
-                    }
-                }
-            }
-        }
-        val result = serde.deserializer.objFromString(response)
-        return compiled.processResult(result)
+        return transport.bulkRequest(
+            Request(
+                compiled.method,
+                compiled.path,
+                parameters = compiled.parameters,
+                body = compiled.body?.flatMap(ActionCompiler.Compiled::toList),
+                processResult = compiled.processResult,
+            )
+        )
     }
 }

@@ -173,13 +173,13 @@ data class HistogramBucket(
     val keyAsString: String?,
 ) : KeyedBucket<Double>()
 
-enum class CalendarInterval : ToValue {
+enum class CalendarInterval : ToValue<String> {
     MINUTE, HOUR, DAY, WEEK, MONTH, QUARTER, YEAR;
 
     override fun toValue() = name.lowercase()
 }
 
-sealed class FixedInterval : ToValue {
+sealed class FixedInterval : ToValue<String> {
     abstract val value: Int
     abstract val unit: String
 

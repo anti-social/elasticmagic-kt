@@ -23,7 +23,7 @@ class TransportErrorTests {
         }
 
         val ex = TransportError.parse(
-            JsonDeserializer.wrapObj(rawError)
+            JsonDeserializer.ObjectCtx(rawError)
         )
         ex shouldBe TransportError.Structured("error", "error reason")
     }
@@ -42,7 +42,7 @@ class TransportErrorTests {
         }
 
         val ex = TransportError.parse(
-            JsonDeserializer.wrapObj(rawError)
+            JsonDeserializer.ObjectCtx(rawError)
         )
         ex shouldBe TransportError.Simple("{root_cause=[{type=error, reason=error reason}]}")
     }
@@ -53,7 +53,7 @@ class TransportErrorTests {
             put("error", "something error message")
         }
         val ex = TransportError.parse(
-            JsonDeserializer.wrapObj(rawError)
+            JsonDeserializer.ObjectCtx(rawError)
         )
         ex shouldBe TransportError.Simple("something error message")
     }

@@ -1,5 +1,6 @@
 package dev.evo.elasticmagic.compile
 
+import dev.evo.elasticmagic.BaseTest
 import dev.evo.elasticmagic.ElasticsearchVersion
 import dev.evo.elasticmagic.Params
 import dev.evo.elasticmagic.doc.BoundField
@@ -12,31 +13,29 @@ import dev.evo.elasticmagic.doc.SubFields
 import dev.evo.elasticmagic.doc.datetime
 import dev.evo.elasticmagic.doc.mergeDocuments
 import dev.evo.elasticmagic.query.Script
-import dev.evo.elasticmagic.serde.StdSerializer
 
 import io.kotest.matchers.maps.shouldContainExactly
-import io.kotest.matchers.nulls.shouldNotBeNull
+import io.kotest.matchers.types.shouldBeInstanceOf
 
 import kotlin.test.Test
 
-class MappingCompilerTests {
-    private val serializer = object : StdSerializer() {
-        override fun objToString(obj: Map<String, Any?>): String {
-            TODO("not implemented")
-        }
-    }
+class MappingCompilerTests : BaseTest() {
     val esVersion = ElasticsearchVersion(6, 0, 0)
     private val compiler = MappingCompiler(
         esVersion,
         SearchQueryCompiler(esVersion)
     )
 
+    private fun compile(doc: Document): Map<String, Any?> {
+        val compiled = compiler.compile(serializer, doc)
+        return compiled.body.shouldBeInstanceOf<TestSerializer.ObjectCtx>().toMap()
+    }
+
     @Test
     fun testEmptyMapping() {
         val emptyDoc = object : Document() {}
 
-        val compiled = compiler.compile(serializer, emptyDoc)
-        compiled.body.shouldNotBeNull() shouldContainExactly mapOf(
+        compile(emptyDoc) shouldContainExactly mapOf(
             "properties" to emptyMap<String, Any>()
         )
     }
@@ -53,8 +52,7 @@ class MappingCompilerTests {
             val keywords by text().subFields(::NameFields)
         }
 
-        val compiled = compiler.compile(serializer, productDoc)
-        compiled.body.shouldNotBeNull() shouldContainExactly mapOf(
+        compile(productDoc) shouldContainExactly mapOf(
             "properties" to mapOf(
                 "name" to mapOf(
                     "type" to "text",
@@ -103,8 +101,7 @@ class MappingCompilerTests {
             val opinion by obj(::OpinionDoc)
         }
 
-        val compiled = compiler.compile(serializer, userDoc)
-        compiled.body.shouldNotBeNull() shouldContainExactly mapOf(
+        compile(userDoc) shouldContainExactly mapOf(
             "properties" to mapOf(
                 "company" to mapOf(
                     "type" to "object",
@@ -163,8 +160,7 @@ class MappingCompilerTests {
             }
         }
 
-        val compiled = compiler.compile(serializer, logDoc)
-        compiled.body.shouldNotBeNull() shouldContainExactly mapOf(
+        compile(logDoc) shouldContainExactly mapOf(
             "runtime" to mapOf(
                 "day_of_week" to mapOf(
                     "type" to "keyword",
@@ -210,8 +206,7 @@ class MappingCompilerTests {
 
         val commonDoc = mergeDocuments(questionDoc, answerDoc)
 
-        val compiled = compiler.compile(serializer, commonDoc)
-        compiled.body.shouldNotBeNull() shouldContainExactly mapOf(
+        compile(commonDoc) shouldContainExactly mapOf(
             "properties" to mapOf(
                 "join" to mapOf(
                     "type" to "join",

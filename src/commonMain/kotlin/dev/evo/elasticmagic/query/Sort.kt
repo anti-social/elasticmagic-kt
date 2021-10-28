@@ -65,25 +65,25 @@ data class Sort(
         }
     }
 
-    enum class Order : ToValue {
+    enum class Order : ToValue<String> {
         ASC, DESC;
 
         override fun toValue() = name.lowercase()
     }
 
-    enum class Mode : ToValue {
+    enum class Mode : ToValue<String> {
         MIN, MAX, SUM, AVG, MEDIAN;
 
         override fun toValue() = name.lowercase()
     }
 
-    enum class NumericType : ToValue {
+    enum class NumericType : ToValue<String> {
         DOUBLE, LONG, DATE, DATE_NANOS;
 
         override fun toValue() = name.lowercase()
     }
 
-    sealed class Missing : ToValue {
+    sealed class Missing : ToValue<Any> {
         object Last : Missing()
         object First : Missing()
         class Value(val value: Any) : Missing()

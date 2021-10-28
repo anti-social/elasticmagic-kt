@@ -20,10 +20,10 @@ open class MappingCompiler(
     private val searchQueryCompiler: SearchQueryCompiler,
 ) : BaseCompiler(esVersion) {
 
-    data class Compiled<OBJ>(val body: OBJ?)
+    data class Compiled(val body: ObjectCtx?)
 
-    fun <OBJ> compile(serializer: Serializer<OBJ>, input: Document): Compiled<OBJ> {
-        val body = serializer.buildObj {
+    fun compile(serializer: Serializer, input: Document): Compiled {
+        val body = serializer.obj {
             visit(this, input)
         }
         return Compiled(body)
@@ -34,7 +34,7 @@ open class MappingCompiler(
             is Expression -> ctx.obj {
                 searchQueryCompiler.visit(this, value)
             }
-            is ToValue -> {
+            is ToValue<*> -> {
                 ctx.value(value.toValue())
             }
             else -> super.dispatch(ctx, value)
@@ -46,7 +46,7 @@ open class MappingCompiler(
             is Expression -> ctx.obj(name) {
                 searchQueryCompiler.visit(this, value)
             }
-            is ToValue -> {
+            is ToValue<*> -> {
                 ctx.field(name, value.toValue())
             }
             else -> super.dispatch(ctx, name, value)

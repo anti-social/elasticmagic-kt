@@ -38,11 +38,11 @@ open class SearchQueryCompiler(
         fun accept(ctx: ObjectCtx, compiler: SearchQueryCompiler)
     }
 
-    fun <OBJ, S: BaseDocSource> compile(
-        serializer: Serializer<OBJ>, input: SearchQueryWithIndex<S>
-    ): Request<OBJ, SearchQueryResult<S>> {
+    fun <S: BaseDocSource> compile(
+        serializer: Serializer, input: SearchQueryWithIndex<S>
+    ): Request<Serializer.ObjectCtx, SearchQueryResult<S>> {
         val searchQuery = input.searchQuery.prepare()
-        val body = serializer.buildObj {
+        val body = serializer.obj {
             visit(this, searchQuery)
         }
         return Request(
@@ -157,7 +157,7 @@ open class SearchQueryCompiler(
             is Expression -> ctx.obj {
                 visit(this, value)
             }
-            is ToValue -> {
+            is ToValue<*> -> {
                 ctx.value(value.toValue())
             }
             else -> super.dispatch(ctx, value)
@@ -169,7 +169,7 @@ open class SearchQueryCompiler(
             is Expression -> ctx.obj(name) {
                 visit(this, value)
             }
-            is ToValue -> {
+            is ToValue<*> -> {
                 ctx.field(name, value.toValue())
             }
             else -> super.dispatch(ctx, name, value)

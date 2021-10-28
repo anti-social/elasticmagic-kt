@@ -1,12 +1,15 @@
 package dev.evo.elasticmagic.transport
 
 import dev.evo.elasticmagic.serde.Deserializer
+import dev.evo.elasticmagic.serde.serialization.JsonDeserializer
 import dev.evo.elasticmagic.serde.serialization.JsonSerde
+import dev.evo.elasticmagic.serde.serialization.JsonSerializer
 import dev.evo.elasticmagic.serde.toMap
 
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.maps.shouldContainExactly
 import io.kotest.matchers.nulls.shouldBeNull
+import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldBeEmpty
 
@@ -32,37 +35,6 @@ import kotlin.test.Test
 
 @ExperimentalStdlibApi
 class ElasticsearchKtorTransportTests {
-    @Test
-    fun rawRequest() = runTest {
-        val client = ElasticsearchKtorTransport(
-            "http://example.com:9200",
-            JsonSerde,
-            MockEngine { request ->
-                request.method shouldBe HttpMethod.Get
-                request.url.encodedPath shouldBe "/_alias"
-
-                respond(
-                    """
-                    {
-                      "products_v1": {"aliases": {"products": {}}},
-                      "orders_v2": {"aliases": {"orders": {}, "shopping_carts": {}}}
-                    }
-                    """.trimIndent(),
-                    headers = headersOf(
-                        HttpHeaders.ContentType, ContentType.Application.Json.toString()
-                    )
-                )
-            }
-        )
-        val aliasesResp = client.request(Method.GET, "_alias")
-        aliasesResp shouldBe """
-            {
-              "products_v1": {"aliases": {"products": {}}},
-              "orders_v2": {"aliases": {"orders": {}, "shopping_carts": {}}}
-            }
-            """.trimIndent()
-    }
-
     @Test
     fun headRequest() = runTest {
         val client = ElasticsearchKtorTransport(
@@ -111,9 +83,9 @@ class ElasticsearchKtorTransportTests {
                 )
             }
         )
-        val body = buildJsonObject {
-            putJsonObject("index") {
-                put("number_of_replicas", 2)
+        val body = JsonSerializer.obj {
+            obj("index") {
+                field("number_of_replicas", 2.toInt())
             }
         }
         val result = client.request(
@@ -165,10 +137,15 @@ class ElasticsearchKtorTransportTests {
                  request.method shouldBe HttpMethod.Post
                  request.url.encodedPath shouldBe "/_bulk"
                  request.body.contentType shouldBe ContentType("application", "x-ndjson")
-                 request.body.toByteArray().decodeToString() shouldBe (
-                     "{\"delete\":{\"_id\":\"123\",\"_index\":\"test\"}}\n"
-                 )
-                 val body = buildJsonObject {
+                 val rawBody = request.body.toByteArray().decodeToString()
+                 JsonDeserializer.objFromStringOrNull(rawBody)
+                     .shouldNotBeNull().toMap() shouldContainExactly mapOf(
+                         "delete" to mapOf(
+                             "_id" to "123",
+                             "_index" to "test",
+                         )
+                     )
+                 val respBody = buildJsonObject {
                      put("took", 7)
                      put("errors", false)
                      putJsonArray("items") {
@@ -183,14 +160,14 @@ class ElasticsearchKtorTransportTests {
                  }
 
                  respond(
-                     Json.encodeToString(body)
+                     Json.encodeToString(respBody)
                  )
              }
          )
-         val body = buildJsonObject {
-            putJsonObject("delete") {
-                put("_id", "123")
-                put("_index", "test")
+         val body = JsonSerializer.obj {
+            obj("delete") {
+                field("_id", "123")
+                field("_index", "test")
             }
         }
          val result = client.bulkRequest(
@@ -231,7 +208,11 @@ class ElasticsearchKtorTransportTests {
         )
         val ex = shouldThrow<ElasticsearchException.GatewayTimeout> {
             client.request(
-                Method.POST, "products_v2/_forcemerge", mapOf("max_num_segments" to listOf("1"))
+                Request(
+                    Method.POST,
+                    "products_v2/_forcemerge",
+                    parameters = mapOf("max_num_segments" to listOf("1"))
+                )
             )
         }
         ex.statusCode shouldBe 504
