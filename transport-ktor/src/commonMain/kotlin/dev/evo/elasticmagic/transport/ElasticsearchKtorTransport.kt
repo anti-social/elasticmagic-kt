@@ -83,11 +83,9 @@ class ElasticsearchKtorTransport(
                 } else {
                     ContentType.Application.Json
                 }
-                if (ktorHttpMethod != HttpMethod.Head) {
-                    this.body = ByteArrayContent(
-                        requestEncoder.toByteArray(),
-                        contentType
-                    )
+                val content = requestEncoder.toByteArray()
+                if (content.isNotEmpty()) {
+                    this.body = ByteArrayContent(content, contentType)
                 }
             }
         }
