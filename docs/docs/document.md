@@ -35,8 +35,24 @@ You don't need to import all those field types:
 --8<-- "../samples/src/main/kotlin/samples/document/shortcuts/Shortcuts.kt"
 ```
 
-Full list of available shortcuts can be found 
+Full list of available shortcuts can be found
 [here](https://anti-social.github.io/elasticmagic-kt/api/latest/elasticmagic/dev.evo.elasticmagic.doc/-base-document/index.html)
+
+### Enums
+
+It is possible to map field values to kotlin enums.
+Use [enum](https://anti-social.github.io/elasticmagic-kt/api/latest/elasticmagic/dev.evo.elasticmagic.doc/enum.html)
+extension function for that:
+
+```kotlin
+--8<-- "../samples/src/main/kotlin/samples/document/enums/Enum.kt"
+```
+
+Now you are able to use enum variants in your search queries:
+
+```kotlin
+--8<-- "../samples/src/main/kotlin/samples/document/enums/SearchQuery.kt"
+```
 
 ### Sub fields
 

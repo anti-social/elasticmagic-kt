@@ -15,6 +15,7 @@ import dev.evo.elasticmagic.doc.DocSource
 import dev.evo.elasticmagic.doc.Document
 import dev.evo.elasticmagic.doc.IdentDocSourceWithMeta
 import dev.evo.elasticmagic.doc.SubDocument
+import dev.evo.elasticmagic.doc.enum
 import dev.evo.elasticmagic.doc.instant
 import dev.evo.elasticmagic.query.Ids
 import dev.evo.elasticmagic.query.Nested
@@ -35,6 +36,10 @@ import kotlinx.datetime.toInstant
 
 import kotlin.test.Test
 
+enum class OrderStatus(val id: Int) {
+    NEW(0), ACCEPTED(1), SHIPPED(2), DELIVERED(3), CANCELLED(4)
+}
+
 object OrderDoc : Document() {
     class User(field: BoundField<BaseDocSource, Nothing>) : SubDocument(field) {
         val id by int()
@@ -52,7 +57,7 @@ object OrderDoc : Document() {
 
     val user by obj(::User)
     val items by nested(::CartItem)
-    val status by int()
+    val status by int().enum(OrderStatus::id)
     val comment by text()
     val dateCreated by instant()
 }
@@ -98,7 +103,7 @@ class SearchQueryTests : ElasticsearchTestBase("test-search-query") {
                 quantity = 3
             }
         )
-        status = 0
+        status = OrderStatus.NEW
         dateCreated = LocalDateTime(2019, 4, 30, 12, 29, 35).toInstant(TimeZone.UTC)
     }
         .withActionMeta(id = "101")
@@ -113,7 +118,7 @@ class SearchQueryTests : ElasticsearchTestBase("test-search-query") {
                 quantity = 100
             }
         )
-        status = 0
+        status = OrderStatus.NEW
         dateCreated = LocalDateTime(2020, 12, 23, 8, 47, 8).toInstant(TimeZone.UTC)
     }
         .withActionMeta(id = "102")
@@ -128,7 +133,7 @@ class SearchQueryTests : ElasticsearchTestBase("test-search-query") {
                 quantity = 10
             }
         )
-        status = 1
+        status = OrderStatus.ACCEPTED
         dateCreated = LocalDateTime(2020, 12, 31, 23, 59, 59).toInstant(TimeZone.UTC)
     }
         .withActionMeta(id = "103")
@@ -154,7 +159,7 @@ class SearchQueryTests : ElasticsearchTestBase("test-search-query") {
                 quantity = 9
             },
         )
-        status = 0
+        status = OrderStatus.NEW
         dateCreated = LocalDateTime(2021, 10, 9, 15, 31, 45).toInstant(TimeZone.UTC)
     }
         .withActionMeta(id = "104")
@@ -245,7 +250,7 @@ class SearchQueryTests : ElasticsearchTestBase("test-search-query") {
             karlssonsJam, karlssonsBestDonuts, karlssonsJustDonuts, littleBrotherDogStuff
         )) {
             val searchResult = SearchQuery(::OrderDocSource)
-                .filter(OrderDoc.status.eq(0))
+                .filter(OrderDoc.status.eq(OrderStatus.NEW))
                 .execute(index)
 
             searchResult.totalHits shouldBe 3
@@ -270,7 +275,7 @@ class SearchQueryTests : ElasticsearchTestBase("test-search-query") {
             checkOrderHits(searchResult.hits, setOf("101"))
             val hit = searchResult.hits[0]
             val order = hit.source.shouldNotBeNull()
-            order.status shouldBe 0
+            order.status shouldBe OrderStatus.NEW
             order.user.name shouldBe "Karlson"
             order.items.size shouldBe 1
             order.dateCreated shouldBe LocalDateTime(2019, 4, 30, 12, 29, 35).toInstant(TimeZone.UTC)

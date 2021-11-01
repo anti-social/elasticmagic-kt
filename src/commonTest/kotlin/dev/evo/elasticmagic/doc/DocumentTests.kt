@@ -126,6 +126,36 @@ class DocumentTests {
         userDoc.cls.getQualifiedFieldName() shouldBe "class"
     }
 
+    enum class OrderStatus {
+        NEW,
+        ACCEPTED,
+        SHIPPED,
+        DELIVERED,
+    }
+
+    @Test
+    fun enums() {
+        val orderDoc = object : Document() {
+            val statusId by int().enum<OrderStatus>(OrderStatus::ordinal)
+            val statusName by keyword().enum<OrderStatus> { it.name.lowercase() }
+
+            // val statusId by enum(OrderStatus::ordinal)
+            // val statusName by enum<OrderStatus>(KeywordEnumValue { it.name.lowercase() })
+        }
+
+        orderDoc.statusId.getFieldType().shouldBeInstanceOf<EnumFieldType<*>>()
+        orderDoc.statusId.getFieldType().name shouldBe "integer"
+        orderDoc.statusId.getFieldName() shouldBe "statusId"
+        orderDoc.statusId.deserializeTerm(0) shouldBe OrderStatus.NEW
+        orderDoc.statusId.serializeTerm(OrderStatus.DELIVERED) shouldBe 3
+
+        orderDoc.statusName.getFieldType().shouldBeInstanceOf<EnumFieldType<*>>()
+        orderDoc.statusName.getFieldType().name shouldBe "keyword"
+        orderDoc.statusName.getFieldName() shouldBe "statusName"
+        orderDoc.statusName.deserializeTerm("accepted") shouldBe OrderStatus.ACCEPTED
+        orderDoc.statusName.serializeTerm(OrderStatus.SHIPPED) shouldBe "shipped"
+    }
+
     @Test
     fun testMappingParameters() {
         val logEventDoc = object : Document() {
