@@ -292,6 +292,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#enums" class="md-nav__link">
+    Enums
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#sub-fields" class="md-nav__link">
     Sub fields
   </a>
@@ -464,6 +471,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#enums" class="md-nav__link">
+    Enums
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#sub-fields" class="md-nav__link">
     Sub fields
   </a>
@@ -610,8 +624,35 @@ You don't need to import all those field types:</p>
     <span class="kd">val</span> <span class="nv">about</span> <span class="k">by</span> <span class="n">text</span><span class="p">(</span><span class="n">norms</span> <span class="o">=</span> <span class="kc">false</span><span class="p">)</span>
 <span class="p">}</span>
 </code></pre></div>
-<p>Full list of available shortcuts can be found 
+<p>Full list of available shortcuts can be found
 <a href="https://anti-social.github.io/elasticmagic-kt/api/latest/elasticmagic/dev.evo.elasticmagic.doc/-base-document/index.html">here</a></p>
+<h3 id="enums">Enums<a class="headerlink" href="#enums" title="Permanent link">&para;</a></h3>
+<p>It is possible to map field values to kotlin enums.
+Use <a href="https://anti-social.github.io/elasticmagic-kt/api/latest/elasticmagic/dev.evo.elasticmagic.doc/enum.html">enum</a>
+extension function for that:</p>
+<div class="highlight"><pre><span></span><code><span class="k">package</span> <span class="nn">samples.document.enums</span>
+
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.doc.Document</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.doc.enum</span>
+
+<span class="kd">enum</span> <span class="kd">class</span> <span class="nc">UserStatus</span> <span class="p">{</span>
+    <span class="n">ACTIVE</span><span class="p">,</span> <span class="n">LOCKED</span><span class="p">,</span> <span class="n">NO_PASSWORD</span>
+<span class="p">}</span>
+
+<span class="kd">object</span> <span class="nc">UserDoc</span> <span class="p">:</span> <span class="n">Document</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">val</span> <span class="nv">status</span> <span class="k">by</span> <span class="n">keyword</span><span class="p">().</span><span class="na">enum</span><span class="o">&lt;</span><span class="n">UserStatus</span><span class="o">&gt;</span><span class="p">()</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Now you are able to use enum variants in your search queries:</p>
+<div class="highlight"><pre><span></span><code><span class="k">package</span> <span class="nn">samples.document.enums</span>
+
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.SearchQuery</span>
+
+<span class="kd">val</span> <span class="nv">q</span> <span class="o">=</span> <span class="n">SearchQuery</span><span class="p">()</span>
+    <span class="p">.</span><span class="na">filter</span><span class="p">(</span>
+        <span class="n">UserDoc</span><span class="p">.</span><span class="na">status</span><span class="p">.</span><span class="na">eq</span><span class="p">(</span><span class="n">UserStatus</span><span class="p">.</span><span class="na">ACTIVE</span><span class="p">)</span>
+    <span class="p">)</span>
+</code></pre></div>
 <h3 id="sub-fields">Sub fields<a class="headerlink" href="#sub-fields" title="Permanent link">&para;</a></h3>
 <p>It is possible to define <a href="https://anti-social.github.io/elasticmagic-kt/api/latest/elasticmagic/dev.evo.elasticmagic.doc/-sub-fields/index.html">sub-fields</a>
 for any simple field:</p>
