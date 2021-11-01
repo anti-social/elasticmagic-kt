@@ -374,6 +374,48 @@ abstract class FieldSet : Named {
 }
 
 /**
+ * Maps integer value to the corresponding enum variant.
+ *
+ * @param fieldValue function that provides field value of an enum variant.
+ * It is not recommended to use [Enum.ordinal] property for field value as it can change
+ * when new variant is added.
+ */
+inline fun <reified V: Enum<V>> FieldSet.Field<Int, Int>.enum(
+    fieldValue: IntEnumValue<V>,
+): FieldSet.Field<V, V> {
+    return FieldSet.Field(
+        name,
+        EnumFieldType(
+            enumValues(),
+            fieldValue,
+            type,
+            V::class
+        ),
+        emptyMap()
+    )
+}
+
+/**
+ * Maps string value to the corresponding enum variant.
+ *
+ * @param fieldValue function that provides field value of an enum variant
+ */
+inline fun <reified V: Enum<V>> FieldSet.Field<String, String>.enum(
+    fieldValue: KeywordEnumValue<V>? = null,
+): FieldSet.Field<V, V> {
+    return FieldSet.Field(
+        name,
+        EnumFieldType(
+            enumValues(),
+            fieldValue ?: KeywordEnumValue { it.name },
+            type,
+            V::class
+        ),
+        emptyMap()
+    )
+}
+
+/**
  * Represents Elasticsearch multi-fields:
  * https://www.elastic.co/guide/en/elasticsearch/reference/7.10/multi-fields.html
  */

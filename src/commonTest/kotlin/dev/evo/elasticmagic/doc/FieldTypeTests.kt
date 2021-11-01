@@ -195,4 +195,36 @@ class FieldTypeTests {
             DoubleRangeType.deserializeTerm("-Inf")
         }
     }
+
+    enum class CardStatus(val id: Int) {
+        ISSUED(1), ACTIVATED(0), TEMP_BLOCKED(3), BLOCKED(2)
+    }
+
+    @Test
+    fun enum() {
+        val cardStatusType = EnumFieldType(
+            enumValues(), CardStatus::id, IntType, CardStatus::class
+        )
+        cardStatusType.name shouldBe "integer"
+
+        cardStatusType.serialize(CardStatus.ISSUED) shouldBe 1
+        cardStatusType.deserialize(0) shouldBe CardStatus.ACTIVATED
+        cardStatusType.deserialize("2") shouldBe CardStatus.BLOCKED
+        shouldThrow<ValueDeserializationException> {
+            cardStatusType.deserialize("4")
+        }
+        shouldThrow<ValueDeserializationException> {
+            cardStatusType.deserialize("ISSUED")
+        }
+
+        cardStatusType.serializeTerm(CardStatus.ISSUED) shouldBe 1
+        cardStatusType.deserializeTerm(0) shouldBe CardStatus.ACTIVATED
+        cardStatusType.deserializeTerm("3") shouldBe CardStatus.TEMP_BLOCKED
+        shouldThrow<ValueDeserializationException> {
+            cardStatusType.deserializeTerm("4")
+        }
+        shouldThrow<ValueDeserializationException> {
+            cardStatusType.deserializeTerm("ISSUED")
+        }
+    }
 }

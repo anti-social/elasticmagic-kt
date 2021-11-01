@@ -13,7 +13,7 @@ interface FieldOperations<T> : Named {
     }
 
     fun deserializeTerm(v: Any): T {
-        TODO("return getFieldType().deserializeTerm(v)")
+        return getFieldType().deserializeTerm(v)
     }
 
     fun eq(term: T?): QueryExpression {

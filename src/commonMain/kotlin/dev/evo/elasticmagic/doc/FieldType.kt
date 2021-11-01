@@ -36,6 +36,8 @@ interface FieldType<V, T> {
 }
 
 abstract class SimpleFieldType<V> : FieldType<V, V> {
+    override fun serializeTerm(v: V): Any = serialize(v)
+
     override fun deserializeTerm(v: Any): V = deserialize(v)
 }
 
@@ -251,6 +253,59 @@ object LongRangeType : RangeType<Long>(LongType)
 object FloatRangeType : RangeType<Float>(FloatType)
 
 object DoubleRangeType : RangeType<Double>(DoubleType)
+
+/**
+ * An interface that provides field value for an enum.
+ * We need this interface hierarchy to be able to make multiple [enum] extension functions
+ * without signature clashing.
+ */
+fun interface EnumValue<V: Enum<V>, T> {
+    fun get(v: V): T
+}
+
+/**
+ * An interface that provides integer field value for an enum.
+ */
+fun interface IntEnumValue<V: Enum<V>> : EnumValue<V, Int>
+
+/**
+ * An interface that provides string field value for an enum.
+ */
+fun interface KeywordEnumValue<V: Enum<V>> : EnumValue<V, String>
+
+/**
+ * A field type that transforms enum variants to field values and vice verse.
+ *
+ * @param V the type of enum
+ * @param enumValues an array of enum variants. Usually got by calling [enumValues] function.
+ * @param fieldValue function interface that takes enum variant and returns field value.
+ * @param type original field type
+ * @param termType should be `V::class`
+ */
+class EnumFieldType<V: Enum<V>>(
+    enumValues: Array<V>,
+    private val fieldValue: EnumValue<V, *>,
+    private val type: FieldType<*, *>,
+    override val termType: KClass<*>,
+) : SimpleFieldType<V>() {
+    override val name = type.name
+
+    private val valueToEnumValue = enumValues.associateBy(fieldValue::get)
+
+    override fun serialize(v: V): Any {
+        return fieldValue.get(v) ?: throw IllegalStateException("Unreachable")
+    }
+
+    override fun deserialize(v: Any, valueFactory: (() -> V)?): V {
+        return valueToEnumValue[type.deserialize(v)]
+            ?: deErr(v, this::class.simpleName ?: "<unknown>")
+    }
+
+    override fun deserializeTerm(v: Any): V {
+        return valueToEnumValue[type.deserializeTerm(v)]
+            ?: deErr(v, this::class.simpleName ?: "<unknown>")
+    }
+}
 
 data class Join(
     val name: String,
