@@ -398,7 +398,8 @@ inline fun <reified V: Enum<V>> FieldSet.Field<Int, Int>.enum(
 /**
  * Maps string value to the corresponding enum variant.
  *
- * @param fieldValue function that provides field value of an enum variant
+ * @param fieldValue function that provides field value of an enum variant.
+ * [Enum.name] property will be used if [fieldValue] is not provided.
  */
 inline fun <reified V: Enum<V>> FieldSet.Field<String, String>.enum(
     fieldValue: KeywordEnumValue<V>? = null,
