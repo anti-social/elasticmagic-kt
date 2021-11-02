@@ -53,6 +53,7 @@ data class Terms<T>(
 
 data class Ids(
     val values: List<String>,
+    val boost: Double? = null,
 ) : QueryExpression {
     override val name = "ids"
 
@@ -62,11 +63,13 @@ data class Ids(
         ctx.array("values") {
             compiler.visit(this, values)
         }
+        ctx.fieldIfNotNull("boost", boost)
     }
 }
 
 data class Exists(
     val field: FieldOperations<*>,
+    val boost: Double? = null,
 ) : QueryExpression {
     override val name = "exists"
 
@@ -77,6 +80,7 @@ data class Exists(
         compiler: SearchQueryCompiler
     ) {
         ctx.field("field", field.getQualifiedFieldName())
+        ctx.fieldIfNotNull("boost", boost)
     }
 }
 
@@ -86,6 +90,7 @@ data class Range<T>(
     val gte: T? = null,
     val lt: T? = null,
     val lte: T? = null,
+    val boost: Double? = null,
 ) : QueryExpression {
     override val name = "range"
 
@@ -108,6 +113,7 @@ data class Range<T>(
             if (lte != null) {
                 field("lte", field.serializeTerm(lte))
             }
+            ctx.fieldIfNotNull("boost", boost)
         }
     }
 }
