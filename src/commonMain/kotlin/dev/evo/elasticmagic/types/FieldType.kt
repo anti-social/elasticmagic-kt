@@ -2,6 +2,8 @@ package dev.evo.elasticmagic.types
 
 import dev.evo.elasticmagic.Params
 import dev.evo.elasticmagic.doc.BaseDocSource
+import dev.evo.elasticmagic.doc.DynDocSource
+
 import kotlin.reflect.KClass
 
 /**
@@ -614,6 +616,50 @@ internal class RequiredListType<V, T>(val type: FieldType<V, T>) : FieldType<Lis
     }
 
     override fun deserializeTerm(v: Any): T {
+        throw IllegalStateException("Unreachable")
+    }
+}
+
+/**
+ * Represents any field type.
+ * Used by [DynDocSource] for fields navigation.
+ */
+internal object AnyFieldType : FieldType<Any, Any> {
+    override val name: String
+        get() = throw IllegalStateException("Should not be used in mappings")
+    override val termType = Any::class
+
+    override fun deserialize(v: Any, valueFactory: (() -> Any)?): Any {
+        return v
+    }
+
+    override fun serializeTerm(v: Any): Any = serErr(v)
+
+    override fun deserializeTerm(v: Any): Any = v
+}
+
+/**
+ * Serializes/deserializes [DynDocSource].
+ */
+internal object DynDocSourceFieldType : FieldType<DynDocSource, Nothing> {
+    override val name: String
+        get() = throw IllegalStateException("Should not be used in mappings")
+    override val termType = Nothing::class
+
+    override fun deserialize(v: Any, valueFactory: (() -> DynDocSource)?): DynDocSource {
+        return when (v) {
+            is DynDocSource -> v
+            else -> throw IllegalArgumentException(
+                "DynDocSource object expected but was ${v::class.simpleName}"
+            )
+        }
+    }
+
+    override fun serializeTerm(v: Nothing): Nothing {
+        throw IllegalStateException("Unreachable")
+    }
+
+    override fun deserializeTerm(v: Any): Nothing {
         throw IllegalStateException("Unreachable")
     }
 }
