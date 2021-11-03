@@ -2,6 +2,15 @@ package dev.evo.elasticmagic.doc
 
 import dev.evo.elasticmagic.serde.Platform
 import dev.evo.elasticmagic.serde.platform
+import dev.evo.elasticmagic.types.BooleanType
+import dev.evo.elasticmagic.types.DoubleRangeType
+import dev.evo.elasticmagic.types.EnumFieldType
+import dev.evo.elasticmagic.types.FloatRangeType
+import dev.evo.elasticmagic.types.IntRangeType
+import dev.evo.elasticmagic.types.IntType
+import dev.evo.elasticmagic.types.LongRangeType
+import dev.evo.elasticmagic.types.Range
+import dev.evo.elasticmagic.types.ValueDeserializationException
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.booleans.shouldBeTrue
 import io.kotest.matchers.shouldBe

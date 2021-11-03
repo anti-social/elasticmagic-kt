@@ -10,7 +10,7 @@ import dev.evo.elasticmagic.doc.BaseDocSource
 import dev.evo.elasticmagic.doc.BoundField
 import dev.evo.elasticmagic.doc.Document
 import dev.evo.elasticmagic.doc.RootFieldSet
-import dev.evo.elasticmagic.doc.SimpleFieldType
+import dev.evo.elasticmagic.types.SimpleFieldType
 import dev.evo.elasticmagic.doc.SubDocument
 import dev.evo.elasticmagic.doc.datetime
 import dev.evo.elasticmagic.query.BoolNode

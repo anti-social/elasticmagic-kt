@@ -1,6 +1,6 @@
 package dev.evo.elasticmagic.query
 
-import dev.evo.elasticmagic.doc.FieldType
+import dev.evo.elasticmagic.types.FieldType
 
 /**
  * Holds field operations shortcuts.

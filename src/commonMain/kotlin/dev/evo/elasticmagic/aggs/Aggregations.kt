@@ -4,7 +4,7 @@ import dev.evo.elasticmagic.query.Expression
 import dev.evo.elasticmagic.query.FieldOperations
 import dev.evo.elasticmagic.query.NamedExpression
 import dev.evo.elasticmagic.compile.SearchQueryCompiler
-import dev.evo.elasticmagic.doc.FieldType
+import dev.evo.elasticmagic.types.FieldType
 import dev.evo.elasticmagic.serde.Deserializer
 import dev.evo.elasticmagic.serde.Serializer
 

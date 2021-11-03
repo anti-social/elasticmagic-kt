@@ -1,6 +1,12 @@
 package dev.evo.elasticmagic.doc
 
 import dev.evo.elasticmagic.serde.Deserializer
+import dev.evo.elasticmagic.types.FieldType
+import dev.evo.elasticmagic.types.JoinType
+import dev.evo.elasticmagic.types.OptionalListType
+import dev.evo.elasticmagic.types.RequiredListType
+import dev.evo.elasticmagic.types.SourceType
+import dev.evo.elasticmagic.types.serErr
 
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty

@@ -1,5 +1,7 @@
 package dev.evo.elasticmagic.doc
 
+import dev.evo.elasticmagic.types.RequiredListType
+import dev.evo.elasticmagic.types.SourceType
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.maps.shouldContainExactly
 import io.kotest.matchers.nulls.shouldBeNull

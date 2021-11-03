@@ -5,6 +5,21 @@ import dev.evo.elasticmagic.query.FieldOperations
 import dev.evo.elasticmagic.query.Named
 import dev.evo.elasticmagic.query.Script
 import dev.evo.elasticmagic.query.ToValue
+import dev.evo.elasticmagic.types.BooleanType
+import dev.evo.elasticmagic.types.DoubleType
+import dev.evo.elasticmagic.types.EnumFieldType
+import dev.evo.elasticmagic.types.FieldType
+import dev.evo.elasticmagic.types.FloatType
+import dev.evo.elasticmagic.types.IntEnumValue
+import dev.evo.elasticmagic.types.IntType
+import dev.evo.elasticmagic.types.Join
+import dev.evo.elasticmagic.types.JoinType
+import dev.evo.elasticmagic.types.KeywordEnumValue
+import dev.evo.elasticmagic.types.KeywordType
+import dev.evo.elasticmagic.types.LongType
+import dev.evo.elasticmagic.types.NestedType
+import dev.evo.elasticmagic.types.ObjectType
+import dev.evo.elasticmagic.types.TextType
 
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty

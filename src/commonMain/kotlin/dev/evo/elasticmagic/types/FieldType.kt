@@ -1,6 +1,7 @@
-package dev.evo.elasticmagic.doc
+package dev.evo.elasticmagic.types
 
 import dev.evo.elasticmagic.Params
+import dev.evo.elasticmagic.doc.BaseDocSource
 import kotlin.reflect.KClass
 
 /**
@@ -516,7 +517,7 @@ class NestedType<V: BaseDocSource> : ObjectType<V>() {
 
 /**
  * Needed to bind specific document source to [ObjectType] at runtime.
- * Used by [DocSource].
+ * Used by [dev.evo.elasticmagic.doc.DocSource].
  */
 internal class SourceType<V: BaseDocSource>(
     val type: FieldType<BaseDocSource, Nothing>,
@@ -545,7 +546,7 @@ internal class SourceType<V: BaseDocSource>(
 
 /**
  * Serializes/deserializes [type] into list of optional values.
- * Used by [DocSource].
+ * Used by [dev.evo.elasticmagic.doc.DocSource].
  */
 internal class OptionalListType<V, T>(val type: FieldType<V, T>) : FieldType<List<V?>, T> {
     override val name get() = type.name
@@ -585,7 +586,7 @@ internal class OptionalListType<V, T>(val type: FieldType<V, T>) : FieldType<Lis
 
 /**
  * Serializes/deserializes [type] into list of required values.
- * Used by [DocSource].
+ * Used by [dev.evo.elasticmagic.doc.DocSource].
  */
 internal class RequiredListType<V, T>(val type: FieldType<V, T>) : FieldType<List<V>, T> {
     override val name get() = type.name
