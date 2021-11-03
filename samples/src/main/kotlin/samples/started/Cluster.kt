@@ -11,5 +11,5 @@ val esTransport = ElasticsearchKtorTransport(
     serde = JsonSerde,
     engine = CIO.create {}
 )
-val cluster = ElasticsearchCluster(esTransport, JsonSerde)
+val cluster = ElasticsearchCluster(esTransport)
 val userIndex = cluster["user"]

@@ -25,9 +25,10 @@ internal fun Params.toRequestParameters(): Parameters {
 
 class ElasticsearchCluster(
     val transport: ElasticsearchTransport,
-    val serde: Serde,
+    serde: Serde? = null,
     private val compilers: CompilerSet? = null,
 ) {
+    val serde = serde ?: transport.serde
 
     private val esVersion = CompletableDeferred<ElasticsearchVersion>()
     private val sniffedCompilers = CompletableDeferred<CompilerSet>()

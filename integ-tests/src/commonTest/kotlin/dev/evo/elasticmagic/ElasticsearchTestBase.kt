@@ -18,7 +18,7 @@ abstract class ElasticsearchTestBase(indexName: String) : TestBase() {
         serde = JsonSerde,
         engine = httpEngine
     )
-    protected val cluster = ElasticsearchCluster(esTransport, JsonSerde)
+    protected val cluster = ElasticsearchCluster(esTransport)
     protected val index = cluster["elasticmagic-tests_$indexName"]
 
     protected suspend fun withTestIndex(vararg mappings: Document, block: suspend () -> Unit) {
