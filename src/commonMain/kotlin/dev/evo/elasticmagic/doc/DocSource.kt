@@ -1,6 +1,13 @@
 package dev.evo.elasticmagic.doc
 
 import dev.evo.elasticmagic.serde.Deserializer
+import dev.evo.elasticmagic.types.AnyFieldType
+import dev.evo.elasticmagic.types.DynDocSourceFieldType
+import dev.evo.elasticmagic.types.FieldType
+import dev.evo.elasticmagic.types.JoinType
+import dev.evo.elasticmagic.types.OptionalListType
+import dev.evo.elasticmagic.types.RequiredListType
+import dev.evo.elasticmagic.types.SourceType
 
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
@@ -674,42 +681,5 @@ fun SubDocument.list(): BoundField<List<DynDocSource?>, Nothing> {
         override fun getQualifiedFieldName(): String {
             return this@list.getQualifiedFieldName()
         }
-    }
-}
-
-internal object AnyFieldType : FieldType<Any, Any> {
-    override val name: String
-        get() = throw IllegalStateException("Should not be used in mappings")
-    override val termType = Any::class
-
-    override fun deserialize(v: Any, valueFactory: (() -> Any)?): Any {
-        return v
-    }
-
-    override fun serializeTerm(v: Any): Any = serErr(v)
-
-    override fun deserializeTerm(v: Any): Any = v
-}
-
-internal object DynDocSourceFieldType : FieldType<DynDocSource, Nothing> {
-    override val name: String
-        get() = throw IllegalStateException("Should not be used in mappings")
-    override val termType = Nothing::class
-
-    override fun deserialize(v: Any, valueFactory: (() -> DynDocSource)?): DynDocSource {
-        return when (v) {
-            is DynDocSource -> v
-            else -> throw IllegalArgumentException(
-                "DynDocSource object expected but was ${v::class.simpleName}"
-            )
-        }
-    }
-
-    override fun serializeTerm(v: Nothing): Nothing {
-        throw IllegalStateException("Unreachable")
-    }
-
-    override fun deserializeTerm(v: Any): Nothing {
-        throw IllegalStateException("Unreachable")
     }
 }

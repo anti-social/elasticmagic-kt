@@ -1,48 +1,106 @@
-package dev.evo.elasticmagic.doc
+package dev.evo.elasticmagic.types
 
 import dev.evo.elasticmagic.Params
+import dev.evo.elasticmagic.doc.BaseDocSource
+import dev.evo.elasticmagic.doc.DynDocSource
+
 import kotlin.reflect.KClass
 
+/**
+ * An exception for serialization errors.
+ */
 class ValueSerializationException(value: Any?, cause: Throwable? = null) :
     IllegalArgumentException("Cannot serialize [$value]", cause)
 
+/**
+ * A shortcut to throw [ValueSerializationException].
+ */
 fun serErr(v: Any?, cause: Throwable? = null): Nothing =
     throw ValueSerializationException(v, cause)
 
+/**
+ * An exception for deserialization errors.
+ */
 class ValueDeserializationException(value: Any, type: String, cause: Throwable? = null) :
     IllegalArgumentException("Cannot deserialize [$value] to [$type]", cause)
 
+/**
+ * A shortcut to throw [ValueDeserializationException].
+ */
 fun deErr(v: Any, type: String, cause: Throwable? = null): Nothing =
     throw ValueDeserializationException(v, type, cause)
 
+/**
+ * A field type is responsible for serialization/deserialization of
+ * document and term values. Term values are used in queries, aggregations etc.
+ *
+ * @param V the type of field value.
+ * @param T the type of term value.
+ */
 interface FieldType<V, T> {
+    /**
+     * Name of Elasticsearch mapping type.
+     */
     val name: String
+
+    /**
+     * Term class is used inside [FieldSet.getFieldByName] method to check term type before casting.
+     */
     val termType: KClass<*>
 
+    /**
+     * Serializes field value to Elasticsearch.
+     *
+     * @param v is a value from document source.
+     */
     fun serialize(v: V): Any {
         return v as Any
     }
 
+    /**
+     * Deserializes field value from Elasticsearch.
+     *
+     * @param v is a value from Elasticsearch response.
+     * @param valueFactory is a function that produces an instance of [V].
+     * Required for [ObjectType.deserialize] to create a document source.
+     */
     fun deserialize(
         v: Any,
         valueFactory: (() -> V)? = null
     ): V
 
+    /**
+     * Serializes term value to Elasticsearch.
+     */
     fun serializeTerm(v: T): Any {
         return v as Any
     }
 
+    /**
+     * Deserializes term value from Elasticsearch.
+     */
     fun deserializeTerm(v: Any): T
 }
 
+/**
+ * Base field type for types with the same field and term value types.
+ */
 abstract class SimpleFieldType<V> : FieldType<V, V> {
     override fun serializeTerm(v: V): Any = serialize(v)
 
     override fun deserializeTerm(v: Any): V = deserialize(v)
 }
 
+/**
+ * Base class for numeric field types.
+ *
+ * See: <https://www.elastic.co/guide/en/elasticsearch/reference/current/number.html>
+ */
 abstract class NumberType<V: Number> : SimpleFieldType<V>()
 
+/**
+ * Integer field type represents signed integer value from [Int.MIN_VALUE] to [Int.MAX_VALUE].
+ */
 object IntType : NumberType<Int>() {
     override val name = "integer"
     override val termType = Int::class
@@ -64,6 +122,9 @@ object IntType : NumberType<Int>() {
     }
 }
 
+/**
+ * Long field type represents signed integer value from [Long.MIN_VALUE] to [Long.MAX_VALUE].
+ */
 object LongType : NumberType<Long>() {
     override val name = "long"
     override val termType = Long::class
@@ -80,6 +141,9 @@ object LongType : NumberType<Long>() {
     }
 }
 
+/**
+ * Float field type represents single-precision floating point value.
+ */
 object FloatType : NumberType<Float>() {
     override val name = "float"
     override val termType = Float::class
@@ -98,6 +162,9 @@ object FloatType : NumberType<Float>() {
     }
 }
 
+/**
+ * Double field type represents double-precision floating point value.
+ */
 object DoubleType : NumberType<Double>() {
     override val name = "double"
     override val termType = Double::class
@@ -116,6 +183,11 @@ object DoubleType : NumberType<Double>() {
     }
 }
 
+/**
+ * Represents boolean values.
+ *
+ * See: <https://www.elastic.co/guide/en/elasticsearch/reference/current/boolean.html>
+ */
 object BooleanType : SimpleFieldType<Boolean>() {
     override val name = "boolean"
     override val termType = Boolean::class
@@ -139,6 +211,9 @@ object BooleanType : SimpleFieldType<Boolean>() {
     }
 }
 
+/**
+ * Base class for string types.
+ */
 abstract class StringType : SimpleFieldType<String>() {
     override val termType = String::class
 
@@ -147,14 +222,28 @@ abstract class StringType : SimpleFieldType<String>() {
     }
 }
 
+/**
+ * Keyword field type is used for not-analyzed strings.
+ *
+ * See: <https://www.elastic.co/guide/en/elasticsearch/reference/current/keyword.html>
+ */
 object KeywordType : StringType() {
     override val name = "keyword"
 }
 
+/**
+ * Text field type is used for full-text search.
+ *
+ * See: <https://www.elastic.co/guide/en/elasticsearch/reference/current/text.html>
+ */
 object TextType : StringType() {
     override val name = "text"
 }
 
+/**
+ * Base class for date types. Core module doesn't provide any specific implementations.
+ * One of implementation you can find inside `kotlinx-datetime` module.
+ */
 abstract class BaseDateTimeType<V> : SimpleFieldType<V>() {
     override val name = "date"
 
@@ -209,6 +298,13 @@ abstract class BaseDateTimeType<V> : SimpleFieldType<V>() {
     }
 }
 
+/**
+ * A class that represents field value for range types.
+ *
+ * @param V is a specific type of range.
+ *
+ * See: <https://www.elastic.co/guide/en/elasticsearch/reference/current/range.html>
+ */
 data class Range<V>(
     val gt: V? = null,
     val gte: V? = null,
@@ -216,6 +312,12 @@ data class Range<V>(
     val lte: V? = null,
 )
 
+/**
+ * A base class for range field types.
+ *
+ * @param V the range value type.
+ * @param type is a field type corresponding to [V] type.
+ */
 @Suppress("UnnecessaryAbstractClass")
 abstract class RangeType<V>(private val type: FieldType<V, V>) : FieldType<Range<V>, V> {
     override val name = "${type.name}_range"
@@ -246,12 +348,24 @@ abstract class RangeType<V>(private val type: FieldType<V, V>) : FieldType<Range
     override fun deserializeTerm(v: Any): V = type.deserializeTerm(v)
 }
 
+/**
+ * A range of signed 32-bit integers.
+ */
 object IntRangeType : RangeType<Int>(IntType)
 
+/**
+ * A range of signed 64-bit integers.
+ */
 object LongRangeType : RangeType<Long>(LongType)
 
+/**
+ * A range of single-precision floating point values.
+ */
 object FloatRangeType : RangeType<Float>(FloatType)
 
+/**
+ * A range of double-precision floating point values.
+ */
 object DoubleRangeType : RangeType<Double>(DoubleType)
 
 /**
@@ -307,11 +421,22 @@ class EnumFieldType<V: Enum<V>>(
     }
 }
 
+/**
+ * Join field value.
+ *
+ * @param name is a name of the relation.
+ * @param parent is an optional parent document id.
+ */
 data class Join(
     val name: String,
     val parent: String? = null,
 )
 
+/**
+ * Join field type represents parent-child relations between documents in an index.
+ *
+ * See: <https://www.elastic.co/guide/en/elasticsearch/reference/current/parent-join.html>
+ */
 object JoinType : FieldType<Join, String> {
     override val name = "join"
     override val termType = String::class
@@ -343,6 +468,13 @@ object JoinType : FieldType<Join, String> {
     }
 }
 
+/**
+ * Object field type is used to represent sub-documents.
+ *
+ * @param V is a type of document source.
+ *
+ * See: <https://www.elastic.co/guide/en/elasticsearch/reference/current/object.html>
+ */
 open class ObjectType<V: BaseDocSource> : FieldType<V, Nothing> {
     override val name = "object"
     override val termType = Nothing::class
@@ -376,11 +508,20 @@ open class ObjectType<V: BaseDocSource> : FieldType<V, Nothing> {
     }
 }
 
+/**
+ * Nested field type allows indexing array of objects as separate documents.
+ *
+ * See: <https://www.elastic.co/guide/en/elasticsearch/reference/current/nested.html>
+ */
 class NestedType<V: BaseDocSource> : ObjectType<V>() {
     override val name = "nested"
 }
 
-open class SourceType<V: BaseDocSource>(
+/**
+ * Needed to bind specific document source to [ObjectType] at runtime.
+ * Used by [dev.evo.elasticmagic.doc.DocSource].
+ */
+internal class SourceType<V: BaseDocSource>(
     val type: FieldType<BaseDocSource, Nothing>,
     private val sourceFactory: () -> V
 ) : FieldType<V, Nothing> {
@@ -405,7 +546,11 @@ open class SourceType<V: BaseDocSource>(
     }
 }
 
-class OptionalListType<V, T>(val type: FieldType<V, T>) : FieldType<List<V?>, T> {
+/**
+ * Serializes/deserializes [type] into list of optional values.
+ * Used by [dev.evo.elasticmagic.doc.DocSource].
+ */
+internal class OptionalListType<V, T>(val type: FieldType<V, T>) : FieldType<List<V?>, T> {
     override val name get() = type.name
     override val termType = type.termType
 
@@ -441,7 +586,11 @@ class OptionalListType<V, T>(val type: FieldType<V, T>) : FieldType<List<V?>, T>
     }
 }
 
-class RequiredListType<V, T>(val type: FieldType<V, T>) : FieldType<List<V>, T> {
+/**
+ * Serializes/deserializes [type] into list of required values.
+ * Used by [dev.evo.elasticmagic.doc.DocSource].
+ */
+internal class RequiredListType<V, T>(val type: FieldType<V, T>) : FieldType<List<V>, T> {
     override val name get() = type.name
     override val termType = type.termType
 
@@ -467,6 +616,50 @@ class RequiredListType<V, T>(val type: FieldType<V, T>) : FieldType<List<V>, T> 
     }
 
     override fun deserializeTerm(v: Any): T {
+        throw IllegalStateException("Unreachable")
+    }
+}
+
+/**
+ * Represents any field type.
+ * Used by [DynDocSource] for fields navigation.
+ */
+internal object AnyFieldType : FieldType<Any, Any> {
+    override val name: String
+        get() = throw IllegalStateException("Should not be used in mappings")
+    override val termType = Any::class
+
+    override fun deserialize(v: Any, valueFactory: (() -> Any)?): Any {
+        return v
+    }
+
+    override fun serializeTerm(v: Any): Any = serErr(v)
+
+    override fun deserializeTerm(v: Any): Any = v
+}
+
+/**
+ * Serializes/deserializes [DynDocSource].
+ */
+internal object DynDocSourceFieldType : FieldType<DynDocSource, Nothing> {
+    override val name: String
+        get() = throw IllegalStateException("Should not be used in mappings")
+    override val termType = Nothing::class
+
+    override fun deserialize(v: Any, valueFactory: (() -> DynDocSource)?): DynDocSource {
+        return when (v) {
+            is DynDocSource -> v
+            else -> throw IllegalArgumentException(
+                "DynDocSource object expected but was ${v::class.simpleName}"
+            )
+        }
+    }
+
+    override fun serializeTerm(v: Nothing): Nothing {
+        throw IllegalStateException("Unreachable")
+    }
+
+    override fun deserializeTerm(v: Any): Nothing {
         throw IllegalStateException("Unreachable")
     }
 }

@@ -6,7 +6,7 @@ import dev.evo.elasticmagic.Params
 import dev.evo.elasticmagic.doc.BoundField
 import dev.evo.elasticmagic.doc.DocSourceField
 import dev.evo.elasticmagic.doc.Document
-import dev.evo.elasticmagic.doc.KeywordType
+import dev.evo.elasticmagic.types.KeywordType
 import dev.evo.elasticmagic.doc.RuntimeFields
 import dev.evo.elasticmagic.doc.SubDocument
 import dev.evo.elasticmagic.doc.SubFields

@@ -1,5 +1,8 @@
 package dev.evo.elasticmagic.doc
 
+import dev.evo.elasticmagic.types.BaseDateTimeType
+import dev.evo.elasticmagic.types.ValueDeserializationException
+import dev.evo.elasticmagic.types.deErr
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime

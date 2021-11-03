@@ -1,5 +1,6 @@
 package dev.evo.elasticmagic.doc
 
+import dev.evo.elasticmagic.types.ValueDeserializationException
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
 

@@ -8,7 +8,7 @@ import dev.evo.elasticmagic.doc.DocSourceFactory
 import dev.evo.elasticmagic.doc.DocSourceWithMeta
 import dev.evo.elasticmagic.doc.Document
 import dev.evo.elasticmagic.doc.IdentActionMeta
-import dev.evo.elasticmagic.doc.Join
+import dev.evo.elasticmagic.types.Join
 import dev.evo.elasticmagic.doc.MetaFields
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.shouldBe

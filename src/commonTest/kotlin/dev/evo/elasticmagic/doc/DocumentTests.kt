@@ -2,6 +2,14 @@ package dev.evo.elasticmagic.doc
 
 import dev.evo.elasticmagic.Params
 import dev.evo.elasticmagic.query.Script
+import dev.evo.elasticmagic.types.DoubleType
+import dev.evo.elasticmagic.types.EnumFieldType
+import dev.evo.elasticmagic.types.FieldType
+import dev.evo.elasticmagic.types.IntType
+import dev.evo.elasticmagic.types.KeywordType
+import dev.evo.elasticmagic.types.LongType
+import dev.evo.elasticmagic.types.ObjectType
+import dev.evo.elasticmagic.types.TextType
 
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.maps.shouldContainExactly
