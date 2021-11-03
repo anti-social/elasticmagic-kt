@@ -8,6 +8,12 @@ import dev.evo.elasticmagic.doc.FieldType
 import dev.evo.elasticmagic.serde.Deserializer
 import dev.evo.elasticmagic.serde.Serializer
 
+/**
+ * Represents value source for an aggregation:
+ * - [Field] takes values from a field.
+ * - [Script] gets values as a script result.
+ * - [ValueScript] combines a field with a script. There is special variable `_value` that contains field value.
+ */
 sealed class AggValue<T> : Expression {
     data class Field<T>(val field: FieldOperations<T>) : AggValue<T>() {
         override fun clone() = copy()
@@ -51,8 +57,18 @@ sealed class AggValue<T> : Expression {
     }
 }
 
+/**
+ * Base aggregation expression.
+ * @param R an aggregation result type for this aggregation
+ */
 interface Aggregation<R: AggregationResult> : NamedExpression {
+    /**
+     * Processes corresponding aggregation response.
+     */
     fun processResult(obj: Deserializer.ObjectCtx): R
 }
 
+/**
+ * Aggregation result interface marker.
+ */
 interface AggregationResult
