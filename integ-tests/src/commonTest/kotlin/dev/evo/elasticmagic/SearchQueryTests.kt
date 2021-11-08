@@ -210,22 +210,20 @@ class SearchQueryTests : ElasticsearchTestBase("test-search-query") {
 
     @Test
     fun docvalueFields() = runTest {
-        withFixtures(OrderDoc, listOf(
-            karlssonsJam, karlssonsBestDonuts, karlssonsJustDonuts, littleBrotherDogStuff
-        )) {
+        withFixtures(OrderDoc, listOf(karlssonsJam)) {
             val searchResult = SearchQuery(::OrderDocSource)
-                .docvalueFields(OrderDoc.status)
-                .docvalueFields(FieldFormat(OrderDoc.dateCreated, "YYYY"))
+                .docvalueFields(OrderDoc.status, OrderDoc.dateCreated.format("YYYY"))
                 .execute(index)
 
-            searchResult.totalHits shouldBe 4
+            searchResult.totalHits shouldBe 1
             searchResult.maxScore shouldBe 1.0F
 
-            checkOrderHits(searchResult.hits, setOf("101", "102", "103", "104"))
             searchResult.hits[0].shouldNotBeNull().let { hit ->
                 val fields = hit.fields
                 fields[OrderDoc.status] shouldBe listOf(OrderStatus.NEW)
+                fields["status"] shouldBe listOf(0L)
                 fields[OrderDoc.dateCreated] shouldBe listOf(LocalDateTime(2019, 1, 1, 0, 0).toInstant(TimeZone.UTC))
+                fields["dateCreated"] shouldBe listOf("2019")
             }
         }
     }

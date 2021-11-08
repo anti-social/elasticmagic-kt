@@ -2,7 +2,6 @@ package dev.evo.elasticmagic.compile
 
 import dev.evo.elasticmagic.BaseTest
 import dev.evo.elasticmagic.ElasticsearchVersion
-import dev.evo.elasticmagic.FieldFormat
 import dev.evo.elasticmagic.Params
 import dev.evo.elasticmagic.SearchQuery
 import dev.evo.elasticmagic.SearchType
@@ -16,6 +15,7 @@ import dev.evo.elasticmagic.doc.datetime
 import dev.evo.elasticmagic.query.BoolNode
 import dev.evo.elasticmagic.query.DisMax
 import dev.evo.elasticmagic.query.DisMaxNode
+import dev.evo.elasticmagic.query.FieldFormat
 import dev.evo.elasticmagic.query.FunctionScore
 import dev.evo.elasticmagic.query.FunctionScoreNode
 import dev.evo.elasticmagic.query.Ids

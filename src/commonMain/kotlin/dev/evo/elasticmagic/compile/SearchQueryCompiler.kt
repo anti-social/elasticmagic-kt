@@ -116,6 +116,7 @@ open class SearchQueryCompiler(
             }
         }
         if (searchQuery.docvalueFields.isNotEmpty()) {
+            val df = searchQuery.docvalueFields
             ctx.array("docvalue_fields") {
                 visit(this, searchQuery.docvalueFields)
             }
