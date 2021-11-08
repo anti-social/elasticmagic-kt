@@ -17,20 +17,24 @@ interface Named : ToValue<String> {
     }
 }
 
-interface Expression : SearchQueryCompiler.Visitable {
-    fun clone(): Expression
+interface Expression<T: Serializer.Ctx> : SearchQueryCompiler.Visitable<T> {
+    fun clone(): Expression<T>
 
-    fun children(): Iterator<Expression>? {
+    fun children(): Iterator<Expression<*>>? {
         return null
     }
 
-    fun reduce(): Expression? {
+    fun reduce(): Expression<T>? {
         return this
     }
 }
 
-internal inline fun Expression.collect(process: (Expression) -> Unit) {
-    val stack = ArrayList<Expression>()
+interface ObjExpression : Expression<Serializer.ObjectCtx>
+
+interface ArrayExpression : Expression<Serializer.ArrayCtx>
+
+internal inline fun Expression<*>.collect(process: (Expression<*>) -> Unit) {
+    val stack = ArrayList<Expression<*>>()
     stack.add(this)
 
     while (true) {
@@ -46,7 +50,7 @@ internal inline fun Expression.collect(process: (Expression) -> Unit) {
     }
 }
 
-interface NamedExpression : Expression {
+interface NamedExpression : ObjExpression {
     val name: String
 
     override fun accept(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {

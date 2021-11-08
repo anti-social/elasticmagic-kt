@@ -425,21 +425,99 @@ class SearchQueryCompilerTests : BaseTest() {
     }
 
     @Test
-    fun testTrackScores() {
+    fun trackScores() {
         compile(SearchQuery().trackScores(true)).body shouldContainExactly mapOf(
             "track_scores" to true
         )
     }
 
     @Test
-    fun testTrackTotalHits() {
+    fun trackTotalHits() {
         compile(SearchQuery().trackScores(true)).body shouldContainExactly mapOf(
             "track_scores" to true
         )
     }
 
     @Test
-    fun testSizeAndFrom() {
+    fun fields() {
+        compile(
+            SearchQuery().fields(*arrayOf<FieldFormat>())
+        ).body shouldContainExactly emptyMap()
+
+        compile(
+            SearchQuery()
+                .fields(AnyField("rank"), AnyField("opinion.rating"))
+        ).body shouldContainExactly mapOf(
+            "fields" to listOf("rank", "opinion.rating")
+        )
+
+        compile(
+            SearchQuery()
+                .fields(FieldFormat(AnyField("date_created"), "epoch_millis"))
+        ).body shouldContainExactly mapOf(
+            "fields" to listOf(mapOf("field" to "date_created", "format" to "epoch_millis"))
+        )
+    }
+
+    @Test
+    fun docvalueFields() {
+        compile(
+            SearchQuery().docvalueFields(*arrayOf<FieldFormat>())
+        ).body shouldContainExactly emptyMap()
+
+        compile(
+            SearchQuery()
+                .docvalueFields(AnyField("rank"), AnyField("opinion.rating"))
+        ).body shouldContainExactly mapOf(
+            "docvalue_fields" to listOf("rank", "opinion.rating")
+        )
+
+        compile(
+            SearchQuery()
+                .docvalueFields(FieldFormat(AnyField("date_created"), "YYYY"))
+        ).body shouldContainExactly mapOf(
+            "docvalue_fields" to listOf(mapOf("field" to "date_created", "format" to "YYYY"))
+        )
+    }
+
+    @Test
+    fun storedFields() {
+        compile(
+            SearchQuery().storedFields(*arrayOf())
+        ).body shouldContainExactly emptyMap()
+
+        compile(
+            SearchQuery()
+                .storedFields(AnyField("rank"), AnyField("opinion.rating"))
+        ).body shouldContainExactly mapOf(
+            "stored_fields" to listOf("rank", "opinion.rating")
+        )
+    }
+
+    @Test
+    fun scriptFields() {
+        compile(
+            SearchQuery().scriptFields(*arrayOf())
+        ).body shouldContainExactly emptyMap()
+
+        compile(
+            SearchQuery()
+                .scriptFields(
+                    "weighted_rank" to Script("doc['rank'].value * doc['weight'].value"),
+                )
+        ).body shouldContainExactly mapOf(
+            "script_fields" to mapOf(
+                "weighted_rank" to mapOf(
+                    "script" to mapOf(
+                        "source" to "doc['rank'].value * doc['weight'].value"
+                    )
+                )
+            )
+        )
+    }
+
+    @Test
+    fun sizeAndFrom() {
         val query = SearchQuery()
             .size(100)
             .from(200)

@@ -10,7 +10,7 @@ data class Script(
     val spec: Spec,
     val lang: String? = null,
     val params: Params = Params(),
-) : Expression {
+) : ObjExpression {
     // FIXME: Don't like it as it is error prone
     constructor(
         source: String? = null,
@@ -20,8 +20,8 @@ data class Script(
     ) : this(Spec(source, id), lang, params)
 
     // TODO: After update kotlin to 1.5 move subclasses outside of Spec
-    sealed class Spec : Expression {
-        data class Source(val source: String) : Spec(), Expression {
+    sealed class Spec : ObjExpression {
+        data class Source(val source: String) : Spec() {
             override fun clone() = copy()
 
             override fun accept(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
@@ -29,7 +29,7 @@ data class Script(
             }
         }
 
-        data class Id(val id: String) : Spec(), Expression {
+        data class Id(val id: String) : Spec() {
             override fun clone() = copy()
 
             override fun accept(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {

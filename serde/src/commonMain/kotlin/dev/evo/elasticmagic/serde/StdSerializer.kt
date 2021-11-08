@@ -45,7 +45,7 @@ abstract class StdSerializer(
         }
     }
 
-    open inner class ArrayCtx(
+    abstract inner class ArrayCtx(
         protected val array: MutableList<Any?>
     ) : Serializer.ArrayCtx {
         fun build(): List<Any?> {

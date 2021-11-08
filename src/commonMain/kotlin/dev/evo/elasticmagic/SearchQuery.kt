@@ -1,8 +1,10 @@
 package dev.evo.elasticmagic
 
 import dev.evo.elasticmagic.aggs.Aggregation
+import dev.evo.elasticmagic.compile.SearchQueryCompiler
 import dev.evo.elasticmagic.doc.BaseDocSource
 import dev.evo.elasticmagic.doc.DynDocSource
+import dev.evo.elasticmagic.query.ArrayExpression
 import dev.evo.elasticmagic.query.FieldOperations
 import dev.evo.elasticmagic.query.NodeHandle
 import dev.evo.elasticmagic.query.QueryExpression
@@ -13,11 +15,25 @@ import dev.evo.elasticmagic.query.Sort
 import dev.evo.elasticmagic.query.ToValue
 import dev.evo.elasticmagic.query.collect
 import dev.evo.elasticmagic.serde.Deserializer
+import dev.evo.elasticmagic.serde.Serializer
 
 data class FieldFormat(
     val field: FieldOperations<*>,
     val format: String? = null,
-)
+) : ArrayExpression {
+    override fun clone() = copy()
+
+    override fun accept(ctx: Serializer.ArrayCtx, compiler: SearchQueryCompiler) {
+        if (format != null) {
+            ctx.obj {
+                field("field", field.getQualifiedFieldName())
+                field("format", format)
+            }
+        } else {
+            ctx.value(field.getQualifiedFieldName())
+        }
+    }
+}
 
 enum class SearchType : ToValue<String> {
     QUERY_THEN_FETCH, DFS_QUERY_THEN_FETCH;
@@ -38,6 +54,7 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
 
     protected val aggregations: MutableMap<String, Aggregation<*>> = mutableMapOf()
 
+    protected val fields: MutableList<FieldFormat> = mutableListOf()
     protected val docvalueFields: MutableList<FieldFormat> = mutableListOf()
     protected val storedFields: MutableList<FieldOperations<*>> = mutableListOf()
     protected val scriptFields: MutableMap<String, Script> = mutableMapOf()
@@ -145,6 +162,14 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
         this.trackTotalHits = trackTotalHits
     }
 
+    fun fields(vararg fields: FieldOperations<*>): T = self {
+        this.fields += fields.map(::FieldFormat)
+    }
+
+    fun fields(vararg fields: FieldFormat): T = self {
+        this.fields += fields
+    }
+
     fun docvalueFields(vararg fields: FieldOperations<*>): T = self {
         docvalueFields += fields.map(::FieldFormat)
     }
@@ -223,6 +248,7 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
             sorts = sorts.toList(),
             trackScores = trackScores,
             trackTotalHits = trackTotalHits,
+            fields = fields,
             docvalueFields = docvalueFields,
             storedFields = storedFields,
             scriptFields = scriptFields,
@@ -275,6 +301,7 @@ open class SearchQuery<S: BaseDocSource>(
         cloned.sorts.addAll(sorts)
         cloned.trackScores = trackScores
         cloned.trackTotalHits = trackTotalHits
+        cloned.fields.addAll(fields)
         cloned.docvalueFields.addAll(docvalueFields)
         cloned.storedFields.addAll(storedFields)
         cloned.scriptFields.putAll(scriptFields)
@@ -300,6 +327,7 @@ data class PreparedSearchQuery<S: BaseDocSource>(
     val sorts: List<Sort>,
     val trackScores: Boolean?,
     val trackTotalHits: Boolean?,
+    val fields: List<FieldFormat>,
     val docvalueFields: List<FieldFormat>,
     val storedFields: List<FieldOperations<*>>,
     val scriptFields: Map<String, Script>,

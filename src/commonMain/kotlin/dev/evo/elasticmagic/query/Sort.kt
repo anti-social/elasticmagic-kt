@@ -13,7 +13,7 @@ data class Sort(
     val missing: Missing? = null,
     val unmappedType: String? = null,
     val nested: Nested? = null,
-) : Expression {
+) : ObjExpression {
     constructor(
         field: FieldOperations<*>? = null,
         scriptType: String? = null,
@@ -102,7 +102,7 @@ data class Sort(
         val filter: QueryExpression? = null,
         val maxChildren: Int? = null,
         val nested: Nested? = null,
-    ) : Expression {
+    ) : ObjExpression {
         override fun clone() = copy()
 
         override fun accept(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {

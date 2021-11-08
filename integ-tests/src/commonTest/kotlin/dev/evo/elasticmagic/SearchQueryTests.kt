@@ -209,6 +209,28 @@ class SearchQueryTests : ElasticsearchTestBase("test-search-query") {
     }
 
     @Test
+    fun docvalueFields() = runTest {
+        withFixtures(OrderDoc, listOf(
+            karlssonsJam, karlssonsBestDonuts, karlssonsJustDonuts, littleBrotherDogStuff
+        )) {
+            val searchResult = SearchQuery(::OrderDocSource)
+                .docvalueFields(OrderDoc.status)
+                .docvalueFields(FieldFormat(OrderDoc.dateCreated, "YYYY"))
+                .execute(index)
+
+            searchResult.totalHits shouldBe 4
+            searchResult.maxScore shouldBe 1.0F
+
+            checkOrderHits(searchResult.hits, setOf("101", "102", "103", "104"))
+            searchResult.hits[0].shouldNotBeNull().let { hit ->
+                val fields = hit.fields
+                fields[OrderDoc.status] shouldBe listOf(OrderStatus.NEW)
+                fields[OrderDoc.dateCreated] shouldBe listOf(LocalDateTime(2019, 1, 1, 0, 0).toInstant(TimeZone.UTC))
+            }
+        }
+    }
+
+    @Test
     fun simpleTermQuery() = runTest {
         withFixtures(OrderDoc, listOf(karlssonsJam, littleBrotherDogStuff)) {
             val searchResult = SearchQuery(

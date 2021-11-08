@@ -38,10 +38,8 @@ enum class Dynamic : ToValue<String> {
  * Represents field of any type in an Elasticsearch document.
  * See [FieldSet.getAllFields] and [FieldSet.get] methods.
  */
-interface AnyField<T> : FieldOperations<T> {
+interface MappingField<T> : FieldOperations<T> {
     fun getMappingParams(): Params
-
-    fun getParent(): Named
 
     fun isIgnored(): Boolean
 }
@@ -60,7 +58,7 @@ open class BoundField<V, T>(
     private val params: Params,
     private val parent: FieldSet,
     private val ignored: Boolean = false,
-) : AnyField<T> {
+) : MappingField<T> {
     private val qualifiedName = run {
         val parentQualifiedName = parent.getQualifiedFieldName()
         if (parentQualifiedName.isNotEmpty()) {
@@ -78,7 +76,7 @@ open class BoundField<V, T>(
 
     override fun getMappingParams(): Params = params
 
-    override fun getParent(): FieldSet = parent
+    fun getParent(): FieldSet = parent
 
     override fun isIgnored(): Boolean = ignored
 
@@ -144,11 +142,11 @@ class BoundJoinField(
  * https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping.html
  */
 abstract class FieldSet : Named {
-    private val fields: ArrayList<AnyField<*>> = arrayListOf()
+    private val fields: ArrayList<MappingField<*>> = arrayListOf()
     private val fieldsByName: HashMap<String, Int> = hashMapOf()
 
     // TODO: consider to make it public
-    internal fun addField(field: AnyField<*>) {
+    internal fun addField(field: MappingField<*>) {
         val existingFieldIx = fieldsByName[field.getFieldName()]
         if (existingFieldIx != null) {
             fields[existingFieldIx] = field
@@ -158,22 +156,22 @@ abstract class FieldSet : Named {
         }
     }
 
-    fun getAllFields(): List<AnyField<*>> {
+    fun getAllFields(): List<MappingField<*>> {
         return fields.toList()
     }
 
-    operator fun get(name: String): AnyField<*>? {
+    operator fun get(name: String): MappingField<*>? {
         return fields[fieldsByName[name] ?: return null]
     }
 
-    inline fun <reified T> getFieldByName(name: String): AnyField<T> {
+    inline fun <reified T> getFieldByName(name: String): MappingField<T> {
         val field = this[name] ?: throw IllegalArgumentException("Missing field: [$name]")
         val termType = T::class
         if (field.getFieldType().termType != termType) {
             throw IllegalArgumentException("Expected $name field should be of type ${termType.simpleName}")
         }
         @Suppress("UNCHECKED_CAST")
-        return field as AnyField<T>
+        return field as MappingField<T>
     }
 
     fun <V, T> field(
@@ -469,17 +467,16 @@ open class SubFields<V>(private val field: BoundField<V, V>) : FieldSet() {
     }
 }
 
-internal open class WrapperField<T>(val field: AnyField<T>) : AnyField<T> {
+internal open class WrapperField<T>(val field: MappingField<T>) : MappingField<T> {
     override fun getFieldName(): String = field.getFieldName()
     override fun getQualifiedFieldName(): String = field.getQualifiedFieldName()
     override fun getFieldType(): FieldType<*, T> = field.getFieldType()
     override fun getMappingParams(): Params = field.getMappingParams()
-    override fun getParent(): Named = field.getParent()
     override fun isIgnored(): Boolean = field.isIgnored()
 }
 
 internal class SubFieldsField<T>(
-    field: AnyField<T>,
+    field: MappingField<T>,
     val subFields: SubFields<*>
 ) : WrapperField<T>(field)
 
@@ -587,7 +584,7 @@ abstract class SubDocument(
 }
 
 internal class SubDocumentField<T>(
-    field: AnyField<T>,
+    field: MappingField<T>,
     val subDocument: SubDocument
 ) : WrapperField<T>(field)
 
@@ -609,7 +606,7 @@ open class MetaFields : RootFieldSet() {
     open val size by SizeField()
 
     @Suppress("UnnecessaryAbstractClass")
-    abstract class BaseMetaField<V, B: AnyField<V>>(
+    abstract class BaseMetaField<V, B: MappingField<V>>(
         name: String, type: FieldType<V, V>, params: Params = Params(),
         private val boundFieldFactory: (String, Params, MetaFields) -> B
     ) : Field<V, V>(name, type, params) {
@@ -751,8 +748,8 @@ fun mergeDocuments(vararg docs: Document): Document {
     }
 }
 
-private fun mergeFieldSets(fieldSets: List<FieldSet>): List<AnyField<*>> {
-    val mergedFields = mutableListOf<AnyField<*>>()
+private fun mergeFieldSets(fieldSets: List<FieldSet>): List<MappingField<*>> {
+    val mergedFields = mutableListOf<MappingField<*>>()
     val mergedFieldsByName = mutableMapOf<String, Int>()
     for (fields in fieldSets) {
         for (field in fields.getAllFields()) {
@@ -852,7 +849,7 @@ private fun checkMetaFields(
     expectedDocName: String?,
     expectedMetaFields: MetaFields
 ) {
-    val expectedFieldNames = expectedMetaFields.getAllFields().map(AnyField<*>::getFieldName)
+    val expectedFieldNames = expectedMetaFields.getAllFields().map(MappingField<*>::getFieldName)
     for (expectedFieldName in expectedFieldNames) {
         requireNotNull(metaFields[expectedFieldName]) {
             "$expectedDocName has meta field $expectedFieldName but $docName does not"
@@ -869,7 +866,7 @@ private fun checkMetaFields(
 }
 
 private fun checkFieldsIdentical(
-    field: AnyField<*>, expected: AnyField<*>,
+    field: MappingField<*>, expected: MappingField<*>,
 ) {
     val fieldName = field.getFieldName()
     val expectedName = expected.getFieldName()

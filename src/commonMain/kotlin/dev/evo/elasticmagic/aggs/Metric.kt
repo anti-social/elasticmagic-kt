@@ -1,9 +1,9 @@
 package dev.evo.elasticmagic.aggs
 
-import dev.evo.elasticmagic.query.Expression
-import dev.evo.elasticmagic.query.FieldOperations
-import dev.evo.elasticmagic.query.Script
 import dev.evo.elasticmagic.compile.SearchQueryCompiler
+import dev.evo.elasticmagic.query.FieldOperations
+import dev.evo.elasticmagic.query.ObjExpression
+import dev.evo.elasticmagic.query.Script
 import dev.evo.elasticmagic.serde.Deserializer
 import dev.evo.elasticmagic.serde.Serializer
 
@@ -113,7 +113,7 @@ data class WeightedAvgAgg<T>(
         val value: AggValue<T>,
         val script: Script? = null,
         val missing: T? = null,
-    ) : Expression {
+    ) : ObjExpression {
         override fun clone() = copy()
 
         constructor(

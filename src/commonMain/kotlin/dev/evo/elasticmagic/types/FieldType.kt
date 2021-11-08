@@ -340,6 +340,13 @@ abstract class RangeType<V>(private val type: FieldType<V, V>) : FieldType<Range
             val lte = v["lte"]?.let(type::deserialize)
             Range(gt = gt, gte = gte, lt = lt, lte = lte)
         }
+        is String -> {
+            // Ranges can have 2 flavors:
+            // - stored: "[0 : 10)"
+            // - docvalue: "\x02\x80\x81\x81\x82"
+            //   https://github.com/elastic/elasticsearch/blob/26c86871fc091900952e88e252c36fbfedf8d5fa/server/src/main/java/org/elasticsearch/index/mapper/BinaryRangeUtil.java#L107
+            TODO("Implement deserializing from string")
+        }
         else -> deErr(v, "Map")
     }
 

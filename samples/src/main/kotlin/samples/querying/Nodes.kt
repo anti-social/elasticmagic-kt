@@ -4,7 +4,7 @@ import dev.evo.elasticmagic.SearchQuery
 import dev.evo.elasticmagic.doc.BaseDocSource
 import dev.evo.elasticmagic.doc.BoundField
 import dev.evo.elasticmagic.doc.Document
-import dev.evo.elasticmagic.doc.AnyField
+import dev.evo.elasticmagic.doc.MappingField
 import dev.evo.elasticmagic.doc.SubDocument
 import dev.evo.elasticmagic.query.Bool
 import dev.evo.elasticmagic.query.DisMaxNode
@@ -71,7 +71,7 @@ var boostedQuery = if (boostByNumberOfVotes) {
 
 val additionalLanguages = listOf("de", "ru")
 val userLang = additionalLanguages[Random.nextInt(additionalLanguages.size)]
-val additionalLangFields: List<AnyField<String>> = listOfNotNull(
+val additionalLangFields: List<MappingField<String>> = listOfNotNull(
     QuestionDoc.title.getFieldByName(userLang),
     QuestionDoc.text.getFieldByName(userLang),
 )

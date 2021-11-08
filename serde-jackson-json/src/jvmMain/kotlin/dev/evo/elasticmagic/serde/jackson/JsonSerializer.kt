@@ -13,5 +13,9 @@ object JsonSerializer : StdSerializer(::ObjectCtx, ::ArrayCtx) {
         }
     }
 
-    class ArrayCtx : StdSerializer.ArrayCtx(ArrayList())
+    class ArrayCtx : StdSerializer.ArrayCtx(ArrayList()) {
+        override fun serialize(): String {
+            return mapper.writeValueAsString(array)
+        }
+    }
 }

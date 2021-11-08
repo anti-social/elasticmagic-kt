@@ -6,7 +6,7 @@ import dev.evo.elasticmagic.serde.Serializer
 interface DisMaxExpression : QueryExpression {
     val queries: List<QueryExpression>
 
-    override fun children(): Iterator<Expression> = iterator {
+    override fun children(): Iterator<QueryExpression> = iterator {
         yieldAll(queries)
     }
 }

@@ -6,7 +6,7 @@ import dev.evo.elasticmagic.serde.Serializer
 interface FunctionScoreExpression : QueryExpression {
     val functions: List<FunctionScore.Function>
 
-    override fun children(): Iterator<Expression> = iterator {
+    override fun children(): Iterator<Expression<*>> = iterator {
         yieldAll(functions)
     }
 }
@@ -59,10 +59,10 @@ data class FunctionScore(
         }
     }
 
-    abstract class Function : Expression {
+    abstract class Function : ObjExpression {
         abstract val filter: QueryExpression?
 
-        override fun children(): Iterator<Expression>? {
+        override fun children(): Iterator<Expression<*>>? {
             val filter = filter
             if (filter != null) {
                 return iterator { yield(filter) }
@@ -95,7 +95,7 @@ data class FunctionScore(
     ) : Function() {
         override fun clone() = copy()
 
-        override fun reduce(): Expression {
+        override fun reduce(): Function {
             return copy(
                 filter = reduceFilter()
             )
@@ -136,7 +136,7 @@ data class FunctionScore(
 
         override fun clone() = copy()
 
-        override fun reduce(): Expression {
+        override fun reduce(): Function {
             return copy(
                 filter = reduceFilter()
             )
@@ -165,7 +165,7 @@ data class FunctionScore(
     ) : Function() {
         override fun clone() = copy()
 
-        override fun reduce(): Expression {
+        override fun reduce(): Function {
             return copy(
                 filter = reduceFilter()
             )
@@ -187,7 +187,7 @@ data class FunctionScore(
     ) : Function() {
         override fun clone() = copy()
 
-        override fun reduce(): Expression {
+        override fun reduce(): Function {
             return copy(
                 filter = reduceFilter()
             )

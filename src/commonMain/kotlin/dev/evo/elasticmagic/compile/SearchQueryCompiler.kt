@@ -1,19 +1,22 @@
 package dev.evo.elasticmagic.compile
 
-import dev.evo.elasticmagic.aggs.AggregationResult
-import dev.evo.elasticmagic.doc.BaseDocSource
 import dev.evo.elasticmagic.BaseSearchQuery
-import dev.evo.elasticmagic.query.Bool
 import dev.evo.elasticmagic.ElasticsearchVersion
-import dev.evo.elasticmagic.query.Expression
 import dev.evo.elasticmagic.PreparedSearchQuery
 import dev.evo.elasticmagic.SearchHit
 import dev.evo.elasticmagic.SearchQueryResult
+import dev.evo.elasticmagic.aggs.AggregationResult
+import dev.evo.elasticmagic.doc.BaseDocSource
+import dev.evo.elasticmagic.query.ArrayExpression
+import dev.evo.elasticmagic.query.Bool
+import dev.evo.elasticmagic.query.Expression
+import dev.evo.elasticmagic.query.ObjExpression
 import dev.evo.elasticmagic.query.ToValue
 import dev.evo.elasticmagic.serde.Deserializer
 import dev.evo.elasticmagic.serde.Serializer
 import dev.evo.elasticmagic.serde.Serializer.ArrayCtx
 import dev.evo.elasticmagic.serde.Serializer.ObjectCtx
+import dev.evo.elasticmagic.serde.toList
 import dev.evo.elasticmagic.serde.toMap
 import dev.evo.elasticmagic.toRequestParameters
 import dev.evo.elasticmagic.transport.Request
@@ -34,13 +37,13 @@ open class SearchQueryCompiler(
     esVersion: ElasticsearchVersion,
 ) : BaseCompiler(esVersion) {
 
-    interface Visitable {
-        fun accept(ctx: ObjectCtx, compiler: SearchQueryCompiler)
+    interface Visitable<T: Serializer.Ctx> {
+        fun accept(ctx: T, compiler: SearchQueryCompiler)
     }
 
     fun <S: BaseDocSource> compile(
         serializer: Serializer, input: SearchQueryWithIndex<S>
-    ): Request<Serializer.ObjectCtx, SearchQueryResult<S>> {
+    ): Request<ObjectCtx, SearchQueryResult<S>> {
         val searchQuery = input.searchQuery.prepare()
         val body = serializer.obj {
             visit(this, searchQuery)
@@ -107,18 +110,14 @@ open class SearchQueryCompiler(
         if (searchQuery.trackTotalHits != null) {
             ctx.field("track_total_hits", searchQuery.trackTotalHits)
         }
+        if (searchQuery.fields.isNotEmpty()) {
+            ctx.array("fields") {
+                visit(this, searchQuery.fields)
+            }
+        }
         if (searchQuery.docvalueFields.isNotEmpty()) {
             ctx.array("docvalue_fields") {
-                for (field in searchQuery.docvalueFields) {
-                    if (field.format != null) {
-                        obj {
-                            field("field", field.field.getQualifiedFieldName())
-                            field("format", field.format)
-                        }
-                    } else {
-                        value(field.field.getQualifiedFieldName())
-                    }
-                }
+                visit(this, searchQuery.docvalueFields)
             }
         }
         if (searchQuery.storedFields.isNotEmpty()) {
@@ -148,14 +147,21 @@ open class SearchQueryCompiler(
         }
     }
 
-    fun visit(ctx: ObjectCtx, expression: Expression) {
+    fun visit(ctx: ObjectCtx, expression: Expression<ObjectCtx>) {
+        expression.accept(ctx, this)
+    }
+
+    fun visit(ctx: ArrayCtx, expression: Expression<ArrayCtx>) {
         expression.accept(ctx, this)
     }
 
     override fun dispatch(ctx: ArrayCtx, value: Any?) {
         when (value) {
-            is Expression -> ctx.obj {
+            is ObjExpression -> ctx.obj {
                 visit(this, value)
+            }
+            is ArrayExpression -> {
+                visit(ctx, value)
             }
             is ToValue<*> -> {
                 ctx.value(value.toValue())
@@ -166,7 +172,10 @@ open class SearchQueryCompiler(
 
     override fun dispatch(ctx: ObjectCtx, name: String, value: Any?) {
         when (value) {
-            is Expression -> ctx.obj(name) {
+            is ObjExpression -> ctx.obj(name) {
+                visit(this, value)
+            }
+            is ArrayExpression -> ctx.array(name) {
                 visit(this, value)
             }
             is ToValue<*> -> {
@@ -226,6 +235,17 @@ open class SearchQueryCompiler(
                 fromSource(rawSource.toMap())
             }
         }
+        val fields = rawHit.objOrNull("fields").let { rawFields ->
+            val fields = mutableMapOf<String, List<Any>>()
+            if (rawFields != null) {
+                val fieldsIter = rawFields.iterator()
+                while (fieldsIter.hasNext()) {
+                    val (fieldName, fieldValues) = fieldsIter.array()
+                    fields[fieldName] = fieldValues.toList().filterNotNull()
+                }
+            }
+            SearchHit.Fields(fields)
+        }
         val rawSort = rawHit.arrayOrNull("sort")
         val sort = mutableListOf<Any>()
         if (rawSort != null) {
@@ -244,6 +264,7 @@ open class SearchQueryCompiler(
             score = rawHit.doubleOrNull("_score"),
             sort = sort.ifEmpty { null },
             source = source,
+            fields = fields,
         )
     }
 }
