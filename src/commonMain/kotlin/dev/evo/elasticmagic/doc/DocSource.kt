@@ -1,5 +1,9 @@
 package dev.evo.elasticmagic.doc
 
+import dev.evo.elasticmagic.bulk.ActionMeta
+import dev.evo.elasticmagic.bulk.DocSourceWithMeta
+import dev.evo.elasticmagic.bulk.IdActionMeta
+import dev.evo.elasticmagic.bulk.IdDocSourceWithMeta
 import dev.evo.elasticmagic.serde.Deserializer
 import dev.evo.elasticmagic.types.AnyFieldType
 import dev.evo.elasticmagic.types.DynDocSourceFieldType

@@ -1,10 +1,10 @@
 package dev.evo.elasticmagic
 
 import dev.evo.elasticmagic.aggs.AggregationResult
-import dev.evo.elasticmagic.doc.ActionMeta
+import dev.evo.elasticmagic.bulk.ActionMeta
 import dev.evo.elasticmagic.doc.BaseDocSource
 import dev.evo.elasticmagic.doc.BoundField
-import dev.evo.elasticmagic.doc.IdActionMeta
+import dev.evo.elasticmagic.bulk.IdActionMeta
 import dev.evo.elasticmagic.query.FieldOperations
 
 data class SearchQueryResult<S: BaseDocSource>(

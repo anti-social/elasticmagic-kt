@@ -5,9 +5,9 @@ import dev.evo.elasticmagic.aggs.TermsAgg
 import dev.evo.elasticmagic.aggs.TermsAggResult
 import dev.evo.elasticmagic.doc.DocSource
 import dev.evo.elasticmagic.doc.DocSourceFactory
-import dev.evo.elasticmagic.doc.DocSourceWithMeta
+import dev.evo.elasticmagic.bulk.DocSourceWithMeta
 import dev.evo.elasticmagic.doc.Document
-import dev.evo.elasticmagic.doc.IdActionMeta
+import dev.evo.elasticmagic.bulk.IdActionMeta
 import dev.evo.elasticmagic.types.Join
 import dev.evo.elasticmagic.doc.MetaFields
 import io.kotest.matchers.collections.shouldContainExactly

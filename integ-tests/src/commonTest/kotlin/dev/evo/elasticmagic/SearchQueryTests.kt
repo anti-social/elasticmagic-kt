@@ -13,7 +13,7 @@ import dev.evo.elasticmagic.doc.BaseDocSource
 import dev.evo.elasticmagic.doc.BoundField
 import dev.evo.elasticmagic.doc.DocSource
 import dev.evo.elasticmagic.doc.Document
-import dev.evo.elasticmagic.doc.IdDocSourceWithMeta
+import dev.evo.elasticmagic.bulk.IdDocSourceWithMeta
 import dev.evo.elasticmagic.doc.SubDocument
 import dev.evo.elasticmagic.doc.enum
 import dev.evo.elasticmagic.doc.instant

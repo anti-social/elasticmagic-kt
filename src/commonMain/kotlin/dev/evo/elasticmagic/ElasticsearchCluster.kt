@@ -6,10 +6,10 @@ import dev.evo.elasticmagic.compile.CompilerSet
 import dev.evo.elasticmagic.compile.PreparedCreateIndex
 import dev.evo.elasticmagic.compile.PreparedUpdateMapping
 import dev.evo.elasticmagic.compile.usingIndex
-import dev.evo.elasticmagic.doc.Action
+import dev.evo.elasticmagic.bulk.Action
 import dev.evo.elasticmagic.doc.BaseDocSource
 import dev.evo.elasticmagic.doc.Document
-import dev.evo.elasticmagic.doc.Refresh
+import dev.evo.elasticmagic.bulk.Refresh
 import dev.evo.elasticmagic.serde.Serde
 import dev.evo.elasticmagic.transport.Request
 import dev.evo.elasticmagic.transport.ElasticsearchException

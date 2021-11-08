@@ -1,5 +1,6 @@
-package dev.evo.elasticmagic.doc
+package dev.evo.elasticmagic.bulk
 
+import dev.evo.elasticmagic.doc.BaseDocSource
 import dev.evo.elasticmagic.query.Script
 import dev.evo.elasticmagic.query.ToValue
 
