@@ -1,12 +1,12 @@
 package dev.evo.elasticmagic
 
-import dev.evo.elasticmagic.doc.CreateAction
+import dev.evo.elasticmagic.bulk.CreateAction
 import dev.evo.elasticmagic.doc.DocSource
 import dev.evo.elasticmagic.doc.Document
 import dev.evo.elasticmagic.doc.Dynamic
-import dev.evo.elasticmagic.doc.IdentActionMeta
-import dev.evo.elasticmagic.doc.IndexAction
-import dev.evo.elasticmagic.doc.Refresh
+import dev.evo.elasticmagic.bulk.IdActionMeta
+import dev.evo.elasticmagic.bulk.IndexAction
+import dev.evo.elasticmagic.bulk.Refresh
 import dev.evo.elasticmagic.query.match
 
 import io.kotest.matchers.shouldBe
@@ -37,7 +37,7 @@ class UpdateMappingTests : ElasticsearchTestBase("update-mapping") {
         withTestIndex(UserV1Doc) {
             index.bulk(listOf(
                 CreateAction(
-                    meta = IdentActionMeta("1"),
+                    meta = IdActionMeta("1"),
                     source = UserDocSource().apply {
                         id = 1
                         name = "Hell boy"
@@ -56,7 +56,7 @@ class UpdateMappingTests : ElasticsearchTestBase("update-mapping") {
             )
             index.bulk(listOf(
                 IndexAction(
-                    meta = IdentActionMeta("1"),
+                    meta = IdActionMeta("1"),
                     source = UserDocSource().apply {
                         id = 1
                         name = "Hell boy"

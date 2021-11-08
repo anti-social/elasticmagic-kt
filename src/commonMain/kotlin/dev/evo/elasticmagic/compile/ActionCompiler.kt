@@ -1,13 +1,13 @@
 package dev.evo.elasticmagic.compile
 
 import dev.evo.elasticmagic.ElasticsearchVersion
-import dev.evo.elasticmagic.doc.Action
-import dev.evo.elasticmagic.doc.ActionMeta
-import dev.evo.elasticmagic.doc.ConcurrencyControl
-import dev.evo.elasticmagic.doc.DeleteAction
-import dev.evo.elasticmagic.doc.IndexAction
-import dev.evo.elasticmagic.doc.UpdateAction
-import dev.evo.elasticmagic.doc.UpdateSource
+import dev.evo.elasticmagic.bulk.Action
+import dev.evo.elasticmagic.bulk.ActionMeta
+import dev.evo.elasticmagic.bulk.ConcurrencyControl
+import dev.evo.elasticmagic.bulk.DeleteAction
+import dev.evo.elasticmagic.bulk.IndexAction
+import dev.evo.elasticmagic.bulk.UpdateAction
+import dev.evo.elasticmagic.bulk.UpdateSource
 import dev.evo.elasticmagic.serde.Serializer
 
 class ActionCompiler(

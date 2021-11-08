@@ -94,7 +94,7 @@ Caused by: java.lang.IllegalStateException: Field [description] has already been
 
 ### Object
 
-Object type just represent hierarchical structure. It is similar to sub-fields but every field
+Object type just represents a hierarchical structure. It is similar to sub-fields but every field
 in a sub-document can have its own source value:
 
 ```kotlin
@@ -144,7 +144,7 @@ Read more:
 
 ### Meta fields
 
-Elasticsearch document has some [metadata fields](https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-fields.html).
+Elasticsearch mapping has [metadata fields](https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-fields.html).
 Some of those fields can be customized. In following example we make a value for `_routing`
 field required and keep only `name` field in document source:
 
@@ -157,7 +157,7 @@ will throw `routing_missing_exceptions`.
 
 ### Merge multiple documents
 
-To create mapping for multiple documents you can use
+To create a mapping for multiple documents you can use
 [mergeDocuments](https://anti-social.github.io/elasticmagic-kt/api/latest/elasticmagic/dev.evo.elasticmagic.doc/merge-documents.html)
 function. Documents that are merged should not contradict each other.
 

@@ -3,11 +3,11 @@ package dev.evo.elasticmagic
 import dev.evo.elasticmagic.aggs.TermBucket
 import dev.evo.elasticmagic.aggs.TermsAgg
 import dev.evo.elasticmagic.aggs.TermsAggResult
+import dev.evo.elasticmagic.bulk.DocSourceAndMeta
 import dev.evo.elasticmagic.doc.DocSource
 import dev.evo.elasticmagic.doc.DocSourceFactory
-import dev.evo.elasticmagic.doc.DocSourceWithMeta
 import dev.evo.elasticmagic.doc.Document
-import dev.evo.elasticmagic.doc.IdentActionMeta
+import dev.evo.elasticmagic.bulk.IdActionMeta
 import dev.evo.elasticmagic.types.Join
 import dev.evo.elasticmagic.doc.MetaFields
 import io.kotest.matchers.collections.shouldContainExactly
@@ -68,9 +68,9 @@ class ParentChildTests : ElasticsearchTestBase("parent-child") {
             accepted = true
         }
         val docSources = listOf(
-            DocSourceWithMeta(IdentActionMeta("q~1", routing = "q~1"), q1),
-            DocSourceWithMeta(IdentActionMeta("a~1", routing = "q~1"), a1),
-            DocSourceWithMeta(IdentActionMeta("a~2", routing = "q~1"), a2),
+            DocSourceAndMeta(IdActionMeta("q~1", routing = "q~1"), q1),
+            DocSourceAndMeta(IdActionMeta("a~1", routing = "q~1"), a1),
+            DocSourceAndMeta(IdActionMeta("a~2", routing = "q~1"), a2),
         )
         withFixtures(listOf(QuestionDoc, AnswerDoc), docSources) {
             val sourceFactory = DocSourceFactory.byJoin(
