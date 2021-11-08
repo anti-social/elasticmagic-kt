@@ -8,11 +8,11 @@ import samples.docsource.UserDoc
 val root = DynDocSource {
     it[UserDoc.id] = 0
     it[UserDoc.login] = "root"
-    it[UserDoc.groups.list()] = listOf("root", "wheel")
-    it[UserDoc.roles.list()] = listOf(
+    it[UserDoc.groups.list()] = mutableListOf("root", "wheel")
+    it[UserDoc.roles.list()] = mutableListOf(
         DynDocSource {
             it[UserDoc.roles.name] = "superuser"
-            it[UserDoc.roles.permissions.list()] = listOf("*")
+            it[UserDoc.roles.permissions.list()] = mutableListOf("*")
         }
     )
 }

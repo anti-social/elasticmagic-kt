@@ -557,11 +557,11 @@ internal class SourceType<V: BaseDocSource>(
  * Serializes/deserializes [type] into list of optional values.
  * Used by [dev.evo.elasticmagic.doc.DocSource].
  */
-internal class OptionalListType<V, T>(val type: FieldType<V, T>) : FieldType<List<V?>, T> {
+internal class OptionalListType<V, T>(val type: FieldType<V, T>) : FieldType<MutableList<V?>, T> {
     override val name get() = type.name
     override val termType = type.termType
 
-    override fun serialize(v: List<V?>): Any {
+    override fun serialize(v: MutableList<V?>): Any {
         return v.map { w ->
             if (w != null) {
                 type.serialize(w)
@@ -571,7 +571,7 @@ internal class OptionalListType<V, T>(val type: FieldType<V, T>) : FieldType<Lis
         }
     }
 
-    override fun deserialize(v: Any, valueFactory: (() -> List<V?>)?): List<V?> {
+    override fun deserialize(v: Any, valueFactory: (() -> MutableList<V?>)?): MutableList<V?> {
         return when (v) {
             is List<*> -> {
                 v.map {
@@ -581,8 +581,9 @@ internal class OptionalListType<V, T>(val type: FieldType<V, T>) : FieldType<Lis
                         null
                     }
                 }
+                    .toMutableList()
             }
-            else -> listOf(type.deserialize(v))
+            else -> mutableListOf(type.deserialize(v))
         }
     }
 
@@ -597,17 +598,17 @@ internal class OptionalListType<V, T>(val type: FieldType<V, T>) : FieldType<Lis
  * Serializes/deserializes [type] into list of required values.
  * Used by [dev.evo.elasticmagic.doc.DocSource].
  */
-internal class RequiredListType<V, T>(val type: FieldType<V, T>) : FieldType<List<V>, T> {
+internal class RequiredListType<V, T>(val type: FieldType<V, T>) : FieldType<MutableList<V>, T> {
     override val name get() = type.name
     override val termType = type.termType
 
     override fun serializeTerm(v: T): Any = serErr(v)
 
-    override fun serialize(v: List<V>): Any {
+    override fun serialize(v: MutableList<V>): Any {
         return v.map(type::serialize)
     }
 
-    override fun deserialize(v: Any, valueFactory: (() -> List<V>)?): List<V> {
+    override fun deserialize(v: Any, valueFactory: (() -> MutableList<V>)?): MutableList<V> {
         return when (v) {
             is List<*> -> {
                 v.map {
@@ -617,8 +618,9 @@ internal class RequiredListType<V, T>(val type: FieldType<V, T>) : FieldType<Lis
                         throw IllegalArgumentException("null is not allowed")
                     }
                 }
+                    .toMutableList()
             }
-            else -> listOf(type.deserialize(v))
+            else -> mutableListOf(type.deserialize(v))
         }
     }
 

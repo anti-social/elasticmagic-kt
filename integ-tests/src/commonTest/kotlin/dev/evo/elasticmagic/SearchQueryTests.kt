@@ -95,7 +95,7 @@ class SearchQueryTests : ElasticsearchTestBase("test-search-query") {
     }
     private val karlssonsJam = OrderDocSource().apply {
         user = karlsson
-        items = listOf(
+        items = mutableListOf(
             OrderDocSource.CartItem().apply {
                 productId = 1
                 productName = "Jam"
@@ -110,7 +110,7 @@ class SearchQueryTests : ElasticsearchTestBase("test-search-query") {
         .also { docSources[it.meta.id] = it }
     private val karlssonsBestDonuts = OrderDocSource().apply {
         user = karlsson
-        items = listOf(
+        items = mutableListOf(
             OrderDocSource.CartItem().apply {
                 productId = 2
                 productName = "Genuine Miss Bock's donut"
@@ -125,7 +125,7 @@ class SearchQueryTests : ElasticsearchTestBase("test-search-query") {
         .also { docSources[it.meta.id] = it }
     private val karlssonsJustDonuts = OrderDocSource().apply {
         user = karlsson
-        items = listOf(
+        items = mutableListOf(
             OrderDocSource.CartItem().apply {
                 productId = 3
                 productName = "Shop donut"
@@ -145,7 +145,7 @@ class SearchQueryTests : ElasticsearchTestBase("test-search-query") {
     }
     private val littleBrotherDogStuff = OrderDocSource().apply {
         user = littleBrother
-        items = listOf(
+        items = mutableListOf(
             OrderDocSource.CartItem().apply {
                 productId = 4
                 productName = "Collar"

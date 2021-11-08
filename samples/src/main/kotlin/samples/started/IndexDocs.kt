@@ -15,25 +15,25 @@ suspend fun indexDocs() {
             // it[UserDoc.groups.list()] = "root"
             it[UserDoc.id] = 0
             it[UserDoc.name] = "root"
-            it[UserDoc.groups.list()] = listOf("root", "wheel")
+            it[UserDoc.groups.list()] = mutableListOf("root", "wheel")
             it[UserDoc.about] = "Super user"
         },
         DynDocSource {
             it[UserDoc.id] = 1
             it[UserDoc.name] = "daemon"
-            it[UserDoc.groups.list()] = listOf("daemon")
+            it[UserDoc.groups.list()] = mutableListOf("daemon")
             it[UserDoc.about] = "Daemon user"
         },
         DynDocSource {
             it[UserDoc.id] = 65535
             it[UserDoc.name] = "nobody"
-            it[UserDoc.groups.list()] = listOf("nobody")
+            it[UserDoc.groups.list()] = mutableListOf("nobody")
             it[UserDoc.about] = "Just nobody"
         },
         DynDocSource {
             it[UserDoc.id] = 65534
             it[UserDoc.name] = "noone"
-            it[UserDoc.groups.list()] = listOf("nobody")
+            it[UserDoc.groups.list()] = mutableListOf("nobody")
             it[UserDoc.about] = "Another nobody"
         },
     )
