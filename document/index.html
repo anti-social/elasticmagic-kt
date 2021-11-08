@@ -718,7 +718,7 @@ Caused by: java.lang.IllegalStateException: Field [description] has already been
 
 <h2 id="object-fields">Object fields<a class="headerlink" href="#object-fields" title="Permanent link">&para;</a></h2>
 <h3 id="object">Object<a class="headerlink" href="#object" title="Permanent link">&para;</a></h3>
-<p>Object type just represent hierarchical structure. It is similar to sub-fields but every field
+<p>Object type just represents a hierarchical structure. It is similar to sub-fields but every field
 in a sub-document can have its own source value:</p>
 <div class="highlight"><pre><span></span><code><span class="k">package</span> <span class="nn">samples.document.`object`</span>
 
@@ -819,7 +819,7 @@ a <code>moderator</code> role with <code>article</code> permission and <code>vie
 <li><a href="https://anti-social.github.io/elasticmagic-kt/api/latest/elasticmagic/dev.evo.elasticmagic.doc/-field-set/join.html">Join API</a></li>
 </ul>
 <h3 id="meta-fields">Meta fields<a class="headerlink" href="#meta-fields" title="Permanent link">&para;</a></h3>
-<p>Elasticsearch document has some <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-fields.html">metadata fields</a>.
+<p>Elasticsearch mapping has <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-fields.html">metadata fields</a>.
 Some of those fields can be customized. In following example we make a value for <code>_routing</code>
 field required and keep only <code>name</code> field in document source:</p>
 <div class="highlight"><pre><span></span><code><span class="k">package</span> <span class="nn">samples.document.meta</span>
@@ -840,7 +840,7 @@ field required and keep only <code>name</code> field in document source:</p>
 <p>Now you must provide the required routing value when indexing documents otherwise Elasticsearch
 will throw <code>routing_missing_exceptions</code>.</p>
 <h3 id="merge-multiple-documents">Merge multiple documents<a class="headerlink" href="#merge-multiple-documents" title="Permanent link">&para;</a></h3>
-<p>To create mapping for multiple documents you can use
+<p>To create a mapping for multiple documents you can use
 <a href="https://anti-social.github.io/elasticmagic-kt/api/latest/elasticmagic/dev.evo.elasticmagic.doc/merge-documents.html">mergeDocuments</a>
 function. Documents that are merged should not contradict each other.</p>
 <div class="highlight"><pre><span></span><code><span class="k">package</span> <span class="nn">samples.document.join</span>

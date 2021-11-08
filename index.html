@@ -510,10 +510,10 @@ Use it on your own risk</p>
 <div class="highlight"><pre><span></span><code><span class="k">package</span> <span class="nn">samples.started</span>
 
 <span class="k">import</span> <span class="nn">dev.evo.elasticmagic.doc.DynDocSource</span>
-<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.doc.IndexAction</span>
-<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.doc.IdentActionMeta</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.bulk.IndexAction</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.bulk.IdActionMeta</span>
 <span class="k">import</span> <span class="nn">dev.evo.elasticmagic.doc.list</span>
-<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.doc.Refresh</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.bulk.Refresh</span>
 
 <span class="kd">suspend</span> <span class="kd">fun</span> <span class="nf">indexDocs</span><span class="p">()</span> <span class="p">{</span>
     <span class="kd">val</span> <span class="nv">docs</span> <span class="o">=</span> <span class="n">listOf</span><span class="p">(</span>
@@ -550,7 +550,7 @@ Use it on your own risk</p>
     <span class="n">userIndex</span><span class="p">.</span><span class="na">bulk</span><span class="p">(</span>
         <span class="n">docs</span><span class="p">.</span><span class="na">map</span> <span class="p">{</span> <span class="n">doc</span> <span class="o">-&gt;</span>
             <span class="n">IndexAction</span><span class="p">(</span>
-                <span class="n">meta</span> <span class="o">=</span> <span class="n">IdentActionMeta</span><span class="p">(</span><span class="n">id</span> <span class="o">=</span> <span class="n">doc</span><span class="o">[</span><span class="n">UserDoc</span><span class="p">.</span><span class="na">id</span><span class="o">]</span><span class="p">.</span><span class="na">toString</span><span class="p">()),</span>
+                <span class="n">meta</span> <span class="o">=</span> <span class="n">IdActionMeta</span><span class="p">(</span><span class="n">id</span> <span class="o">=</span> <span class="n">doc</span><span class="o">[</span><span class="n">UserDoc</span><span class="p">.</span><span class="na">id</span><span class="o">]</span><span class="p">.</span><span class="na">toString</span><span class="p">()),</span>
                 <span class="n">source</span> <span class="o">=</span> <span class="n">doc</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="p">},</span>
