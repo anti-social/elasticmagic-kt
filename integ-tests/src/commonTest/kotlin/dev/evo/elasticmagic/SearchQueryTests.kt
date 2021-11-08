@@ -13,7 +13,7 @@ import dev.evo.elasticmagic.doc.BaseDocSource
 import dev.evo.elasticmagic.doc.BoundField
 import dev.evo.elasticmagic.doc.DocSource
 import dev.evo.elasticmagic.doc.Document
-import dev.evo.elasticmagic.doc.IdentDocSourceWithMeta
+import dev.evo.elasticmagic.doc.IdDocSourceWithMeta
 import dev.evo.elasticmagic.doc.SubDocument
 import dev.evo.elasticmagic.doc.enum
 import dev.evo.elasticmagic.doc.instant
@@ -86,7 +86,7 @@ class OrderDocSource : DocSource() {
 
 class SearchQueryTests : ElasticsearchTestBase("test-search-query") {
 
-    private val docSources = mutableMapOf<String, IdentDocSourceWithMeta>()
+    private val docSources = mutableMapOf<String, IdDocSourceWithMeta>()
 
     private val karlsson = OrderDocSource.User().apply {
         id = 1

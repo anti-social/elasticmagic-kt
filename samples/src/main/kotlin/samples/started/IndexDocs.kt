@@ -2,7 +2,7 @@ package samples.started
 
 import dev.evo.elasticmagic.doc.DynDocSource
 import dev.evo.elasticmagic.doc.IndexAction
-import dev.evo.elasticmagic.doc.IdentActionMeta
+import dev.evo.elasticmagic.doc.IdActionMeta
 import dev.evo.elasticmagic.doc.list
 import dev.evo.elasticmagic.doc.Refresh
 
@@ -41,7 +41,7 @@ suspend fun indexDocs() {
     userIndex.bulk(
         docs.map { doc ->
             IndexAction(
-                meta = IdentActionMeta(id = doc[UserDoc.id].toString()),
+                meta = IdActionMeta(id = doc[UserDoc.id].toString()),
                 source = doc,
             )
         },

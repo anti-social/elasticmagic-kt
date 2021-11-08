@@ -27,9 +27,9 @@ abstract class BaseDocSource {
         version: Long? = null,
         seqNo: Long? = null,
         primaryTerm: Long? = null,
-    ): IdentDocSourceWithMeta {
-        return IdentDocSourceWithMeta(
-            meta = object : IdentActionMeta {
+    ): IdDocSourceWithMeta {
+        return IdDocSourceWithMeta(
+            meta = object : IdActionMeta {
                 override val id: String = id
                 override val routing: String? = routing
                 override val version: Long? = version

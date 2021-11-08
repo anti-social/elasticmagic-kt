@@ -32,8 +32,8 @@ data class DocSourceWithMeta(
     override val doc: BaseDocSource,
 ) : DocSourceAndMeta
 
-data class IdentDocSourceWithMeta(
-    override val meta: IdentActionMeta,
+data class IdDocSourceWithMeta(
+    override val meta: IdActionMeta,
     override val doc: BaseDocSource,
 ) : DocSourceAndMeta
 
@@ -61,18 +61,18 @@ fun ActionMeta(
     }
 }
 
-interface IdentActionMeta : ActionMeta {
+interface IdActionMeta : ActionMeta {
     override val id: String
 }
 
-fun IdentActionMeta(
+fun IdActionMeta(
     id: String,
     routing: String? = null,
     version: Long? = null,
     seqNo: Long? = null,
     primaryTerm: Long? = null,
-): IdentActionMeta {
-    return object : IdentActionMeta {
+): IdActionMeta {
+    return object : IdActionMeta {
         override val id: String = id
         override val routing: String? = routing
         override val version: Long? = version
@@ -107,7 +107,7 @@ class CreateAction<S: BaseDocSource>(
 }
 
 class DeleteAction(
-    override val meta: IdentActionMeta,
+    override val meta: IdActionMeta,
     override val concurrencyControl: ConcurrencyControl? = null,
 ) : Action<Nothing>() {
     override val name = "delete"
@@ -140,7 +140,7 @@ sealed class UpdateSource<S: BaseDocSource>(
 }
 
 class UpdateAction<S: BaseDocSource>(
-    override val meta: IdentActionMeta,
+    override val meta: IdActionMeta,
     override val source: UpdateSource<S>,
     val retryOnConflict: Int? = null,
     override val concurrencyControl: ConcurrencyControl? = null,
