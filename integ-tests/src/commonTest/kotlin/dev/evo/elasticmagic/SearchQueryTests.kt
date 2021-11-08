@@ -25,7 +25,7 @@ import dev.evo.elasticmagic.query.match
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.nulls.shouldNotBeNull
-import io.kotest.matchers.doubles.shouldBeLessThan
+import io.kotest.matchers.doubles.shouldBeGreaterThan
 
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
@@ -258,7 +258,7 @@ class SearchQueryTests : ElasticsearchTestBase("test-search-query") {
             )
 
             searchResult.totalHits shouldBe 2
-            searchResult.maxScore.shouldNotBeNull() shouldBeLessThan 1.0
+            searchResult.maxScore.shouldNotBeNull() shouldBeGreaterThan 0.0
 
             checkOrderHits(searchResult.hits, setOf("103", "102"))
         }
@@ -274,7 +274,7 @@ class SearchQueryTests : ElasticsearchTestBase("test-search-query") {
                 .execute(index)
 
             searchResult.totalHits shouldBe 3
-            searchResult.maxScore.shouldNotBeNull() shouldBeLessThan 1.0
+            searchResult.maxScore.shouldNotBeNull() shouldBe 0.0
 
             checkOrderHits(searchResult.hits, setOf("101", "102", "104"))
         }
@@ -290,7 +290,7 @@ class SearchQueryTests : ElasticsearchTestBase("test-search-query") {
                 .execute(index)
 
             searchResult.totalHits shouldBe 1
-            searchResult.maxScore.shouldNotBeNull() shouldBeLessThan 1.0
+            searchResult.maxScore.shouldNotBeNull() shouldBe 0.0
 
             checkOrderHits(searchResult.hits, setOf("101"))
             val hit = searchResult.hits[0]
