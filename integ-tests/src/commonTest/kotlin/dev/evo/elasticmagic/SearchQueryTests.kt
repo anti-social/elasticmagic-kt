@@ -326,11 +326,11 @@ class SearchQueryTests : ElasticsearchTestBase("test-search-query") {
             val searchResult = SearchQuery(::OrderDocSource)
                 .sort(
                     Sort(
-                    OrderDoc.items.quantity,
-                    order = Sort.Order.DESC,
-                    mode = Sort.Mode.SUM,
-                    nested = Sort.Nested(OrderDoc.items)
-                )
+                        OrderDoc.items.quantity,
+                        order = Sort.Order.DESC,
+                        mode = Sort.Mode.SUM,
+                        nested = Sort.Nested(OrderDoc.items)
+                    )
                 )
                 .execute(index)
 

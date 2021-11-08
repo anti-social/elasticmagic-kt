@@ -92,16 +92,7 @@ open class SearchQueryCompiler(
         }
         if (searchQuery.sorts.isNotEmpty()) {
             ctx.array("sort") {
-                for (sort in searchQuery.sorts) {
-                    val simpleSortName = sort.simplifiedName()
-                    if (simpleSortName != null) {
-                        value(simpleSortName)
-                    } else {
-                        obj {
-                            visit(this, sort)
-                        }
-                    }
-                }
+                visit(this, searchQuery.sorts)
             }
         }
         if (searchQuery.trackScores != null) {
@@ -116,7 +107,6 @@ open class SearchQueryCompiler(
             }
         }
         if (searchQuery.docvalueFields.isNotEmpty()) {
-            val df = searchQuery.docvalueFields
             ctx.array("docvalue_fields") {
                 visit(this, searchQuery.docvalueFields)
             }

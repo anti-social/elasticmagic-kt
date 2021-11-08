@@ -45,7 +45,7 @@ interface FieldFormat {
 /**
  * Holds field operations shortcuts.
  */
-interface FieldOperations<T> : Named, FieldFormat {
+interface FieldOperations<T> : Named, FieldFormat, Sort {
     fun getFieldType(): FieldType<*, T>
 
     fun serializeTerm(v: T): Any {

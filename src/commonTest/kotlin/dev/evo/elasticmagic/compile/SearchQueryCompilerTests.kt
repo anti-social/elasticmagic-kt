@@ -339,9 +339,9 @@ class SearchQueryCompilerTests : BaseTest() {
     fun testSort_fieldSimplified() {
         compile(
             SearchQuery()
-                .sort(Sort(field = AnyField("popularity")))
+                .sort(AnyField("popularity"), Sort(AnyField("id")))
         ).body shouldContainExactly mapOf(
-            "sort" to listOf("popularity")
+            "sort" to listOf("popularity", "id")
         )
     }
 
