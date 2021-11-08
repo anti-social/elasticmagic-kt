@@ -52,7 +52,7 @@ abstract class ElasticsearchTestBase(indexName: String) : TestBase() {
 
     protected suspend fun withFixtures(
         mapping: Document,
-        fixtures: List<DocSourceAndMeta>,
+        fixtures: List<DocSourceAndMeta<*>>,
         block: suspend () -> Unit
     ) {
         withFixtures(listOf(mapping), fixtures, block)
@@ -60,7 +60,7 @@ abstract class ElasticsearchTestBase(indexName: String) : TestBase() {
 
     protected suspend fun withFixtures(
         mappings: List<Document>,
-        fixtures: List<DocSourceAndMeta>,
+        fixtures: List<DocSourceAndMeta<*>>,
         block: suspend () -> Unit
     ) {
         ensureIndex(*mappings.toTypedArray())

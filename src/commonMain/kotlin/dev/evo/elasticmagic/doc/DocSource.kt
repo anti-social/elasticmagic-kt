@@ -1,9 +1,5 @@
 package dev.evo.elasticmagic.doc
 
-import dev.evo.elasticmagic.bulk.ActionMeta
-import dev.evo.elasticmagic.bulk.DocSourceWithMeta
-import dev.evo.elasticmagic.bulk.IdActionMeta
-import dev.evo.elasticmagic.bulk.IdDocSourceWithMeta
 import dev.evo.elasticmagic.serde.Deserializer
 import dev.evo.elasticmagic.types.AnyFieldType
 import dev.evo.elasticmagic.types.DynDocSourceFieldType
@@ -20,48 +16,11 @@ typealias RawSource = Map<*, *>
 
 fun emptySource(): Map<Nothing, Nothing> = emptyMap()
 
+@Suppress("UnnecessaryAbstractClass")
 abstract class BaseDocSource {
     abstract fun toSource(): Map<String, Any?>
 
     abstract fun fromSource(rawSource: RawSource)
-
-    fun withActionMeta(
-        id: String,
-        routing: String? = null,
-        version: Long? = null,
-        seqNo: Long? = null,
-        primaryTerm: Long? = null,
-    ): IdDocSourceWithMeta {
-        return IdDocSourceWithMeta(
-            meta = object : IdActionMeta {
-                override val id: String = id
-                override val routing: String? = routing
-                override val version: Long? = version
-                override val seqNo: Long? = seqNo
-                override val primaryTerm: Long? = primaryTerm
-            },
-            doc = this,
-        )
-    }
-
-    fun withActionMeta(
-        id: String? = null,
-        routing: String? = null,
-        version: Long? = null,
-        seqNo: Long? = null,
-        primaryTerm: Long? = null,
-    ): DocSourceWithMeta {
-        return DocSourceWithMeta(
-            meta = object : ActionMeta {
-                override val id: String? = id
-                override val routing: String? = routing
-                override val version: Long? = version
-                override val seqNo: Long? = seqNo
-                override val primaryTerm: Long? = primaryTerm
-            },
-            doc = this,
-        )
-    }
 }
 
 object DocSourceFactory {
