@@ -8,7 +8,7 @@ import samples.docsource.UserDoc
 
 class RoleDocSource : DocSource() {
     var name: String by UserDoc.roles.name.required()
-    var permissions: List<String> by UserDoc.roles.permissions.required().list().required()
+    var permissions: MutableList<String> by UserDoc.roles.permissions.required().list().required()
 }
 
 class UserDocSource : DocSource() {
@@ -17,10 +17,10 @@ class UserDocSource : DocSource() {
     var login: String by UserDoc.login.required()
 
     // If groups field is missing or null default value will be used
-    var groups: List<String> by UserDoc.groups.required().list().default { emptyList() }
+    var groups: MutableList<String> by UserDoc.groups.required().list().default { mutableListOf() }
 
     // Optional list of a required RoleDocSource instances
-    var roles: List<RoleDocSource>? by UserDoc.roles.source(::RoleDocSource).required().list()
+    var roles: MutableList<RoleDocSource>? by UserDoc.roles.source(::RoleDocSource).required().list()
 }
 
 val nobody = UserDocSource().apply {
@@ -33,11 +33,11 @@ val nobodyHasGroups = nobody.groups.isEmpty()
 val root = UserDocSource().apply {
     id = 0
     login = "root"
-    groups = listOf("root", "wheel")
-    roles = listOf(
+    groups = mutableListOf("root", "wheel")
+    roles = mutableListOf(
         RoleDocSource().apply {
             name = "superuser"
-            permissions = listOf("*")
+            permissions = mutableListOf("*")
         }
     )
 }

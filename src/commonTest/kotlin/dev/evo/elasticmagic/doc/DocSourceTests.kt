@@ -394,11 +394,14 @@ class DocSourceTests {
         order.status shouldBe listOf(1)
         order.toSource() shouldContainExactly mapOf("status" to listOf(1))
 
-        order.status = emptyList()
+        order.status.shouldNotBeNull().add(null)
+        order.toSource() shouldContainExactly mapOf("status" to listOf(1, null))
+
+        order.status = emptyList<Int?>().toMutableList()
         order.status shouldBe emptyList()
         order.toSource() shouldContainExactly mapOf("status" to emptyList<Nothing>())
 
-        order.status = listOf(1, 2, null)
+        order.status = mutableListOf(1, 2, null)
         order.status shouldBe listOf(1, 2, null)
         order.toSource() shouldContainExactly mapOf("status" to listOf(1, 2, null))
 
@@ -421,13 +424,17 @@ class DocSourceTests {
         order.status.shouldBeNull()
         order.toSource() shouldContainExactly mapOf("status" to null)
 
-        order.status = emptyList()
+        order.status = mutableListOf()
         order.status shouldBe emptyList()
         order.toSource() shouldContainExactly mapOf("status" to emptyList<Nothing>())
 
-        order.status = listOf(1, 2)
+        order.status = mutableListOf(1, 2)
         order.status shouldBe listOf(1, 2)
         order.toSource() shouldContainExactly mapOf("status" to listOf(1, 2))
+
+        order.status.shouldNotBeNull().remove(2)
+        order.status shouldBe listOf(1)
+        order.toSource() shouldContainExactly mapOf("status" to listOf(1))
 
         shouldThrow<IllegalArgumentException> {
             order.fromSource(mapOf("status" to listOf(null)))
@@ -458,13 +465,17 @@ class DocSourceTests {
             order.toSource()
         }
 
-        order.status = emptyList()
+        order.status = mutableListOf()
         order.status shouldBe emptyList()
         order.toSource() shouldBe mapOf("status" to emptyList<Nothing>())
 
-        order.status = listOf(1, 2, null)
+        order.status = mutableListOf(1, 2, null)
         order.status shouldBe listOf(1, 2, null)
         order.toSource() shouldBe mapOf("status" to listOf(1, 2, null))
+
+        order.status.removeAll { it == null}
+        order.status shouldBe listOf(1, 2)
+        order.toSource() shouldBe mapOf("status" to listOf(1, 2))
 
         order.fromSource(mapOf("status" to listOf(null)))
         order.status shouldBe listOf(null)
@@ -493,13 +504,17 @@ class DocSourceTests {
             order.toSource()
         }
 
-        order.status = emptyList()
+        order.status = mutableListOf()
         order.status shouldBe emptyList()
         order.toSource() shouldBe mapOf("status" to emptyList<Nothing>())
 
-        order.status = listOf(1, 2)
+        order.status = mutableListOf(1, 2)
         order.status shouldBe listOf(1, 2)
         order.toSource() shouldBe mapOf("status" to listOf(1, 2))
+
+        order.status.addAll(order.status)
+        order.status shouldBe listOf(1, 2, 1, 2)
+        order.toSource() shouldBe mapOf("status" to listOf(1, 2, 1, 2))
 
         shouldThrow<IllegalArgumentException> {
             order.fromSource(mapOf("status" to listOf(null)))
@@ -637,7 +652,7 @@ class DocSourceTests {
         order.users shouldBe listOf(UserDocSource(2))
         order.toSource() shouldContainExactly mapOf("user" to listOf(mapOf("id" to 2)))
 
-        order.users = listOf(UserDocSource(id = 19))
+        order.users = mutableListOf(UserDocSource(id = 19))
         order.users.let { users ->
             users?.get(0)?.id shouldBe 19
         }
@@ -687,7 +702,7 @@ class DocSourceTests {
         order.users shouldBe listOf(UserDocSource(2))
         order.toSource() shouldContainExactly mapOf("user" to listOf(mapOf("id" to 2)))
 
-        order.users = listOf(UserDocSource(id = 19))
+        order.users = mutableListOf(UserDocSource(id = 19))
         order.users.let { users ->
             users?.get(0)?.id shouldBe 19
         }
@@ -740,7 +755,7 @@ class DocSourceTests {
         order.users shouldBe listOf(UserDocSource(2))
         order.toSource() shouldContainExactly mapOf("user" to listOf(mapOf("id" to 2)))
 
-        order.users = listOf(UserDocSource(id = 19))
+        order.users = mutableListOf(UserDocSource(id = 19))
         order.users.let { users ->
             users[0]?.id shouldBe 19
         }
@@ -796,7 +811,7 @@ class DocSourceTests {
         order.users shouldBe listOf(UserDocSource(2))
         order.toSource() shouldContainExactly mapOf("user" to listOf(mapOf("id" to 2)))
 
-        order.users = listOf(UserDocSource(id = 19))
+        order.users = mutableListOf(UserDocSource(id = 19))
         order.users.let { users ->
             users[0].id shouldBe 19
         }
@@ -811,7 +826,7 @@ class DocSourceTests {
 
         class OrderDocSource : DocSource() {
             var id by OrderDoc.id.required()
-            var status by OrderDoc.status.required().list().default { listOf(0, 3) }
+            var status by OrderDoc.status.required().list().default { mutableListOf(0, 3) }
             var total by OrderDoc.total.default { 666.66f }
             var user by OrderDoc.user.source(::UserDocSource)
                 .default { UserDocSource().apply { id = 777 } }

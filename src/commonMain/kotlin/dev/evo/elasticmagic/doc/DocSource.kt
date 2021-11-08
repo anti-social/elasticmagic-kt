@@ -216,7 +216,7 @@ open class DocSource : BaseDocSource() {
         )
     }
 
-    fun <V> BoundField<V, *>.list(): OptionalValueDelegate<List<V?>> {
+    fun <V> BoundField<V, *>.list(): OptionalValueDelegate<MutableList<V?>> {
         return OptionalValueDelegate(
             getFieldName(), OptionalListType(getFieldType())
         )
@@ -288,7 +288,7 @@ open class DocSource : BaseDocSource() {
             return RequiredListableValueDelegate(fieldName, fieldType)
         }
 
-        fun list(): OptionalValueDelegate<List<V?>> {
+        fun list(): OptionalValueDelegate<MutableList<V?>> {
             return OptionalValueDelegate(
                 fieldName, OptionalListType(fieldType)
             )
@@ -314,7 +314,7 @@ open class DocSource : BaseDocSource() {
         fieldName: String,
         fieldType: FieldType<V, *>,
     ) : RequiredValueDelegate<V>(fieldName, fieldType) {
-        fun list(): OptionalValueDelegate<List<V>> {
+        fun list(): OptionalValueDelegate<MutableList<V>> {
             return OptionalValueDelegate(
                 fieldName, RequiredListType(fieldType)
             )
@@ -660,8 +660,8 @@ class DynDocSource private constructor(
     }
 }
 
-fun <V, T> BoundField<V, T>.list(): BoundField<List<V?>, T> {
-    return object : BoundField<List<V?>, T>(
+fun <V, T> BoundField<V, T>.list(): BoundField<MutableList<V?>, T> {
+    return object : BoundField<MutableList<V?>, T>(
         getFieldName(),
         OptionalListType(getFieldType()),
         getMappingParams(),
@@ -673,9 +673,9 @@ fun <V, T> BoundField<V, T>.list(): BoundField<List<V?>, T> {
     }
 }
 
-fun SubDocument.list(): BoundField<List<DynDocSource?>, Nothing> {
+fun SubDocument.list(): BoundField<MutableList<DynDocSource?>, Nothing> {
     val listType = OptionalListType(DynDocSourceFieldType)
-    return object : BoundField<List<DynDocSource?>, Nothing>(
+    return object : BoundField<MutableList<DynDocSource?>, Nothing>(
         getFieldName(), listType, emptyMap(), getParent()
     ) {
         override fun getQualifiedFieldName(): String {
