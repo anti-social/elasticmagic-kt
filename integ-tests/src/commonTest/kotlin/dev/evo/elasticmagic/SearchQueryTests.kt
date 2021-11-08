@@ -25,7 +25,7 @@ import dev.evo.elasticmagic.query.match
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.nulls.shouldNotBeNull
-import io.kotest.matchers.doubles.shouldBeLessThan
+import io.kotest.matchers.doubles.shouldBeGreaterThan
 
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
@@ -209,6 +209,26 @@ class SearchQueryTests : ElasticsearchTestBase("test-search-query") {
     }
 
     @Test
+    fun docvalueFields() = runTest {
+        withFixtures(OrderDoc, listOf(karlssonsJam)) {
+            val searchResult = SearchQuery(::OrderDocSource)
+                .docvalueFields(OrderDoc.status, OrderDoc.dateCreated.format("YYYY"))
+                .execute(index)
+
+            searchResult.totalHits shouldBe 1
+            searchResult.maxScore shouldBe 1.0F
+
+            searchResult.hits[0].shouldNotBeNull().let { hit ->
+                val fields = hit.fields
+                fields[OrderDoc.status] shouldBe listOf(OrderStatus.NEW)
+                fields["status"] shouldBe listOf(0L)
+                fields[OrderDoc.dateCreated] shouldBe listOf(LocalDateTime(2019, 1, 1, 0, 0).toInstant(TimeZone.UTC))
+                fields["dateCreated"] shouldBe listOf("2019")
+            }
+        }
+    }
+
+    @Test
     fun simpleTermQuery() = runTest {
         withFixtures(OrderDoc, listOf(karlssonsJam, littleBrotherDogStuff)) {
             val searchResult = SearchQuery(
@@ -238,7 +258,7 @@ class SearchQueryTests : ElasticsearchTestBase("test-search-query") {
             )
 
             searchResult.totalHits shouldBe 2
-            searchResult.maxScore.shouldNotBeNull() shouldBeLessThan 1.0
+            searchResult.maxScore.shouldNotBeNull() shouldBeGreaterThan 0.0
 
             checkOrderHits(searchResult.hits, setOf("103", "102"))
         }
@@ -254,7 +274,7 @@ class SearchQueryTests : ElasticsearchTestBase("test-search-query") {
                 .execute(index)
 
             searchResult.totalHits shouldBe 3
-            searchResult.maxScore.shouldNotBeNull() shouldBeLessThan 1.0
+            searchResult.maxScore.shouldNotBeNull() shouldBe 0.0
 
             checkOrderHits(searchResult.hits, setOf("101", "102", "104"))
         }
@@ -270,7 +290,7 @@ class SearchQueryTests : ElasticsearchTestBase("test-search-query") {
                 .execute(index)
 
             searchResult.totalHits shouldBe 1
-            searchResult.maxScore.shouldNotBeNull() shouldBeLessThan 1.0
+            searchResult.maxScore.shouldNotBeNull() shouldBe 0.0
 
             checkOrderHits(searchResult.hits, setOf("101"))
             val hit = searchResult.hits[0]
@@ -306,11 +326,11 @@ class SearchQueryTests : ElasticsearchTestBase("test-search-query") {
             val searchResult = SearchQuery(::OrderDocSource)
                 .sort(
                     Sort(
-                    OrderDoc.items.quantity,
-                    order = Sort.Order.DESC,
-                    mode = Sort.Mode.SUM,
-                    nested = Sort.Nested(OrderDoc.items)
-                )
+                        OrderDoc.items.quantity,
+                        order = Sort.Order.DESC,
+                        mode = Sort.Mode.SUM,
+                        nested = Sort.Nested(OrderDoc.items)
+                    )
                 )
                 .execute(index)
 

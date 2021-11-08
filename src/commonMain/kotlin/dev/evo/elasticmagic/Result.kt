@@ -3,7 +3,9 @@ package dev.evo.elasticmagic
 import dev.evo.elasticmagic.aggs.AggregationResult
 import dev.evo.elasticmagic.doc.ActionMeta
 import dev.evo.elasticmagic.doc.BaseDocSource
+import dev.evo.elasticmagic.doc.BoundField
 import dev.evo.elasticmagic.doc.IdentActionMeta
+import dev.evo.elasticmagic.query.FieldOperations
 
 data class SearchQueryResult<S: BaseDocSource>(
     val rawResult: Map<String, Any?>?,
@@ -31,7 +33,54 @@ data class SearchHit<S: BaseDocSource>(
     val score: Double? = null,
     val sort: List<Any>? = null,
     val source: S? = null,
-) : ActionMeta
+    val fields: Fields = Fields(emptyMap()),
+) : ActionMeta {
+    class Fields(private val fields: Map<String, List<Any>>) {
+        /**
+         * Checks if the search hit contains the given field name.
+         */
+        operator fun contains(field: String): Boolean {
+            return field in fields
+        }
+
+        /**
+         * Returns the value for the corresponding field name.
+         *
+         * @throws NoSuchElementException if [field] name is missing in the search hit.
+         */
+        operator fun get(field: String): List<Any> {
+            return fields[field]
+                ?: throw NoSuchElementException("Field $field is missing")
+        }
+
+        /**
+         * Checks if the search hit contains the given field.
+         */
+        operator fun contains(field: FieldOperations<*>): Boolean {
+            return field.getQualifiedFieldName() in this
+        }
+
+        /**
+         * Returns deserialized value for the corresponding field.
+         *
+         * @throws NoSuchElementException if [field] is missing in the search hit.
+         * @throws dev.evo.elasticmagic.types.ValueDeserializationException if the field value
+         * cannot be deserialized.
+         */
+        operator fun <V> get(field: BoundField<V, *>): List<V>? {
+            return this[field.getQualifiedFieldName()]
+                .map(field.getFieldType()::deserialize)
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (other !is Fields) return false
+
+            return fields == other.fields
+        }
+
+        override fun hashCode(): Int = fields.hashCode()
+    }
+}
 
 data class CreateIndexResult(
     val acknowledged: Boolean,

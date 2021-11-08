@@ -4,35 +4,99 @@ import dev.evo.elasticmagic.Params
 import dev.evo.elasticmagic.compile.SearchQueryCompiler
 import dev.evo.elasticmagic.serde.Serializer
 
-// TODO: geo distance
-data class Sort(
-    val by: By,
-    val order: Order? = null,
-    val mode: Mode? = null,
-    val numericType: NumericType? = null,
-    val missing: Missing? = null,
-    val unmappedType: String? = null,
-    val nested: Nested? = null,
-) : Expression {
-    constructor(
-        field: FieldOperations<*>? = null,
-        scriptType: String? = null,
-        script: Script? = null,
-        order: Order? = null,
-        mode: Mode? = null,
-        numericType: NumericType? = null,
-        missing: Missing? = null,
-        unmappedType: String? = null,
-        nested: Nested? = null,
-    ) : this(
-        by = By(field, scriptType, script),
-        order = order,
-        mode = mode,
-        numericType = numericType,
-        missing = missing,
-        unmappedType = unmappedType,
-        nested = nested,
-    )
+interface Sort {
+    companion object {
+        operator fun invoke(
+            by: By,
+            order: Order? = null,
+            mode: Mode? = null,
+            numericType: NumericType? = null,
+            missing: Missing? = null,
+            unmappedType: String? = null,
+            nested: Nested? = null,
+        ): Sort = Impl(
+            by,
+            order = order,
+            mode = mode,
+            numericType = numericType,
+            missing = missing,
+            unmappedType = unmappedType,
+            nested = nested,
+        )
+
+        operator fun invoke(
+            field: FieldOperations<*>? = null,
+            scriptType: String? = null,
+            script: Script? = null,
+            order: Order? = null,
+            mode: Mode? = null,
+            numericType: NumericType? = null,
+            missing: Missing? = null,
+            unmappedType: String? = null,
+            nested: Nested? = null,
+        ): Sort = Impl(
+            by = By(field, scriptType, script),
+            order = order,
+            mode = mode,
+            numericType = numericType,
+            missing = missing,
+            unmappedType = unmappedType,
+            nested = nested,
+        )
+    }
+
+    // TODO: geo distance
+    data class Impl(
+        val by: By,
+        val order: Order? = null,
+        val mode: Mode? = null,
+        val numericType: NumericType? = null,
+        val missing: Missing? = null,
+        val unmappedType: String? = null,
+        val nested: Nested? = null,
+    ) : ArrayExpression, Sort {
+        override fun clone() = copy()
+
+        override fun accept(ctx: Serializer.ArrayCtx, compiler: SearchQueryCompiler) {
+            val params = Params(
+                "order" to order,
+                "mode" to mode,
+                "numeric_type" to numericType,
+                "missing" to missing,
+                "unmapped_type" to unmappedType,
+                "nested" to nested,
+            )
+            if (
+                by is By.Field &&
+                order == null &&
+                mode == null &&
+                numericType == null &&
+                missing == null &&
+                unmappedType == null
+            ) {
+                ctx.value(by.field.getQualifiedFieldName())
+            } else {
+                ctx.obj {
+                    when (by) {
+                        is By.Field -> {
+                            obj(by.field.getQualifiedFieldName()) {
+                                compiler.visit(this, params)
+                            }
+                        }
+                        is By.Script -> {
+                            obj("_script") {
+                                field("type", by.type)
+                                obj("script") {
+                                    compiler.visit(this, by.script)
+                                }
+                                compiler.visit(this, params)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     sealed class By {
         class Field(val field: FieldOperations<*>) : By()
@@ -102,7 +166,7 @@ data class Sort(
         val filter: QueryExpression? = null,
         val maxChildren: Int? = null,
         val nested: Nested? = null,
-    ) : Expression {
+    ) : ObjExpression {
         override fun clone() = copy()
 
         override fun accept(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
@@ -116,49 +180,6 @@ data class Sort(
             if (nested != null) {
                 ctx.obj("nested") {
                     compiler.visit(this, nested)
-                }
-            }
-        }
-    }
-
-    internal fun simplifiedName(): String? {
-        if (
-            by is By.Field &&
-            order == null &&
-            mode == null &&
-            numericType == null &&
-            missing == null &&
-            unmappedType == null
-        ) {
-            return by.field.getQualifiedFieldName()
-        }
-        return null
-    }
-
-    override fun clone() = copy()
-
-    override fun accept(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
-        val params = Params(
-            "order" to order,
-            "mode" to mode,
-            "numeric_type" to numericType,
-            "missing" to missing,
-            "unmapped_type" to unmappedType,
-            "nested" to nested,
-        )
-        when (by) {
-            is By.Field -> {
-                ctx.obj(by.field.getQualifiedFieldName()) {
-                    compiler.visit(this, params)
-                }
-            }
-            is By.Script -> {
-                ctx.obj("_script") {
-                    field("type", by.type)
-                    obj("script") {
-                        compiler.visit(this, by.script)
-                    }
-                    compiler.visit(this, params)
                 }
             }
         }

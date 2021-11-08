@@ -6,6 +6,7 @@ import dev.evo.elasticmagic.query.Expression
 import dev.evo.elasticmagic.compile.SearchQueryCompiler
 import dev.evo.elasticmagic.doc.Document
 import dev.evo.elasticmagic.doc.date
+import dev.evo.elasticmagic.serde.Serializer
 
 import io.kotest.matchers.types.shouldBeInstanceOf
 
@@ -15,7 +16,7 @@ abstract class TestAggregation : BaseTest() {
         ElasticsearchVersion(6, 0, 0),
     )
 
-    protected fun Expression.compile(): Map<String, Any?> {
+    protected fun Expression<Serializer.ObjectCtx>.compile(): Map<String, Any?> {
         val obj = serializer.obj {
             compiler.visit(this, this@compile)
         }

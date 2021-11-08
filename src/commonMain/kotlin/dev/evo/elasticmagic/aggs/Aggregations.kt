@@ -1,9 +1,9 @@
 package dev.evo.elasticmagic.aggs
 
-import dev.evo.elasticmagic.query.Expression
+import dev.evo.elasticmagic.compile.SearchQueryCompiler
 import dev.evo.elasticmagic.query.FieldOperations
 import dev.evo.elasticmagic.query.NamedExpression
-import dev.evo.elasticmagic.compile.SearchQueryCompiler
+import dev.evo.elasticmagic.query.ObjExpression
 import dev.evo.elasticmagic.types.FieldType
 import dev.evo.elasticmagic.serde.Deserializer
 import dev.evo.elasticmagic.serde.Serializer
@@ -14,7 +14,7 @@ import dev.evo.elasticmagic.serde.Serializer
  * - [Script] gets values as a script result.
  * - [ValueScript] combines a field with a script. There is special variable `_value` that contains field value.
  */
-sealed class AggValue<T> : Expression {
+sealed class AggValue<T> : ObjExpression {
     data class Field<T>(val field: FieldOperations<T>) : AggValue<T>() {
         override fun clone() = copy()
         override fun getValueType(): FieldType<*, T> = field.getFieldType()

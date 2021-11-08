@@ -3,6 +3,7 @@ package dev.evo.elasticmagic
 import dev.evo.elasticmagic.aggs.Aggregation
 import dev.evo.elasticmagic.doc.BaseDocSource
 import dev.evo.elasticmagic.doc.DynDocSource
+import dev.evo.elasticmagic.query.FieldFormat
 import dev.evo.elasticmagic.query.FieldOperations
 import dev.evo.elasticmagic.query.NodeHandle
 import dev.evo.elasticmagic.query.QueryExpression
@@ -13,11 +14,6 @@ import dev.evo.elasticmagic.query.Sort
 import dev.evo.elasticmagic.query.ToValue
 import dev.evo.elasticmagic.query.collect
 import dev.evo.elasticmagic.serde.Deserializer
-
-data class FieldFormat(
-    val field: FieldOperations<*>,
-    val format: String? = null,
-)
 
 enum class SearchType : ToValue<String> {
     QUERY_THEN_FETCH, DFS_QUERY_THEN_FETCH;
@@ -38,6 +34,7 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
 
     protected val aggregations: MutableMap<String, Aggregation<*>> = mutableMapOf()
 
+    protected val fields: MutableList<FieldFormat> = mutableListOf()
     protected val docvalueFields: MutableList<FieldFormat> = mutableListOf()
     protected val storedFields: MutableList<FieldOperations<*>> = mutableListOf()
     protected val scriptFields: MutableMap<String, Script> = mutableMapOf()
@@ -129,10 +126,6 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
         this.sorts += sorts
     }
 
-    fun sort(vararg fields: FieldOperations<*>): T = self {
-        this.sorts += fields.map(::Sort)
-    }
-
     fun clearSort(): T = self {
         sorts.clear()
     }
@@ -145,8 +138,8 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
         this.trackTotalHits = trackTotalHits
     }
 
-    fun docvalueFields(vararg fields: FieldOperations<*>): T = self {
-        docvalueFields += fields.map(::FieldFormat)
+    fun fields(vararg fields: FieldFormat): T = self {
+        this.fields += fields
     }
 
     fun docvalueFields(vararg fields: FieldFormat): T = self {
@@ -223,6 +216,7 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
             sorts = sorts.toList(),
             trackScores = trackScores,
             trackTotalHits = trackTotalHits,
+            fields = fields,
             docvalueFields = docvalueFields,
             storedFields = storedFields,
             scriptFields = scriptFields,
@@ -275,6 +269,7 @@ open class SearchQuery<S: BaseDocSource>(
         cloned.sorts.addAll(sorts)
         cloned.trackScores = trackScores
         cloned.trackTotalHits = trackTotalHits
+        cloned.fields.addAll(fields)
         cloned.docvalueFields.addAll(docvalueFields)
         cloned.storedFields.addAll(storedFields)
         cloned.scriptFields.putAll(scriptFields)
@@ -300,6 +295,7 @@ data class PreparedSearchQuery<S: BaseDocSource>(
     val sorts: List<Sort>,
     val trackScores: Boolean?,
     val trackTotalHits: Boolean?,
+    val fields: List<FieldFormat>,
     val docvalueFields: List<FieldFormat>,
     val storedFields: List<FieldOperations<*>>,
     val scriptFields: Map<String, Script>,

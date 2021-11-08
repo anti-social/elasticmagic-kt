@@ -17,7 +17,11 @@ abstract class BaseTest {
             }
         }
 
-        class ArrayCtx : StdSerializer.ArrayCtx(ArrayList())
+        class ArrayCtx : StdSerializer.ArrayCtx(ArrayList()) {
+            override fun serialize(): String {
+                TODO("not implemented")
+            }
+        }
     }
     protected val serializer = TestSerializer
 

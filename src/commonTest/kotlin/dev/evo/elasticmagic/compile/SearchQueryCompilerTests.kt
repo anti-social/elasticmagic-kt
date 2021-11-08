@@ -2,7 +2,6 @@ package dev.evo.elasticmagic.compile
 
 import dev.evo.elasticmagic.BaseTest
 import dev.evo.elasticmagic.ElasticsearchVersion
-import dev.evo.elasticmagic.FieldFormat
 import dev.evo.elasticmagic.Params
 import dev.evo.elasticmagic.SearchQuery
 import dev.evo.elasticmagic.SearchType
@@ -16,6 +15,7 @@ import dev.evo.elasticmagic.doc.datetime
 import dev.evo.elasticmagic.query.BoolNode
 import dev.evo.elasticmagic.query.DisMax
 import dev.evo.elasticmagic.query.DisMaxNode
+import dev.evo.elasticmagic.query.FieldFormat
 import dev.evo.elasticmagic.query.FunctionScore
 import dev.evo.elasticmagic.query.FunctionScoreNode
 import dev.evo.elasticmagic.query.Ids
@@ -339,9 +339,9 @@ class SearchQueryCompilerTests : BaseTest() {
     fun testSort_fieldSimplified() {
         compile(
             SearchQuery()
-                .sort(Sort(field = AnyField("popularity")))
+                .sort(AnyField("popularity"), Sort(AnyField("id")))
         ).body shouldContainExactly mapOf(
-            "sort" to listOf("popularity")
+            "sort" to listOf("popularity", "id")
         )
     }
 
@@ -425,21 +425,99 @@ class SearchQueryCompilerTests : BaseTest() {
     }
 
     @Test
-    fun testTrackScores() {
+    fun trackScores() {
         compile(SearchQuery().trackScores(true)).body shouldContainExactly mapOf(
             "track_scores" to true
         )
     }
 
     @Test
-    fun testTrackTotalHits() {
+    fun trackTotalHits() {
         compile(SearchQuery().trackScores(true)).body shouldContainExactly mapOf(
             "track_scores" to true
         )
     }
 
     @Test
-    fun testSizeAndFrom() {
+    fun fields() {
+        compile(
+            SearchQuery().fields(*arrayOf<FieldFormat>())
+        ).body shouldContainExactly emptyMap()
+
+        compile(
+            SearchQuery()
+                .fields(AnyField("rank"), AnyField("opinion.rating"))
+        ).body shouldContainExactly mapOf(
+            "fields" to listOf("rank", "opinion.rating")
+        )
+
+        compile(
+            SearchQuery()
+                .fields(FieldFormat(AnyField("date_created"), "epoch_millis"))
+        ).body shouldContainExactly mapOf(
+            "fields" to listOf(mapOf("field" to "date_created", "format" to "epoch_millis"))
+        )
+    }
+
+    @Test
+    fun docvalueFields() {
+        compile(
+            SearchQuery().docvalueFields(*arrayOf<FieldFormat>())
+        ).body shouldContainExactly emptyMap()
+
+        compile(
+            SearchQuery()
+                .docvalueFields(AnyField("rank"), AnyField("opinion.rating"))
+        ).body shouldContainExactly mapOf(
+            "docvalue_fields" to listOf("rank", "opinion.rating")
+        )
+
+        compile(
+            SearchQuery()
+                .docvalueFields(FieldFormat(AnyField("date_created"), "YYYY"))
+        ).body shouldContainExactly mapOf(
+            "docvalue_fields" to listOf(mapOf("field" to "date_created", "format" to "YYYY"))
+        )
+    }
+
+    @Test
+    fun storedFields() {
+        compile(
+            SearchQuery().storedFields(*arrayOf())
+        ).body shouldContainExactly emptyMap()
+
+        compile(
+            SearchQuery()
+                .storedFields(AnyField("rank"), AnyField("opinion.rating"))
+        ).body shouldContainExactly mapOf(
+            "stored_fields" to listOf("rank", "opinion.rating")
+        )
+    }
+
+    @Test
+    fun scriptFields() {
+        compile(
+            SearchQuery().scriptFields(*arrayOf())
+        ).body shouldContainExactly emptyMap()
+
+        compile(
+            SearchQuery()
+                .scriptFields(
+                    "weighted_rank" to Script("doc['rank'].value * doc['weight'].value"),
+                )
+        ).body shouldContainExactly mapOf(
+            "script_fields" to mapOf(
+                "weighted_rank" to mapOf(
+                    "script" to mapOf(
+                        "source" to "doc['rank'].value * doc['weight'].value"
+                    )
+                )
+            )
+        )
+    }
+
+    @Test
+    fun sizeAndFrom() {
         val query = SearchQuery()
             .size(100)
             .from(200)

@@ -1,9 +1,9 @@
 package dev.evo.elasticmagic.aggs
 
-import dev.evo.elasticmagic.query.Expression
-import dev.evo.elasticmagic.query.FieldOperations
 import dev.evo.elasticmagic.Params
 import dev.evo.elasticmagic.compile.SearchQueryCompiler
+import dev.evo.elasticmagic.query.FieldOperations
+import dev.evo.elasticmagic.query.ObjExpression
 import dev.evo.elasticmagic.query.ToValue
 import dev.evo.elasticmagic.serde.Deserializer
 import dev.evo.elasticmagic.serde.Serializer
@@ -245,7 +245,7 @@ data class DateHistogramAgg<T>(
         aggs = aggs,
     )
 
-    sealed class Interval : Expression {
+    sealed class Interval : ObjExpression {
         abstract val name: String
 
         abstract fun intervalValue(): String

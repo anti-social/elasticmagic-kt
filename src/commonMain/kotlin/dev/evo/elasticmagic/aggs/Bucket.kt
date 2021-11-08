@@ -1,10 +1,10 @@
 package dev.evo.elasticmagic.aggs
 
-import dev.evo.elasticmagic.query.Expression
+import dev.evo.elasticmagic.compile.SearchQueryCompiler
 import dev.evo.elasticmagic.query.FieldOperations
+import dev.evo.elasticmagic.query.ObjExpression
 import dev.evo.elasticmagic.query.QueryExpression
 import dev.evo.elasticmagic.query.Sort
-import dev.evo.elasticmagic.compile.SearchQueryCompiler
 import dev.evo.elasticmagic.serde.Deserializer
 import dev.evo.elasticmagic.serde.Serializer
 
@@ -64,7 +64,7 @@ abstract class KeyedBucket<K> : BaseBucket() {
 data class BucketsOrder(
     val key: String,
     val order: Sort.Order,
-) : Expression {
+) : ObjExpression {
     override fun clone() = copy()
 
     override fun accept(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {

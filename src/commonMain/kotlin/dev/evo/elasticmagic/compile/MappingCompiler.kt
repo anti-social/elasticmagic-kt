@@ -1,15 +1,16 @@
 package dev.evo.elasticmagic.compile
 
-import dev.evo.elasticmagic.doc.AnyField
+import dev.evo.elasticmagic.ElasticsearchVersion
+import dev.evo.elasticmagic.doc.MappingField
 import dev.evo.elasticmagic.doc.BaseDocument
 import dev.evo.elasticmagic.doc.Document
-import dev.evo.elasticmagic.ElasticsearchVersion
-import dev.evo.elasticmagic.query.Expression
 import dev.evo.elasticmagic.doc.FieldSet
 import dev.evo.elasticmagic.doc.MetaFields
 import dev.evo.elasticmagic.doc.RuntimeFields
 import dev.evo.elasticmagic.doc.SubDocumentField
 import dev.evo.elasticmagic.doc.SubFieldsField
+import dev.evo.elasticmagic.query.ArrayExpression
+import dev.evo.elasticmagic.query.ObjExpression
 import dev.evo.elasticmagic.query.ToValue
 import dev.evo.elasticmagic.serde.Serializer
 import dev.evo.elasticmagic.serde.Serializer.ArrayCtx
@@ -31,8 +32,11 @@ open class MappingCompiler(
 
     override fun dispatch(ctx: ArrayCtx, value: Any?) {
         when (value) {
-            is Expression -> ctx.obj {
+            is ObjExpression -> ctx.obj {
                 searchQueryCompiler.visit(this, value)
+            }
+            is ArrayExpression -> ctx.array {
+                searchQueryCompiler.visit(ctx, value)
             }
             is ToValue<*> -> {
                 ctx.value(value.toValue())
@@ -43,7 +47,10 @@ open class MappingCompiler(
 
     override fun dispatch(ctx: ObjectCtx, name: String, value: Any?) {
         when (value) {
-            is Expression -> ctx.obj(name) {
+            is ObjExpression -> ctx.obj(name) {
+                searchQueryCompiler.visit(this, value)
+            }
+            is ArrayExpression -> ctx.array(name) {
                 searchQueryCompiler.visit(this, value)
             }
             is ToValue<*> -> {
@@ -100,7 +107,7 @@ open class MappingCompiler(
         }
     }
 
-    private fun visit(ctx: ObjectCtx, field: AnyField<*>) {
+    private fun visit(ctx: ObjectCtx, field: MappingField<*>) {
         ctx.field("type", field.getFieldType().name)
         visit(ctx, field.getMappingParams())
 

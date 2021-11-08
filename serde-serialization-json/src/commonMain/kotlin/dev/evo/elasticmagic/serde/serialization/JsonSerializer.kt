@@ -52,7 +52,7 @@ sealed class JsonSerializer : Serializer {
         }
 
         override fun serialize(): String {
-            return Json.encodeToString(JsonElement.serializer(), build())
+            return Json.encodeToString(JsonObject.serializer(), build())
         }
     }
 
@@ -93,6 +93,10 @@ sealed class JsonSerializer : Serializer {
 
         override fun array(block: Serializer.ArrayCtx.() -> Unit) {
             content.add(ArrayCtx().apply(block).build())
+        }
+
+        override fun serialize(): String {
+            return Json.encodeToString(JsonArray.serializer(), build())
         }
     }
 
