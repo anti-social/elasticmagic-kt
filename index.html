@@ -577,7 +577,7 @@ Use it on your own risk</p>
     <span class="n">println</span><span class="p">()</span>
 <span class="p">}</span>
 
-<span class="kd">fun</span> <span class="nf">printGroupsAgg</span><span class="p">(</span><span class="n">aggResult</span><span class="p">:</span> <span class="n">TermsAggResult</span><span class="p">)</span> <span class="p">{</span>
+<span class="kd">fun</span> <span class="nf">printGroupsAgg</span><span class="p">(</span><span class="n">aggResult</span><span class="p">:</span> <span class="n">TermsAggResult</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span><span class="p">)</span> <span class="p">{</span>
     <span class="n">println</span><span class="p">(</span><span class="s">&quot;Groups aggregation&quot;</span><span class="p">)</span>
     <span class="k">for</span> <span class="p">(</span><span class="n">bucket</span> <span class="k">in</span> <span class="n">aggResult</span><span class="p">.</span><span class="na">buckets</span><span class="p">)</span> <span class="p">{</span>
         <span class="n">println</span><span class="p">(</span><span class="s">&quot;  </span><span class="si">${</span><span class="n">bucket</span><span class="p">.</span><span class="na">key</span><span class="si">}</span><span class="s">: </span><span class="si">${</span><span class="n">bucket</span><span class="p">.</span><span class="na">docCount</span><span class="si">}</span><span class="s">&quot;</span><span class="p">)</span>

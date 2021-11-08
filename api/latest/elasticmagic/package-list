@@ -415,7 +415,7 @@ $dokka.location:dev.evo.elasticmagic.aggs/RangeBucket/key/#/PointingToDeclaratio
 $dokka.location:dev.evo.elasticmagic.aggs/RangeBucket/to/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.aggs/-range-bucket/to.html
 $dokka.location:dev.evo.elasticmagic.aggs/RangeBucket/toAsString/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.aggs/-range-bucket/to-as-string.html
 $dokka.location:dev.evo.elasticmagic.aggs/SignificantTermBucket///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.aggs/-significant-term-bucket/index.html
-$dokka.location:dev.evo.elasticmagic.aggs/SignificantTermBucket/SignificantTermBucket/#kotlin.Any#kotlin.Long#kotlin.Long#kotlin.Float#kotlin.Long?#kotlin.collections.Map[kotlin.String,dev.evo.elasticmagic.aggs.AggregationResult]/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.aggs/-significant-term-bucket/-significant-term-bucket.html
+$dokka.location:dev.evo.elasticmagic.aggs/SignificantTermBucket/SignificantTermBucket/#TypeParam(bounds=[kotlin.Any?])#kotlin.Long#kotlin.Long#kotlin.Float#kotlin.Long?#kotlin.collections.Map[kotlin.String,dev.evo.elasticmagic.aggs.AggregationResult]/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.aggs/-significant-term-bucket/-significant-term-bucket.html
 $dokka.location:dev.evo.elasticmagic.aggs/SignificantTermBucket/aggs/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.aggs/-significant-term-bucket/aggs.html
 $dokka.location:dev.evo.elasticmagic.aggs/SignificantTermBucket/bgCount/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.aggs/-significant-term-bucket/bg-count.html
 $dokka.location:dev.evo.elasticmagic.aggs/SignificantTermBucket/docCount/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.aggs/-significant-term-bucket/doc-count.html
@@ -444,8 +444,10 @@ $dokka.location:dev.evo.elasticmagic.aggs/SignificantTermsAgg/size/#/PointingToD
 $dokka.location:dev.evo.elasticmagic.aggs/SignificantTermsAgg/value/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.aggs/-significant-terms-agg/value.html
 $dokka.location:dev.evo.elasticmagic.aggs/SignificantTermsAgg/visit/#dev.evo.elasticmagic.serde.Serializer.ObjectCtx#dev.evo.elasticmagic.compile.SearchQueryCompiler/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.aggs/-significant-terms-agg/visit.html
 $dokka.location:dev.evo.elasticmagic.aggs/SignificantTermsAggResult///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.aggs/-significant-terms-agg-result/index.html
-$dokka.location:dev.evo.elasticmagic.aggs/SignificantTermsAggResult/SignificantTermsAggResult/#kotlin.collections.List[dev.evo.elasticmagic.aggs.SignificantTermBucket]/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.aggs/-significant-terms-agg-result/-significant-terms-agg-result.html
+$dokka.location:dev.evo.elasticmagic.aggs/SignificantTermsAggResult/SignificantTermsAggResult/#kotlin.Long#kotlin.Long#kotlin.collections.List[dev.evo.elasticmagic.aggs.SignificantTermBucket[TypeParam(bounds=[kotlin.Any?])]]/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.aggs/-significant-terms-agg-result/-significant-terms-agg-result.html
+$dokka.location:dev.evo.elasticmagic.aggs/SignificantTermsAggResult/bgCount/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.aggs/-significant-terms-agg-result/bg-count.html
 $dokka.location:dev.evo.elasticmagic.aggs/SignificantTermsAggResult/buckets/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.aggs/-significant-terms-agg-result/buckets.html
+$dokka.location:dev.evo.elasticmagic.aggs/SignificantTermsAggResult/docCount/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.aggs/-significant-terms-agg-result/doc-count.html
 $dokka.location:dev.evo.elasticmagic.aggs/SingleBucketAggResult///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.aggs/-single-bucket-agg-result/index.html
 $dokka.location:dev.evo.elasticmagic.aggs/SingleBucketAggResult/SingleBucketAggResult/#kotlin.Long#kotlin.collections.Map[kotlin.String,dev.evo.elasticmagic.aggs.AggregationResult]/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.aggs/-single-bucket-agg-result/-single-bucket-agg-result.html
 $dokka.location:dev.evo.elasticmagic.aggs/SingleBucketAggResult/aggs/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.aggs/-single-bucket-agg-result/aggs.html
@@ -492,7 +494,7 @@ $dokka.location:dev.evo.elasticmagic.aggs/SumAgg/missing/#/PointingToDeclaration
 $dokka.location:dev.evo.elasticmagic.aggs/SumAgg/name/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.aggs/-sum-agg/name.html
 $dokka.location:dev.evo.elasticmagic.aggs/SumAgg/value/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.aggs/-sum-agg/value.html
 $dokka.location:dev.evo.elasticmagic.aggs/TermBucket///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.aggs/-term-bucket/index.html
-$dokka.location:dev.evo.elasticmagic.aggs/TermBucket/TermBucket/#kotlin.Any#kotlin.Long#kotlin.Long?#kotlin.collections.Map[kotlin.String,dev.evo.elasticmagic.aggs.AggregationResult]/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.aggs/-term-bucket/-term-bucket.html
+$dokka.location:dev.evo.elasticmagic.aggs/TermBucket/TermBucket/#TypeParam(bounds=[kotlin.Any?])#kotlin.Long#kotlin.Long?#kotlin.collections.Map[kotlin.String,dev.evo.elasticmagic.aggs.AggregationResult]/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.aggs/-term-bucket/-term-bucket.html
 $dokka.location:dev.evo.elasticmagic.aggs/TermBucket/aggs/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.aggs/-term-bucket/aggs.html
 $dokka.location:dev.evo.elasticmagic.aggs/TermBucket/docCount/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.aggs/-term-bucket/doc-count.html
 $dokka.location:dev.evo.elasticmagic.aggs/TermBucket/docCountErrorUpperBound/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.aggs/-term-bucket/doc-count-error-upper-bound.html
@@ -519,7 +521,7 @@ $dokka.location:dev.evo.elasticmagic.aggs/TermsAgg/size/#/PointingToDeclaration/
 $dokka.location:dev.evo.elasticmagic.aggs/TermsAgg/value/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.aggs/-terms-agg/value.html
 $dokka.location:dev.evo.elasticmagic.aggs/TermsAgg/visit/#dev.evo.elasticmagic.serde.Serializer.ObjectCtx#dev.evo.elasticmagic.compile.SearchQueryCompiler/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.aggs/-terms-agg/visit.html
 $dokka.location:dev.evo.elasticmagic.aggs/TermsAggResult///PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.aggs/-terms-agg-result/index.html
-$dokka.location:dev.evo.elasticmagic.aggs/TermsAggResult/TermsAggResult/#kotlin.collections.List[dev.evo.elasticmagic.aggs.TermBucket]#kotlin.Long#kotlin.Long/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.aggs/-terms-agg-result/-terms-agg-result.html
+$dokka.location:dev.evo.elasticmagic.aggs/TermsAggResult/TermsAggResult/#kotlin.collections.List[dev.evo.elasticmagic.aggs.TermBucket[TypeParam(bounds=[kotlin.Any?])]]#kotlin.Long#kotlin.Long/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.aggs/-terms-agg-result/-terms-agg-result.html
 $dokka.location:dev.evo.elasticmagic.aggs/TermsAggResult/buckets/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.aggs/-terms-agg-result/buckets.html
 $dokka.location:dev.evo.elasticmagic.aggs/TermsAggResult/docCountErrorUpperBound/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.aggs/-terms-agg-result/doc-count-error-upper-bound.html
 $dokka.location:dev.evo.elasticmagic.aggs/TermsAggResult/sumOtherDocCount/#/PointingToDeclaration/elasticmagic/dev.evo.elasticmagic.aggs/-terms-agg-result/sum-other-doc-count.html
