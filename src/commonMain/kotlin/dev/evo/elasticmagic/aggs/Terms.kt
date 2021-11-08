@@ -104,7 +104,7 @@ data class TermsAgg<T>(
     val showTermDocCountError: Boolean? = null,
     override val params: Params = Params(),
     override val aggs: Map<String, Aggregation<*>> = emptyMap(),
-) : BaseTermsAgg<T, TermsAggResult>() {
+) : BaseTermsAgg<T, TermsAggResult<T>>() {
     override val name = "terms"
 
     constructor(
@@ -146,14 +146,14 @@ data class TermsAgg<T>(
         super.visit(ctx, compiler)
     }
 
-    override fun processResult(obj: Deserializer.ObjectCtx): TermsAggResult {
-        val buckets = mutableListOf<TermBucket>()
+    override fun processResult(obj: Deserializer.ObjectCtx): TermsAggResult<T> {
+        val buckets = mutableListOf<TermBucket<T>>()
         val rawBuckets = obj.array("buckets")
         while (rawBuckets.hasNext()) {
             val rawBucket = rawBuckets.obj()
             buckets.add(
                 TermBucket(
-                    key = rawBucket.any("key"),
+                    key = value.deserializeTerm(rawBucket.any("key")),
                     docCount = rawBucket.long("doc_count"),
                     docCountErrorUpperBound = rawBucket.longOrNull("doc_count_error_upper_bound"),
                     aggs = processSubAggs(rawBucket)
@@ -169,18 +169,18 @@ data class TermsAgg<T>(
     }
 }
 
-data class TermsAggResult(
-    override val buckets: List<TermBucket>,
+data class TermsAggResult<T>(
+    override val buckets: List<TermBucket<T>>,
     val docCountErrorUpperBound: Long,
     val sumOtherDocCount: Long,
-) : BucketAggResult<TermBucket>()
+) : BucketAggResult<TermBucket<T>>()
 
-data class TermBucket(
-    override val key: Any,
+data class TermBucket<T>(
+    override val key: T,
     override val docCount: Long,
     val docCountErrorUpperBound: Long? = null,
     override val aggs: Map<String, AggregationResult> = emptyMap(),
-) : KeyedBucket<Any>()
+) : KeyedBucket<T>()
 
 data class SignificantTermsAgg<T>(
     override val value: AggValue<T>,
@@ -197,7 +197,7 @@ data class SignificantTermsAgg<T>(
     val backgroundFilter: QueryExpression? = null,
     override val params: Params = Params(),
     override val aggs: Map<String, Aggregation<*>> = emptyMap(),
-) : BaseTermsAgg<T, SignificantTermsAggResult>() {
+) : BaseTermsAgg<T, SignificantTermsAggResult<T>>() {
     override val name = "significant_terms"
 
     constructor(
@@ -243,14 +243,14 @@ data class SignificantTermsAgg<T>(
         super.visit(ctx, compiler)
     }
 
-    override fun processResult(obj: Deserializer.ObjectCtx): SignificantTermsAggResult {
-        val buckets = mutableListOf<SignificantTermBucket>()
+    override fun processResult(obj: Deserializer.ObjectCtx): SignificantTermsAggResult<T> {
+        val buckets = mutableListOf<SignificantTermBucket<T>>()
         val rawBuckets = obj.array("buckets")
         while (rawBuckets.hasNext()) {
             val rawBucket = rawBuckets.obj()
             buckets.add(
                 SignificantTermBucket(
-                    key = rawBucket.any("key"),
+                    key = value.deserializeTerm(rawBucket.any("key")),
                     docCount = rawBucket.long("doc_count"),
                     bgCount = rawBucket.long("bg_count"),
                     score = rawBucket.float("score"),
@@ -260,19 +260,25 @@ data class SignificantTermsAgg<T>(
             )
 
         }
-        return SignificantTermsAggResult(buckets)
+        return SignificantTermsAggResult(
+            obj.long("doc_count"),
+            obj.long("bg_count"),
+            buckets
+        )
     }
 }
 
-data class SignificantTermsAggResult(
-    override val buckets: List<SignificantTermBucket>,
-) : BucketAggResult<SignificantTermBucket>()
+data class SignificantTermsAggResult<T>(
+    val docCount: Long,
+    val bgCount: Long,
+    override val buckets: List<SignificantTermBucket<T>>,
+) : BucketAggResult<SignificantTermBucket<T>>()
 
-data class SignificantTermBucket(
-    override val key: Any,
+data class SignificantTermBucket<T>(
+    override val key: T,
     override val docCount: Long,
     val bgCount: Long,
     val score: Float,
     val docCountErrorUpperBound: Long? = null,
     override val aggs: Map<String, AggregationResult> = emptyMap(),
-) : KeyedBucket<Any>()
+) : KeyedBucket<T>()

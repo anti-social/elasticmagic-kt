@@ -141,6 +141,8 @@ class TermsTests : TestAggregation() {
         process(
             agg,
             mapOf(
+                "doc_count" to 158,
+                "bg_count" to 2097,
                 "buckets" to listOf(
                     mapOf(
                         "key" to "comedy",
@@ -151,6 +153,8 @@ class TermsTests : TestAggregation() {
                 )
             )
         ) shouldBe SignificantTermsAggResult(
+            docCount = 158,
+            bgCount = 2097,
             buckets = listOf(SignificantTermBucket("comedy", 83, 832, 0.693F)),
         )
     }

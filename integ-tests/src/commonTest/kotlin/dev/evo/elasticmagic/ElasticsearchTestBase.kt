@@ -53,14 +53,16 @@ abstract class ElasticsearchTestBase(indexName: String) : TestBase() {
     protected suspend fun withFixtures(
         mapping: Document,
         fixtures: List<DocSourceAndMeta<*>>,
+        cleanup: Boolean = true,
         block: suspend () -> Unit
     ) {
-        withFixtures(listOf(mapping), fixtures, block)
+        withFixtures(listOf(mapping), fixtures, cleanup, block)
     }
 
     protected suspend fun withFixtures(
         mappings: List<Document>,
         fixtures: List<DocSourceAndMeta<*>>,
+        cleanup: Boolean = true,
         block: suspend () -> Unit
     ) {
         ensureIndex(*mappings.toTypedArray())
@@ -94,7 +96,9 @@ abstract class ElasticsearchTestBase(indexName: String) : TestBase() {
         try {
             block()
         } finally {
-            index.bulk(deleteActions, refresh = Refresh.TRUE)
+            if (cleanup) {
+                index.bulk(deleteActions, refresh = Refresh.TRUE)
+            }
         }
     }
 }
