@@ -16,7 +16,7 @@ fun printUsers(result: SearchQueryResult<DynDocSource>) {
     println()
 }
 
-fun printGroupsAgg(aggResult: TermsAggResult) {
+fun printGroupsAgg(aggResult: TermsAggResult<String>) {
     println("Groups aggregation")
     for (bucket in aggResult.buckets) {
         println("  ${bucket.key}: ${bucket.docCount}")

@@ -159,6 +159,12 @@ class SearchQueryTests : ElasticsearchTestBase("test-search-query") {
                 productPrice = 1.99F
                 quantity = 9
             },
+            OrderDocSource.CartItem().apply {
+                productId = 2
+                productName = "Genuine Miss Bock's donut"
+                productPrice = 0.2F
+                quantity = 2
+            }
         )
         status = OrderStatus.NEW
         dateCreated = LocalDateTime(2021, 10, 9, 15, 31, 45).toInstant(TimeZone.UTC)
@@ -341,7 +347,7 @@ class SearchQueryTests : ElasticsearchTestBase("test-search-query") {
             val hits = searchResult.hits
             checkOrderHitsSorted(hits, listOf("102", "104", "103", "101"))
             hits[0].sort shouldBe listOf(100)
-            hits[1].sort shouldBe listOf(11)
+            hits[1].sort shouldBe listOf(13)
             hits[2].sort shouldBe listOf(10)
             hits[3].sort shouldBe listOf(3)
         }
@@ -366,11 +372,11 @@ class SearchQueryTests : ElasticsearchTestBase("test-search-query") {
             (searchResult.maxScore ?: 0.0) shouldBe 0.0
             searchResult.hits.size shouldBe 0
 
-            val statusesAgg = searchResult.agg<TermsAggResult>("statuses")
+            val statusesAgg = searchResult.agg<TermsAggResult<OrderStatus>>("statuses")
             statusesAgg.buckets.size shouldBe 2
-            statusesAgg.buckets[0].key shouldBe 0
+            statusesAgg.buckets[0].key shouldBe OrderStatus.NEW
             statusesAgg.buckets[0].docCount shouldBe 3
-            statusesAgg.buckets[1].key shouldBe 1
+            statusesAgg.buckets[1].key shouldBe OrderStatus.ACCEPTED
             statusesAgg.buckets[1].docCount shouldBe 1
         }
     }
@@ -438,11 +444,11 @@ class SearchQueryTests : ElasticsearchTestBase("test-search-query") {
             searchResult.hits.size shouldBe 0
 
             val cartItemsAgg = searchResult.agg<SingleBucketAggResult>("cart_items")
-            cartItemsAgg.docCount shouldBe 5
+            cartItemsAgg.docCount shouldBe 6
             val priceHistAgg = cartItemsAgg.agg<HistogramAggResult>("item_price_hist")
             priceHistAgg.buckets.size shouldBe 4
             priceHistAgg.buckets[0].key shouldBe 0.0
-            priceHistAgg.buckets[0].docCount shouldBe 2
+            priceHistAgg.buckets[0].docCount shouldBe 3
             priceHistAgg.buckets[1].key shouldBe 1.0
             priceHistAgg.buckets[1].docCount shouldBe 1
             priceHistAgg.buckets[2].key shouldBe 5.0

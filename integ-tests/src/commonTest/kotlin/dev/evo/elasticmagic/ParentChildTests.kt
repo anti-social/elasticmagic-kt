@@ -138,7 +138,7 @@ class ParentChildTests : ElasticsearchTestBase("parent-child") {
                 )
                 .execute(index)
                 .let { searchResult ->
-                    val parentsAgg = searchResult.agg<TermsAggResult>("parents")
+                    val parentsAgg = searchResult.agg<TermsAggResult<String>>("parents")
                     parentsAgg.buckets shouldBe listOf(TermBucket("q~1", docCount = 3))
                 }
         }
