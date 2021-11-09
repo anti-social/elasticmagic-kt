@@ -21,9 +21,14 @@ enum class SearchType : ToValue<String> {
     override fun toValue() = name.lowercase()
 }
 
+/**
+ * An abstract class that holds all the search query builder methods. Inheritors of the class
+ * can implement some shortcut methods. For instance [SearchQuery.execute] which can be
+ * suspendable or blocking.
+ */
 @Suppress("UnnecessaryAbstractClass")
 abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
-    protected val sourceFactory: (obj: Deserializer.ObjectCtx) -> S,
+    protected val docSourceFactory: (obj: Deserializer.ObjectCtx) -> S,
     protected var query: QueryExpression? = null,
     params: Params = Params(),
 ) {
@@ -52,7 +57,9 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
     protected val params: MutableParams = params.toMutable()
 
     companion object {
-        private fun collectNodes(expression: QueryExpression?): Map<NodeHandle<*>, QueryExpressionNode<*>> {
+        private fun collectNodes(
+            expression: QueryExpression?
+        ): Map<NodeHandle<*>, QueryExpressionNode<*>> {
             val nodes = mutableMapOf<NodeHandle<*>, QueryExpressionNode<*>>()
             expression?.collect { node ->
                 if (node is QueryExpressionNode<*>) {
@@ -63,6 +70,70 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
         }
     }
 
+    protected abstract fun new(docSourceFactory: (obj: Deserializer.ObjectCtx) -> S): T
+
+    /**
+     * Clones this search query builder.
+     */
+    fun clone(): T {
+        val cloned = new(docSourceFactory)
+        cloned.query = query?.clone()
+        cloned.queryNodes = queryNodes
+        cloned.filters.addAll(filters)
+        cloned.postFilters.addAll(postFilters)
+        cloned.aggregations.putAll(aggregations)
+        cloned.rescores.addAll(rescores)
+        cloned.sorts.addAll(sorts)
+        cloned.trackScores = trackScores
+        cloned.trackTotalHits = trackTotalHits
+        cloned.fields.addAll(fields)
+        cloned.docvalueFields.addAll(docvalueFields)
+        cloned.storedFields.addAll(storedFields)
+        cloned.scriptFields.putAll(scriptFields)
+        cloned.size = size
+        cloned.from = from
+        cloned.terminateAfter = terminateAfter
+        cloned.params.putAll(params)
+        return cloned
+    }
+
+    /**
+     * Makes an immutable view of the search query. Be careful when using this method.
+     *
+     * <b>Note:</b>
+     *
+     * Returned [PreparedSearchQuery] is just a view of the [SearchQuery], thus changes in
+     * the search query are reflected in the [PreparedSearchQuery].
+     * Therefore [PreparedSearchQuery] should only be used from the same thread as the underlying
+     * [SearchQuery]. If you really need to share [PreparedSearchQuery] between threads
+     * you should clone the [SearchQuery]:
+     *
+     * ```kotlin
+     * val preparedQuery = searchQuery.clone().prepare()
+     * ```
+     */
+    fun prepare(): PreparedSearchQuery<S> {
+        return PreparedSearchQuery(
+            docSourceFactory,
+            query = query,
+            filters = filters,
+            postFilters = postFilters,
+            aggregations = aggregations,
+            rescores = rescores,
+            sorts = sorts,
+            trackScores = trackScores,
+            trackTotalHits = trackTotalHits,
+            fields = fields,
+            docvalueFields = docvalueFields,
+            storedFields = storedFields,
+            scriptFields = scriptFields,
+            size = size,
+            from = from,
+            terminateAfter = terminateAfter,
+            params = params,
+        )
+    }
+
     @Suppress("UNCHECKED_CAST")
     protected fun self(): T = this as T
 
@@ -71,16 +142,36 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
         return self()
     }
 
+    /**
+     * Replaces main query expression.
+     *
+     * @param query a new query that should replace an existing one.
+     *
+     * @sample samples.code.SearchQuery.query
+     *
+     * @see <https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html>
+     */
     fun query(query: QueryExpression?): T = self {
         this.query = query
         updateQueryNodes()
     }
 
+    /**
+     * Allows modifying specific query expression node using [handle] of the node.
+     *
+     * @param handle a handle bound to the specific query expression node.
+     * @param block a function that modifies the query expression node.
+     * @throws IllegalArgumentException if a node specified by the [handle] is missing.
+     *
+     * @sample samples.code.SearchQuery.queryNode
+     */
     inline fun <reified N: QueryExpressionNode<N>> queryNode(
         handle: NodeHandle<N>,
         block: (N) -> Unit
     ): T {
-        val node = findNode(handle) ?: error("Node handle not found: $handle")
+        val node = requireNotNull(findNode(handle)) {
+            "Node handle not found: $handle"
+        }
         block(node as N)
         updateQueryNodes()
 
@@ -100,50 +191,122 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
         this.queryNodes = collectNodes(query)
     }
 
+    /**
+     * Combines all the filter expressions together and wraps the existing query
+     * using the [dev.evo.elasticmagic.query.Bool] query expression.
+     *
+     * @param filters query filters which will be appended to the existing filters.
+     *
+     * @sample samples.code.SearchQuery.filter
+     *
+     * @see <https://www.elastic.co/guide/en/elasticsearch/reference/current/query-filter-context.html#filter-context>
+     */
     fun filter(vararg filters: QueryExpression): T = self {
         this.filters += filters
     }
 
+    /**
+     * Clears the existing filters.
+     */
     fun clearFilter(): T = self {
         filters.clear()
     }
 
+    /**
+     * Filter expressions in the post filter will be applied after the aggregations are
+     * calculated. Useful for building faceted filtering.
+     *
+     * @param filters query filters which will be appended to the existing post filters.
+     *
+     * @sample samples.code.SearchQuery.postFilter
+     *
+     * @see <https://www.elastic.co/guide/en/elasticsearch/reference/current/filter-search-results.html#post-filter>
+     */
     fun postFilter(vararg filters: QueryExpression): T = self {
         this.postFilters += filters
     }
 
+    /**
+     * Clears the existing post filters.
+     */
     fun clearPostFilter(): T = self {
         postFilters.clear()
     }
 
+    /**
+     * Adds [aggregations] to the existing query aggregations.
+     *
+     * @param aggregations pairs of the aggregation name and the aggregation itself.
+     * The aggregation name can be used to retrieve an aggregation result using
+     * [SearchQueryResult.aggs] method.
+     *
+     * @sample samples.code.SearchQuery.aggs
+     *
+     * @see <https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations.html>
+     */
     fun aggs(vararg aggregations: Pair<String, Aggregation<*>>): T = self {
         this.aggregations.putAll(aggregations)
     }
 
+    /**
+     * Clears the existing aggregations.
+     */
     fun clearAggs(): T = self {
         aggregations.clear()
     }
 
+    /**
+     * Adds [rescorers] to the existing query rescorers. Rescoring is executed after
+     * post filter phase.
+     *
+     * @sample samples.code.SearchQuery.rescore
+     *
+     * @see <https://www.elastic.co/guide/en/elasticsearch/reference/current/filter-search-results.html#rescore>
+     */
     fun rescore(vararg rescores: Rescore): T = self {
         this.rescores += rescores
     }
 
+    /**
+     * Clears the existing rescorers.
+     */
     fun clearRescore(): T = self {
         rescores.clear()
     }
 
+    /**
+     * Adds [sorts] to the existing query sorting expressions.
+     *
+     * @sample samples.code.SearchQuery.sort
+     *
+     * @see <https://www.elastic.co/guide/en/elasticsearch/reference/current/sort-search-results.html>
+     */
     fun sort(vararg sorts: Sort): T = self {
         this.sorts += sorts
     }
 
+    /**
+     * Clears the existing sorts.
+     */
     fun clearSort(): T = self {
         sorts.clear()
     }
 
+    /**
+     * If [trackScores] is `true` forces computing scores even when sorting on a field.
+     *
+     * @see <https://www.elastic.co/guide/en/elasticsearch/reference/7.15/sort-search-results.html#_track_scores>
+     */
     fun trackScores(trackScores: Boolean?): T = self {
         this.trackScores = trackScores
     }
 
+    /**
+     * When [trackTotalHits] is `true` the search query will always count the total number of
+     * hits that match the query.
+     *
+     * @see <https://www.elastic.co/guide/en/elasticsearch/reference/7.15/search-your-data.html#track-total-hits>
+     */
     fun trackTotalHits(trackTotalHits: Boolean?): T = self {
         this.trackTotalHits = trackTotalHits
     }
@@ -230,44 +393,25 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
     fun seqNoPrimaryTerm(seqNoPrimaryTerm: Boolean?): T = self {
         params.putNotNullOrRemove("seq_no_primary_term", seqNoPrimaryTerm)
     }
-
-    fun prepare(): PreparedSearchQuery<S> {
-        return PreparedSearchQuery(
-            sourceFactory,
-            query = query,
-            filters = filters.toList(),
-            postFilters = postFilters.toList(),
-            aggregations = aggregations.toMap(),
-            rescores = rescores.toList(),
-            sorts = sorts.toList(),
-            trackScores = trackScores,
-            trackTotalHits = trackTotalHits,
-            fields = fields,
-            docvalueFields = docvalueFields,
-            storedFields = storedFields,
-            scriptFields = scriptFields,
-            size = size,
-            from = from,
-            terminateAfter = terminateAfter,
-            params = params,
-        )
-    }
 }
 
+/**
+ * An asynchronous version of search query.
+ */
 open class SearchQuery<S: BaseDocSource>(
-    sourceFactory: (obj: Deserializer.ObjectCtx) -> S,
+    docSourceFactory: (obj: Deserializer.ObjectCtx) -> S,
     query: QueryExpression? = null,
     params: Params = Params(),
-) : BaseSearchQuery<S, SearchQuery<S>>(sourceFactory, query, params) {
+) : BaseSearchQuery<S, SearchQuery<S>>(docSourceFactory, query, params) {
 
     companion object {
         operator fun <S: BaseDocSource> invoke(
-            sourceFactory: () -> S,
+            docSourceFactory: () -> S,
             query: QueryExpression? = null,
             params: Params = Params(),
         ): SearchQuery<S> {
             return SearchQuery(
-                { _ -> sourceFactory() },
+                { _ -> docSourceFactory() },
                 query = query,
                 params = params
             )
@@ -281,29 +425,8 @@ open class SearchQuery<S: BaseDocSource>(
         }
     }
 
-    /**
-     * Clones this search query builder.
-     */
-    fun clone(): SearchQuery<S> {
-        val cloned = SearchQuery(sourceFactory)
-        cloned.query = query?.clone()
-        cloned.queryNodes = queryNodes
-        cloned.filters.addAll(filters)
-        cloned.postFilters.addAll(postFilters)
-        cloned.aggregations.putAll(aggregations)
-        cloned.rescores.addAll(rescores)
-        cloned.sorts.addAll(sorts)
-        cloned.trackScores = trackScores
-        cloned.trackTotalHits = trackTotalHits
-        cloned.fields.addAll(fields)
-        cloned.docvalueFields.addAll(docvalueFields)
-        cloned.storedFields.addAll(storedFields)
-        cloned.scriptFields.putAll(scriptFields)
-        cloned.size = size
-        cloned.from = from
-        cloned.terminateAfter = terminateAfter
-        cloned.params.putAll(params)
-        return cloned
+    override fun new(docSourceFactory: (obj: Deserializer.ObjectCtx) -> S): SearchQuery<S> {
+        return SearchQuery(docSourceFactory)
     }
 
     suspend fun execute(index: ElasticsearchIndex): SearchQueryResult<S> {
@@ -311,8 +434,12 @@ open class SearchQuery<S: BaseDocSource>(
     }
 }
 
+/**
+ * A prepared search query is a public read-only view to a search query.
+ * Mainly it is used to compile a search query.
+ */
 data class PreparedSearchQuery<S: BaseDocSource>(
-    val sourceFactory: (obj: Deserializer.ObjectCtx) -> S,
+    val docSourceFactory: (obj: Deserializer.ObjectCtx) -> S,
     val query: QueryExpression?,
     val filters: List<QueryExpression>,
     val postFilters: List<QueryExpression>,

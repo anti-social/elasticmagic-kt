@@ -23,13 +23,16 @@ import dev.evo.elasticmagic.query.FieldFormat
 import dev.evo.elasticmagic.query.FunctionScore
 import dev.evo.elasticmagic.query.FunctionScoreNode
 import dev.evo.elasticmagic.query.Ids
+import dev.evo.elasticmagic.query.Match
 import dev.evo.elasticmagic.query.MatchAll
+import dev.evo.elasticmagic.query.MatchPhrase
 import dev.evo.elasticmagic.query.MultiMatch
 import dev.evo.elasticmagic.query.NodeHandle
 import dev.evo.elasticmagic.query.Script
 import dev.evo.elasticmagic.query.Sort
 import dev.evo.elasticmagic.query.QueryRescore
 import dev.evo.elasticmagic.query.match
+import io.kotest.assertions.throwables.shouldThrow
 
 import io.kotest.matchers.maps.shouldContainExactly
 import io.kotest.matchers.types.shouldBeInstanceOf
@@ -109,13 +112,34 @@ class SearchQueryCompilerTests : BaseTest() {
     }
 
     @Test
-    fun query() {
+    fun match() {
         val query = SearchQuery(StringField("name").match("Tesla"))
         compile(query).let { compiled ->
             compiled.body shouldContainExactly mapOf(
                 "query" to mapOf(
                     "match" to mapOf(
                         "name" to "Tesla"
+                    )
+                )
+            )
+        }
+
+        query.query(
+            Match(
+                StringField("name"), "Tesla model S",
+                minimumShouldMatch = -1,
+                params = Params("boost" to 1.5)
+            )
+        )
+        compile(query).let { compiled ->
+            compiled.body shouldContainExactly mapOf(
+                "query" to mapOf(
+                    "match" to mapOf(
+                        "name" to mapOf(
+                            "query" to "Tesla model S",
+                            "minimum_should_match" to -1,
+                            "boost" to 1.5
+                        )
                     )
                 )
             )
@@ -128,6 +152,45 @@ class SearchQueryCompilerTests : BaseTest() {
         }
 
         compile(query.query(null)).body shouldContainExactly emptyMap()
+    }
+
+    @Test
+    fun matchPhraseQuery() {
+        val query = SearchQuery()
+        query.query(
+            MatchPhrase(
+                StringField("description"), "quick brown fox"
+            )
+        )
+        compile(query).body shouldContainExactly mapOf(
+            "query" to mapOf(
+                "match_phrase" to mapOf(
+                    "description" to "quick brown fox"
+                )
+            )
+        )
+
+        query.query(
+            MatchPhrase(
+                StringField("description"),
+                "quick brown fox",
+                slop = 3,
+                analyzer = "text",
+                params = Params("boost" to 2),
+            )
+        )
+        compile(query).body shouldContainExactly mapOf(
+            "query" to mapOf(
+                "match_phrase" to mapOf(
+                    "description" to mapOf(
+                        "query" to "quick brown fox",
+                        "slop" to 3,
+                        "analyzer" to "text",
+                        "boost" to 2,
+                    )
+                )
+            )
+        )
     }
 
     @Test
@@ -865,6 +928,10 @@ class SearchQueryCompilerTests : BaseTest() {
                 )
             )
         )
+
+        shouldThrow<IllegalArgumentException> {
+            query.queryNode(NodeHandle<DisMaxNode>()) {}
+        }
     }
 
     @Test

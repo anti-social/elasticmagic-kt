@@ -91,7 +91,7 @@ data class FunctionScore(
 
     data class Weight(
         val weight: Double,
-        override val filter: QueryExpression?,
+        override val filter: QueryExpression? = null,
     ) : Function() {
         override fun clone() = copy()
 

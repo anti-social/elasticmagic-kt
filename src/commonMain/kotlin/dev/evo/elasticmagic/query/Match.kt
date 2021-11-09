@@ -4,6 +4,7 @@ import dev.evo.elasticmagic.Params
 import dev.evo.elasticmagic.compile.SearchQueryCompiler
 import dev.evo.elasticmagic.serde.Serializer
 
+// TODO: seled class for minimumShouldMatch argument
 data class Match(
     val field: FieldOperations<String>,
     val query: String,
@@ -28,6 +29,38 @@ data class Match(
             ctx.field(field.getQualifiedFieldName(), query)
         } else {
             ctx.obj(field.getQualifiedFieldName()) {
+                field("query", query)
+                compiler.visit(this, params)
+            }
+        }
+    }
+}
+
+data class MatchPhrase(
+    val field: FieldOperations<String>,
+    val query: String,
+    val slop: Int? = null,
+    val analyzer: String? = null,
+    val params: Params? = null,
+) : QueryExpression {
+    override val name = "match_phrase"
+
+    override fun clone() = copy()
+
+    override fun visit(
+        ctx: Serializer.ObjectCtx,
+        compiler: SearchQueryCompiler
+    ) {
+        val params = Params(
+            params,
+            "slop" to slop,
+            "analyzer" to analyzer,
+        )
+        if (params.isEmpty()) {
+            ctx.field(field.getQualifiedFieldName(), query)
+        } else {
+            ctx.obj(field.getQualifiedFieldName()) {
+                field("query", query)
                 compiler.visit(this, params)
             }
         }
