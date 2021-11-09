@@ -2,7 +2,7 @@
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
     <title>queryNode</title>
-<link href="../../../../../../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../../../";</script><script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async="async"></script><link href="../../../styles/style.css" rel="Stylesheet"><link href="../../../styles/logo-styles.css" rel="Stylesheet"><link href="../../../styles/jetbrains-mono.css" rel="Stylesheet"><link href="../../../styles/main.css" rel="Stylesheet"><script type="text/javascript" src="../../../scripts/clipboard.js" async="async"></script><script type="text/javascript" src="../../../scripts/navigation-loader.js" async="async"></script><script type="text/javascript" src="../../../scripts/platform-content-handler.js" async="async"></script><script type="text/javascript" src="../../../scripts/main.js" async="async"></script>  </head>
+<link href="../../../../../../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../../../";</script><script src="https://unpkg.com/kotlin-playground@1" data-selector="code.runnablesample"></script><script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async="async"></script><link href="../../../styles/style.css" rel="Stylesheet"><link href="../../../styles/logo-styles.css" rel="Stylesheet"><link href="../../../styles/jetbrains-mono.css" rel="Stylesheet"><link href="../../../styles/main.css" rel="Stylesheet"><script type="text/javascript" src="../../../scripts/clipboard.js" async="async"></script><script type="text/javascript" src="../../../scripts/navigation-loader.js" async="async"></script><script type="text/javascript" src="../../../scripts/platform-content-handler.js" async="async"></script><script type="text/javascript" src="../../../scripts/main.js" async="async"></script>  </head>
   <body>
     <div id="container">
       <div id="leftColumn"><a href="../../../index.html">
@@ -28,7 +28,54 @@
   <div>
     <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":dokkaHtml/commonMain"><div class="symbol monospace">inline fun &lt;<a href="query-node.html">N</a> : <a href="../../dev.evo.elasticmagic.query/-query-expression-node/index.html">QueryExpressionNode</a>&lt;<a href="query-node.html">N</a>&gt;&gt; <a href="query-node.html">queryNode</a>(handle: <a href="../../dev.evo.elasticmagic.query/-node-handle/index.html">NodeHandle</a>&lt;<a href="query-node.html">N</a>&gt;, block: (<a href="query-node.html">N</a>) -&gt; <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a>): <a href="index.html">T</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
   </div>
-</div>
+<p class="paragraph">Allows modifying specific query expression node using <a href="query-node.html">handle</a> of the node.</p><h2 class="">Samples</h2><div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Samples"><div class="content sourceset-depenent-content" data-active="" data-togglable=":dokkaHtml/commonMain"><div class="sample-container"><code class="runnablesample monospace" theme="idea"><pre>import dev.evo.elasticmagic.SearchQuery
+import dev.evo.elasticmagic.aggs.HistogramAgg
+import dev.evo.elasticmagic.aggs.TermsAgg
+import dev.evo.elasticmagic.doc.Document
+import dev.evo.elasticmagic.query.Bool
+import dev.evo.elasticmagic.query.FunctionScore
+import dev.evo.elasticmagic.query.FunctionScoreNode
+import dev.evo.elasticmagic.query.MatchPhrase
+import dev.evo.elasticmagic.query.MultiMatch
+import dev.evo.elasticmagic.query.NodeHandle
+import dev.evo.elasticmagic.query.QueryRescore
+import dev.evo.elasticmagic.query.match
+
+import kotlin.random.Random
+fun main() { 
+   //sampleStart 
+   val BOOST_HANDLE = NodeHandle&lt;FunctionScoreNode&gt;()
+
+searchQuery.query(
+    FunctionScoreNode(
+        BOOST_HANDLE,
+        query = MultiMatch(&quot;system&quot;, listOf(UserDoc.name, UserDoc.about)),
+        functions = listOf(
+            FunctionScore.FieldValueFactor(
+                UserDoc.rank,
+                missing = 1.0F,
+                factor = 2.0,
+                modifier = &quot;sqrt&quot;,
+            )
+        ),
+        scoreMode = FunctionScore.ScoreMode.SUM,
+    )
+)
+
+val boostActive = Random.nextBoolean()
+if (boostActive) {
+    // Move active users the top
+    searchQuery.queryNode(BOOST_HANDLE) {
+        it.functions.add(
+            FunctionScore.Weight(
+                1000.0,
+                filter = UserDoc.isActive.eq(true)
+            )
+        )
+    }
+} 
+   //sampleEnd
+}</pre></code></div></div></div><h2 class="">Parameters</h2><div data-togglable="Parameters"><div class="platform-hinted WithExtraAttributes" data-platform-hinted="data-platform-hinted" data-togglable="Parameters"><div class="content sourceset-depenent-content" data-active="" data-togglable=":dokkaHtml/commonMain"><div data-togglable="Parameters"><div class="table" data-togglable="Parameters"><div class="table-row" data-filterable-current=":dokkaHtml/commonMain" data-filterable-set=":dokkaHtml/commonMain"><div class="main-subrow keyValue WithExtraAttributes"><div class=""><span class="inline-flex">handle</span></div><div><div class="title"><div data-togglable="Parameters"><p class="paragraph">a handle bound to the specific query expression node.</p></div></div></div></div></div><div class="table-row" data-filterable-current=":dokkaHtml/commonMain" data-filterable-set=":dokkaHtml/commonMain"><div class="main-subrow keyValue WithExtraAttributes"><div class=""><span class="inline-flex">block</span></div><div><div class="title"><div data-togglable="Parameters"><p class="paragraph">a function that modifies the query expression node.</p></div></div></div></div></div></div></div></div></div></div><h4 class="">Throws</h4><div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":dokkaHtml/commonMain"><div class="table"><div class="table-row" data-filterable-current=":dokkaHtml/commonMain" data-filterable-set=":dokkaHtml/commonMain"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-illegal-argument-exception/index.html">kotlin.IllegalArgumentException</a></span></div><div><div class="title"><p class="paragraph">if a node specified by the <a href="query-node.html">handle</a> is missing.</p></div></div></div></div></div></div></div></div>
         </div>
         <div class="footer"><span class="go-to-top-icon"><a href="#content"></a></span><span>© 2021 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span></div>
       </div>
