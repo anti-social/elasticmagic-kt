@@ -13,14 +13,14 @@ Read [User Guide](https://anti-social.github.io/elasticmagic-kt/document/)
 ## Features
 
 - Multiplatform (JVM, Native and JS)
-- Only asynchronous API
-- No code generation (instead makes heavy use of kotlin delegates)
+- Asynchronous API
 - No reflection (only for delegates)
 - Sub-fields and sub-documents with navigation
+- Typed query expression (when it is possible)
 - Typed document source
 - Parent child relations (ability to merge multiple documents into a single mapping)
-- Focus on search API
-- Supports several serialization libraries (kotlinx.serialization and jackson out of the box)
+- Focused on a search API
+- Supports several serialization libraries (`kotlinx.serialization` and `jackson` out of the box)
 - Supports Elasticsearch 6.x and 7.x (autodetect Elasticsearch version)
 
 ## Not a goal
