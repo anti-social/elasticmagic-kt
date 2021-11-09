@@ -70,7 +70,15 @@ interface QueryExpression : NamedExpression {
     }
 }
 
-data class NodeHandle<T: QueryExpressionNode<T>>(val name: String? = null)
+data class NodeHandle<T: QueryExpressionNode<T>>(val name: String? = null) {
+    override fun equals(other: Any?): Boolean {
+        return this === other
+    }
+
+    override fun hashCode(): Int {
+        return super.hashCode()
+    }
+}
 
 abstract class QueryExpressionNode<T: QueryExpressionNode<T>> : QueryExpression {
     abstract val handle: NodeHandle<T>

@@ -5,6 +5,10 @@ import dev.evo.elasticmagic.ElasticsearchVersion
 import dev.evo.elasticmagic.Params
 import dev.evo.elasticmagic.SearchQuery
 import dev.evo.elasticmagic.SearchType
+import dev.evo.elasticmagic.aggs.DateHistogramAgg
+import dev.evo.elasticmagic.aggs.FixedInterval
+import dev.evo.elasticmagic.aggs.MinAgg
+import dev.evo.elasticmagic.aggs.TermsAgg
 import dev.evo.elasticmagic.doc.BaseDocSource
 import dev.evo.elasticmagic.doc.BoundField
 import dev.evo.elasticmagic.doc.Document
@@ -19,12 +23,16 @@ import dev.evo.elasticmagic.query.FieldFormat
 import dev.evo.elasticmagic.query.FunctionScore
 import dev.evo.elasticmagic.query.FunctionScoreNode
 import dev.evo.elasticmagic.query.Ids
+import dev.evo.elasticmagic.query.Match
+import dev.evo.elasticmagic.query.MatchAll
+import dev.evo.elasticmagic.query.MatchPhrase
 import dev.evo.elasticmagic.query.MultiMatch
 import dev.evo.elasticmagic.query.NodeHandle
 import dev.evo.elasticmagic.query.Script
 import dev.evo.elasticmagic.query.Sort
 import dev.evo.elasticmagic.query.QueryRescore
 import dev.evo.elasticmagic.query.match
+import io.kotest.assertions.throwables.shouldThrow
 
 import io.kotest.matchers.maps.shouldContainExactly
 import io.kotest.matchers.types.shouldBeInstanceOf
@@ -98,13 +106,182 @@ class SearchQueryCompilerTests : BaseTest() {
     }
 
     @Test
-    fun testEmpty() {
+    fun empty() {
         val compiled = compile(SearchQuery())
         compiled.body shouldContainExactly emptyMap()
     }
 
     @Test
-    fun testComposeFilters() {
+    fun match() {
+        val query = SearchQuery(StringField("name").match("Tesla"))
+        compile(query).let { compiled ->
+            compiled.body shouldContainExactly mapOf(
+                "query" to mapOf(
+                    "match" to mapOf(
+                        "name" to "Tesla"
+                    )
+                )
+            )
+        }
+
+        query.query(
+            Match(
+                StringField("name"), "Tesla model S",
+                minimumShouldMatch = -1,
+                params = Params("boost" to 1.5)
+            )
+        )
+        compile(query).let { compiled ->
+            compiled.body shouldContainExactly mapOf(
+                "query" to mapOf(
+                    "match" to mapOf(
+                        "name" to mapOf(
+                            "query" to "Tesla model S",
+                            "minimum_should_match" to -1,
+                            "boost" to 1.5
+                        )
+                    )
+                )
+            )
+        }
+
+        compile(query.query(MatchAll)).let { compiled ->
+            compiled.body shouldContainExactly mapOf(
+                "query" to mapOf("match_all" to emptyMap<String, Any>())
+            )
+        }
+
+        compile(query.query(null)).body shouldContainExactly emptyMap()
+    }
+
+    @Test
+    fun matchPhraseQuery() {
+        val query = SearchQuery()
+        query.query(
+            MatchPhrase(
+                StringField("description"), "quick brown fox"
+            )
+        )
+        compile(query).body shouldContainExactly mapOf(
+            "query" to mapOf(
+                "match_phrase" to mapOf(
+                    "description" to "quick brown fox"
+                )
+            )
+        )
+
+        query.query(
+            MatchPhrase(
+                StringField("description"),
+                "quick brown fox",
+                slop = 3,
+                analyzer = "text",
+                params = Params("boost" to 2),
+            )
+        )
+        compile(query).body shouldContainExactly mapOf(
+            "query" to mapOf(
+                "match_phrase" to mapOf(
+                    "description" to mapOf(
+                        "query" to "quick brown fox",
+                        "slop" to 3,
+                        "analyzer" to "text",
+                        "boost" to 2,
+                    )
+                )
+            )
+        )
+    }
+
+    @Test
+    fun aggs() {
+        val query = SearchQuery()
+        query.aggs(
+            "statuses" to TermsAgg(
+                AnyField("status"),
+                size = 100,
+                shardSize = 1000,
+            )
+        )
+        compile(query).let { compiled ->
+            compiled.body shouldContainExactly mapOf(
+                "aggs" to mapOf(
+                    "statuses" to mapOf(
+                        "terms" to mapOf(
+                            "field" to "status",
+                            "size" to 100,
+                            "shard_size" to 1000,
+                        )
+                    )
+                )
+            )
+        }
+
+        query.aggs(
+            "statuses" to TermsAgg(
+                AnyField("status"),
+                size = 10,
+                shardSize = 100,
+            )
+        )
+        compile(query).let { compiled ->
+            compiled.body shouldContainExactly mapOf(
+                "aggs" to mapOf(
+                    "statuses" to mapOf(
+                        "terms" to mapOf(
+                            "field" to "status",
+                            "size" to 10,
+                            "shard_size" to 100,
+                        )
+                    )
+                )
+            )
+        }
+
+        query.aggs(
+            "date_created_hist" to DateHistogramAgg(
+                AnyField("date_created"),
+                interval = DateHistogramAgg.Interval.Fixed(FixedInterval.Hours(2)),
+                aggs = mapOf(
+                    "min_price" to MinAgg(
+                        AnyField("price")
+                    )
+                )
+            )
+        )
+        compile(query).let { compiled ->
+            compiled.body shouldContainExactly mapOf(
+                "aggs" to mapOf(
+                    "statuses" to mapOf(
+                        "terms" to mapOf(
+                            "field" to "status",
+                            "size" to 10,
+                            "shard_size" to 100,
+                        )
+                    ),
+                    "date_created_hist" to mapOf(
+                        "date_histogram" to mapOf(
+                            "field" to "date_created",
+                            "fixed_interval" to "2h",
+                        ),
+                        "aggs" to mapOf(
+                            "min_price" to mapOf(
+                                "min" to mapOf(
+                                    "field" to "price"
+                                )
+                            )
+                        )
+                    )
+                )
+            )
+        }
+
+        query.clearAggs()
+        compile(query).body shouldContainExactly emptyMap()
+    }
+
+    @Test
+    fun composeFilters() {
         val userDoc = object : Document() {
             val status by int()
             val rank by float()
@@ -147,7 +324,7 @@ class SearchQueryCompilerTests : BaseTest() {
     }
 
     @Test
-    fun testFilteredQuery() {
+    fun filter() {
         class OpinionDoc(field: BoundField<BaseDocSource, Nothing>) : SubDocument(field) {
             val count by int()
         }
@@ -178,9 +355,7 @@ class SearchQueryCompilerTests : BaseTest() {
             )
         )
         query.filter(productDoc.company.opinion.count.gt(4))
-
-        val compiled = compile(query)
-        compiled.body shouldContainExactly mapOf(
+        compile(query).body shouldContainExactly mapOf(
             "query" to mapOf(
                 "bool" to mapOf(
                     "must" to listOf(
@@ -230,15 +405,50 @@ class SearchQueryCompilerTests : BaseTest() {
                 )
             )
         )
+
+        query.clearFilter()
+        compile(query).body shouldContainExactly mapOf(
+            "query" to mapOf(
+                "function_score" to mapOf(
+                    "functions" to listOf(
+                        mapOf(
+                            "random_score" to mapOf(
+                                "seed" to 10,
+                                "field" to "_seq_no",
+                            ),
+                        ),
+                        mapOf(
+                            "filter" to mapOf(
+                                "term" to mapOf(
+                                    "company.opinion.count" to 5
+                                )
+                            ),
+                            "weight" to 2.0,
+                        ),
+                        mapOf(
+                            "field_value_factor" to mapOf(
+                                "field" to "rank",
+                                "factor" to 5.0,
+                            )
+                        ),
+                    ),
+                    "query" to mapOf(
+                        "multi_match" to mapOf(
+                            "query" to "Test term",
+                            "fields" to listOf("name", "company.name"),
+                            "type" to "cross_fields",
+                        )
+                    ),
+                )
+            )
+        )
     }
 
     @Test
-    fun testPostFilters() {
+    fun postFilter() {
         val query = SearchQuery()
-        query.postFilter(AnyField("status").eq(0))
-
-        val compiled = compile(query)
-        compiled.body shouldContainExactly mapOf(
+            .postFilter(AnyField("status").eq(0))
+        compile(query).body shouldContainExactly mapOf(
             "post_filter" to listOf(
                 mapOf(
                     "term" to mapOf(
@@ -247,10 +457,13 @@ class SearchQueryCompilerTests : BaseTest() {
                 )
             )
         )
+
+        query.clearPostFilter()
+        compile(query).body shouldContainExactly emptyMap()
     }
 
     @Test
-    fun testRescore() {
+    fun rescore() {
         val query = SearchQuery()
 
         query.rescore(
@@ -336,17 +549,19 @@ class SearchQueryCompilerTests : BaseTest() {
     }
 
     @Test
-    fun testSort_fieldSimplified() {
-        compile(
-            SearchQuery()
-                .sort(AnyField("popularity"), Sort(AnyField("id")))
-        ).body shouldContainExactly mapOf(
+    fun sort_fieldSimplified() {
+        val query = SearchQuery()
+            .sort(AnyField("popularity"), Sort(AnyField("id")))
+        compile(query).body shouldContainExactly mapOf(
             "sort" to listOf("popularity", "id")
         )
+
+        query.clearSort()
+        compile(query).body shouldContainExactly emptyMap()
     }
 
     @Test
-    fun testSort_fieldOrder() {
+    fun sort_fieldOrder() {
         compile(
             SearchQuery()
                 .sort(Sort(field = AnyField("popularity"), order = Sort.Order.DESC))
@@ -362,7 +577,7 @@ class SearchQueryCompilerTests : BaseTest() {
     }
 
     @Test
-    fun testSort_fieldAllParams() {
+    fun sort_fieldAllParams() {
         compile(
             SearchQuery()
                 .sort(
@@ -391,7 +606,7 @@ class SearchQueryCompilerTests : BaseTest() {
     }
 
     @Test
-    fun testSort_scriptWithOrder() {
+    fun sort_scriptWithOrder() {
         compile(
             SearchQuery()
                 .sort(
@@ -433,8 +648,8 @@ class SearchQueryCompilerTests : BaseTest() {
 
     @Test
     fun trackTotalHits() {
-        compile(SearchQuery().trackScores(true)).body shouldContainExactly mapOf(
-            "track_scores" to true
+        compile(SearchQuery().trackTotalHits(true)).body shouldContainExactly mapOf(
+            "track_total_hits" to true
         )
     }
 
@@ -461,51 +676,51 @@ class SearchQueryCompilerTests : BaseTest() {
 
     @Test
     fun docvalueFields() {
-        compile(
-            SearchQuery().docvalueFields(*arrayOf<FieldFormat>())
-        ).body shouldContainExactly emptyMap()
+        val query = SearchQuery().docvalueFields(*arrayOf())
+        compile(query).body shouldContainExactly emptyMap()
 
-        compile(
-            SearchQuery()
-                .docvalueFields(AnyField("rank"), AnyField("opinion.rating"))
-        ).body shouldContainExactly mapOf(
+        query.docvalueFields(AnyField("rank"), AnyField("opinion.rating"))
+        compile(query).body shouldContainExactly mapOf(
             "docvalue_fields" to listOf("rank", "opinion.rating")
         )
 
-        compile(
-            SearchQuery()
-                .docvalueFields(FieldFormat(AnyField("date_created"), "YYYY"))
-        ).body shouldContainExactly mapOf(
-            "docvalue_fields" to listOf(mapOf("field" to "date_created", "format" to "YYYY"))
+        query.docvalueFields(AnyField("date_created").format("YYYY"))
+        compile(query).body shouldContainExactly mapOf(
+            "docvalue_fields" to listOf(
+                "rank",
+                "opinion.rating",
+                mapOf(
+                    "field" to "date_created",
+                    "format" to "YYYY"
+                ),
+            )
         )
+
+        compile(query.clearDocvalueFields()).body shouldContainExactly emptyMap()
     }
 
     @Test
     fun storedFields() {
-        compile(
-            SearchQuery().storedFields(*arrayOf())
-        ).body shouldContainExactly emptyMap()
+        val query = SearchQuery().storedFields(*arrayOf())
+        compile(query).body shouldContainExactly emptyMap()
 
-        compile(
-            SearchQuery()
-                .storedFields(AnyField("rank"), AnyField("opinion.rating"))
-        ).body shouldContainExactly mapOf(
+        query.storedFields(AnyField("rank"), AnyField("opinion.rating"))
+        compile(query).body shouldContainExactly mapOf(
             "stored_fields" to listOf("rank", "opinion.rating")
         )
+
+        compile(query.clearStoredFields()).body shouldContainExactly emptyMap()
     }
 
     @Test
     fun scriptFields() {
-        compile(
-            SearchQuery().scriptFields(*arrayOf())
-        ).body shouldContainExactly emptyMap()
+        val query = SearchQuery().scriptFields(*arrayOf())
+        compile(query).body shouldContainExactly emptyMap()
 
-        compile(
-            SearchQuery()
-                .scriptFields(
-                    "weighted_rank" to Script("doc['rank'].value * doc['weight'].value"),
-                )
-        ).body shouldContainExactly mapOf(
+        query.scriptFields(
+            "weighted_rank" to Script("doc['rank'].value * doc['weight'].value"),
+        )
+        compile(query).body shouldContainExactly mapOf(
             "script_fields" to mapOf(
                 "weighted_rank" to mapOf(
                     "script" to mapOf(
@@ -514,6 +729,8 @@ class SearchQueryCompilerTests : BaseTest() {
                 )
             )
         )
+
+        compile(query.clearScriptFields()).body shouldContainExactly emptyMap()
     }
 
     @Test
@@ -530,7 +747,7 @@ class SearchQueryCompilerTests : BaseTest() {
     }
 
     @Test
-    fun testTerminateAfter() {
+    fun terminateAfter() {
         val query = SearchQuery().terminateAfter(10_000)
 
         val compiled = compile(query)
@@ -540,7 +757,7 @@ class SearchQueryCompilerTests : BaseTest() {
     }
 
     @Test
-    fun testSearchParams() {
+    fun searchParams() {
         val query = SearchQuery(params = Params("routing" to "111"))
 
         compile(query).params shouldContainExactly mapOf(
@@ -558,19 +775,45 @@ class SearchQueryCompilerTests : BaseTest() {
             "request_cache" to listOf("true"),
         )
 
+        query.routing("4321")
+        compile(query).params shouldContainExactly mapOf(
+            "search_type" to listOf("dfs_query_then_fetch"),
+            "routing" to listOf("4321"),
+            "request_cache" to listOf("true"),
+        )
+
         query.searchParams(
             "search_type" to SearchType.QUERY_THEN_FETCH,
             "routing" to null,
         )
-
         compile(query).params shouldContainExactly mapOf(
             "search_type" to listOf("query_then_fetch"),
             "request_cache" to listOf("true"),
         )
+
+        query
+            .stats("test")
+            .version(true)
+            .seqNoPrimaryTerm(true)
+        compile(query).params shouldContainExactly mapOf(
+            "search_type" to listOf("query_then_fetch"),
+            "request_cache" to listOf("true"),
+            "stats" to listOf("test"),
+            "version" to listOf("true"),
+            "seq_no_primary_term" to listOf("true")
+        )
+
+        query
+            .searchType(null)
+            .requestCache(null)
+            .stats(null)
+            .version(null)
+            .seqNoPrimaryTerm(null)
+        compile(query).params shouldContainExactly emptyMap()
     }
 
     @Test
-    fun testTerms() {
+    fun termsQuery() {
         val query = SearchQuery(
             AnyField("tags").contains(listOf(1, 9))
         )
@@ -584,7 +827,7 @@ class SearchQueryCompilerTests : BaseTest() {
     }
 
     @Test
-    fun testIds() {
+    fun idsQuery() {
         val query = SearchQuery(
             Ids(listOf(
                 "order~3",
@@ -602,7 +845,7 @@ class SearchQueryCompilerTests : BaseTest() {
     }
 
     @Test
-    fun testDisMax() {
+    fun disMaxQuery() {
         val query = SearchQuery(
             DisMax(
                 listOf(
@@ -640,7 +883,7 @@ class SearchQueryCompilerTests : BaseTest() {
     }
 
     @Test
-    fun testDisMaxNode() {
+    fun disMaxNodeQuery() {
         val LANG_HANDLE = NodeHandle<DisMaxNode>()
         val query = SearchQuery(
             DisMaxNode(LANG_HANDLE)
@@ -685,10 +928,14 @@ class SearchQueryCompilerTests : BaseTest() {
                 )
             )
         )
+
+        shouldThrow<IllegalArgumentException> {
+            query.queryNode(NodeHandle<DisMaxNode>()) {}
+        }
     }
 
     @Test
-    fun testFunctionScore_scriptScore() {
+    fun functionScoreQuery_scriptScore() {
         val query = SearchQuery(
             FunctionScore(
                 query = null,
@@ -731,7 +978,7 @@ class SearchQueryCompilerTests : BaseTest() {
     }
 
     @Test
-    fun testDocvalueFields_simple() {
+    fun docvalueFields_simple() {
         val query = SearchQuery()
             .docvalueFields(AnyField("name"), AnyField("rank"))
 
@@ -742,7 +989,7 @@ class SearchQueryCompilerTests : BaseTest() {
     }
 
     @Test
-    fun testDocvalueFields_formatted() {
+    fun docvalueFields_formatted() {
         val query = SearchQuery()
             .docvalueFields(FieldFormat(AnyField("date_created"), format = "epoch_millis"))
 
@@ -752,48 +999,6 @@ class SearchQueryCompilerTests : BaseTest() {
                 mapOf(
                     "field" to "date_created",
                     "format" to "epoch_millis",
-                )
-            )
-        )
-    }
-
-    @Test
-    fun testStoredFields() {
-        val query = SearchQuery()
-            .storedFields(AnyField("name"), AnyField("date_modified"))
-
-        val compiled = compile(query)
-        compiled.body shouldContainExactly mapOf(
-            "stored_fields" to listOf("name", "date_modified")
-        )
-    }
-
-    @Test
-    fun testScriptFields() {
-        val query = SearchQuery()
-            .scriptFields(
-                "sort_price" to Script(
-                    id = "price_sort",
-                    lang = "painless",
-                    params = Params(
-                        "field" to AnyField("price"),
-                        "factor" to 2.0
-                    )
-                )
-            )
-
-        val compiled = compile(query)
-        compiled.body shouldContainExactly mapOf(
-            "script_fields" to mapOf(
-                "sort_price" to mapOf(
-                    "script" to mapOf(
-                        "lang" to "painless",
-                        "id" to "price_sort",
-                        "params" to mapOf(
-                            "field" to "price",
-                            "factor" to 2.0
-                        )
-                    )
                 )
             )
         )
