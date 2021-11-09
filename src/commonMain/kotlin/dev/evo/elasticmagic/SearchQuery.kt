@@ -73,28 +73,30 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
 
     fun query(query: QueryExpression?): T = self {
         this.query = query
-        _updateQueryNodes()
+        updateQueryNodes()
     }
 
     inline fun <reified N: QueryExpressionNode<N>> queryNode(
         handle: NodeHandle<N>,
         block: (N) -> Unit
     ): T {
-        val node = _findNode(handle) ?: error("Node handle not found: $handle")
+        val node = findNode(handle) ?: error("Node handle not found: $handle")
         block(node as N)
-        _updateQueryNodes()
+        updateQueryNodes()
 
         @Suppress("UNCHECKED_CAST")
         return this as T
     }
 
+    @PublishedApi
     @Suppress("FunctionName")
-    fun _findNode(handle: NodeHandle<*>): QueryExpressionNode<*>? {
+    internal fun findNode(handle: NodeHandle<*>): QueryExpressionNode<*>? {
         return queryNodes[handle]
     }
 
+    @PublishedApi
     @Suppress("FunctionName")
-    fun _updateQueryNodes() {
+    internal fun updateQueryNodes() {
         this.queryNodes = collectNodes(query)
     }
 
@@ -102,8 +104,16 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
         this.filters += filters
     }
 
+    fun clearFilter(): T = self {
+        filters.clear()
+    }
+
     fun postFilter(vararg filters: QueryExpression): T = self {
         this.postFilters += filters
+    }
+
+    fun clearPostFilter(): T = self {
+        postFilters.clear()
     }
 
     fun aggs(vararg aggregations: Pair<String, Aggregation<*>>): T = self {
@@ -142,16 +152,32 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
         this.fields += fields
     }
 
+    fun clearFields(): T = self {
+        fields.clear()
+    }
+
     fun docvalueFields(vararg fields: FieldFormat): T = self {
         docvalueFields += fields
+    }
+
+    fun clearDocvalueFields(): T = self {
+        docvalueFields.clear()
     }
 
     fun storedFields(vararg fields: FieldOperations<*>): T = self {
         storedFields += fields
     }
 
+    fun clearStoredFields(): T = self {
+        storedFields.clear()
+    }
+
     fun scriptFields(vararg fields: Pair<String, Script>): T = self {
         scriptFields += fields
+    }
+
+    fun clearScriptFields(): T = self {
+        scriptFields.clear()
     }
 
     fun size(size: Long?): T = self {
