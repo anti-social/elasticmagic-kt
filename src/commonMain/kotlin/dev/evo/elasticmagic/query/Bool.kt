@@ -22,8 +22,7 @@ data class Bool(
     override val should: List<QueryExpression> = emptyList(),
     override val must: List<QueryExpression> = emptyList(),
     override val mustNot: List<QueryExpression> = emptyList(),
-    // TODO: Make as a sealed class
-    val minimumShouldMatch: Any? = null,
+    val minimumShouldMatch: MinimumShouldMatch? = null,
 ) : BoolExpression {
     override val name = "bool"
 
@@ -67,7 +66,9 @@ data class Bool(
         ctx: Serializer.ObjectCtx,
         compiler: SearchQueryCompiler
     ) {
-        ctx.fieldIfNotNull("minimum_should_match", minimumShouldMatch)
+        if (minimumShouldMatch != null) {
+            ctx.field("minimum_should_match", minimumShouldMatch.toValue())
+        }
         if (filter.isNotEmpty()) {
             ctx.array("filter") {
                 compiler.visit(this, filter)
@@ -97,7 +98,7 @@ data class BoolNode(
     override var should: MutableList<QueryExpression>,
     override var must: MutableList<QueryExpression>,
     override var mustNot: MutableList<QueryExpression>,
-    var minimumShouldMatch: Any? = null,
+    var minimumShouldMatch: MinimumShouldMatch? = null,
 ) : QueryExpressionNode<BoolNode>(), BoolExpression {
     override val name: String = "bool"
 
@@ -108,7 +109,7 @@ data class BoolNode(
             should: List<QueryExpression> = emptyList(),
             must: List<QueryExpression> = emptyList(),
             mustNot: List<QueryExpression> = emptyList(),
-            minimumShouldMatch: Any? = null,
+            minimumShouldMatch: MinimumShouldMatch? = null,
         ): BoolNode {
             return BoolNode(
                 handle,

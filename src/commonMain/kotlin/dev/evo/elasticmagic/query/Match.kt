@@ -4,12 +4,49 @@ import dev.evo.elasticmagic.Params
 import dev.evo.elasticmagic.compile.SearchQueryCompiler
 import dev.evo.elasticmagic.serde.Serializer
 
-// TODO: seled class for minimumShouldMatch argument
+/**
+ * Represents variants for `minimum_should_match` parameter.
+ *
+ * @see <https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-minimum-should-match.html>
+ */
+sealed class MinimumShouldMatch : ToValue<Any> {
+    abstract class Simple : MinimumShouldMatch()
+
+    /**
+     * A fixed number of matched clauses. Can be negative that means a number of optional clauses.
+     */
+    data class Count(val count: Int) : Simple() {
+        override fun toValue(): Int = count
+    }
+
+    /**
+     * A percentage of the total number of clauses should be necessary.
+     */
+    data class Percent(val percent: Int) : Simple() {
+        override fun toValue(): String = "$percent%"
+    }
+
+    /**
+     * A list of pairs where the first value is a positive integer. If the number of
+     * matched clauses is greater than it then a specification from the second value is applied.
+     */
+    data class Combinations(val combinations: List<Pair<Int, Simple>>) : MinimumShouldMatch() {
+        constructor(vararg combinations: Pair<Int, Simple>) : this(combinations.toList())
+
+        override fun toValue(): String {
+            return combinations.joinToString(" ") { (count, spec) ->
+                "$count<${spec.toValue()}"
+            }
+        }
+    }
+}
+
 data class Match(
     val field: FieldOperations<String>,
     val query: String,
+    val boost: Double? = null,
     val analyzer: String? = null,
-    val minimumShouldMatch: Any? = null,
+    val minimumShouldMatch: MinimumShouldMatch? = null,
     val params: Params? = null,
 ) : QueryExpression {
     override val name = "match"
@@ -22,6 +59,7 @@ data class Match(
     ) {
         val params = Params(
             params,
+            "boost" to boost,
             "analyzer" to analyzer,
             "minimum_should_match" to minimumShouldMatch,
         )
@@ -40,6 +78,7 @@ data class MatchPhrase(
     val field: FieldOperations<String>,
     val query: String,
     val slop: Int? = null,
+    val boost: Double? = null,
     val analyzer: String? = null,
     val params: Params? = null,
 ) : QueryExpression {
@@ -54,6 +93,7 @@ data class MatchPhrase(
         val params = Params(
             params,
             "slop" to slop,
+            "boost" to boost,
             "analyzer" to analyzer,
         )
         if (params.isEmpty()) {
