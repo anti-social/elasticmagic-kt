@@ -43,9 +43,24 @@ interface FieldFormat {
 }
 
 /**
+ * Boosted fields can be used in the [MultiMatch] query expression.
+ */
+interface BoostedField : ToValue<String> {
+    companion object {
+        operator fun invoke(field: FieldOperations<String>, boost: Double): BoostedField {
+            return object : BoostedField {
+                override fun toValue(): String {
+                    return "${field.getQualifiedFieldName()}^$boost"
+                }
+            }
+        }
+    }
+}
+
+/**
  * Holds field operations shortcuts.
  */
-interface FieldOperations<T> : Named, FieldFormat, Sort {
+interface FieldOperations<T> : Named, FieldFormat, BoostedField, Sort {
     fun getFieldType(): FieldType<*, T>
 
     fun serializeTerm(v: T): Any {
@@ -89,3 +104,8 @@ interface FieldOperations<T> : Named, FieldFormat, Sort {
 }
 
 fun FieldOperations<String>.match(text: String): QueryExpression = Match(this, text)
+
+/**
+ * A shortcut to get boosted field.
+ */
+fun FieldOperations<String>.boost(boost: Double): BoostedField = BoostedField(this, boost)

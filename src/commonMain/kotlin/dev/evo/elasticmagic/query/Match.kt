@@ -118,9 +118,14 @@ object MatchAll : QueryExpression {
     ) {}
 }
 
+/**
+ * Represents a multi match query that allows to search in several fields at once.
+ *
+ * @see <https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-multi-match-query.html>
+ */
 data class MultiMatch(
     val query: String,
-    val fields: List<FieldOperations<String>>,
+    val fields: List<BoostedField>,
     val type: Type? = null,
     val boost: Double? = null,
     val params: Params? = null,
@@ -141,7 +146,7 @@ data class MultiMatch(
     ) {
         ctx.field("query", query)
         ctx.array("fields") {
-            compiler.visit(this, fields.map(FieldOperations<*>::getQualifiedFieldName))
+            compiler.visit(this, fields.map(BoostedField::toValue))
         }
         ctx.fieldIfNotNull("type", type?.toValue())
         ctx.fieldIfNotNull("boost", boost)
