@@ -90,11 +90,11 @@ class MatchTests : BaseExpressionTest() {
     fun multiMatch() {
         MultiMatch(
             "Matrix",
-            listOf(MovieDoc.name, MovieDoc.description)
+            listOf(MovieDoc.name.boost(2.5), MovieDoc.description)
         ).compile() shouldContainExactly mapOf(
             "multi_match" to mapOf(
                 "query" to "Matrix",
-                "fields" to listOf("name", "description")
+                "fields" to listOf("name^2.5", "description")
             )
         )
 
