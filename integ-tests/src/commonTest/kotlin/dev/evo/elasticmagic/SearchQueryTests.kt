@@ -85,7 +85,8 @@ class OrderDocSource : DocSource() {
     var dateCreated by OrderDoc.dateCreated.required()
 }
 
-class SearchQueryTests : ElasticsearchTestBase("test-search-query") {
+class SearchQueryTests : ElasticsearchTestBase() {
+    override val indexName = "search-query"
 
     private val docSources = mutableMapOf<String, DocSourceAndMeta<*>>()
 
@@ -172,7 +173,7 @@ class SearchQueryTests : ElasticsearchTestBase("test-search-query") {
         .withActionMeta(id = "104")
         .also { docSources[it.meta.id] = it }
 
-    private fun checkOrderHits(hits: List<SearchHit<OrderDocSource>>, expectedIds: Set<String>) {
+    private fun TestScope.checkOrderHits(hits: List<SearchHit<OrderDocSource>>, expectedIds: Set<String>) {
         hits.size shouldBe expectedIds.size
         for (hit in hits) {
             val orderId = hit.id
@@ -186,7 +187,7 @@ class SearchQueryTests : ElasticsearchTestBase("test-search-query") {
         }
     }
 
-    private fun checkOrderHitsSorted(hits: List<SearchHit<OrderDocSource>>, expectedIds: List<String>) {
+    private fun TestScope.checkOrderHitsSorted(hits: List<SearchHit<OrderDocSource>>, expectedIds: List<String>) {
         hits.size shouldBe expectedIds.size
         for ((hit, orderId) in hits.zip(expectedIds)) {
             hit.index shouldBe index.name
@@ -201,7 +202,7 @@ class SearchQueryTests : ElasticsearchTestBase("test-search-query") {
     }
 
     @Test
-    fun emptyQuery() = runTest {
+    fun emptyQuery() = runTestWithTransports {
         withFixtures(OrderDoc, listOf(
             karlssonsJam, karlssonsBestDonuts, karlssonsJustDonuts, littleBrotherDogStuff
         )) {
@@ -216,7 +217,7 @@ class SearchQueryTests : ElasticsearchTestBase("test-search-query") {
     }
 
     @Test
-    fun docvalueFields() = runTest {
+    fun docvalueFields() = runTestWithTransports {
         withFixtures(OrderDoc, listOf(karlssonsJam)) {
             val searchResult = SearchQuery(::OrderDocSource)
                 .docvalueFields(OrderDoc.status, OrderDoc.dateCreated.format("YYYY"))
@@ -236,7 +237,7 @@ class SearchQueryTests : ElasticsearchTestBase("test-search-query") {
     }
 
     @Test
-    fun simpleTermQuery() = runTest {
+    fun simpleTermQuery() = runTestWithTransports {
         withFixtures(OrderDoc, listOf(karlssonsJam, littleBrotherDogStuff)) {
             val searchResult = SearchQuery(
                 ::OrderDocSource,
@@ -252,7 +253,7 @@ class SearchQueryTests : ElasticsearchTestBase("test-search-query") {
     }
 
     @Test
-    fun simpleNestedQuery() = runTest {
+    fun simpleNestedQuery() = runTestWithTransports {
         withFixtures(OrderDoc, listOf(karlssonsJam, karlssonsBestDonuts, karlssonsJustDonuts)) {
             val searchResult = index.search(
                 SearchQuery(
@@ -272,7 +273,7 @@ class SearchQueryTests : ElasticsearchTestBase("test-search-query") {
     }
 
     @Test
-    fun simpleFiltering() = runTest {
+    fun simpleFiltering() = runTestWithTransports {
         withFixtures(OrderDoc, listOf(
             karlssonsJam, karlssonsBestDonuts, karlssonsJustDonuts, littleBrotherDogStuff
         )) {
@@ -288,7 +289,7 @@ class SearchQueryTests : ElasticsearchTestBase("test-search-query") {
     }
 
     @Test
-    fun rangeDateFiltering() = runTest {
+    fun rangeDateFiltering() = runTestWithTransports {
         withFixtures(OrderDoc, listOf(
             karlssonsJam, karlssonsBestDonuts, karlssonsJustDonuts, littleBrotherDogStuff
         )) {
@@ -310,7 +311,7 @@ class SearchQueryTests : ElasticsearchTestBase("test-search-query") {
     }
 
     @Test
-    fun idsFiltering() = runTest {
+    fun idsFiltering() = runTestWithTransports {
         withFixtures(OrderDoc, listOf(
             karlssonsJam, karlssonsBestDonuts, karlssonsJustDonuts, littleBrotherDogStuff
         )) {
@@ -326,7 +327,7 @@ class SearchQueryTests : ElasticsearchTestBase("test-search-query") {
     }
 
     @Test
-    fun sortNested() = runTest {
+    fun sortNested() = runTestWithTransports {
         withFixtures(OrderDoc, listOf(
             karlssonsJam, karlssonsBestDonuts, karlssonsJustDonuts, littleBrotherDogStuff
         )) {
@@ -354,7 +355,7 @@ class SearchQueryTests : ElasticsearchTestBase("test-search-query") {
     }
 
     @Test
-    fun aggTerms() = runTest {
+    fun aggTerms() = runTestWithTransports {
         withFixtures(OrderDoc, listOf(
             karlssonsJam, karlssonsBestDonuts, karlssonsJustDonuts, littleBrotherDogStuff
         )) {
@@ -382,7 +383,7 @@ class SearchQueryTests : ElasticsearchTestBase("test-search-query") {
     }
 
     @Test
-    fun agg_dateHistogram() = runTest {
+    fun agg_dateHistogram() = runTestWithTransports {
         withFixtures(OrderDoc, listOf(
             karlssonsJam, karlssonsBestDonuts, karlssonsJustDonuts, littleBrotherDogStuff
         )) {
@@ -419,7 +420,7 @@ class SearchQueryTests : ElasticsearchTestBase("test-search-query") {
     }
 
     @Test
-    fun aggNested() = runTest {
+    fun aggNested() = runTestWithTransports {
         withFixtures(OrderDoc, listOf(
             karlssonsJam, karlssonsBestDonuts, karlssonsJustDonuts, littleBrotherDogStuff
         )) {
