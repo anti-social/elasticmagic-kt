@@ -5,19 +5,24 @@ kotlin {
         val commonTest by getting {
             dependencies {
                 implementation(project(":"))
-                implementation(project(":elasticmagic-serde-serialization-json"))
-                implementation(project(":elasticmagic-transport-ktor"))
-                implementation(project(":elasticmagic-kotlinx-datetime"))
 
-                implementation(Libs.kotlinxCoroutines("core"))
+                implementation(project(":elasticmagic-serde-serialization-json"))
+
+                implementation(project(":elasticmagic-transport-ktor"))
                 implementation(Libs.ktorClient("core"))
+                implementation(Libs.kotlinxCoroutines("core"))
+
+                implementation(project(":elasticmagic-kotlinx-datetime"))
                 implementation(Libs.kotlinxDatetime())
+
             }
         }
 
         val jvmTest by getting {
             dependencies {
                 implementation(project(":elasticmagic-serde-jackson-json"))
+                implementation(Libs.jackson("databind"))
+
                 implementation(Libs.ktorClient("cio"))
             }
         }

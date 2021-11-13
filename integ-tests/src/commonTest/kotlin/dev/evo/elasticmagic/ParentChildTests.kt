@@ -48,9 +48,11 @@ class AnswerDocSource : DocSource() {
     var accepted by AnswerDoc.accepted
 }
 
-class ParentChildTests : ElasticsearchTestBase("parent-child") {
+class ParentChildTests : ElasticsearchTestBase() {
+    override val indexName = "parent-child"
+
     @Test
-    fun testParentChildQueries() = runTest {
+    fun testParentChildQueries() = runTestWithTransports {
         val q1 = QuestionDocSource().apply {
             id = 1
             join = Join("question")

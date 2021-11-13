@@ -31,9 +31,11 @@ class UserDocSource : DocSource() {
     var name by UserV2Doc.name
 }
 
-class UpdateMappingTests : ElasticsearchTestBase("update-mapping") {
+class UpdateMappingTests : ElasticsearchTestBase() {
+    override val indexName = "update-mapping"
+    
     @Test
-    fun testUpdateMapping() = runTest {
+    fun testUpdateMapping() = runTestWithTransports {
         withTestIndex(UserV1Doc) {
             index.bulk(listOf(
                 CreateAction(
