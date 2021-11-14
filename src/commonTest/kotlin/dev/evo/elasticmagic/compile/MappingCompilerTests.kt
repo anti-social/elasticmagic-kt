@@ -143,15 +143,13 @@ class MappingCompilerTests : BaseTest() {
                 val dayOfWeek by runtime(
                     "day_of_week",
                     KeywordType,
-                    Script(
-                        Script.Source(
-                            """
-                            emit(
-                                doc[params.timestampField].value
-                                    .dayOfWeekEnum
-                                    .getDisplayName(TextStyle.FULL, Locale.ROOT)
-                            )""".trimIndent()
-                        ),
+                    Script.Source(
+                        """
+                        emit(
+                            doc[params.timestampField].value
+                                .dayOfWeekEnum
+                                .getDisplayName(TextStyle.FULL, Locale.ROOT)
+                        )""".trimIndent(),
                         params = Params(
                             "timestampField" to timestamp
                         )

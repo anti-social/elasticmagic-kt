@@ -124,4 +124,6 @@ interface Serializer {
     }
 
     fun obj(block: ObjectCtx.() -> Unit): ObjectCtx
+
+    fun array(block: ArrayCtx.() -> Unit): ArrayCtx
 }

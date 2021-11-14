@@ -21,6 +21,10 @@ abstract class BaseTest {
             override fun serialize(): String {
                 TODO("not implemented")
             }
+
+            fun toList(): List<Any?> {
+                return array.toList()
+            }
         }
     }
     protected val serializer = TestSerializer

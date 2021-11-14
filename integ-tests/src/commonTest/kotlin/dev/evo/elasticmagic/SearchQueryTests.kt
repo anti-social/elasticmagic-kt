@@ -20,6 +20,7 @@ import dev.evo.elasticmagic.doc.enum
 import dev.evo.elasticmagic.doc.instant
 import dev.evo.elasticmagic.query.Ids
 import dev.evo.elasticmagic.query.Nested
+import dev.evo.elasticmagic.query.Script
 import dev.evo.elasticmagic.query.Sort
 import dev.evo.elasticmagic.query.match
 
@@ -323,6 +324,38 @@ class SearchQueryTests : ElasticsearchTestBase() {
             searchResult.maxScore shouldBe 0.0
 
             checkOrderHits(searchResult.hits, setOf("102", "104"))
+        }
+    }
+
+    @Test
+    fun sortScript() = runTestWithTransports {
+        withFixtures(OrderDoc, listOf(
+            karlssonsJam, karlssonsBestDonuts, karlssonsJustDonuts, littleBrotherDogStuff
+        )) {
+            val searchResult = SearchQuery(::OrderDocSource)
+                .sort(
+                    Sort(
+                        Script.Source(
+                            "doc[params.date_field].value.toInstant().toEpochMilli()",
+                            params = Params(
+                                "date_field" to OrderDoc.dateCreated
+                            )
+                        ),
+                        scriptType = "number",
+                        order = Sort.Order.DESC,
+                    )
+                )
+                .execute(index)
+
+            searchResult.totalHits shouldBe 4
+            searchResult.maxScore shouldBe null
+
+            val hits = searchResult.hits
+            checkOrderHitsSorted(hits, listOf("104", "103", "102", "101"))
+            hits[0].sort shouldBe listOf(1.633793505E12)
+            hits[1].sort shouldBe listOf(1.609459199E12)
+            hits[2].sort shouldBe listOf(1.608713228E12)
+            hits[3].sort shouldBe listOf(1.556627375E12)
         }
     }
 

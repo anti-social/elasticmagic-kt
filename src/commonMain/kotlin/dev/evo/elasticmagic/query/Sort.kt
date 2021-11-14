@@ -3,19 +3,20 @@ package dev.evo.elasticmagic.query
 import dev.evo.elasticmagic.Params
 import dev.evo.elasticmagic.compile.SearchQueryCompiler
 import dev.evo.elasticmagic.serde.Serializer
+import dev.evo.elasticmagic.types.FieldType
 
-interface Sort {
+sealed interface Sort {
     companion object {
         operator fun invoke(
-            by: By,
+            field: FieldOperations<*>,
             order: Order? = null,
             mode: Mode? = null,
             numericType: NumericType? = null,
             missing: Missing? = null,
-            unmappedType: String? = null,
+            unmappedType: FieldType<*, *>? = null,
             nested: Nested? = null,
-        ): Sort = Impl(
-            by,
+        ): Field = Field(
+            field,
             order = order,
             mode = mode,
             numericType = numericType,
@@ -25,34 +26,28 @@ interface Sort {
         )
 
         operator fun invoke(
-            field: FieldOperations<*>? = null,
-            scriptType: String? = null,
-            script: Script? = null,
+            script: dev.evo.elasticmagic.query.Script,
+            scriptType: String,
             order: Order? = null,
             mode: Mode? = null,
-            numericType: NumericType? = null,
-            missing: Missing? = null,
-            unmappedType: String? = null,
             nested: Nested? = null,
-        ): Sort = Impl(
-            by = By(field, scriptType, script),
+        ): Script = Script(
+            script,
+            scriptType,
             order = order,
             mode = mode,
-            numericType = numericType,
-            missing = missing,
-            unmappedType = unmappedType,
             nested = nested,
         )
     }
 
     // TODO: geo distance
-    data class Impl(
-        val by: By,
+    data class Field(
+        val field: FieldOperations<*>,
         val order: Order? = null,
         val mode: Mode? = null,
         val numericType: NumericType? = null,
         val missing: Missing? = null,
-        val unmappedType: String? = null,
+        val unmappedType: FieldType<*, *>? = null,
         val nested: Nested? = null,
     ) : ArrayExpression, Sort {
         override fun clone() = copy()
@@ -63,67 +58,43 @@ interface Sort {
                 "mode" to mode,
                 "numeric_type" to numericType,
                 "missing" to missing,
-                "unmapped_type" to unmappedType,
+                "unmapped_type" to unmappedType?.name,
                 "nested" to nested,
             )
-            if (
-                by is By.Field &&
-                order == null &&
-                mode == null &&
-                numericType == null &&
-                missing == null &&
-                unmappedType == null
-            ) {
-                ctx.value(by.field.getQualifiedFieldName())
+            if (params.isEmpty()) {
+                ctx.value(field.getQualifiedFieldName())
             } else {
                 ctx.obj {
-                    when (by) {
-                        is By.Field -> {
-                            obj(by.field.getQualifiedFieldName()) {
-                                compiler.visit(this, params)
-                            }
-                        }
-                        is By.Script -> {
-                            obj("_script") {
-                                field("type", by.type)
-                                obj("script") {
-                                    compiler.visit(this, by.script)
-                                }
-                                compiler.visit(this, params)
-                            }
-                        }
+                    obj(field.getQualifiedFieldName()) {
+                        compiler.visit(this, params)
                     }
                 }
             }
         }
     }
 
-    sealed class By {
-        class Field(val field: FieldOperations<*>) : By()
-        class Script(val type: String, val script: dev.evo.elasticmagic.query.Script) : By()
+    data class Script(
+        val script: dev.evo.elasticmagic.query.Script,
+        val type: String,
+        val order: Order? = null,
+        val mode: Mode? = null,
+        val nested: Nested? = null,
+    ) : ArrayExpression, Sort {
+        override fun clone() = copy()
 
-        companion object {
-            internal operator fun invoke(
-                field: FieldOperations<*>?, scriptType: String?, script: dev.evo.elasticmagic.query.Script?
-            ): By {
-                return when {
-                    field != null && script != null -> throw IllegalArgumentException(
-                        "Only field or script are allowed, not both"
-                    )
-                    field == null && script == null -> throw IllegalArgumentException(
-                        "One of field or script are required"
-                    )
-                    field != null -> Field(field)
-                    script != null -> {
-                        if (scriptType != null) {
-                            Script(scriptType, script)
-                        } else {
-                            throw IllegalArgumentException(
-                                "script requires scriptType"
-                            )
-                        }
+        override fun accept(ctx: Serializer.ArrayCtx, compiler: SearchQueryCompiler) {
+            val params = Params(
+                "type" to type,
+                "order" to order,
+                "mode" to mode,
+                "nested" to nested,
+            )
+            ctx.obj {
+                obj("_script") {
+                    obj("script") {
+                        compiler.visit(this, script)
                     }
-                    else -> error("Unreachable")
+                    compiler.visit(this, params)
                 }
             }
         }

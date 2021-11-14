@@ -3,7 +3,10 @@ package dev.evo.elasticmagic.query
 import dev.evo.elasticmagic.BaseTest
 import dev.evo.elasticmagic.ElasticsearchVersion
 import dev.evo.elasticmagic.compile.SearchQueryCompiler
+import dev.evo.elasticmagic.doc.BaseDocSource
+import dev.evo.elasticmagic.doc.BoundField
 import dev.evo.elasticmagic.doc.Document
+import dev.evo.elasticmagic.doc.SubDocument
 import dev.evo.elasticmagic.doc.date
 import dev.evo.elasticmagic.serde.Serializer
 import io.kotest.matchers.types.shouldBeInstanceOf
@@ -21,9 +24,22 @@ abstract class BaseExpressionTest : BaseTest() {
         return obj.shouldBeInstanceOf<TestSerializer.ObjectCtx>().toMap()
     }
 
+    protected fun Expression<Serializer.ArrayCtx>.compile(): List<Any?> {
+        val arr = serializer.array {
+            compiler.visit(this, this@compile)
+        }
+        return arr.shouldBeInstanceOf<TestSerializer.ArrayCtx>().toList()
+    }
+
+    protected class StarDoc(field: BoundField<BaseDocSource, Nothing>) : SubDocument(field) {
+        val name by text()
+        val rank by float()
+    }
+
     protected object MovieDoc : Document() {
         val genre by keyword()
         val rating by float()
+        val stars by nested(::StarDoc)
         val isColored by boolean("is_colored")
         val numRatings by int("num_ratings")
         val releaseDate by date("release_date")
