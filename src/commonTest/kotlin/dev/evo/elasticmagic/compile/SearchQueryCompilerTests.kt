@@ -32,6 +32,7 @@ import dev.evo.elasticmagic.query.Script
 import dev.evo.elasticmagic.query.Sort
 import dev.evo.elasticmagic.query.QueryRescore
 import dev.evo.elasticmagic.query.match
+import dev.evo.elasticmagic.types.LongType
 import io.kotest.assertions.throwables.shouldThrow
 
 import io.kotest.matchers.maps.shouldContainExactly
@@ -455,8 +456,8 @@ class SearchQueryCompilerTests : BaseTest() {
                 FunctionScore(
                     functions = listOf(
                         FunctionScore.ScriptScore(
-                            script = Script(
-                                source = "Math.log10(doc[params.field].value + 2)",
+                            script = Script.Source(
+                                "Math.log10(doc[params.field].value + 2)",
                                 params = mapOf(
                                     "field" to AnyField("likes")
                                 )
@@ -525,7 +526,7 @@ class SearchQueryCompilerTests : BaseTest() {
     fun sort_fieldOrder() {
         compile(
             SearchQuery()
-                .sort(Sort(field = AnyField("popularity"), order = Sort.Order.DESC))
+                .sort(Sort(AnyField("popularity"), order = Sort.Order.DESC))
         ).body shouldContainExactly mapOf(
             "sort" to listOf(
                 mapOf(
@@ -543,12 +544,12 @@ class SearchQueryCompilerTests : BaseTest() {
             SearchQuery()
                 .sort(
                     Sort(
-                        field = AnyField("popularity"),
+                        AnyField("popularity"),
                         order = Sort.Order.DESC,
                         mode = Sort.Mode.MEDIAN,
                         numericType = Sort.NumericType.LONG,
                         missing = Sort.Missing.Value(50),
-                        unmappedType = "long",
+                        unmappedType = LongType,
                     )
                 )
         ).body shouldContainExactly mapOf(
@@ -572,8 +573,8 @@ class SearchQueryCompilerTests : BaseTest() {
             SearchQuery()
                 .sort(
                     Sort(
-                        script = Script(
-                            source = "doc[params.field].value",
+                        Script.Source(
+                            "doc[params.field].value",
                             params = mapOf(
                                 "field" to AnyField("popularity"),
                             )
@@ -679,7 +680,7 @@ class SearchQueryCompilerTests : BaseTest() {
         compile(query).body shouldContainExactly emptyMap()
 
         query.scriptFields(
-            "weighted_rank" to Script("doc['rank'].value * doc['weight'].value"),
+            "weighted_rank" to Script.Source("doc['rank'].value * doc['weight'].value"),
         )
         compile(query).body shouldContainExactly mapOf(
             "script_fields" to mapOf(
@@ -902,7 +903,7 @@ class SearchQueryCompilerTests : BaseTest() {
                 query = null,
                 functions = listOf(
                     FunctionScore.ScriptScore(
-                        Script(
+                        Script.Source(
                             source = "params.a / Math.pow(params.b, doc[params.field].value)",
                             params = Params(
                                 "a" to 5,

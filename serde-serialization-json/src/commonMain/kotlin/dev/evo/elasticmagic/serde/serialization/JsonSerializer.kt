@@ -103,4 +103,8 @@ sealed class JsonSerializer : Serializer {
     override fun obj(block: Serializer.ObjectCtx.() -> Unit): Serializer.ObjectCtx {
         return ObjectCtx().apply(block)
     }
+
+    override fun array(block: Serializer.ArrayCtx.() -> Unit): Serializer.ArrayCtx {
+        return ArrayCtx().apply(block)
+    }
 }

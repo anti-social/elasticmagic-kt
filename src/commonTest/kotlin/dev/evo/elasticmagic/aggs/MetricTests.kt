@@ -152,7 +152,7 @@ class MetricTests : TestAggregation() {
             ),
             weight = WeightedAvgAgg.ValueSource(
                 AggValue.Script(
-                    Script(
+                    Script.Source(
                         "doc[params.rating_field].value + 1",
                         params = mapOf(
                             "rating_field" to MovieDoc.numRatings

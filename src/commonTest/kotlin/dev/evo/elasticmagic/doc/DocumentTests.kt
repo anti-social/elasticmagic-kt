@@ -56,8 +56,8 @@ class DocumentTests {
                 val fullName by runtime(
                     "full_name",
                     KeywordType,
-                    Script(
-                        Script.Source("emit(doc['first_name'].value + doc['last_name'].value)")
+                    Script.Source(
+                        "emit(doc['first_name'].value + doc['last_name'].value)"
                     )
                 )
             }
@@ -491,10 +491,8 @@ class DocumentTests {
             override val runtime = object : RuntimeFields() {
                 val fullName by runtime(
                     KeywordType,
-                    Script(
-                        Script.Source(
-                            "emit(doc[params.firstNameField].value + doc[params.lastNameField].value)"
-                        ),
+                    Script.Source(
+                        "emit(doc[params.firstNameField].value + doc[params.lastNameField].value)",
                         params = Params(
                             "firstNameField" to firstName,
                             "lastNameField" to lastName,
@@ -511,10 +509,8 @@ class DocumentTests {
             override val runtime = object : RuntimeFields() {
                 val fullName by runtime(
                     KeywordType,
-                    Script(
-                        Script.Source(
-                            "emit(doc[params.firstNameField].value + doc[params.lastNameField].value)"
-                        ),
+                    Script.Source(
+                        "emit(doc[params.firstNameField].value + doc[params.lastNameField].value)",
                         params = Params(
                             "firstNameField" to firstName,
                             "lastNameField" to lastName,
@@ -538,10 +534,8 @@ class DocumentTests {
             override val runtime = object : RuntimeFields() {
                 val fullName by runtime(
                     KeywordType,
-                    Script(
-                        Script.Source(
-                            "emit(doc[params.firstNameField].value + doc[params.lastNameField].value)"
-                        ),
+                    Script.Source(
+                        "emit(doc[params.firstNameField].value + doc[params.lastNameField].value)",
                         params = Params(
                             "firstNameField" to firstName,
                             "lastNameField" to lastName,
@@ -558,10 +552,8 @@ class DocumentTests {
             override val runtime = object : RuntimeFields() {
                 val fullName by runtime(
                     KeywordType,
-                    Script(
-                        Script.Source(
-                            "emit(doc[params.lastNameField].value + doc[params.firstNameField].value)"
-                        ),
+                    Script.Source(
+                        "emit(doc[params.lastNameField].value + doc[params.firstNameField].value)",
                         params = Params(
                             "firstNameField" to firstName,
                             "lastNameField" to lastName,

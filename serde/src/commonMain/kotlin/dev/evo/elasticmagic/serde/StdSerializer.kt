@@ -88,4 +88,8 @@ abstract class StdSerializer(
     override fun obj(block: Serializer.ObjectCtx.() -> Unit): Serializer.ObjectCtx {
         return objFactory().apply(block)
     }
+
+    override fun array(block: Serializer.ArrayCtx.() -> Unit): Serializer.ArrayCtx {
+        return arrayFactory().apply(block)
+    }
 }

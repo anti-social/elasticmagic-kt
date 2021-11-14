@@ -4,77 +4,37 @@ import dev.evo.elasticmagic.Params
 import dev.evo.elasticmagic.compile.SearchQueryCompiler
 import dev.evo.elasticmagic.serde.Serializer
 
-// TODO: Refactor script creation
-// Script.WithSource, Script.WithId shortcuts
-data class Script(
-    val spec: Spec,
-    val lang: String? = null,
-    val params: Params = Params(),
-) : ObjExpression {
-    // FIXME: Don't like it as it is error prone
-    constructor(
-        source: String? = null,
-        id: String? = null,
-        lang: String? = null,
-        params: Params = Params(),
-    ) : this(Spec(source, id), lang, params)
+sealed class Script : ObjExpression {
+    protected abstract val by: String
+    protected abstract val value: String
 
-    // TODO: After update kotlin to 1.5 move subclasses outside of Spec
-    sealed class Spec : ObjExpression {
-        data class Source(val source: String) : Spec() {
-            override fun clone() = copy()
+    abstract val lang: String?
+    abstract val params: Params
 
-            override fun accept(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
-                ctx.field("source", source)
-            }
-        }
+    data class Id(
+        val id: String,
+        override val lang: String? = null,
+        override val params: Params = Params(),
+    ) : Script() {
+        override val by = "id"
+        override val value = id
 
-        data class Id(val id: String) : Spec() {
-            override fun clone() = copy()
-
-            override fun accept(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
-                ctx.field("id", id)
-            }
-        }
-
-        companion object {
-            internal operator fun invoke(source: String?, id: String?): Spec {
-                return when {
-                    source == null && id == null -> {
-                        throw IllegalArgumentException(
-                            "Both source and id are missing"
-                        )
-                    }
-                    source != null && id != null -> {
-                        throw IllegalArgumentException(
-                            "Only source or id allowed, not both"
-                        )
-                    }
-                    source != null -> Source(source)
-                    id != null -> Id(id)
-                    else -> {
-                        error("Unreachable")
-                    }
-                }
-            }
-        }
+        override fun clone() = copy()
     }
 
-    companion object {
-        @Suppress("FunctionNaming")
-        fun Source(source: String): Spec.Source = Spec.Source(source)
+    data class Source(
+        val source: String,
+        override val lang: String? = null,
+        override val params: Params = Params(),
+    ) : Script() {
+        override val by = "source"
+        override val value = source
 
-        @Suppress("FunctionNaming")
-        fun Id(id: String): Spec.Id = Spec.Id(id)
+        override fun clone() = copy()
     }
-
-    override fun clone() = copy()
 
     override fun accept(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
-        when (spec) {
-            is Spec.Source -> ctx.field("source", spec.source)
-            is Spec.Id -> ctx.field("id", spec.id)
-        }
+        ctx.field(by, value)
         if (lang != null) {
             ctx.field("lang", lang)
         }
