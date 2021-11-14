@@ -23,7 +23,9 @@ import dev.evo.elasticmagic.query.Nested
 import dev.evo.elasticmagic.query.Script
 import dev.evo.elasticmagic.query.Sort
 import dev.evo.elasticmagic.query.match
+import dev.evo.elasticmagic.transport.ElasticsearchException
 
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.nulls.shouldNotBeNull
@@ -199,6 +201,38 @@ class SearchQueryTests : ElasticsearchTestBase() {
             hit.primaryTerm shouldBe null
             val doc = hit.source.shouldNotBeNull()
             doc shouldBe docSources[hit.id]?.doc
+        }
+    }
+
+    @Test
+    fun badRequest() = runTestWithTransports {
+        withFixtures(OrderDoc, listOf(karlssonsBestDonuts)) {
+            shouldThrow<ElasticsearchException.BadRequest> {
+                SearchQuery(::OrderDocSource)
+                    .sort(
+                        Sort(
+                            Script.Source("doc['_id'].value"),
+                            scriptType = "unknown",
+                        )
+                    )
+                    .execute(index)
+            }
+        }
+    }
+
+    @Test
+    fun internalServerError() = runTestWithTransports {
+        withFixtures(OrderDoc, listOf(karlssonsBestDonuts)) {
+            shouldThrow<ElasticsearchException.Internal> {
+                SearchQuery(::OrderDocSource)
+                    .sort(
+                        Sort(
+                            Script.Source("doc['unknown'].value"),
+                            scriptType = "number"
+                        )
+                    )
+                    .execute(index)
+            }
         }
     }
 

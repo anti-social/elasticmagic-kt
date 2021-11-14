@@ -41,6 +41,7 @@ abstract class ElasticsearchTestBase : TestBase() {
                 index.name,
                 mapping = mergeDocuments(*mappings),
                 settings = Params(
+                    "index.number_of_shards" to 1,
                     "index.number_of_replicas" to 0,
                 ),
             )
@@ -57,6 +58,7 @@ abstract class ElasticsearchTestBase : TestBase() {
                     index.name,
                     mapping = mergeDocuments(*mappings),
                     settings = Params(
+                        "index.number_of_shards" to 1,
                         "index.number_of_replicas" to 0,
                     ),
                 )

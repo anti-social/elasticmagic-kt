@@ -7,6 +7,7 @@ open class ElasticsearchException(msg: String) : Exception(msg) {
         private const val HTTP_FORBIDDEN = 403
         private const val HTTP_NOT_FOUND = 404
         private const val HTTP_CONFLICT = 409
+        private const val HTTP_INTERNAL_SERVER_ERROR = 500
         private const val HTTP_GATEWAY_TIMEOUT = 504
     }
 
@@ -25,11 +26,12 @@ open class ElasticsearchException(msg: String) : Exception(msg) {
 
             fun fromStatusCode(statusCode: Int, error: TransportError): Transport {
                 return when (statusCode) {
-                    HTTP_BAD_REQUEST -> Request(error)
+                    HTTP_BAD_REQUEST -> BadRequest(error)
                     HTTP_UNAUTHORIZED -> Authentication(error)
                     HTTP_FORBIDDEN -> Authorization(error)
                     HTTP_NOT_FOUND -> NotFound(error)
                     HTTP_CONFLICT -> Conflict(error)
+                    HTTP_INTERNAL_SERVER_ERROR -> Internal(error)
                     HTTP_GATEWAY_TIMEOUT -> GatewayTimeout(error)
                     else -> Transport(statusCode, error)
                 }
@@ -53,10 +55,11 @@ open class ElasticsearchException(msg: String) : Exception(msg) {
             return "${this::class.simpleName}(${statusCode}, \"${reason}\")"
         }
     }
-    class Request(error: TransportError) : Transport(HTTP_BAD_REQUEST, error)
+    class BadRequest(error: TransportError) : Transport(HTTP_BAD_REQUEST, error)
     class Authentication(error: TransportError) : Transport(HTTP_UNAUTHORIZED, error)
     class Authorization(error: TransportError) : Transport(HTTP_FORBIDDEN, error)
     class NotFound(error: TransportError) : Transport(HTTP_NOT_FOUND, error)
     class Conflict(error: TransportError) : Transport(HTTP_CONFLICT, error)
+    class Internal(error: TransportError) : Transport(HTTP_INTERNAL_SERVER_ERROR, error)
     class GatewayTimeout(error: TransportError) : Transport(HTTP_GATEWAY_TIMEOUT, error)
 }

@@ -33,8 +33,8 @@ import dev.evo.elasticmagic.query.Sort
 import dev.evo.elasticmagic.query.QueryRescore
 import dev.evo.elasticmagic.query.match
 import dev.evo.elasticmagic.types.LongType
-import io.kotest.assertions.throwables.shouldThrow
 
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.maps.shouldContainExactly
 import io.kotest.matchers.types.shouldBeInstanceOf
 
