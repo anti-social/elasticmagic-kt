@@ -9,7 +9,10 @@ import dev.evo.elasticmagic.doc.Document
 import dev.evo.elasticmagic.doc.SubDocument
 import dev.evo.elasticmagic.doc.date
 import dev.evo.elasticmagic.serde.Serializer
+
+import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
+import io.kotest.matchers.types.shouldNotBeSameInstanceAs
 
 @Suppress("UnnecessaryAbstractClass")
 abstract class BaseExpressionTest : BaseTest() {
@@ -29,6 +32,12 @@ abstract class BaseExpressionTest : BaseTest() {
             compiler.visit(this, this@compile)
         }
         return arr.shouldBeInstanceOf<TestSerializer.ArrayCtx>().toList()
+    }
+
+    protected fun checkClone(expression: Expression<*>) {
+        val clone = expression.clone()
+        clone.shouldNotBeSameInstanceAs(expression)
+        clone shouldBe expression
     }
 
     protected class StarDoc(field: BoundField<BaseDocSource, Nothing>) : SubDocument(field) {

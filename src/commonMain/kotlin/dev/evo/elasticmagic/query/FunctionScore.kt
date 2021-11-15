@@ -35,9 +35,20 @@ data class FunctionScore(
     override fun clone() = copy()
 
     override fun reduce(): QueryExpression? {
-        val query = query?.reduce()
         if (functions.isEmpty() && minScore == null) {
             return query?.reduce()
+        }
+        val reducedFunctions = ArrayList<Function>(functions.size)
+        var hasReducedFunctions = false
+        for (fn in functions) {
+            val reducedFn = fn.reduce()
+            reducedFunctions.add(reducedFn)
+            if (reducedFn !== fn) {
+                hasReducedFunctions = true
+            }
+        }
+        if (hasReducedFunctions) {
+            return copy(functions = reducedFunctions)
         }
         return this
     }
@@ -54,6 +65,7 @@ data class FunctionScore(
         ctx.fieldIfNotNull("boost", boost)
         ctx.fieldIfNotNull("score_mode", scoreMode?.toValue())
         ctx.fieldIfNotNull("boost_mode", boostMode?.toValue())
+        ctx.fieldIfNotNull("min_score", minScore)
         ctx.array("functions") {
             compiler.visit(this, functions)
         }
@@ -70,9 +82,15 @@ data class FunctionScore(
             return null
         }
 
-        fun reduceFilter(): QueryExpression? {
-            return filter?.reduce()
+        override fun reduce(): Function {
+            val reducedFilter = filter?.reduce()
+            if (reducedFilter !== filter) {
+                return copyWithFilter(reducedFilter)
+            }
+            return this
         }
+
+        protected abstract fun copyWithFilter(filter: QueryExpression?): Function
 
         protected inline fun accept(
             ctx: Serializer.ObjectCtx,
@@ -95,19 +113,12 @@ data class FunctionScore(
     ) : Function() {
         override fun clone() = copy()
 
-        override fun reduce(): Function {
-            return copy(
-                filter = reduceFilter()
-            )
-        }
+        override fun copyWithFilter(filter: QueryExpression?) = copy(filter = filter)
 
         override fun accept(
-            ctx: Serializer.ObjectCtx,
-            compiler: SearchQueryCompiler
-        ) {
-            super.accept(ctx, compiler) {
-                field("weight", weight)
-            }
+            ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler
+        ) = accept(ctx, compiler) {
+            field("weight", weight)
         }
     }
 
@@ -115,7 +126,7 @@ data class FunctionScore(
         val field: FieldOperations<T>,
         val factor: Double? = null,
         val missing: T? = null,
-        val modifier: String? = null,
+        val modifier: Modifier? = null,
         override val filter: QueryExpression? = null,
     ) : Function() {
         companion object {
@@ -123,7 +134,7 @@ data class FunctionScore(
                 field: FieldOperations<T>,
                 factor: Double? = null,
                 missing: T? = null,
-                modifier: String? = null,
+                modifier: Modifier? = null,
                 filter: QueryExpression? = null,
             ) = FieldValueFactor(
                 field,
@@ -136,26 +147,25 @@ data class FunctionScore(
 
         override fun clone() = copy()
 
-        override fun reduce(): Function {
-            return copy(
-                filter = reduceFilter()
-            )
-        }
+        override fun copyWithFilter(filter: QueryExpression?) = copy(filter = filter)
 
         override fun accept(
-            ctx: Serializer.ObjectCtx, compiler:
-            SearchQueryCompiler
-        ) {
-            super.accept(ctx, compiler) {
-                ctx.obj("field_value_factor") {
-                    field("field", field.getQualifiedFieldName())
-                    fieldIfNotNull("factor", factor)
-                    missing?.let { missing ->
-                        field("missing", field.serializeTerm(missing))
-                    }
-                    fieldIfNotNull("modifier", modifier)
+            ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler
+        ) = accept(ctx, compiler) {
+            obj("field_value_factor") {
+                field("field", field.getQualifiedFieldName())
+                fieldIfNotNull("factor", factor)
+                missing?.let { missing ->
+                    field("missing", field.serializeTerm(missing))
                 }
+                fieldIfNotNull("modifier", modifier?.toValue())
             }
+        }
+
+        enum class Modifier : ToValue<String> {
+            LOG, LOG1P, LOG2P, LN, LN1P, LN2P, SQUARE, SQRT, RECIPROCAL;
+
+            override fun toValue() = name.lowercase()
         }
     }
 
@@ -165,14 +175,12 @@ data class FunctionScore(
     ) : Function() {
         override fun clone() = copy()
 
-        override fun reduce(): Function {
-            return copy(
-                filter = reduceFilter()
-            )
-        }
+        override fun copyWithFilter(filter: QueryExpression?) = copy(filter = filter)
 
-        override fun accept(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
-            ctx.obj("script_score") {
+        override fun accept(
+            ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler
+        ) = accept(ctx, compiler) {
+            obj("script_score") {
                 obj("script") {
                     compiler.visit(this, script)
                 }
@@ -187,14 +195,12 @@ data class FunctionScore(
     ) : Function() {
         override fun clone() = copy()
 
-        override fun reduce(): Function {
-            return copy(
-                filter = reduceFilter()
-            )
-        }
+        override fun copyWithFilter(filter: QueryExpression?) = copy(filter = filter)
 
-        override fun accept(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
-            ctx.obj("random_score") {
+        override fun accept(
+            ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler
+        ) = accept(ctx, compiler) {
+            obj("random_score") {
                 fieldIfNotNull("seed", seed)
                 fieldIfNotNull("field", field?.getQualifiedFieldName())
             }
