@@ -218,20 +218,23 @@ class SearchQueryTests : ElasticsearchTestBase() {
                     .execute(index)
             }
         }
-    }
 
-    @Test
-    fun internalServerError() = runTestWithTransports {
         withFixtures(OrderDoc, listOf(karlssonsBestDonuts)) {
-            shouldThrow<ElasticsearchException.Internal> {
-                SearchQuery(::OrderDocSource)
-                    .sort(
-                        Sort(
-                            Script.Source("doc['unknown'].value"),
-                            scriptType = "number"
-                        )
+            val query = SearchQuery(::OrderDocSource)
+                .sort(
+                    Sort(
+                        Script.Source("doc['unknown'].value"),
+                        scriptType = "number"
                     )
-                    .execute(index)
+                )
+            if (cluster.getVersion().major < 7) {
+                shouldThrow<ElasticsearchException.Internal> {
+                    query.execute(index)
+                }
+            } else {
+                shouldThrow<ElasticsearchException.BadRequest> {
+                    query.execute(index)
+                }
             }
         }
     }
