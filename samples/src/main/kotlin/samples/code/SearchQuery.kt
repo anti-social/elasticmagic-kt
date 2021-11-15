@@ -42,7 +42,7 @@ fun queryNode() {
                     UserDoc.rank,
                     missing = 1.0F,
                     factor = 2.0,
-                    modifier = "sqrt",
+                    modifier = FunctionScore.FieldValueFactor.Modifier.LN1P
                 )
             ),
             scoreMode = FunctionScore.ScoreMode.SUM,
