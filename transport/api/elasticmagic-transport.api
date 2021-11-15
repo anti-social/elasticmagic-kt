@@ -1,0 +1,267 @@
+public class dev/evo/elasticmagic/transport/ElasticsearchException : java/lang/Exception {
+	public static final field Companion Ldev/evo/elasticmagic/transport/ElasticsearchException$Companion;
+	public fun <init> (Ljava/lang/String;)V
+}
+
+public final class dev/evo/elasticmagic/transport/ElasticsearchException$Authentication : dev/evo/elasticmagic/transport/ElasticsearchException$Transport {
+	public fun <init> (Ldev/evo/elasticmagic/transport/TransportError;)V
+}
+
+public final class dev/evo/elasticmagic/transport/ElasticsearchException$Authorization : dev/evo/elasticmagic/transport/ElasticsearchException$Transport {
+	public fun <init> (Ldev/evo/elasticmagic/transport/TransportError;)V
+}
+
+public final class dev/evo/elasticmagic/transport/ElasticsearchException$BadRequest : dev/evo/elasticmagic/transport/ElasticsearchException$Transport {
+	public fun <init> (Ldev/evo/elasticmagic/transport/TransportError;)V
+}
+
+public final class dev/evo/elasticmagic/transport/ElasticsearchException$Companion {
+}
+
+public final class dev/evo/elasticmagic/transport/ElasticsearchException$Conflict : dev/evo/elasticmagic/transport/ElasticsearchException$Transport {
+	public fun <init> (Ldev/evo/elasticmagic/transport/TransportError;)V
+}
+
+public final class dev/evo/elasticmagic/transport/ElasticsearchException$GatewayTimeout : dev/evo/elasticmagic/transport/ElasticsearchException$Transport {
+	public fun <init> (Ldev/evo/elasticmagic/transport/TransportError;)V
+}
+
+public final class dev/evo/elasticmagic/transport/ElasticsearchException$Internal : dev/evo/elasticmagic/transport/ElasticsearchException$Transport {
+	public fun <init> (Ldev/evo/elasticmagic/transport/TransportError;)V
+}
+
+public final class dev/evo/elasticmagic/transport/ElasticsearchException$NotFound : dev/evo/elasticmagic/transport/ElasticsearchException$Transport {
+	public fun <init> (Ldev/evo/elasticmagic/transport/TransportError;)V
+}
+
+public class dev/evo/elasticmagic/transport/ElasticsearchException$Transport : dev/evo/elasticmagic/transport/ElasticsearchException {
+	public static final field Companion Ldev/evo/elasticmagic/transport/ElasticsearchException$Transport$Companion;
+	public fun <init> (ILdev/evo/elasticmagic/transport/TransportError;)V
+	public final fun getError ()Ldev/evo/elasticmagic/transport/TransportError;
+	public final fun getStatusCode ()I
+	public fun isRetriable ()Z
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/evo/elasticmagic/transport/ElasticsearchException$Transport$Companion {
+	public final fun fromStatusCode (ILdev/evo/elasticmagic/transport/TransportError;)Ldev/evo/elasticmagic/transport/ElasticsearchException$Transport;
+}
+
+public abstract class dev/evo/elasticmagic/transport/ElasticsearchTransport {
+	public fun <init> (Ljava/lang/String;Ldev/evo/elasticmagic/serde/Serde;Ldev/evo/elasticmagic/transport/ElasticsearchTransport$Config;)V
+	public final fun bulkRequest (Ldev/evo/elasticmagic/transport/Request;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	protected abstract fun doRequest (Ldev/evo/elasticmagic/transport/Method;Ljava/lang/String;Ljava/util/Map;Ljava/lang/String;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun doRequest$default (Ldev/evo/elasticmagic/transport/ElasticsearchTransport;Ldev/evo/elasticmagic/transport/Method;Ljava/lang/String;Ljava/util/Map;Ljava/lang/String;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun getBaseUrl ()Ljava/lang/String;
+	protected final fun getRequestEncoderFactory ()Ldev/evo/elasticmagic/transport/RequestEncoderFactory;
+	public final fun getSerde ()Ldev/evo/elasticmagic/serde/Serde;
+	public final fun request (Ldev/evo/elasticmagic/transport/Request;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class dev/evo/elasticmagic/transport/ElasticsearchTransport$Config {
+	public fun <init> ()V
+	public final fun getGzipRequests ()Z
+	public final fun setGzipRequests (Z)V
+}
+
+public final class dev/evo/elasticmagic/transport/ElasticsearchTransportKt {
+	public static final fun Parameters ([Lkotlin/Pair;)Ljava/util/Map;
+	public static final fun parameterToString (Ljava/lang/Object;)Ljava/lang/String;
+}
+
+public final class dev/evo/elasticmagic/transport/ErrorCause {
+	public static final field Companion Ldev/evo/elasticmagic/transport/ErrorCause$Companion;
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/Integer;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun component5 ()Ljava/lang/Integer;
+	public final fun component6 ()Ljava/lang/Integer;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/Integer;)Ldev/evo/elasticmagic/transport/ErrorCause;
+	public static synthetic fun copy$default (Ldev/evo/elasticmagic/transport/ErrorCause;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/Integer;ILjava/lang/Object;)Ldev/evo/elasticmagic/transport/ErrorCause;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCol ()Ljava/lang/Integer;
+	public final fun getLine ()Ljava/lang/Integer;
+	public final fun getReason ()Ljava/lang/String;
+	public final fun getResourceId ()Ljava/lang/String;
+	public final fun getResourceType ()Ljava/lang/String;
+	public final fun getType ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/evo/elasticmagic/transport/ErrorCause$Companion {
+	public final fun parse (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;)Ldev/evo/elasticmagic/transport/ErrorCause;
+}
+
+public final class dev/evo/elasticmagic/transport/ErrorReason {
+	public static final field Companion Ldev/evo/elasticmagic/transport/ErrorReason$Companion;
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ldev/evo/elasticmagic/transport/ErrorReason;
+	public static synthetic fun copy$default (Ldev/evo/elasticmagic/transport/ErrorReason;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Ldev/evo/elasticmagic/transport/ErrorReason;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getReason ()Ljava/lang/String;
+	public final fun getResourceId ()Ljava/lang/String;
+	public final fun getResourceType ()Ljava/lang/String;
+	public final fun getType ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/evo/elasticmagic/transport/ErrorReason$Companion {
+	public final fun parse (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;)Ldev/evo/elasticmagic/transport/ErrorReason;
+}
+
+public final class dev/evo/elasticmagic/transport/FailedShard {
+	public static final field Companion Ldev/evo/elasticmagic/transport/FailedShard$Companion;
+	public fun <init> (ILjava/lang/String;Ljava/lang/String;Ldev/evo/elasticmagic/transport/ErrorReason;)V
+	public final fun component1 ()I
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()Ldev/evo/elasticmagic/transport/ErrorReason;
+	public final fun copy (ILjava/lang/String;Ljava/lang/String;Ldev/evo/elasticmagic/transport/ErrorReason;)Ldev/evo/elasticmagic/transport/FailedShard;
+	public static synthetic fun copy$default (Ldev/evo/elasticmagic/transport/FailedShard;ILjava/lang/String;Ljava/lang/String;Ldev/evo/elasticmagic/transport/ErrorReason;ILjava/lang/Object;)Ldev/evo/elasticmagic/transport/FailedShard;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getIndex ()Ljava/lang/String;
+	public final fun getNode ()Ljava/lang/String;
+	public final fun getReason ()Ldev/evo/elasticmagic/transport/ErrorReason;
+	public final fun getShard ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/evo/elasticmagic/transport/FailedShard$Companion {
+	public final fun parse (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;)Ldev/evo/elasticmagic/transport/FailedShard;
+}
+
+public final class dev/evo/elasticmagic/transport/GzipEncoder : dev/evo/elasticmagic/transport/RequestEncoder {
+	public fun <init> ()V
+	public fun append (C)Ljava/lang/Appendable;
+	public fun append (Ljava/lang/CharSequence;)Ljava/lang/Appendable;
+	public fun append (Ljava/lang/CharSequence;II)Ljava/lang/Appendable;
+	public fun toByteArray ()[B
+}
+
+public final class dev/evo/elasticmagic/transport/GzipEncoderFactory : dev/evo/elasticmagic/transport/RequestEncoderFactory {
+	public fun <init> ()V
+	public fun create ()Ldev/evo/elasticmagic/transport/GzipEncoder;
+	public synthetic fun create ()Ldev/evo/elasticmagic/transport/RequestEncoder;
+	public fun getEncoding ()Ljava/lang/String;
+}
+
+public final class dev/evo/elasticmagic/transport/GzipEncoderKt {
+	public static final fun isGzipSupported ()Z
+}
+
+public final class dev/evo/elasticmagic/transport/Method : java/lang/Enum {
+	public static final field DELETE Ldev/evo/elasticmagic/transport/Method;
+	public static final field GET Ldev/evo/elasticmagic/transport/Method;
+	public static final field HEAD Ldev/evo/elasticmagic/transport/Method;
+	public static final field POST Ldev/evo/elasticmagic/transport/Method;
+	public static final field PUT Ldev/evo/elasticmagic/transport/Method;
+	public static fun valueOf (Ljava/lang/String;)Ldev/evo/elasticmagic/transport/Method;
+	public static fun values ()[Ldev/evo/elasticmagic/transport/Method;
+}
+
+public final class dev/evo/elasticmagic/transport/Request {
+	public static final field Companion Ldev/evo/elasticmagic/transport/Request$Companion;
+	public fun <init> (Ldev/evo/elasticmagic/transport/Method;Ljava/lang/String;Ljava/util/Map;Ljava/lang/Object;Lkotlin/jvm/functions/Function1;)V
+	public synthetic fun <init> (Ldev/evo/elasticmagic/transport/Method;Ljava/lang/String;Ljava/util/Map;Ljava/lang/Object;Lkotlin/jvm/functions/Function1;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun getBody ()Ljava/lang/Object;
+	public final fun getMethod ()Ldev/evo/elasticmagic/transport/Method;
+	public final fun getParameters ()Ljava/util/Map;
+	public final fun getPath ()Ljava/lang/String;
+	public final fun getProcessResult ()Lkotlin/jvm/functions/Function1;
+}
+
+public final class dev/evo/elasticmagic/transport/Request$Companion {
+	public final fun invoke (Ldev/evo/elasticmagic/transport/Method;Ljava/lang/String;Ljava/util/Map;Ljava/lang/Object;)Ldev/evo/elasticmagic/transport/Request;
+	public static synthetic fun invoke$default (Ldev/evo/elasticmagic/transport/Request$Companion;Ldev/evo/elasticmagic/transport/Method;Ljava/lang/String;Ljava/util/Map;Ljava/lang/Object;ILjava/lang/Object;)Ldev/evo/elasticmagic/transport/Request;
+}
+
+public abstract interface class dev/evo/elasticmagic/transport/RequestEncoder : java/lang/Appendable {
+	public abstract fun append (C)Ljava/lang/Appendable;
+	public abstract fun append (Ljava/lang/CharSequence;II)Ljava/lang/Appendable;
+	public abstract fun toByteArray ()[B
+}
+
+public final class dev/evo/elasticmagic/transport/RequestEncoder$DefaultImpls {
+	public static fun append (Ldev/evo/elasticmagic/transport/RequestEncoder;C)Ljava/lang/Appendable;
+	public static fun append (Ldev/evo/elasticmagic/transport/RequestEncoder;Ljava/lang/CharSequence;II)Ljava/lang/Appendable;
+}
+
+public abstract interface class dev/evo/elasticmagic/transport/RequestEncoderFactory {
+	public abstract fun create ()Ldev/evo/elasticmagic/transport/RequestEncoder;
+	public abstract fun getEncoding ()Ljava/lang/String;
+}
+
+public final class dev/evo/elasticmagic/transport/StringEncoder : dev/evo/elasticmagic/transport/RequestEncoder {
+	public fun <init> ()V
+	public fun append (C)Ljava/lang/Appendable;
+	public fun append (Ljava/lang/CharSequence;)Ljava/lang/Appendable;
+	public fun append (Ljava/lang/CharSequence;II)Ljava/lang/Appendable;
+	public fun toByteArray ()[B
+}
+
+public final class dev/evo/elasticmagic/transport/StringEncoderFactory : dev/evo/elasticmagic/transport/RequestEncoderFactory {
+	public fun <init> ()V
+	public synthetic fun create ()Ldev/evo/elasticmagic/transport/RequestEncoder;
+	public fun create ()Ldev/evo/elasticmagic/transport/StringEncoder;
+	public fun getEncoding ()Ljava/lang/String;
+}
+
+public abstract class dev/evo/elasticmagic/transport/TransportError {
+	public static final field Companion Ldev/evo/elasticmagic/transport/TransportError$Companion;
+}
+
+public final class dev/evo/elasticmagic/transport/TransportError$Companion {
+	public final fun parse (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;)Ldev/evo/elasticmagic/transport/TransportError;
+}
+
+public final class dev/evo/elasticmagic/transport/TransportError$Simple : dev/evo/elasticmagic/transport/TransportError {
+	public fun <init> (Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;)Ldev/evo/elasticmagic/transport/TransportError$Simple;
+	public static synthetic fun copy$default (Ldev/evo/elasticmagic/transport/TransportError$Simple;Ljava/lang/String;ILjava/lang/Object;)Ldev/evo/elasticmagic/transport/TransportError$Simple;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getError ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/evo/elasticmagic/transport/TransportError$Structured : dev/evo/elasticmagic/transport/TransportError {
+	public static final field Companion Ldev/evo/elasticmagic/transport/TransportError$Structured$Companion;
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/String;Ljava/lang/Boolean;Ljava/util/List;Ljava/util/List;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/String;Ljava/lang/Boolean;Ljava/util/List;Ljava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/Integer;
+	public final fun component4 ()Ljava/lang/Integer;
+	public final fun component5 ()Ljava/lang/String;
+	public final fun component6 ()Ljava/lang/Boolean;
+	public final fun component7 ()Ljava/util/List;
+	public final fun component8 ()Ljava/util/List;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/String;Ljava/lang/Boolean;Ljava/util/List;Ljava/util/List;)Ldev/evo/elasticmagic/transport/TransportError$Structured;
+	public static synthetic fun copy$default (Ldev/evo/elasticmagic/transport/TransportError$Structured;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/String;Ljava/lang/Boolean;Ljava/util/List;Ljava/util/List;ILjava/lang/Object;)Ldev/evo/elasticmagic/transport/TransportError$Structured;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCol ()Ljava/lang/Integer;
+	public final fun getFailedShards ()Ljava/util/List;
+	public final fun getGrouped ()Ljava/lang/Boolean;
+	public final fun getLine ()Ljava/lang/Integer;
+	public final fun getPhase ()Ljava/lang/String;
+	public final fun getReason ()Ljava/lang/String;
+	public final fun getRootCauses ()Ljava/util/List;
+	public final fun getType ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/evo/elasticmagic/transport/TransportError$Structured$Companion {
+	public final fun parse (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;)Ldev/evo/elasticmagic/transport/TransportError$Structured;
+}
+
