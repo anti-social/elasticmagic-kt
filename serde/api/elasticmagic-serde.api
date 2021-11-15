@@ -1,0 +1,335 @@
+public final class dev/evo/elasticmagic/serde/DeserializationException : java/lang/Exception {
+	public fun <init> (Ljava/lang/String;Ljava/lang/Exception;)V
+}
+
+public abstract interface class dev/evo/elasticmagic/serde/Deserializer {
+	public abstract fun objFromString (Ljava/lang/String;)Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;
+	public abstract fun objFromStringOrNull (Ljava/lang/String;)Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;
+}
+
+public abstract interface class dev/evo/elasticmagic/serde/Deserializer$ArrayCtx {
+	public abstract fun any ()Ljava/lang/Object;
+	public abstract fun anyOrNull ()Ljava/lang/Object;
+	public abstract fun array ()Ldev/evo/elasticmagic/serde/Deserializer$ArrayCtx;
+	public abstract fun arrayOrNull ()Ldev/evo/elasticmagic/serde/Deserializer$ArrayCtx;
+	public abstract fun boolean ()Z
+	public abstract fun booleanOrNull ()Ljava/lang/Boolean;
+	public abstract fun double ()D
+	public abstract fun doubleOrNull ()Ljava/lang/Double;
+	public abstract fun float ()F
+	public abstract fun floatOrNull ()Ljava/lang/Float;
+	public abstract fun hasNext ()Z
+	public abstract fun int ()I
+	public abstract fun intOrNull ()Ljava/lang/Integer;
+	public abstract fun long ()J
+	public abstract fun longOrNull ()Ljava/lang/Long;
+	public abstract fun obj ()Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;
+	public abstract fun objOrNull ()Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;
+	public abstract fun string ()Ljava/lang/String;
+	public abstract fun stringOrNull ()Ljava/lang/String;
+}
+
+public final class dev/evo/elasticmagic/serde/Deserializer$ArrayCtx$DefaultImpls {
+	public static fun any (Ldev/evo/elasticmagic/serde/Deserializer$ArrayCtx;)Ljava/lang/Object;
+	public static fun array (Ldev/evo/elasticmagic/serde/Deserializer$ArrayCtx;)Ldev/evo/elasticmagic/serde/Deserializer$ArrayCtx;
+	public static fun boolean (Ldev/evo/elasticmagic/serde/Deserializer$ArrayCtx;)Z
+	public static fun double (Ldev/evo/elasticmagic/serde/Deserializer$ArrayCtx;)D
+	public static fun float (Ldev/evo/elasticmagic/serde/Deserializer$ArrayCtx;)F
+	public static fun int (Ldev/evo/elasticmagic/serde/Deserializer$ArrayCtx;)I
+	public static fun long (Ldev/evo/elasticmagic/serde/Deserializer$ArrayCtx;)J
+	public static fun obj (Ldev/evo/elasticmagic/serde/Deserializer$ArrayCtx;)Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;
+	public static fun string (Ldev/evo/elasticmagic/serde/Deserializer$ArrayCtx;)Ljava/lang/String;
+}
+
+public final class dev/evo/elasticmagic/serde/Deserializer$DefaultImpls {
+	public static fun objFromString (Ldev/evo/elasticmagic/serde/Deserializer;Ljava/lang/String;)Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;
+}
+
+public abstract interface class dev/evo/elasticmagic/serde/Deserializer$ObjectCtx {
+	public abstract fun any (Ljava/lang/String;)Ljava/lang/Object;
+	public abstract fun anyOrNull (Ljava/lang/String;)Ljava/lang/Object;
+	public abstract fun array (Ljava/lang/String;)Ldev/evo/elasticmagic/serde/Deserializer$ArrayCtx;
+	public abstract fun arrayOrNull (Ljava/lang/String;)Ldev/evo/elasticmagic/serde/Deserializer$ArrayCtx;
+	public abstract fun boolean (Ljava/lang/String;)Z
+	public abstract fun booleanOrNull (Ljava/lang/String;)Ljava/lang/Boolean;
+	public abstract fun double (Ljava/lang/String;)D
+	public abstract fun doubleOrNull (Ljava/lang/String;)Ljava/lang/Double;
+	public abstract fun float (Ljava/lang/String;)F
+	public abstract fun floatOrNull (Ljava/lang/String;)Ljava/lang/Float;
+	public abstract fun int (Ljava/lang/String;)I
+	public abstract fun intOrNull (Ljava/lang/String;)Ljava/lang/Integer;
+	public abstract fun iterator ()Ldev/evo/elasticmagic/serde/Deserializer$ObjectIterator;
+	public abstract fun long (Ljava/lang/String;)J
+	public abstract fun longOrNull (Ljava/lang/String;)Ljava/lang/Long;
+	public abstract fun obj (Ljava/lang/String;)Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;
+	public abstract fun objOrNull (Ljava/lang/String;)Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;
+	public abstract fun string (Ljava/lang/String;)Ljava/lang/String;
+	public abstract fun stringOrNull (Ljava/lang/String;)Ljava/lang/String;
+}
+
+public final class dev/evo/elasticmagic/serde/Deserializer$ObjectCtx$DefaultImpls {
+	public static fun any (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;Ljava/lang/String;)Ljava/lang/Object;
+	public static fun array (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;Ljava/lang/String;)Ldev/evo/elasticmagic/serde/Deserializer$ArrayCtx;
+	public static fun boolean (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;Ljava/lang/String;)Z
+	public static fun double (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;Ljava/lang/String;)D
+	public static fun float (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;Ljava/lang/String;)F
+	public static fun int (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;Ljava/lang/String;)I
+	public static fun long (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;Ljava/lang/String;)J
+	public static fun obj (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;Ljava/lang/String;)Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;
+	public static fun string (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;Ljava/lang/String;)Ljava/lang/String;
+}
+
+public abstract interface class dev/evo/elasticmagic/serde/Deserializer$ObjectIterator {
+	public abstract fun anyOrNull ()Lkotlin/Pair;
+	public abstract fun array ()Lkotlin/Pair;
+	public abstract fun arrayOrNull ()Lkotlin/Pair;
+	public abstract fun boolean ()Lkotlin/Pair;
+	public abstract fun booleanOrNull ()Lkotlin/Pair;
+	public abstract fun double ()Lkotlin/Pair;
+	public abstract fun doubleOrNull ()Lkotlin/Pair;
+	public abstract fun float ()Lkotlin/Pair;
+	public abstract fun floatOrNull ()Lkotlin/Pair;
+	public abstract fun hasNext ()Z
+	public abstract fun int ()Lkotlin/Pair;
+	public abstract fun intOrNull ()Lkotlin/Pair;
+	public abstract fun long ()Lkotlin/Pair;
+	public abstract fun longOrNull ()Lkotlin/Pair;
+	public abstract fun obj ()Lkotlin/Pair;
+	public abstract fun objOrNull ()Lkotlin/Pair;
+	public abstract fun string ()Lkotlin/Pair;
+	public abstract fun stringOrNull ()Lkotlin/Pair;
+}
+
+public final class dev/evo/elasticmagic/serde/Deserializer$ObjectIterator$DefaultImpls {
+	public static fun array (Ldev/evo/elasticmagic/serde/Deserializer$ObjectIterator;)Lkotlin/Pair;
+	public static fun boolean (Ldev/evo/elasticmagic/serde/Deserializer$ObjectIterator;)Lkotlin/Pair;
+	public static fun double (Ldev/evo/elasticmagic/serde/Deserializer$ObjectIterator;)Lkotlin/Pair;
+	public static fun float (Ldev/evo/elasticmagic/serde/Deserializer$ObjectIterator;)Lkotlin/Pair;
+	public static fun int (Ldev/evo/elasticmagic/serde/Deserializer$ObjectIterator;)Lkotlin/Pair;
+	public static fun long (Ldev/evo/elasticmagic/serde/Deserializer$ObjectIterator;)Lkotlin/Pair;
+	public static fun obj (Ldev/evo/elasticmagic/serde/Deserializer$ObjectIterator;)Lkotlin/Pair;
+	public static fun string (Ldev/evo/elasticmagic/serde/Deserializer$ObjectIterator;)Lkotlin/Pair;
+}
+
+public final class dev/evo/elasticmagic/serde/DeserializerKt {
+	public static final fun toList (Ldev/evo/elasticmagic/serde/Deserializer$ArrayCtx;)Ljava/util/List;
+	public static final fun toMap (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;)Ljava/util/Map;
+}
+
+public final class dev/evo/elasticmagic/serde/Platform : java/lang/Enum {
+	public static final field JS Ldev/evo/elasticmagic/serde/Platform;
+	public static final field JVM Ldev/evo/elasticmagic/serde/Platform;
+	public static final field NATIVE Ldev/evo/elasticmagic/serde/Platform;
+	public static fun valueOf (Ljava/lang/String;)Ldev/evo/elasticmagic/serde/Platform;
+	public static fun values ()[Ldev/evo/elasticmagic/serde/Platform;
+}
+
+public final class dev/evo/elasticmagic/serde/PlatformKt {
+	public static final fun getPlatform ()Ldev/evo/elasticmagic/serde/Platform;
+}
+
+public abstract interface class dev/evo/elasticmagic/serde/Serde {
+	public abstract fun getContentType ()Ljava/lang/String;
+	public abstract fun getDeserializer ()Ldev/evo/elasticmagic/serde/Deserializer;
+	public abstract fun getSerializer ()Ldev/evo/elasticmagic/serde/Serializer;
+}
+
+public abstract interface class dev/evo/elasticmagic/serde/Serializer {
+	public abstract fun array (Lkotlin/jvm/functions/Function1;)Ldev/evo/elasticmagic/serde/Serializer$ArrayCtx;
+	public abstract fun obj (Lkotlin/jvm/functions/Function1;)Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;
+}
+
+public abstract interface class dev/evo/elasticmagic/serde/Serializer$ArrayCtx : dev/evo/elasticmagic/serde/Serializer$Ctx {
+	public abstract fun array (Lkotlin/jvm/functions/Function1;)V
+	public abstract fun obj (Lkotlin/jvm/functions/Function1;)V
+	public abstract fun value (Ljava/lang/Boolean;)V
+	public abstract fun value (Ljava/lang/Double;)V
+	public abstract fun value (Ljava/lang/Float;)V
+	public abstract fun value (Ljava/lang/Integer;)V
+	public abstract fun value (Ljava/lang/Long;)V
+	public abstract fun value (Ljava/lang/Object;)V
+	public abstract fun value (Ljava/lang/String;)V
+	public abstract fun valueIfNotNull (Ljava/lang/Boolean;)V
+	public abstract fun valueIfNotNull (Ljava/lang/Double;)V
+	public abstract fun valueIfNotNull (Ljava/lang/Float;)V
+	public abstract fun valueIfNotNull (Ljava/lang/Integer;)V
+	public abstract fun valueIfNotNull (Ljava/lang/Long;)V
+	public abstract fun valueIfNotNull (Ljava/lang/Object;)V
+	public abstract fun valueIfNotNull (Ljava/lang/String;)V
+}
+
+public final class dev/evo/elasticmagic/serde/Serializer$ArrayCtx$DefaultImpls {
+	public static fun value (Ldev/evo/elasticmagic/serde/Serializer$ArrayCtx;Ljava/lang/Object;)V
+	public static fun valueIfNotNull (Ldev/evo/elasticmagic/serde/Serializer$ArrayCtx;Ljava/lang/Boolean;)V
+	public static fun valueIfNotNull (Ldev/evo/elasticmagic/serde/Serializer$ArrayCtx;Ljava/lang/Double;)V
+	public static fun valueIfNotNull (Ldev/evo/elasticmagic/serde/Serializer$ArrayCtx;Ljava/lang/Float;)V
+	public static fun valueIfNotNull (Ldev/evo/elasticmagic/serde/Serializer$ArrayCtx;Ljava/lang/Integer;)V
+	public static fun valueIfNotNull (Ldev/evo/elasticmagic/serde/Serializer$ArrayCtx;Ljava/lang/Long;)V
+	public static fun valueIfNotNull (Ldev/evo/elasticmagic/serde/Serializer$ArrayCtx;Ljava/lang/Object;)V
+	public static fun valueIfNotNull (Ldev/evo/elasticmagic/serde/Serializer$ArrayCtx;Ljava/lang/String;)V
+}
+
+public abstract interface class dev/evo/elasticmagic/serde/Serializer$Ctx {
+	public abstract fun serialize ()Ljava/lang/String;
+}
+
+public abstract interface class dev/evo/elasticmagic/serde/Serializer$ObjectCtx : dev/evo/elasticmagic/serde/Serializer$Ctx {
+	public abstract fun array (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
+	public abstract fun field (Ljava/lang/String;Ljava/lang/Boolean;)V
+	public abstract fun field (Ljava/lang/String;Ljava/lang/Double;)V
+	public abstract fun field (Ljava/lang/String;Ljava/lang/Float;)V
+	public abstract fun field (Ljava/lang/String;Ljava/lang/Integer;)V
+	public abstract fun field (Ljava/lang/String;Ljava/lang/Long;)V
+	public abstract fun field (Ljava/lang/String;Ljava/lang/Object;)V
+	public abstract fun field (Ljava/lang/String;Ljava/lang/String;)V
+	public abstract fun fieldIfNotNull (Ljava/lang/String;Ljava/lang/Boolean;)V
+	public abstract fun fieldIfNotNull (Ljava/lang/String;Ljava/lang/Double;)V
+	public abstract fun fieldIfNotNull (Ljava/lang/String;Ljava/lang/Float;)V
+	public abstract fun fieldIfNotNull (Ljava/lang/String;Ljava/lang/Long;)V
+	public abstract fun fieldIfNotNull (Ljava/lang/String;Ljava/lang/Number;)V
+	public abstract fun fieldIfNotNull (Ljava/lang/String;Ljava/lang/Object;)V
+	public abstract fun fieldIfNotNull (Ljava/lang/String;Ljava/lang/String;)V
+	public abstract fun obj (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
+}
+
+public final class dev/evo/elasticmagic/serde/Serializer$ObjectCtx$DefaultImpls {
+	public static fun field (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ljava/lang/String;Ljava/lang/Object;)V
+	public static fun fieldIfNotNull (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ljava/lang/String;Ljava/lang/Boolean;)V
+	public static fun fieldIfNotNull (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ljava/lang/String;Ljava/lang/Double;)V
+	public static fun fieldIfNotNull (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ljava/lang/String;Ljava/lang/Float;)V
+	public static fun fieldIfNotNull (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ljava/lang/String;Ljava/lang/Long;)V
+	public static fun fieldIfNotNull (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ljava/lang/String;Ljava/lang/Number;)V
+	public static fun fieldIfNotNull (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ljava/lang/String;Ljava/lang/Object;)V
+	public static fun fieldIfNotNull (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ljava/lang/String;Ljava/lang/String;)V
+}
+
+public abstract class dev/evo/elasticmagic/serde/StdDeserializer : dev/evo/elasticmagic/serde/Deserializer {
+	public static final field Companion Ldev/evo/elasticmagic/serde/StdDeserializer$Companion;
+	public fun <init> ()V
+	public fun objFromString (Ljava/lang/String;)Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;
+}
+
+public final class dev/evo/elasticmagic/serde/StdDeserializer$ArrayCtx : dev/evo/elasticmagic/serde/Deserializer$ArrayCtx {
+	public fun <init> (Ljava/util/Iterator;)V
+	public fun <init> (Ljava/util/List;)V
+	public fun any ()Ljava/lang/Object;
+	public fun anyOrNull ()Ljava/lang/Object;
+	public fun array ()Ldev/evo/elasticmagic/serde/Deserializer$ArrayCtx;
+	public fun arrayOrNull ()Ldev/evo/elasticmagic/serde/Deserializer$ArrayCtx;
+	public fun boolean ()Z
+	public fun booleanOrNull ()Ljava/lang/Boolean;
+	public fun double ()D
+	public fun doubleOrNull ()Ljava/lang/Double;
+	public fun float ()F
+	public fun floatOrNull ()Ljava/lang/Float;
+	public fun hasNext ()Z
+	public fun int ()I
+	public fun intOrNull ()Ljava/lang/Integer;
+	public fun long ()J
+	public fun longOrNull ()Ljava/lang/Long;
+	public fun obj ()Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;
+	public fun objOrNull ()Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;
+	public fun string ()Ljava/lang/String;
+	public fun stringOrNull ()Ljava/lang/String;
+}
+
+public final class dev/evo/elasticmagic/serde/StdDeserializer$Companion {
+}
+
+public final class dev/evo/elasticmagic/serde/StdDeserializer$ObjectCtx : dev/evo/elasticmagic/serde/Deserializer$ObjectCtx {
+	public fun <init> (Ljava/util/Map;)V
+	public fun any (Ljava/lang/String;)Ljava/lang/Object;
+	public fun anyOrNull (Ljava/lang/String;)Ljava/lang/Object;
+	public fun array (Ljava/lang/String;)Ldev/evo/elasticmagic/serde/Deserializer$ArrayCtx;
+	public fun arrayOrNull (Ljava/lang/String;)Ldev/evo/elasticmagic/serde/Deserializer$ArrayCtx;
+	public fun boolean (Ljava/lang/String;)Z
+	public fun booleanOrNull (Ljava/lang/String;)Ljava/lang/Boolean;
+	public fun double (Ljava/lang/String;)D
+	public fun doubleOrNull (Ljava/lang/String;)Ljava/lang/Double;
+	public fun float (Ljava/lang/String;)F
+	public fun floatOrNull (Ljava/lang/String;)Ljava/lang/Float;
+	public fun int (Ljava/lang/String;)I
+	public fun intOrNull (Ljava/lang/String;)Ljava/lang/Integer;
+	public synthetic fun iterator ()Ldev/evo/elasticmagic/serde/Deserializer$ObjectIterator;
+	public fun iterator ()Ldev/evo/elasticmagic/serde/StdDeserializer$ObjectIterator;
+	public fun long (Ljava/lang/String;)J
+	public fun longOrNull (Ljava/lang/String;)Ljava/lang/Long;
+	public fun obj (Ljava/lang/String;)Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;
+	public fun objOrNull (Ljava/lang/String;)Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;
+	public fun string (Ljava/lang/String;)Ljava/lang/String;
+	public fun stringOrNull (Ljava/lang/String;)Ljava/lang/String;
+}
+
+public final class dev/evo/elasticmagic/serde/StdDeserializer$ObjectIterator : dev/evo/elasticmagic/serde/Deserializer$ObjectIterator {
+	public fun <init> (Ljava/util/Iterator;)V
+	public fun anyOrNull ()Lkotlin/Pair;
+	public fun array ()Lkotlin/Pair;
+	public fun arrayOrNull ()Lkotlin/Pair;
+	public fun boolean ()Lkotlin/Pair;
+	public fun booleanOrNull ()Lkotlin/Pair;
+	public fun double ()Lkotlin/Pair;
+	public fun doubleOrNull ()Lkotlin/Pair;
+	public fun float ()Lkotlin/Pair;
+	public fun floatOrNull ()Lkotlin/Pair;
+	public final fun getIter ()Ljava/util/Iterator;
+	public fun hasNext ()Z
+	public fun int ()Lkotlin/Pair;
+	public fun intOrNull ()Lkotlin/Pair;
+	public fun long ()Lkotlin/Pair;
+	public fun longOrNull ()Lkotlin/Pair;
+	public fun obj ()Lkotlin/Pair;
+	public fun objOrNull ()Lkotlin/Pair;
+	public fun string ()Lkotlin/Pair;
+	public fun stringOrNull ()Lkotlin/Pair;
+}
+
+public abstract class dev/evo/elasticmagic/serde/StdSerializer : dev/evo/elasticmagic/serde/Serializer {
+	public fun <init> (Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;)V
+	public fun array (Lkotlin/jvm/functions/Function1;)Ldev/evo/elasticmagic/serde/Serializer$ArrayCtx;
+	public fun obj (Lkotlin/jvm/functions/Function1;)Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;
+}
+
+public abstract class dev/evo/elasticmagic/serde/StdSerializer$ArrayCtx : dev/evo/elasticmagic/serde/Serializer$ArrayCtx {
+	public fun <init> (Ldev/evo/elasticmagic/serde/StdSerializer;Ljava/util/List;)V
+	public fun array (Lkotlin/jvm/functions/Function1;)V
+	public final fun build ()Ljava/util/List;
+	protected final fun getArray ()Ljava/util/List;
+	public fun obj (Lkotlin/jvm/functions/Function1;)V
+	public fun value (Ljava/lang/Boolean;)V
+	public fun value (Ljava/lang/Double;)V
+	public fun value (Ljava/lang/Float;)V
+	public fun value (Ljava/lang/Integer;)V
+	public fun value (Ljava/lang/Long;)V
+	public fun value (Ljava/lang/Object;)V
+	public fun value (Ljava/lang/String;)V
+	public fun valueIfNotNull (Ljava/lang/Boolean;)V
+	public fun valueIfNotNull (Ljava/lang/Double;)V
+	public fun valueIfNotNull (Ljava/lang/Float;)V
+	public fun valueIfNotNull (Ljava/lang/Integer;)V
+	public fun valueIfNotNull (Ljava/lang/Long;)V
+	public fun valueIfNotNull (Ljava/lang/Object;)V
+	public fun valueIfNotNull (Ljava/lang/String;)V
+}
+
+public abstract class dev/evo/elasticmagic/serde/StdSerializer$ObjectCtx : dev/evo/elasticmagic/serde/Serializer$ObjectCtx {
+	public fun <init> (Ldev/evo/elasticmagic/serde/StdSerializer;Ljava/util/Map;)V
+	public fun array (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
+	public final fun build ()Ljava/util/Map;
+	public fun field (Ljava/lang/String;Ljava/lang/Boolean;)V
+	public fun field (Ljava/lang/String;Ljava/lang/Double;)V
+	public fun field (Ljava/lang/String;Ljava/lang/Float;)V
+	public fun field (Ljava/lang/String;Ljava/lang/Integer;)V
+	public fun field (Ljava/lang/String;Ljava/lang/Long;)V
+	public fun field (Ljava/lang/String;Ljava/lang/Object;)V
+	public fun field (Ljava/lang/String;Ljava/lang/String;)V
+	public fun fieldIfNotNull (Ljava/lang/String;Ljava/lang/Boolean;)V
+	public fun fieldIfNotNull (Ljava/lang/String;Ljava/lang/Double;)V
+	public fun fieldIfNotNull (Ljava/lang/String;Ljava/lang/Float;)V
+	public fun fieldIfNotNull (Ljava/lang/String;Ljava/lang/Long;)V
+	public fun fieldIfNotNull (Ljava/lang/String;Ljava/lang/Number;)V
+	public fun fieldIfNotNull (Ljava/lang/String;Ljava/lang/Object;)V
+	public fun fieldIfNotNull (Ljava/lang/String;Ljava/lang/String;)V
+	protected final fun getMap ()Ljava/util/Map;
+	public fun obj (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
+}
+

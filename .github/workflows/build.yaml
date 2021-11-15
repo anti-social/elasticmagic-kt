@@ -61,6 +61,11 @@ jobs:
         set -eux
         ./gradlew detekt $GRADLE_ARGS
 
+    - name: Check ABI compatibility
+      run: |
+        set -eux
+        ./gradlew apiCheck $GRADLE_ARGS
+
     - name: Run unit tests
       run: |
         set -eux

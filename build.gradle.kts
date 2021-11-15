@@ -4,6 +4,7 @@ plugins {
     `maven-publish`
     signing
     kotlin("multiplatform") apply false
+    id(Plugins.binaryCompatibilityValidator) version Versions.binaryCompatibilityValidator
     id("io.gitlab.arturbosch.detekt") version Versions.detekt apply false
     id("org.jetbrains.dokka") version Versions.dokka
     id("ru.vyarus.mkdocs") version Versions.mkdocs

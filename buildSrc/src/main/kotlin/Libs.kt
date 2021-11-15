@@ -1,4 +1,6 @@
 import org.gradle.api.JavaVersion
+import org.gradle.kotlin.dsl.PluginDependenciesSpecScope
+import org.gradle.plugin.use.PluginDependencySpec
 
 import java.util.Properties
 
@@ -12,6 +14,7 @@ object Versions {
     const val detekt = "1.18.1"
     const val dokka = "1.5.0"
     const val mkdocs = "2.1.1"
+    const val binaryCompatibilityValidator = "0.8.0"
 
     // Kotlin and libs
     val kotlin = versionProps["kotlin"]!!.toString()
@@ -33,6 +36,10 @@ object Versions {
             }
         }
     }
+}
+
+object Plugins {
+    val binaryCompatibilityValidator = "org.jetbrains.kotlinx.binary-compatibility-validator"
 }
 
 object Libs {
