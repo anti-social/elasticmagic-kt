@@ -32,6 +32,12 @@ val allKotlinClassDirs = publishProjects
         "${p.buildDir}/classes/kotlin/jvm/main"
     }
 
+apiValidation {
+    ignoredProjects.addAll(
+        (allprojects.toSet() - publishProjects).map(Project::getName)
+    )
+}
+
 allprojects {
     group = "dev.evo.elasticmagic"
     version = gitDescribe.trimStart('v')
