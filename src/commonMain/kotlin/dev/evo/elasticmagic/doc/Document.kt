@@ -6,6 +6,7 @@ import dev.evo.elasticmagic.query.Named
 import dev.evo.elasticmagic.query.Script
 import dev.evo.elasticmagic.query.ToValue
 import dev.evo.elasticmagic.types.BooleanType
+import dev.evo.elasticmagic.types.ByteType
 import dev.evo.elasticmagic.types.DoubleType
 import dev.evo.elasticmagic.types.EnumFieldType
 import dev.evo.elasticmagic.types.FieldType
@@ -19,6 +20,7 @@ import dev.evo.elasticmagic.types.KeywordType
 import dev.evo.elasticmagic.types.LongType
 import dev.evo.elasticmagic.types.NestedType
 import dev.evo.elasticmagic.types.ObjectType
+import dev.evo.elasticmagic.types.ShortType
 import dev.evo.elasticmagic.types.TextType
 
 import kotlin.properties.ReadOnlyProperty
@@ -215,6 +217,36 @@ abstract class FieldSet : Named {
     ): Field<Boolean, Boolean> {
         return field(
             name, BooleanType,
+            docValues = docValues,
+            index = index,
+            store = store,
+            params = params,
+        )
+    }
+    fun byte(
+        name: String? = null,
+        docValues: Boolean? = null,
+        index: Boolean? = null,
+        store: Boolean? = null,
+        params: Params? = null,
+    ): Field<Byte, Byte> {
+        return field(
+            name, ByteType,
+            docValues = docValues,
+            index = index,
+            store = store,
+            params = params,
+        )
+    }
+    fun short(
+        name: String? = null,
+        docValues: Boolean? = null,
+        index: Boolean? = null,
+        store: Boolean? = null,
+        params: Params? = null,
+    ): Field<Short, Short> {
+        return field(
+            name, ShortType,
             docValues = docValues,
             index = index,
             store = store,

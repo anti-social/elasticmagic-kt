@@ -99,6 +99,68 @@ abstract class SimpleFieldType<V> : FieldType<V, V> {
 abstract class NumberType<V: Number> : SimpleFieldType<V>()
 
 /**
+ * Integer field type represents signed integer value from [Byte.MIN_VALUE] to [Byte.MAX_VALUE].
+ */
+object ByteType : NumberType<Byte>() {
+    override val name = "byte"
+    override val termType = Byte::class
+
+    override fun serialize(v: Byte) = v.toInt()
+
+    override fun deserialize(v: Any, valueFactory: (() -> Byte)?): Byte {
+        val w = when (v) {
+            is Int -> v.toLong()
+            else -> v
+        }
+        return when(w) {
+            is Long -> {
+                if (w > Byte.MAX_VALUE || w < Byte.MIN_VALUE) {
+                    deErr(v, "Byte")
+                }
+                w.toByte()
+            }
+            is String -> try {
+                w.toByte()
+            } catch (ex: NumberFormatException) {
+                deErr(w, "Byte", ex)
+            }
+            else -> deErr(w, "Byte")
+        }
+    }
+}
+
+/**
+ * Integer field type represents signed integer value from [Short.MIN_VALUE] to [Short.MAX_VALUE].
+ */
+object ShortType : NumberType<Short>() {
+    override val name = "short"
+    override val termType = Short::class
+
+    override fun serialize(v: Short) = v.toInt()
+
+    override fun deserialize(v: Any, valueFactory: (() -> Short)?): Short {
+        val w = when (v) {
+            is Int -> v.toLong()
+            else -> v
+        }
+        return when(w) {
+            is Long -> {
+                if (w > Short.MAX_VALUE || w < Short.MIN_VALUE) {
+                    deErr(v, "Short")
+                }
+                w.toShort()
+            }
+            is String -> try {
+                w.toShort()
+            } catch (ex: NumberFormatException) {
+                deErr(w, "Short", ex)
+            }
+            else -> deErr(w, "Short")
+        }
+    }
+}
+
+/**
  * Integer field type represents signed integer value from [Int.MIN_VALUE] to [Int.MAX_VALUE].
  */
 object IntType : NumberType<Int>() {

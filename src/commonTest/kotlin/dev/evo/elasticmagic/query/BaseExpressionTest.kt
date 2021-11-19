@@ -46,6 +46,7 @@ abstract class BaseExpressionTest : BaseTest() {
     }
 
     protected object MovieDoc : Document() {
+        val status by byte()
         val genre by keyword()
         val rating by float()
         val stars by nested(::StarDoc)

@@ -1,26 +1,106 @@
-package dev.evo.elasticmagic.doc
+package dev.evo.elasticmagic.types
 
 import dev.evo.elasticmagic.serde.Platform
 import dev.evo.elasticmagic.serde.platform
-import dev.evo.elasticmagic.types.BooleanType
-import dev.evo.elasticmagic.types.DoubleRangeType
-import dev.evo.elasticmagic.types.EnumFieldType
-import dev.evo.elasticmagic.types.FloatRangeType
-import dev.evo.elasticmagic.types.IntRangeType
-import dev.evo.elasticmagic.types.IntType
-import dev.evo.elasticmagic.types.LongRangeType
-import dev.evo.elasticmagic.types.Range
-import dev.evo.elasticmagic.types.ValueDeserializationException
+
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.booleans.shouldBeTrue
-import io.kotest.matchers.shouldBe
 import io.kotest.matchers.maps.shouldContainExactly
+import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.types.shouldBeInstanceOf
 
 import kotlin.test.Test
 
 class FieldTypeTests {
+    @Test
+    fun byte() {
+        ByteType.name shouldBe "byte"
+        ByteType.termType shouldBe Byte::class
+
+        ByteType.serialize(0).shouldBeInstanceOf<Int>()
+        ByteType.serialize(127) shouldBe 127
+        ByteType.serialize(-128) shouldBe -128
+
+        ByteType.deserialize(127) shouldBe 127
+        ByteType.deserialize(127L) shouldBe 127
+        ByteType.deserialize(-128) shouldBe -128
+        ByteType.deserialize(-128L) shouldBe -128
+        shouldThrow<ValueDeserializationException> {
+            ByteType.deserialize(128)
+        }
+        shouldThrow<ValueDeserializationException> {
+            ByteType.deserialize(-129)
+        }
+        ByteType.deserialize("1") shouldBe 1
+        shouldThrow<ValueDeserializationException> {
+            ByteType.deserialize("zero")
+        }
+
+        ByteType.serializeTerm(0).shouldBeInstanceOf<Int>()
+        ByteType.serializeTerm(127) shouldBe 127
+        ByteType.serializeTerm(-128) shouldBe -128
+
+        ByteType.deserializeTerm(127) shouldBe 127
+        ByteType.deserializeTerm(127L) shouldBe 127
+        ByteType.deserializeTerm(-128) shouldBe -128
+        ByteType.deserializeTerm(-128L) shouldBe -128
+        shouldThrow<ValueDeserializationException> {
+            ByteType.deserialize(128)
+        }
+        shouldThrow<ValueDeserializationException> {
+            ByteType.deserializeTerm(-129)
+        }
+        ByteType.deserializeTerm("1") shouldBe 1
+        shouldThrow<ValueDeserializationException> {
+            ByteType.deserialize("one")
+        }
+    }
+
+    @Test
+    fun short() {
+        ShortType.name shouldBe "short"
+        ShortType.termType shouldBe Short::class
+
+        ShortType.serialize(0).shouldBeInstanceOf<Int>()
+        ShortType.serialize(32767) shouldBe 32767
+        ShortType.serialize(-32768) shouldBe -32768
+
+        ShortType.deserialize(32767) shouldBe 32767
+        ShortType.deserialize(32767L) shouldBe 32767
+        ShortType.deserialize(-32768) shouldBe -32768
+        ShortType.deserialize(-32768) shouldBe -32768
+        shouldThrow<ValueDeserializationException> {
+            ShortType.deserialize(32768)
+        }
+        shouldThrow<ValueDeserializationException> {
+            ShortType.deserialize(-32769)
+        }
+        ShortType.deserialize("1") shouldBe 1
+        shouldThrow<ValueDeserializationException> {
+            ShortType.deserialize("zero")
+        }
+
+        ShortType.serializeTerm(0).shouldBeInstanceOf<Int>()
+        ShortType.serializeTerm(32767) shouldBe 32767
+        ShortType.serializeTerm(-32768) shouldBe -32768
+
+        ShortType.deserializeTerm(32767) shouldBe 32767
+        ShortType.deserializeTerm(32767L) shouldBe 32767
+        ShortType.deserializeTerm(-32768) shouldBe -32768
+        ShortType.deserializeTerm(-32768) shouldBe -32768
+        shouldThrow<ValueDeserializationException> {
+            ShortType.deserialize(32768)
+        }
+        shouldThrow<ValueDeserializationException> {
+            ShortType.deserializeTerm(-32969)
+        }
+        ShortType.deserializeTerm("1") shouldBe 1
+        shouldThrow<ValueDeserializationException> {
+            ShortType.deserializeTerm("one")
+        }
+    }
+
     @Test
     fun boolean() {
         BooleanType.serialize(false) shouldBe false
@@ -145,14 +225,14 @@ class FieldTypeTests {
 
         FloatRangeType.deserialize(mapOf("gt" to 1)) shouldBe Range(gt = 1F)
         FloatRangeType.deserialize(mapOf("lt" to Int.MAX_VALUE.toFloat())) shouldBe
-            Range(lt = Int.MAX_VALUE.toFloat())
+                Range(lt = Int.MAX_VALUE.toFloat())
         if (platform == Platform.JS) {
             FloatRangeType.deserialize(mapOf("lt" to (Int.MAX_VALUE - 1).toFloat())) shouldBe
-                Range(lt = (Int.MAX_VALUE - 1).toFloat())
+                    Range(lt = (Int.MAX_VALUE - 1).toFloat())
 
         } else {
             FloatRangeType.deserialize(mapOf("lt" to (Int.MAX_VALUE - 1).toFloat())) shouldBe
-                Range(lt = Int.MAX_VALUE.toFloat())
+                    Range(lt = Int.MAX_VALUE.toFloat())
         }
         FloatRangeType.deserialize(mapOf("lte" to "-1")) shouldBe Range(lte = -1F)
         FloatRangeType.deserialize(mapOf("gte" to "-1.1")) shouldBe Range(gte = -1.1F)

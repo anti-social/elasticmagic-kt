@@ -2180,6 +2180,8 @@ public abstract class dev/evo/elasticmagic/doc/FieldSet : dev/evo/elasticmagic/q
 	public fun <init> ()V
 	public final fun boolean (Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
 	public static synthetic fun boolean$default (Ldev/evo/elasticmagic/doc/FieldSet;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;ILjava/lang/Object;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
+	public final fun byte (Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
+	public static synthetic fun byte$default (Ldev/evo/elasticmagic/doc/FieldSet;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;ILjava/lang/Object;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
 	public final fun double (Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
 	public static synthetic fun double$default (Ldev/evo/elasticmagic/doc/FieldSet;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;ILjava/lang/Object;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
 	public final fun field (Ldev/evo/elasticmagic/types/FieldType;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
@@ -2198,6 +2200,8 @@ public abstract class dev/evo/elasticmagic/doc/FieldSet : dev/evo/elasticmagic/q
 	public static synthetic fun keyword$default (Ldev/evo/elasticmagic/doc/FieldSet;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;ILjava/lang/Object;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
 	public final fun long (Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
 	public static synthetic fun long$default (Ldev/evo/elasticmagic/doc/FieldSet;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;ILjava/lang/Object;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
+	public final fun short (Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
+	public static synthetic fun short$default (Ldev/evo/elasticmagic/doc/FieldSet;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;ILjava/lang/Object;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
 	public final fun text (Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Double;Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
 	public static synthetic fun text$default (Ldev/evo/elasticmagic/doc/FieldSet;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Double;Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;ILjava/lang/Object;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
 	public synthetic fun toValue ()Ljava/lang/Object;
@@ -3526,6 +3530,17 @@ public final class dev/evo/elasticmagic/types/BooleanType : dev/evo/elasticmagic
 	public fun getTermType ()Lkotlin/reflect/KClass;
 }
 
+public final class dev/evo/elasticmagic/types/ByteType : dev/evo/elasticmagic/types/NumberType {
+	public static final field INSTANCE Ldev/evo/elasticmagic/types/ByteType;
+	public fun deserialize (Ljava/lang/Object;Lkotlin/jvm/functions/Function0;)Ljava/lang/Byte;
+	public synthetic fun deserialize (Ljava/lang/Object;Lkotlin/jvm/functions/Function0;)Ljava/lang/Object;
+	public fun getName ()Ljava/lang/String;
+	public fun getTermType ()Lkotlin/reflect/KClass;
+	public fun serialize (B)Ljava/lang/Integer;
+	public synthetic fun serialize (Ljava/lang/Number;)Ljava/lang/Object;
+	public synthetic fun serialize (Ljava/lang/Object;)Ljava/lang/Object;
+}
+
 public final class dev/evo/elasticmagic/types/DoubleRangeType : dev/evo/elasticmagic/types/RangeType {
 	public static final field INSTANCE Ldev/evo/elasticmagic/types/DoubleRangeType;
 }
@@ -3703,6 +3718,17 @@ public abstract class dev/evo/elasticmagic/types/RangeType : dev/evo/elasticmagi
 	public fun serialize (Ldev/evo/elasticmagic/types/Range;)Ljava/lang/Object;
 	public synthetic fun serialize (Ljava/lang/Object;)Ljava/lang/Object;
 	public fun serializeTerm (Ljava/lang/Object;)Ljava/lang/Object;
+}
+
+public final class dev/evo/elasticmagic/types/ShortType : dev/evo/elasticmagic/types/NumberType {
+	public static final field INSTANCE Ldev/evo/elasticmagic/types/ShortType;
+	public synthetic fun deserialize (Ljava/lang/Object;Lkotlin/jvm/functions/Function0;)Ljava/lang/Object;
+	public fun deserialize (Ljava/lang/Object;Lkotlin/jvm/functions/Function0;)Ljava/lang/Short;
+	public fun getName ()Ljava/lang/String;
+	public fun getTermType ()Lkotlin/reflect/KClass;
+	public synthetic fun serialize (Ljava/lang/Number;)Ljava/lang/Object;
+	public synthetic fun serialize (Ljava/lang/Object;)Ljava/lang/Object;
+	public fun serialize (S)Ljava/lang/Integer;
 }
 
 public abstract class dev/evo/elasticmagic/types/SimpleFieldType : dev/evo/elasticmagic/types/FieldType {
