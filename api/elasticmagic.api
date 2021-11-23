@@ -2001,21 +2001,15 @@ public abstract class dev/evo/elasticmagic/doc/BaseDocSource {
 	public abstract fun toSource ()Ljava/util/Map;
 }
 
-public abstract class dev/evo/elasticmagic/doc/BaseDocument : dev/evo/elasticmagic/doc/FieldSet {
+public abstract class dev/evo/elasticmagic/doc/BaseDocument : dev/evo/elasticmagic/doc/FieldSet, dev/evo/elasticmagic/doc/DocumentShortcuts {
 	public fun <init> ()V
-	public final fun nested (Ljava/lang/String;Lkotlin/jvm/functions/Function1;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/SubDocument$UnboundSubDocument;
-	public final fun nested (Lkotlin/jvm/functions/Function1;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/SubDocument$UnboundSubDocument;
-	public static synthetic fun nested$default (Ldev/evo/elasticmagic/doc/BaseDocument;Ljava/lang/String;Lkotlin/jvm/functions/Function1;Ljava/util/Map;ILjava/lang/Object;)Ldev/evo/elasticmagic/doc/SubDocument$UnboundSubDocument;
-	public static synthetic fun nested$default (Ldev/evo/elasticmagic/doc/BaseDocument;Lkotlin/jvm/functions/Function1;Ljava/util/Map;ILjava/lang/Object;)Ldev/evo/elasticmagic/doc/SubDocument$UnboundSubDocument;
-	public final fun obj (Ljava/lang/String;Lkotlin/jvm/functions/Function1;Ljava/lang/Boolean;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/SubDocument$UnboundSubDocument;
-	public final fun obj (Lkotlin/jvm/functions/Function1;Ljava/lang/Boolean;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/SubDocument$UnboundSubDocument;
-	public static synthetic fun obj$default (Ldev/evo/elasticmagic/doc/BaseDocument;Ljava/lang/String;Lkotlin/jvm/functions/Function1;Ljava/lang/Boolean;Ljava/util/Map;ILjava/lang/Object;)Ldev/evo/elasticmagic/doc/SubDocument$UnboundSubDocument;
-	public static synthetic fun obj$default (Ldev/evo/elasticmagic/doc/BaseDocument;Lkotlin/jvm/functions/Function1;Ljava/lang/Boolean;Ljava/util/Map;ILjava/lang/Object;)Ldev/evo/elasticmagic/doc/SubDocument$UnboundSubDocument;
-	public final fun object (Ljava/lang/String;Lkotlin/jvm/functions/Function1;Ljava/lang/Boolean;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/SubDocument$UnboundSubDocument;
-	public final fun object (Lkotlin/jvm/functions/Function1;Ljava/lang/Boolean;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/SubDocument$UnboundSubDocument;
-	public static synthetic fun object$default (Ldev/evo/elasticmagic/doc/BaseDocument;Ljava/lang/String;Lkotlin/jvm/functions/Function1;Ljava/lang/Boolean;Ljava/util/Map;ILjava/lang/Object;)Ldev/evo/elasticmagic/doc/SubDocument$UnboundSubDocument;
-	public static synthetic fun object$default (Ldev/evo/elasticmagic/doc/BaseDocument;Lkotlin/jvm/functions/Function1;Ljava/lang/Boolean;Ljava/util/Map;ILjava/lang/Object;)Ldev/evo/elasticmagic/doc/SubDocument$UnboundSubDocument;
-	public final fun subFields (Ldev/evo/elasticmagic/doc/FieldSet$Field;Lkotlin/jvm/functions/Function1;)Ldev/evo/elasticmagic/doc/SubFields$UnboundSubFields;
+	public fun nested (Ljava/lang/String;Lkotlin/jvm/functions/Function1;Ldev/evo/elasticmagic/doc/Dynamic;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/SubDocument$UnboundSubDocument;
+	public fun nested (Lkotlin/jvm/functions/Function1;Ldev/evo/elasticmagic/doc/Dynamic;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/SubDocument$UnboundSubDocument;
+	public fun obj (Ljava/lang/String;Lkotlin/jvm/functions/Function1;Ljava/lang/Boolean;Ldev/evo/elasticmagic/doc/Dynamic;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/SubDocument$UnboundSubDocument;
+	public fun obj (Lkotlin/jvm/functions/Function1;Ljava/lang/Boolean;Ldev/evo/elasticmagic/doc/Dynamic;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/SubDocument$UnboundSubDocument;
+	public fun object (Ljava/lang/String;Lkotlin/jvm/functions/Function1;Ljava/lang/Boolean;Ldev/evo/elasticmagic/doc/Dynamic;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/SubDocument$UnboundSubDocument;
+	public fun object (Lkotlin/jvm/functions/Function1;Ljava/lang/Boolean;Ldev/evo/elasticmagic/doc/Dynamic;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/SubDocument$UnboundSubDocument;
+	public fun subFields (Ldev/evo/elasticmagic/doc/FieldSet$Field;Lkotlin/jvm/functions/Function1;)Ldev/evo/elasticmagic/doc/SubFields$UnboundSubFields;
 }
 
 public class dev/evo/elasticmagic/doc/BoundField : dev/evo/elasticmagic/doc/MappingField {
@@ -2150,13 +2144,56 @@ public final class dev/evo/elasticmagic/doc/DocSourceKt {
 
 public abstract class dev/evo/elasticmagic/doc/Document : dev/evo/elasticmagic/doc/RootFieldSet {
 	public fun <init> ()V
-	public fun getDynamic ()Ldev/evo/elasticmagic/doc/Dynamic;
+	public fun <init> (Ldev/evo/elasticmagic/doc/Dynamic;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/List;)V
+	public synthetic fun <init> (Ldev/evo/elasticmagic/doc/Dynamic;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Ldev/evo/elasticmagic/doc/MappingOptions;)V
+	public synthetic fun <init> (Ldev/evo/elasticmagic/doc/MappingOptions;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun getDynamicTemplates ()Ldev/evo/elasticmagic/doc/DynamicTemplates;
 	public fun getMeta ()Ldev/evo/elasticmagic/doc/MetaFields;
+	public final fun getOptions ()Ldev/evo/elasticmagic/doc/MappingOptions;
 	public fun getRuntime ()Ldev/evo/elasticmagic/doc/RuntimeFields;
 }
 
 public final class dev/evo/elasticmagic/doc/DocumentKt {
 	public static final fun mergeDocuments ([Ldev/evo/elasticmagic/doc/Document;)Ldev/evo/elasticmagic/doc/Document;
+}
+
+public abstract interface class dev/evo/elasticmagic/doc/DocumentShortcuts : dev/evo/elasticmagic/doc/FieldSetShortcuts {
+	public abstract fun nested (Ljava/lang/String;Lkotlin/jvm/functions/Function1;Ldev/evo/elasticmagic/doc/Dynamic;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/SubDocument$UnboundSubDocument;
+	public abstract fun nested (Lkotlin/jvm/functions/Function1;Ldev/evo/elasticmagic/doc/Dynamic;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/SubDocument$UnboundSubDocument;
+	public abstract fun obj (Ljava/lang/String;Lkotlin/jvm/functions/Function1;Ljava/lang/Boolean;Ldev/evo/elasticmagic/doc/Dynamic;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/SubDocument$UnboundSubDocument;
+	public abstract fun obj (Lkotlin/jvm/functions/Function1;Ljava/lang/Boolean;Ldev/evo/elasticmagic/doc/Dynamic;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/SubDocument$UnboundSubDocument;
+	public abstract fun object (Ljava/lang/String;Lkotlin/jvm/functions/Function1;Ljava/lang/Boolean;Ldev/evo/elasticmagic/doc/Dynamic;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/SubDocument$UnboundSubDocument;
+	public abstract fun object (Lkotlin/jvm/functions/Function1;Ljava/lang/Boolean;Ldev/evo/elasticmagic/doc/Dynamic;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/SubDocument$UnboundSubDocument;
+	public abstract fun subFields (Ldev/evo/elasticmagic/doc/FieldSet$Field;Lkotlin/jvm/functions/Function1;)Ldev/evo/elasticmagic/doc/SubFields$UnboundSubFields;
+}
+
+public final class dev/evo/elasticmagic/doc/DocumentShortcuts$DefaultImpls {
+	public static fun boolean (Ldev/evo/elasticmagic/doc/DocumentShortcuts;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
+	public static fun byte (Ldev/evo/elasticmagic/doc/DocumentShortcuts;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
+	public static fun double (Ldev/evo/elasticmagic/doc/DocumentShortcuts;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
+	public static fun field (Ldev/evo/elasticmagic/doc/DocumentShortcuts;Ldev/evo/elasticmagic/types/FieldType;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
+	public static fun field (Ldev/evo/elasticmagic/doc/DocumentShortcuts;Ljava/lang/String;Ldev/evo/elasticmagic/types/FieldType;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
+	public static fun float (Ldev/evo/elasticmagic/doc/DocumentShortcuts;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
+	public static fun int (Ldev/evo/elasticmagic/doc/DocumentShortcuts;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
+	public static fun join (Ldev/evo/elasticmagic/doc/DocumentShortcuts;Ljava/lang/String;Ljava/util/Map;Ljava/lang/Boolean;)Ldev/evo/elasticmagic/doc/FieldSet$JoinField;
+	public static fun keyword (Ldev/evo/elasticmagic/doc/DocumentShortcuts;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
+	public static fun long (Ldev/evo/elasticmagic/doc/DocumentShortcuts;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
+	public static fun nested (Ldev/evo/elasticmagic/doc/DocumentShortcuts;Ljava/lang/String;Lkotlin/jvm/functions/Function1;Ldev/evo/elasticmagic/doc/Dynamic;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/SubDocument$UnboundSubDocument;
+	public static fun nested (Ldev/evo/elasticmagic/doc/DocumentShortcuts;Lkotlin/jvm/functions/Function1;Ldev/evo/elasticmagic/doc/Dynamic;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/SubDocument$UnboundSubDocument;
+	public static synthetic fun nested$default (Ldev/evo/elasticmagic/doc/DocumentShortcuts;Ljava/lang/String;Lkotlin/jvm/functions/Function1;Ldev/evo/elasticmagic/doc/Dynamic;Ljava/util/Map;ILjava/lang/Object;)Ldev/evo/elasticmagic/doc/SubDocument$UnboundSubDocument;
+	public static synthetic fun nested$default (Ldev/evo/elasticmagic/doc/DocumentShortcuts;Lkotlin/jvm/functions/Function1;Ldev/evo/elasticmagic/doc/Dynamic;Ljava/util/Map;ILjava/lang/Object;)Ldev/evo/elasticmagic/doc/SubDocument$UnboundSubDocument;
+	public static fun obj (Ldev/evo/elasticmagic/doc/DocumentShortcuts;Ljava/lang/String;Lkotlin/jvm/functions/Function1;Ljava/lang/Boolean;Ldev/evo/elasticmagic/doc/Dynamic;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/SubDocument$UnboundSubDocument;
+	public static fun obj (Ldev/evo/elasticmagic/doc/DocumentShortcuts;Lkotlin/jvm/functions/Function1;Ljava/lang/Boolean;Ldev/evo/elasticmagic/doc/Dynamic;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/SubDocument$UnboundSubDocument;
+	public static synthetic fun obj$default (Ldev/evo/elasticmagic/doc/DocumentShortcuts;Ljava/lang/String;Lkotlin/jvm/functions/Function1;Ljava/lang/Boolean;Ldev/evo/elasticmagic/doc/Dynamic;Ljava/util/Map;ILjava/lang/Object;)Ldev/evo/elasticmagic/doc/SubDocument$UnboundSubDocument;
+	public static synthetic fun obj$default (Ldev/evo/elasticmagic/doc/DocumentShortcuts;Lkotlin/jvm/functions/Function1;Ljava/lang/Boolean;Ldev/evo/elasticmagic/doc/Dynamic;Ljava/util/Map;ILjava/lang/Object;)Ldev/evo/elasticmagic/doc/SubDocument$UnboundSubDocument;
+	public static fun object (Ldev/evo/elasticmagic/doc/DocumentShortcuts;Ljava/lang/String;Lkotlin/jvm/functions/Function1;Ljava/lang/Boolean;Ldev/evo/elasticmagic/doc/Dynamic;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/SubDocument$UnboundSubDocument;
+	public static fun object (Ldev/evo/elasticmagic/doc/DocumentShortcuts;Lkotlin/jvm/functions/Function1;Ljava/lang/Boolean;Ldev/evo/elasticmagic/doc/Dynamic;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/SubDocument$UnboundSubDocument;
+	public static synthetic fun object$default (Ldev/evo/elasticmagic/doc/DocumentShortcuts;Ljava/lang/String;Lkotlin/jvm/functions/Function1;Ljava/lang/Boolean;Ldev/evo/elasticmagic/doc/Dynamic;Ljava/util/Map;ILjava/lang/Object;)Ldev/evo/elasticmagic/doc/SubDocument$UnboundSubDocument;
+	public static synthetic fun object$default (Ldev/evo/elasticmagic/doc/DocumentShortcuts;Lkotlin/jvm/functions/Function1;Ljava/lang/Boolean;Ldev/evo/elasticmagic/doc/Dynamic;Ljava/util/Map;ILjava/lang/Object;)Ldev/evo/elasticmagic/doc/SubDocument$UnboundSubDocument;
+	public static fun short (Ldev/evo/elasticmagic/doc/DocumentShortcuts;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
+	public static fun subFields (Ldev/evo/elasticmagic/doc/DocumentShortcuts;Ldev/evo/elasticmagic/doc/FieldSet$Field;Lkotlin/jvm/functions/Function1;)Ldev/evo/elasticmagic/doc/SubFields$UnboundSubFields;
+	public static fun text (Ldev/evo/elasticmagic/doc/DocumentShortcuts;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Double;Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
 }
 
 public final class dev/evo/elasticmagic/doc/DynDocSource : dev/evo/elasticmagic/doc/BaseDocSource {
@@ -2168,9 +2205,11 @@ public final class dev/evo/elasticmagic/doc/DynDocSource : dev/evo/elasticmagic/
 	public fun fromSource (Ljava/util/Map;)V
 	public final fun get (Ldev/evo/elasticmagic/doc/BoundField;)Ljava/lang/Object;
 	public final fun get (Ldev/evo/elasticmagic/doc/SubDocument;)Ldev/evo/elasticmagic/doc/DynDocSource;
+	public final fun get (Ldev/evo/elasticmagic/doc/SubFields;)Ljava/lang/Object;
 	public final fun get (Ljava/lang/String;)Ljava/lang/Object;
 	public final fun set (Ldev/evo/elasticmagic/doc/BoundField;Ljava/lang/Object;)V
 	public final fun set (Ldev/evo/elasticmagic/doc/SubDocument;Ldev/evo/elasticmagic/doc/DynDocSource;)V
+	public final fun set (Ldev/evo/elasticmagic/doc/SubFields;Ljava/lang/Object;)V
 	public final fun set (Ljava/lang/String;Ljava/lang/Object;)V
 	public fun toSource ()Ljava/util/Map;
 	public fun toString ()Ljava/lang/String;
@@ -2181,40 +2220,250 @@ public final class dev/evo/elasticmagic/doc/Dynamic : java/lang/Enum, dev/evo/el
 	public static final field RUNTIME Ldev/evo/elasticmagic/doc/Dynamic;
 	public static final field STRICT Ldev/evo/elasticmagic/doc/Dynamic;
 	public static final field TRUE Ldev/evo/elasticmagic/doc/Dynamic;
-	public synthetic fun toValue ()Ljava/lang/Object;
-	public fun toValue ()Ljava/lang/String;
+	public fun toValue ()Ljava/lang/Object;
 	public static fun valueOf (Ljava/lang/String;)Ldev/evo/elasticmagic/doc/Dynamic;
 	public static fun values ()[Ldev/evo/elasticmagic/doc/Dynamic;
 }
 
-public abstract class dev/evo/elasticmagic/doc/FieldSet : dev/evo/elasticmagic/query/Named {
+public class dev/evo/elasticmagic/doc/DynamicTemplates : dev/evo/elasticmagic/doc/DocumentShortcuts {
+	public static final field Companion Ldev/evo/elasticmagic/doc/DynamicTemplates$Companion;
 	public fun <init> ()V
-	public final fun boolean (Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
-	public static synthetic fun boolean$default (Ldev/evo/elasticmagic/doc/FieldSet;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;ILjava/lang/Object;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
-	public final fun byte (Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
-	public static synthetic fun byte$default (Ldev/evo/elasticmagic/doc/FieldSet;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;ILjava/lang/Object;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
-	public final fun double (Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
-	public static synthetic fun double$default (Ldev/evo/elasticmagic/doc/FieldSet;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;ILjava/lang/Object;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
-	public final fun field (Ldev/evo/elasticmagic/types/FieldType;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
-	public final fun field (Ljava/lang/String;Ldev/evo/elasticmagic/types/FieldType;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
-	public static synthetic fun field$default (Ldev/evo/elasticmagic/doc/FieldSet;Ldev/evo/elasticmagic/types/FieldType;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;ILjava/lang/Object;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
-	public static synthetic fun field$default (Ldev/evo/elasticmagic/doc/FieldSet;Ljava/lang/String;Ldev/evo/elasticmagic/types/FieldType;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;ILjava/lang/Object;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
-	public final fun float (Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
-	public static synthetic fun float$default (Ldev/evo/elasticmagic/doc/FieldSet;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;ILjava/lang/Object;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
+	public fun boolean (Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
+	public fun byte (Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
+	public fun double (Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
+	public fun field (Ldev/evo/elasticmagic/types/FieldType;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
+	public fun field (Ljava/lang/String;Ldev/evo/elasticmagic/types/FieldType;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
+	public fun float (Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
+	public final fun get (Ljava/lang/String;)Ldev/evo/elasticmagic/doc/DynamicTemplates$BoundMappingTemplate;
+	public final fun getAllTemplates ()Ljava/util/Collection;
+	public fun int (Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
+	public fun join (Ljava/lang/String;Ljava/util/Map;Ljava/lang/Boolean;)Ldev/evo/elasticmagic/doc/FieldSet$JoinField;
+	public fun keyword (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
+	public fun long (Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
+	public fun nested (Ljava/lang/String;Lkotlin/jvm/functions/Function1;Ldev/evo/elasticmagic/doc/Dynamic;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/SubDocument$UnboundSubDocument;
+	public fun nested (Lkotlin/jvm/functions/Function1;Ldev/evo/elasticmagic/doc/Dynamic;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/SubDocument$UnboundSubDocument;
+	public fun obj (Ljava/lang/String;Lkotlin/jvm/functions/Function1;Ljava/lang/Boolean;Ldev/evo/elasticmagic/doc/Dynamic;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/SubDocument$UnboundSubDocument;
+	public fun obj (Lkotlin/jvm/functions/Function1;Ljava/lang/Boolean;Ldev/evo/elasticmagic/doc/Dynamic;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/SubDocument$UnboundSubDocument;
+	public fun object (Ljava/lang/String;Lkotlin/jvm/functions/Function1;Ljava/lang/Boolean;Ldev/evo/elasticmagic/doc/Dynamic;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/SubDocument$UnboundSubDocument;
+	public fun object (Lkotlin/jvm/functions/Function1;Ljava/lang/Boolean;Ldev/evo/elasticmagic/doc/Dynamic;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/SubDocument$UnboundSubDocument;
+	public fun short (Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
+	public fun subFields (Ldev/evo/elasticmagic/doc/FieldSet$Field;Lkotlin/jvm/functions/Function1;)Ldev/evo/elasticmagic/doc/SubFields$UnboundSubFields;
+	public final fun template (Ljava/lang/String;Ldev/evo/elasticmagic/doc/DynamicTemplates$Mapping;Ldev/evo/elasticmagic/doc/DynamicTemplates$MatchMappingType;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ldev/evo/elasticmagic/doc/DynamicTemplates$MatchPattern;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/DynamicTemplates$MappingTemplate;
+	public final fun template (Ljava/lang/String;Ldev/evo/elasticmagic/doc/DynamicTemplates$Mapping;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ldev/evo/elasticmagic/doc/DynamicTemplates$MatchPattern;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/DynamicTemplates$MappingTemplate;
+	public final fun template (Ljava/lang/String;Ldev/evo/elasticmagic/doc/DynamicTemplates$Runtime$Simple;Ldev/evo/elasticmagic/doc/DynamicTemplates$MatchMappingType;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ldev/evo/elasticmagic/doc/DynamicTemplates$MatchPattern;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/DynamicTemplates$MappingTemplate;
+	public final fun template (Ljava/lang/String;Ldev/evo/elasticmagic/doc/DynamicTemplates$Runtime$Simple;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ldev/evo/elasticmagic/doc/DynamicTemplates$MatchPattern;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/DynamicTemplates$MappingTemplate;
+	public final fun template (Ljava/lang/String;Ldev/evo/elasticmagic/doc/DynamicTemplates$Runtime$Typed;Ldev/evo/elasticmagic/doc/DynamicTemplates$MatchMappingType;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ldev/evo/elasticmagic/doc/DynamicTemplates$MatchPattern;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/DynamicTemplates$MappingTemplate;
+	public final fun template (Ljava/lang/String;Ldev/evo/elasticmagic/doc/FieldSet$Field;Ldev/evo/elasticmagic/doc/DynamicTemplates$MatchMappingType;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ldev/evo/elasticmagic/doc/DynamicTemplates$MatchPattern;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/DynamicTemplates$MappingTemplate;
+	public final fun template (Ljava/lang/String;Ldev/evo/elasticmagic/doc/SubDocument$UnboundSubDocument;Ldev/evo/elasticmagic/doc/DynamicTemplates$MatchMappingType;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ldev/evo/elasticmagic/doc/DynamicTemplates$MatchPattern;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/DynamicTemplates$MappingTemplate;
+	public final fun template (Ljava/lang/String;Ldev/evo/elasticmagic/doc/SubFields$UnboundSubFields;Ldev/evo/elasticmagic/doc/DynamicTemplates$MatchMappingType;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ldev/evo/elasticmagic/doc/DynamicTemplates$MatchPattern;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/DynamicTemplates$MappingTemplate;
+	public static synthetic fun template$default (Ldev/evo/elasticmagic/doc/DynamicTemplates;Ljava/lang/String;Ldev/evo/elasticmagic/doc/DynamicTemplates$Mapping;Ldev/evo/elasticmagic/doc/DynamicTemplates$MatchMappingType;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ldev/evo/elasticmagic/doc/DynamicTemplates$MatchPattern;Ljava/util/Map;ILjava/lang/Object;)Ldev/evo/elasticmagic/doc/DynamicTemplates$MappingTemplate;
+	public static synthetic fun template$default (Ldev/evo/elasticmagic/doc/DynamicTemplates;Ljava/lang/String;Ldev/evo/elasticmagic/doc/DynamicTemplates$Mapping;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ldev/evo/elasticmagic/doc/DynamicTemplates$MatchPattern;Ljava/util/Map;ILjava/lang/Object;)Ldev/evo/elasticmagic/doc/DynamicTemplates$MappingTemplate;
+	public static synthetic fun template$default (Ldev/evo/elasticmagic/doc/DynamicTemplates;Ljava/lang/String;Ldev/evo/elasticmagic/doc/DynamicTemplates$Runtime$Simple;Ldev/evo/elasticmagic/doc/DynamicTemplates$MatchMappingType;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ldev/evo/elasticmagic/doc/DynamicTemplates$MatchPattern;Ljava/util/Map;ILjava/lang/Object;)Ldev/evo/elasticmagic/doc/DynamicTemplates$MappingTemplate;
+	public static synthetic fun template$default (Ldev/evo/elasticmagic/doc/DynamicTemplates;Ljava/lang/String;Ldev/evo/elasticmagic/doc/DynamicTemplates$Runtime$Simple;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ldev/evo/elasticmagic/doc/DynamicTemplates$MatchPattern;Ljava/util/Map;ILjava/lang/Object;)Ldev/evo/elasticmagic/doc/DynamicTemplates$MappingTemplate;
+	public static synthetic fun template$default (Ldev/evo/elasticmagic/doc/DynamicTemplates;Ljava/lang/String;Ldev/evo/elasticmagic/doc/DynamicTemplates$Runtime$Typed;Ldev/evo/elasticmagic/doc/DynamicTemplates$MatchMappingType;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ldev/evo/elasticmagic/doc/DynamicTemplates$MatchPattern;Ljava/util/Map;ILjava/lang/Object;)Ldev/evo/elasticmagic/doc/DynamicTemplates$MappingTemplate;
+	public static synthetic fun template$default (Ldev/evo/elasticmagic/doc/DynamicTemplates;Ljava/lang/String;Ldev/evo/elasticmagic/doc/FieldSet$Field;Ldev/evo/elasticmagic/doc/DynamicTemplates$MatchMappingType;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ldev/evo/elasticmagic/doc/DynamicTemplates$MatchPattern;Ljava/util/Map;ILjava/lang/Object;)Ldev/evo/elasticmagic/doc/DynamicTemplates$MappingTemplate;
+	public static synthetic fun template$default (Ldev/evo/elasticmagic/doc/DynamicTemplates;Ljava/lang/String;Ldev/evo/elasticmagic/doc/SubDocument$UnboundSubDocument;Ldev/evo/elasticmagic/doc/DynamicTemplates$MatchMappingType;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ldev/evo/elasticmagic/doc/DynamicTemplates$MatchPattern;Ljava/util/Map;ILjava/lang/Object;)Ldev/evo/elasticmagic/doc/DynamicTemplates$MappingTemplate;
+	public static synthetic fun template$default (Ldev/evo/elasticmagic/doc/DynamicTemplates;Ljava/lang/String;Ldev/evo/elasticmagic/doc/SubFields$UnboundSubFields;Ldev/evo/elasticmagic/doc/DynamicTemplates$MatchMappingType;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ldev/evo/elasticmagic/doc/DynamicTemplates$MatchPattern;Ljava/util/Map;ILjava/lang/Object;)Ldev/evo/elasticmagic/doc/DynamicTemplates$MappingTemplate;
+	public fun text (Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Double;Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
+}
+
+public final class dev/evo/elasticmagic/doc/DynamicTemplates$BoundMappingTemplate {
+	public fun <init> (Ljava/lang/String;Ldev/evo/elasticmagic/doc/DynamicTemplates$DynamicField;Ldev/evo/elasticmagic/doc/DynamicTemplates$MatchOptions;)V
+	public final fun field (Ljava/lang/String;)Ljava/lang/Object;
+	public final fun getMapping ()Ldev/evo/elasticmagic/doc/DynamicTemplates$DynamicField;
+	public final fun getMatchOptions ()Ldev/evo/elasticmagic/doc/DynamicTemplates$MatchOptions;
+	public final fun getName ()Ljava/lang/String;
+}
+
+public final class dev/evo/elasticmagic/doc/DynamicTemplates$Companion {
+}
+
+public abstract class dev/evo/elasticmagic/doc/DynamicTemplates$DynamicField {
+	public abstract fun field (Ljava/lang/String;)Ljava/lang/Object;
+}
+
+public final class dev/evo/elasticmagic/doc/DynamicTemplates$DynamicField$FromField : dev/evo/elasticmagic/doc/DynamicTemplates$DynamicField {
+	public fun <init> (Ldev/evo/elasticmagic/doc/DynamicTemplates$MappingKind;Ldev/evo/elasticmagic/doc/FieldSet$Field;)V
+	public fun field (Ljava/lang/String;)Ldev/evo/elasticmagic/doc/BoundField;
+	public synthetic fun field (Ljava/lang/String;)Ljava/lang/Object;
+	public final fun getField ()Ldev/evo/elasticmagic/doc/FieldSet$Field;
+	public final fun getMappingKind ()Ldev/evo/elasticmagic/doc/DynamicTemplates$MappingKind;
+}
+
+public final class dev/evo/elasticmagic/doc/DynamicTemplates$DynamicField$FromSubDocument : dev/evo/elasticmagic/doc/DynamicTemplates$DynamicField {
+	public fun <init> (Ldev/evo/elasticmagic/doc/SubDocument$UnboundSubDocument;)V
+	public fun field (Ljava/lang/String;)Ldev/evo/elasticmagic/doc/SubDocument;
+	public synthetic fun field (Ljava/lang/String;)Ljava/lang/Object;
+	public final fun getSubDocument ()Ldev/evo/elasticmagic/doc/SubDocument$UnboundSubDocument;
+}
+
+public final class dev/evo/elasticmagic/doc/DynamicTemplates$DynamicField$FromSubFields : dev/evo/elasticmagic/doc/DynamicTemplates$DynamicField {
+	public fun <init> (Ldev/evo/elasticmagic/doc/SubFields$UnboundSubFields;)V
+	public fun field (Ljava/lang/String;)Ldev/evo/elasticmagic/doc/SubFields;
+	public synthetic fun field (Ljava/lang/String;)Ljava/lang/Object;
+	public final fun getSubFields ()Ldev/evo/elasticmagic/doc/SubFields$UnboundSubFields;
+}
+
+public final class dev/evo/elasticmagic/doc/DynamicTemplates$DynamicField$Simple : dev/evo/elasticmagic/doc/DynamicTemplates$DynamicField {
+	public fun <init> (Ldev/evo/elasticmagic/doc/DynamicTemplates$MappingKind;Ldev/evo/elasticmagic/types/FieldType;Ljava/util/Map;)V
+	public fun field (Ljava/lang/String;)Ldev/evo/elasticmagic/doc/BoundField;
+	public synthetic fun field (Ljava/lang/String;)Ljava/lang/Object;
+	public final fun getFieldType ()Ldev/evo/elasticmagic/types/FieldType;
+	public final fun getMappingKind ()Ldev/evo/elasticmagic/doc/DynamicTemplates$MappingKind;
+	public final fun getParams ()Ljava/util/Map;
+}
+
+public final class dev/evo/elasticmagic/doc/DynamicTemplates$Mapping {
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;)V
+	public synthetic fun <init> (Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun getDocValues ()Ljava/lang/Boolean;
+	public final fun getIndex ()Ljava/lang/Boolean;
+	public final fun getParams ()Ljava/util/Map;
+	public final fun getStore ()Ljava/lang/Boolean;
+}
+
+public final class dev/evo/elasticmagic/doc/DynamicTemplates$MappingKind : java/lang/Enum, dev/evo/elasticmagic/query/ToValue {
+	public static final field MAPPING Ldev/evo/elasticmagic/doc/DynamicTemplates$MappingKind;
+	public static final field RUNTIME Ldev/evo/elasticmagic/doc/DynamicTemplates$MappingKind;
+	public synthetic fun toValue ()Ljava/lang/Object;
+	public fun toValue ()Ljava/lang/String;
+	public static fun valueOf (Ljava/lang/String;)Ldev/evo/elasticmagic/doc/DynamicTemplates$MappingKind;
+	public static fun values ()[Ldev/evo/elasticmagic/doc/DynamicTemplates$MappingKind;
+}
+
+public final class dev/evo/elasticmagic/doc/DynamicTemplates$MappingTemplate {
+	public fun <init> (Ljava/lang/String;Ldev/evo/elasticmagic/doc/DynamicTemplates$DynamicField;Ldev/evo/elasticmagic/doc/DynamicTemplates$MatchOptions;)V
+	public synthetic fun <init> (Ljava/lang/String;Ldev/evo/elasticmagic/doc/DynamicTemplates$DynamicField;Ldev/evo/elasticmagic/doc/DynamicTemplates$MatchOptions;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun getMapping ()Ldev/evo/elasticmagic/doc/DynamicTemplates$DynamicField;
+	public final fun getMatchOptions ()Ldev/evo/elasticmagic/doc/DynamicTemplates$MatchOptions;
+	public final fun getName ()Ljava/lang/String;
+	public final fun provideDelegate (Ldev/evo/elasticmagic/doc/DynamicTemplates;Lkotlin/reflect/KProperty;)Lkotlin/properties/ReadOnlyProperty;
+}
+
+public abstract class dev/evo/elasticmagic/doc/DynamicTemplates$MatchMappingType : dev/evo/elasticmagic/query/ToValue {
+	public synthetic fun toValue ()Ljava/lang/Object;
+	public fun toValue ()Ljava/lang/String;
+}
+
+public final class dev/evo/elasticmagic/doc/DynamicTemplates$MatchMappingType$ANY : dev/evo/elasticmagic/doc/DynamicTemplates$MatchMappingType {
+	public static final field INSTANCE Ldev/evo/elasticmagic/doc/DynamicTemplates$MatchMappingType$ANY;
+	public synthetic fun getFieldType$elasticmagic ()Ldev/evo/elasticmagic/types/FieldType;
+	public synthetic fun toValue ()Ljava/lang/Object;
+	public fun toValue ()Ljava/lang/String;
+}
+
+public final class dev/evo/elasticmagic/doc/DynamicTemplates$MatchMappingType$BOOLEAN : dev/evo/elasticmagic/doc/DynamicTemplates$MatchMappingType {
+	public static final field INSTANCE Ldev/evo/elasticmagic/doc/DynamicTemplates$MatchMappingType$BOOLEAN;
+	public synthetic fun getFieldType$elasticmagic ()Ldev/evo/elasticmagic/types/FieldType;
+}
+
+public final class dev/evo/elasticmagic/doc/DynamicTemplates$MatchMappingType$DOUBLE : dev/evo/elasticmagic/doc/DynamicTemplates$MatchMappingType {
+	public static final field INSTANCE Ldev/evo/elasticmagic/doc/DynamicTemplates$MatchMappingType$DOUBLE;
+	public synthetic fun getFieldType$elasticmagic ()Ldev/evo/elasticmagic/types/FieldType;
+}
+
+public final class dev/evo/elasticmagic/doc/DynamicTemplates$MatchMappingType$Date : dev/evo/elasticmagic/doc/DynamicTemplates$MatchMappingType {
+	public fun <init> (Ldev/evo/elasticmagic/types/FieldType;)V
+	public final fun copy (Ldev/evo/elasticmagic/types/FieldType;)Ldev/evo/elasticmagic/doc/DynamicTemplates$MatchMappingType$Date;
+	public static synthetic fun copy$default (Ldev/evo/elasticmagic/doc/DynamicTemplates$MatchMappingType$Date;Ldev/evo/elasticmagic/types/FieldType;ILjava/lang/Object;)Ldev/evo/elasticmagic/doc/DynamicTemplates$MatchMappingType$Date;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/evo/elasticmagic/doc/DynamicTemplates$MatchMappingType$LONG : dev/evo/elasticmagic/doc/DynamicTemplates$MatchMappingType {
+	public static final field INSTANCE Ldev/evo/elasticmagic/doc/DynamicTemplates$MatchMappingType$LONG;
+	public synthetic fun getFieldType$elasticmagic ()Ldev/evo/elasticmagic/types/FieldType;
+}
+
+public final class dev/evo/elasticmagic/doc/DynamicTemplates$MatchMappingType$Object : dev/evo/elasticmagic/doc/DynamicTemplates$MatchMappingType {
+	public fun <init> (Ldev/evo/elasticmagic/types/FieldType;)V
+	public final fun copy (Ldev/evo/elasticmagic/types/FieldType;)Ldev/evo/elasticmagic/doc/DynamicTemplates$MatchMappingType$Object;
+	public static synthetic fun copy$default (Ldev/evo/elasticmagic/doc/DynamicTemplates$MatchMappingType$Object;Ldev/evo/elasticmagic/types/FieldType;ILjava/lang/Object;)Ldev/evo/elasticmagic/doc/DynamicTemplates$MatchMappingType$Object;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/evo/elasticmagic/doc/DynamicTemplates$MatchMappingType$STRING : dev/evo/elasticmagic/doc/DynamicTemplates$MatchMappingType {
+	public static final field INSTANCE Ldev/evo/elasticmagic/doc/DynamicTemplates$MatchMappingType$STRING;
+	public synthetic fun getFieldType$elasticmagic ()Ldev/evo/elasticmagic/types/FieldType;
+	public synthetic fun toValue ()Ljava/lang/Object;
+	public fun toValue ()Ljava/lang/String;
+}
+
+public final class dev/evo/elasticmagic/doc/DynamicTemplates$MatchOptions {
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ldev/evo/elasticmagic/doc/DynamicTemplates$MatchPattern;Ldev/evo/elasticmagic/doc/DynamicTemplates$MatchMappingType;Ljava/util/Map;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ldev/evo/elasticmagic/doc/DynamicTemplates$MatchPattern;Ldev/evo/elasticmagic/doc/DynamicTemplates$MatchMappingType;Ljava/util/Map;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun component5 ()Ldev/evo/elasticmagic/doc/DynamicTemplates$MatchPattern;
+	public final fun component6 ()Ldev/evo/elasticmagic/doc/DynamicTemplates$MatchMappingType;
+	public final fun component7 ()Ljava/util/Map;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ldev/evo/elasticmagic/doc/DynamicTemplates$MatchPattern;Ldev/evo/elasticmagic/doc/DynamicTemplates$MatchMappingType;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/DynamicTemplates$MatchOptions;
+	public static synthetic fun copy$default (Ldev/evo/elasticmagic/doc/DynamicTemplates$MatchOptions;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ldev/evo/elasticmagic/doc/DynamicTemplates$MatchPattern;Ldev/evo/elasticmagic/doc/DynamicTemplates$MatchMappingType;Ljava/util/Map;ILjava/lang/Object;)Ldev/evo/elasticmagic/doc/DynamicTemplates$MatchOptions;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getMatch ()Ljava/lang/String;
+	public final fun getMatchMappingType ()Ldev/evo/elasticmagic/doc/DynamicTemplates$MatchMappingType;
+	public final fun getMatchPattern ()Ldev/evo/elasticmagic/doc/DynamicTemplates$MatchPattern;
+	public final fun getParams ()Ljava/util/Map;
+	public final fun getPathMatch ()Ljava/lang/String;
+	public final fun getPathUnmatch ()Ljava/lang/String;
+	public final fun getUnmatch ()Ljava/lang/String;
+	public fun hashCode ()I
+	public final fun matches (Ljava/lang/String;)Z
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/evo/elasticmagic/doc/DynamicTemplates$MatchPattern : java/lang/Enum, dev/evo/elasticmagic/query/ToValue {
+	public static final field REGEX Ldev/evo/elasticmagic/doc/DynamicTemplates$MatchPattern;
+	public static final field SIMPLE Ldev/evo/elasticmagic/doc/DynamicTemplates$MatchPattern;
+	public synthetic fun toValue ()Ljava/lang/Object;
+	public fun toValue ()Ljava/lang/String;
+	public static fun valueOf (Ljava/lang/String;)Ldev/evo/elasticmagic/doc/DynamicTemplates$MatchPattern;
+	public static fun values ()[Ldev/evo/elasticmagic/doc/DynamicTemplates$MatchPattern;
+}
+
+public abstract class dev/evo/elasticmagic/doc/DynamicTemplates$Runtime {
+	public static final field Companion Ldev/evo/elasticmagic/doc/DynamicTemplates$Runtime$Companion;
+}
+
+public final class dev/evo/elasticmagic/doc/DynamicTemplates$Runtime$Companion {
+	public final fun invoke (Ldev/evo/elasticmagic/doc/FieldSet$Field;)Ldev/evo/elasticmagic/doc/DynamicTemplates$Runtime$Typed;
+	public final fun invoke (Ljava/util/Map;)Ldev/evo/elasticmagic/doc/DynamicTemplates$Runtime$Simple;
+	public static synthetic fun invoke$default (Ldev/evo/elasticmagic/doc/DynamicTemplates$Runtime$Companion;Ljava/util/Map;ILjava/lang/Object;)Ldev/evo/elasticmagic/doc/DynamicTemplates$Runtime$Simple;
+}
+
+public final class dev/evo/elasticmagic/doc/DynamicTemplates$Runtime$Simple : dev/evo/elasticmagic/doc/DynamicTemplates$Runtime {
+	public fun <init> (Ljava/util/Map;)V
+	public final fun getParams ()Ljava/util/Map;
+}
+
+public final class dev/evo/elasticmagic/doc/DynamicTemplates$Runtime$Typed : dev/evo/elasticmagic/doc/DynamicTemplates$Runtime {
+	public fun <init> (Ldev/evo/elasticmagic/doc/FieldSet$Field;)V
+	public final fun getField ()Ldev/evo/elasticmagic/doc/FieldSet$Field;
+}
+
+public abstract class dev/evo/elasticmagic/doc/FieldSet : dev/evo/elasticmagic/doc/FieldSetShortcuts, dev/evo/elasticmagic/query/Named {
+	public fun <init> ()V
+	public fun boolean (Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
+	public fun byte (Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
+	public fun double (Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
+	public fun field (Ldev/evo/elasticmagic/types/FieldType;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
+	public fun field (Ljava/lang/String;Ldev/evo/elasticmagic/types/FieldType;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
+	public fun float (Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
 	public final fun get (Ljava/lang/String;)Ldev/evo/elasticmagic/doc/MappingField;
-	public final fun getAllFields ()Ljava/util/List;
-	public final fun int (Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
-	public static synthetic fun int$default (Ldev/evo/elasticmagic/doc/FieldSet;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;ILjava/lang/Object;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
-	public final fun join (Ljava/lang/String;Ljava/util/Map;Ljava/lang/Boolean;)Ldev/evo/elasticmagic/doc/FieldSet$JoinField;
-	public static synthetic fun join$default (Ldev/evo/elasticmagic/doc/FieldSet;Ljava/lang/String;Ljava/util/Map;Ljava/lang/Boolean;ILjava/lang/Object;)Ldev/evo/elasticmagic/doc/FieldSet$JoinField;
-	public final fun keyword (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
-	public static synthetic fun keyword$default (Ldev/evo/elasticmagic/doc/FieldSet;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;ILjava/lang/Object;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
-	public final fun long (Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
-	public static synthetic fun long$default (Ldev/evo/elasticmagic/doc/FieldSet;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;ILjava/lang/Object;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
-	public final fun short (Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
-	public static synthetic fun short$default (Ldev/evo/elasticmagic/doc/FieldSet;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;ILjava/lang/Object;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
-	public final fun text (Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Double;Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
-	public static synthetic fun text$default (Ldev/evo/elasticmagic/doc/FieldSet;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Double;Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;ILjava/lang/Object;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
+	public final fun getAllFields ()Ljava/util/Collection;
+	public fun int (Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
+	public fun join (Ljava/lang/String;Ljava/util/Map;Ljava/lang/Boolean;)Ldev/evo/elasticmagic/doc/FieldSet$JoinField;
+	public fun keyword (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
+	public fun long (Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
+	public fun short (Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
+	public fun text (Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Double;Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
 	public synthetic fun toValue ()Ljava/lang/Object;
 	public fun toValue ()Ljava/lang/String;
 }
@@ -2233,6 +2482,48 @@ public final class dev/evo/elasticmagic/doc/FieldSet$JoinField : dev/evo/elastic
 	public fun <init> (Ljava/lang/String;Ldev/evo/elasticmagic/types/JoinType;Ljava/util/Map;Ljava/util/Map;)V
 	public final fun getRelations ()Ljava/util/Map;
 	public final fun provideDelegate (Ldev/evo/elasticmagic/doc/BaseDocument;Lkotlin/reflect/KProperty;)Lkotlin/properties/ReadOnlyProperty;
+}
+
+public abstract interface class dev/evo/elasticmagic/doc/FieldSetShortcuts {
+	public abstract fun boolean (Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
+	public abstract fun byte (Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
+	public abstract fun double (Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
+	public abstract fun field (Ldev/evo/elasticmagic/types/FieldType;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
+	public abstract fun field (Ljava/lang/String;Ldev/evo/elasticmagic/types/FieldType;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
+	public abstract fun float (Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
+	public abstract fun int (Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
+	public abstract fun join (Ljava/lang/String;Ljava/util/Map;Ljava/lang/Boolean;)Ldev/evo/elasticmagic/doc/FieldSet$JoinField;
+	public abstract fun keyword (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
+	public abstract fun long (Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
+	public abstract fun short (Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
+	public abstract fun text (Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Double;Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
+}
+
+public final class dev/evo/elasticmagic/doc/FieldSetShortcuts$DefaultImpls {
+	public static fun boolean (Ldev/evo/elasticmagic/doc/FieldSetShortcuts;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
+	public static synthetic fun boolean$default (Ldev/evo/elasticmagic/doc/FieldSetShortcuts;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;ILjava/lang/Object;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
+	public static fun byte (Ldev/evo/elasticmagic/doc/FieldSetShortcuts;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
+	public static synthetic fun byte$default (Ldev/evo/elasticmagic/doc/FieldSetShortcuts;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;ILjava/lang/Object;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
+	public static fun double (Ldev/evo/elasticmagic/doc/FieldSetShortcuts;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
+	public static synthetic fun double$default (Ldev/evo/elasticmagic/doc/FieldSetShortcuts;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;ILjava/lang/Object;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
+	public static fun field (Ldev/evo/elasticmagic/doc/FieldSetShortcuts;Ldev/evo/elasticmagic/types/FieldType;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
+	public static fun field (Ldev/evo/elasticmagic/doc/FieldSetShortcuts;Ljava/lang/String;Ldev/evo/elasticmagic/types/FieldType;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
+	public static synthetic fun field$default (Ldev/evo/elasticmagic/doc/FieldSetShortcuts;Ldev/evo/elasticmagic/types/FieldType;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;ILjava/lang/Object;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
+	public static synthetic fun field$default (Ldev/evo/elasticmagic/doc/FieldSetShortcuts;Ljava/lang/String;Ldev/evo/elasticmagic/types/FieldType;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;ILjava/lang/Object;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
+	public static fun float (Ldev/evo/elasticmagic/doc/FieldSetShortcuts;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
+	public static synthetic fun float$default (Ldev/evo/elasticmagic/doc/FieldSetShortcuts;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;ILjava/lang/Object;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
+	public static fun int (Ldev/evo/elasticmagic/doc/FieldSetShortcuts;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
+	public static synthetic fun int$default (Ldev/evo/elasticmagic/doc/FieldSetShortcuts;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;ILjava/lang/Object;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
+	public static fun join (Ldev/evo/elasticmagic/doc/FieldSetShortcuts;Ljava/lang/String;Ljava/util/Map;Ljava/lang/Boolean;)Ldev/evo/elasticmagic/doc/FieldSet$JoinField;
+	public static synthetic fun join$default (Ldev/evo/elasticmagic/doc/FieldSetShortcuts;Ljava/lang/String;Ljava/util/Map;Ljava/lang/Boolean;ILjava/lang/Object;)Ldev/evo/elasticmagic/doc/FieldSet$JoinField;
+	public static fun keyword (Ldev/evo/elasticmagic/doc/FieldSetShortcuts;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
+	public static synthetic fun keyword$default (Ldev/evo/elasticmagic/doc/FieldSetShortcuts;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;ILjava/lang/Object;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
+	public static fun long (Ldev/evo/elasticmagic/doc/FieldSetShortcuts;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
+	public static synthetic fun long$default (Ldev/evo/elasticmagic/doc/FieldSetShortcuts;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;ILjava/lang/Object;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
+	public static fun short (Ldev/evo/elasticmagic/doc/FieldSetShortcuts;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
+	public static synthetic fun short$default (Ldev/evo/elasticmagic/doc/FieldSetShortcuts;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;ILjava/lang/Object;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
+	public static fun text (Ldev/evo/elasticmagic/doc/FieldSetShortcuts;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Double;Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
+	public static synthetic fun text$default (Ldev/evo/elasticmagic/doc/FieldSetShortcuts;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Double;Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;ILjava/lang/Object;)Ldev/evo/elasticmagic/doc/FieldSet$Field;
 }
 
 public abstract interface class dev/evo/elasticmagic/doc/MappingField : dev/evo/elasticmagic/query/FieldOperations {
@@ -2257,6 +2548,25 @@ public final class dev/evo/elasticmagic/doc/MappingField$DefaultImpls {
 	public static fun range (Ldev/evo/elasticmagic/doc/MappingField;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Double;)Ldev/evo/elasticmagic/query/QueryExpression;
 	public static fun serializeTerm (Ldev/evo/elasticmagic/doc/MappingField;Ljava/lang/Object;)Ljava/lang/Object;
 	public static fun toValue (Ldev/evo/elasticmagic/doc/MappingField;)Ljava/lang/String;
+}
+
+public final class dev/evo/elasticmagic/doc/MappingOptions {
+	public fun <init> ()V
+	public fun <init> (Ldev/evo/elasticmagic/doc/Dynamic;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/List;)V
+	public synthetic fun <init> (Ldev/evo/elasticmagic/doc/Dynamic;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ldev/evo/elasticmagic/doc/Dynamic;
+	public final fun component2 ()Ljava/lang/Boolean;
+	public final fun component3 ()Ljava/lang/Boolean;
+	public final fun component4 ()Ljava/util/List;
+	public final fun copy (Ldev/evo/elasticmagic/doc/Dynamic;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/List;)Ldev/evo/elasticmagic/doc/MappingOptions;
+	public static synthetic fun copy$default (Ldev/evo/elasticmagic/doc/MappingOptions;Ldev/evo/elasticmagic/doc/Dynamic;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/List;ILjava/lang/Object;)Ldev/evo/elasticmagic/doc/MappingOptions;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getDateDetection ()Ljava/lang/Boolean;
+	public final fun getDynamic ()Ldev/evo/elasticmagic/doc/Dynamic;
+	public final fun getDynamicDateFormats ()Ljava/util/List;
+	public final fun getNumericDetection ()Ljava/lang/Boolean;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
 }
 
 public class dev/evo/elasticmagic/doc/MetaFields : dev/evo/elasticmagic/doc/RootFieldSet {
@@ -2323,7 +2633,7 @@ public final class dev/evo/elasticmagic/doc/MetaFields$SourceField : dev/evo/ela
 	public synthetic fun <init> (Ljava/lang/Boolean;Ljava/util/List;Ljava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 }
 
-public abstract class dev/evo/elasticmagic/doc/RootFieldSet : dev/evo/elasticmagic/doc/BaseDocument {
+public class dev/evo/elasticmagic/doc/RootFieldSet : dev/evo/elasticmagic/doc/BaseDocument {
 	public static final field Companion Ldev/evo/elasticmagic/doc/RootFieldSet$Companion;
 	public fun <init> ()V
 	public fun getFieldName ()Ljava/lang/String;
@@ -2347,7 +2657,8 @@ public final class dev/evo/elasticmagic/doc/RuntimeFields$RuntimeField : dev/evo
 }
 
 public abstract class dev/evo/elasticmagic/doc/SubDocument : dev/evo/elasticmagic/doc/BaseDocument, dev/evo/elasticmagic/query/FieldOperations {
-	public fun <init> (Ldev/evo/elasticmagic/doc/BoundField;)V
+	public fun <init> (Ldev/evo/elasticmagic/doc/BoundField;Ldev/evo/elasticmagic/doc/Dynamic;)V
+	public synthetic fun <init> (Ldev/evo/elasticmagic/doc/BoundField;Ldev/evo/elasticmagic/doc/Dynamic;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun asc (Ldev/evo/elasticmagic/query/Sort$Mode;Ldev/evo/elasticmagic/query/Sort$NumericType;Ldev/evo/elasticmagic/query/Sort$Missing;Ldev/evo/elasticmagic/types/FieldType;Ldev/evo/elasticmagic/query/Sort$Nested;)Ldev/evo/elasticmagic/query/Sort;
 	public fun desc (Ldev/evo/elasticmagic/query/Sort$Mode;Ldev/evo/elasticmagic/query/Sort$NumericType;Ldev/evo/elasticmagic/query/Sort$Missing;Ldev/evo/elasticmagic/types/FieldType;Ldev/evo/elasticmagic/query/Sort$Nested;)Ldev/evo/elasticmagic/query/Sort;
 	public synthetic fun deserializeTerm (Ljava/lang/Object;)Ljava/lang/Object;
@@ -2360,6 +2671,7 @@ public abstract class dev/evo/elasticmagic/doc/SubDocument : dev/evo/elasticmagi
 	public final fun getBoundField ()Ldev/evo/elasticmagic/doc/BoundField;
 	public fun getFieldName ()Ljava/lang/String;
 	public fun getFieldType ()Ldev/evo/elasticmagic/types/FieldType;
+	public final fun getOptions ()Ldev/evo/elasticmagic/doc/MappingOptions;
 	public final fun getParent ()Ldev/evo/elasticmagic/doc/FieldSet;
 	public fun getQualifiedFieldName ()Ljava/lang/String;
 	public synthetic fun gt (Ljava/lang/Object;)Ldev/evo/elasticmagic/query/QueryExpression;
@@ -2386,12 +2698,27 @@ public final class dev/evo/elasticmagic/doc/SubDocument$UnboundSubDocument {
 	public final fun provideDelegate (Ldev/evo/elasticmagic/doc/BaseDocument;Lkotlin/reflect/KProperty;)Lkotlin/properties/ReadOnlyProperty;
 }
 
-public class dev/evo/elasticmagic/doc/SubFields : dev/evo/elasticmagic/doc/FieldSet {
+public class dev/evo/elasticmagic/doc/SubFields : dev/evo/elasticmagic/doc/FieldSet, dev/evo/elasticmagic/query/FieldOperations {
 	public fun <init> (Ldev/evo/elasticmagic/doc/BoundField;)V
+	public fun asc (Ldev/evo/elasticmagic/query/Sort$Mode;Ldev/evo/elasticmagic/query/Sort$NumericType;Ldev/evo/elasticmagic/query/Sort$Missing;Ldev/evo/elasticmagic/types/FieldType;Ldev/evo/elasticmagic/query/Sort$Nested;)Ldev/evo/elasticmagic/query/Sort;
+	public fun desc (Ldev/evo/elasticmagic/query/Sort$Mode;Ldev/evo/elasticmagic/query/Sort$NumericType;Ldev/evo/elasticmagic/query/Sort$Missing;Ldev/evo/elasticmagic/types/FieldType;Ldev/evo/elasticmagic/query/Sort$Nested;)Ldev/evo/elasticmagic/query/Sort;
+	public fun deserializeTerm (Ljava/lang/Object;)Ljava/lang/Object;
+	public fun eq (Ljava/lang/Object;)Ldev/evo/elasticmagic/query/QueryExpression;
+	public fun eq (Ljava/lang/Object;Ljava/lang/Double;)Ldev/evo/elasticmagic/query/QueryExpression;
+	public fun format (Ljava/lang/String;)Ldev/evo/elasticmagic/query/FieldFormat;
 	public final fun getBoundField ()Ldev/evo/elasticmagic/doc/BoundField;
 	public fun getFieldName ()Ljava/lang/String;
-	public final fun getFieldType ()Ldev/evo/elasticmagic/types/FieldType;
+	public fun getFieldType ()Ldev/evo/elasticmagic/types/FieldType;
 	public fun getQualifiedFieldName ()Ljava/lang/String;
+	public fun gt (Ljava/lang/Object;)Ldev/evo/elasticmagic/query/QueryExpression;
+	public fun gte (Ljava/lang/Object;)Ldev/evo/elasticmagic/query/QueryExpression;
+	public fun lt (Ljava/lang/Object;)Ldev/evo/elasticmagic/query/QueryExpression;
+	public fun lte (Ljava/lang/Object;)Ldev/evo/elasticmagic/query/QueryExpression;
+	public fun ne (Ljava/lang/Object;)Ldev/evo/elasticmagic/query/QueryExpression;
+	public fun ne (Ljava/lang/Object;Ljava/lang/Double;)Ldev/evo/elasticmagic/query/QueryExpression;
+	public fun oneOf (Ljava/util/List;)Ldev/evo/elasticmagic/query/QueryExpression;
+	public fun range (Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Double;)Ldev/evo/elasticmagic/query/QueryExpression;
+	public fun serializeTerm (Ljava/lang/Object;)Ljava/lang/Object;
 }
 
 public final class dev/evo/elasticmagic/doc/SubFields$UnboundSubFields {
@@ -2410,8 +2737,8 @@ public final class dev/evo/elasticmagic/query/ArrayExpression$DefaultImpls {
 public final class dev/evo/elasticmagic/query/Bool : dev/evo/elasticmagic/query/BoolExpression {
 	public static final field Companion Ldev/evo/elasticmagic/query/Bool$Companion;
 	public fun <init> ()V
-	public fun <init> (Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ldev/evo/elasticmagic/query/MinimumShouldMatch;)V
-	public synthetic fun <init> (Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ldev/evo/elasticmagic/query/MinimumShouldMatch;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ldev/evo/elasticmagic/query/MinimumShouldMatch;Ljava/lang/Double;)V
+	public synthetic fun <init> (Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ldev/evo/elasticmagic/query/MinimumShouldMatch;Ljava/lang/Double;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public synthetic fun accept (Ldev/evo/elasticmagic/serde/Serializer$Ctx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
 	public fun accept (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
 	public fun children ()Ljava/util/Iterator;
@@ -2423,9 +2750,11 @@ public final class dev/evo/elasticmagic/query/Bool : dev/evo/elasticmagic/query/
 	public final fun component3 ()Ljava/util/List;
 	public final fun component4 ()Ljava/util/List;
 	public final fun component5 ()Ldev/evo/elasticmagic/query/MinimumShouldMatch;
-	public final fun copy (Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ldev/evo/elasticmagic/query/MinimumShouldMatch;)Ldev/evo/elasticmagic/query/Bool;
-	public static synthetic fun copy$default (Ldev/evo/elasticmagic/query/Bool;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ldev/evo/elasticmagic/query/MinimumShouldMatch;ILjava/lang/Object;)Ldev/evo/elasticmagic/query/Bool;
+	public final fun component6 ()Ljava/lang/Double;
+	public final fun copy (Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ldev/evo/elasticmagic/query/MinimumShouldMatch;Ljava/lang/Double;)Ldev/evo/elasticmagic/query/Bool;
+	public static synthetic fun copy$default (Ldev/evo/elasticmagic/query/Bool;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ldev/evo/elasticmagic/query/MinimumShouldMatch;Ljava/lang/Double;ILjava/lang/Object;)Ldev/evo/elasticmagic/query/Bool;
 	public fun equals (Ljava/lang/Object;)Z
+	public final fun getBoost ()Ljava/lang/Double;
 	public fun getFilter ()Ljava/util/List;
 	public final fun getMinimumShouldMatch ()Ldev/evo/elasticmagic/query/MinimumShouldMatch;
 	public fun getMust ()Ljava/util/List;
