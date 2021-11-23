@@ -4,6 +4,7 @@ import dev.evo.elasticmagic.ElasticsearchVersion
 import dev.evo.elasticmagic.doc.MappingField
 import dev.evo.elasticmagic.doc.BaseDocument
 import dev.evo.elasticmagic.doc.Document
+import dev.evo.elasticmagic.doc.DynamicTemplates
 import dev.evo.elasticmagic.doc.FieldSet
 import dev.evo.elasticmagic.doc.MetaFields
 import dev.evo.elasticmagic.doc.RuntimeFields
@@ -15,6 +16,8 @@ import dev.evo.elasticmagic.query.ToValue
 import dev.evo.elasticmagic.serde.Serializer
 import dev.evo.elasticmagic.serde.Serializer.ArrayCtx
 import dev.evo.elasticmagic.serde.Serializer.ObjectCtx
+import dev.evo.elasticmagic.types.AnyFieldType
+import dev.evo.elasticmagic.types.ObjectType
 
 open class MappingCompiler(
     esVersion: ElasticsearchVersion,
@@ -61,11 +64,18 @@ open class MappingCompiler(
     }
 
     fun visit(ctx: ObjectCtx, document: Document) {
+        val options = document.options
+        ctx.fieldIfNotNull("dynamic", options.dynamic?.toValue())
+        ctx.fieldIfNotNull("numeric_detection", options.numericDetection)
+        ctx.fieldIfNotNull("date_detection", options.dateDetection)
+        if (options.dynamicDateFormats != null) {
+            ctx.array("dynamic_date_formats") {
+                visit(this, options.dynamicDateFormats)
+            }
+        }
         visit(ctx, document.meta)
         visit(ctx, document.runtime)
-        document.dynamic?.let { dynamic ->
-            ctx.field("dynamic", dynamic.toValue())
-        }
+        visit(ctx, document.dynamicTemplates)
         visit(ctx, document as BaseDocument)
     }
 
@@ -88,6 +98,87 @@ open class MappingCompiler(
                 visit(this, runtime as FieldSet)
             }
         }
+    }
+
+    private fun visit(ctx: ObjectCtx, dynamicTemplates: DynamicTemplates) {
+        val templates = dynamicTemplates.getAllTemplates()
+        if (templates.isNotEmpty()) {
+            ctx.array("dynamic_templates") {
+                for (tmpl in templates) {
+                    obj {
+                        visit(this, tmpl)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun visit(ctx: ObjectCtx, template: DynamicTemplates.BoundMappingTemplate<*, *, *>) {
+        ctx.obj(template.name) {
+            visit(this, template.matchOptions)
+            visit(this, template.mapping)
+        }
+    }
+
+    private fun visit(ctx: ObjectCtx, matchOptions: DynamicTemplates.MatchOptions) {
+        ctx.fieldIfNotNull("match", matchOptions.match)
+        ctx.fieldIfNotNull("unmatch", matchOptions.unmatch)
+        ctx.fieldIfNotNull("path_match", matchOptions.pathMatch)
+        ctx.fieldIfNotNull("path_unmatch", matchOptions.pathUnmatch)
+        ctx.fieldIfNotNull("match_pattern", matchOptions.matchPattern?.toValue())
+        ctx.fieldIfNotNull("match_mapping_type", matchOptions.matchMappingType?.toValue())
+        if (matchOptions.params != null) {
+            visit(ctx, matchOptions.params)
+        }
+    }
+
+    private fun visit(ctx: ObjectCtx, mapping: DynamicTemplates.DynamicField<*, *, *>) {
+        when (mapping) {
+            is DynamicTemplates.DynamicField.Simple -> {
+                ctx.obj(mapping.mappingKind.toValue()) {
+                    if (mapping.params.isNotEmpty()) {
+                        visit(this, mapping.params)
+                    }
+                }
+            }
+            is DynamicTemplates.DynamicField.FromField<*, *> -> {
+                ctx.obj(mapping.mappingKind.toValue()) {
+                    visit(this, mapping.field)
+                }
+            }
+            is DynamicTemplates.DynamicField.FromSubFields<*, *> -> {
+                @Suppress("UNCHECKED_CAST")
+                mapping as DynamicTemplates.DynamicField.FromSubFields<Any, *>
+
+                ctx.obj("mapping") {
+                    visit(this, mapping.subFields.unboundField)
+                    obj("fields") {
+                        val subFields = mapping.subFields.subFieldsFactory(
+                            DynamicTemplates.instantiateField(
+                                "", AnyFieldType, mapping.subFields.unboundField.params
+                            )
+                        )
+                        visit(this, subFields)
+                    }
+                }
+            }
+            is DynamicTemplates.DynamicField.FromSubDocument<*> -> {
+                ctx.obj("mapping") {
+                    field("type", mapping.subDocument.type.name)
+                    visit(this, mapping.subDocument.params)
+                    val field = DynamicTemplates.instantiateField(
+                        "", ObjectType(), mapping.subDocument.params
+                    )
+                    val subDocument = mapping.subDocument.subDocumentFactory(field)
+                    visit(this, subDocument)
+                }
+            }
+        }
+    }
+
+    private fun visit(ctx: ObjectCtx, field: FieldSet.Field<*, *>) {
+        ctx.field("type", field.type.name)
+        visit(ctx, field.params)
     }
 
     private fun visit(ctx: ObjectCtx, doc: BaseDocument) {

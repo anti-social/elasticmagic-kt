@@ -77,6 +77,89 @@ class DocumentTests {
         emptyDoc.runtime.fullName.getQualifiedFieldName() shouldBe "full_name"
     }
 
+    class CountSubFields(field: BoundField<Int, Int>) : SubFields<Int>(field) {
+        val sort by keyword()
+    }
+
+    class UserDoc(field: DocSourceField) : SubDocument(field) {
+        val firstName by text("first_name")
+        val lastName by text("last_name")
+    }
+
+    class DynamicDocTemplates : DynamicTemplates() {
+        val strings by template(
+            mapping = Mapping(
+                store = true,
+            ),
+            matchMappingType = MatchMappingType.STRING,
+        )
+        val ids by template(
+            mapping = long(),
+            match = "*_id",
+        )
+        val counts by template(
+            match = "*_count",
+            mapping = int().subFields(::CountSubFields)
+        )
+        val extra by template(
+            mapping = Mapping(
+                docValues = false
+            ),
+            match = "extra_*"
+        )
+        val users by template(
+            mapping = obj(::UserDoc)
+        )
+    }
+
+    object DynamicDoc : Document() {
+        val count by int().subFields(::CountSubFields)
+
+        override val dynamicTemplates = DynamicDocTemplates()
+
+        val i by int().subFields { field ->
+            object : SubFields<Int>(field) {
+                val sort by keyword()
+            }
+        }
+    }
+
+    @Test
+    fun dynamicTemplates() {
+        val nameField = DynamicDoc.dynamicTemplates.strings.field("name")
+            .shouldBeInstanceOf<BoundField<String, String>>()
+        nameField.deserializeTerm(111) shouldBe "111"
+
+        val companyIdField = DynamicDoc.dynamicTemplates.ids.field("company_id")
+            .shouldBeInstanceOf<BoundField<Long, Long>>()
+        companyIdField.deserializeTerm("1") shouldBe 1L
+
+        val opinionsCountField = DynamicDoc.dynamicTemplates.counts.field("opinions_count")
+            .shouldBeInstanceOf<CountSubFields>()
+        opinionsCountField.sort.getQualifiedFieldName() shouldBe "opinions_count.sort"
+        opinionsCountField.sort.getFieldType() shouldBe KeywordType
+        opinionsCountField.deserializeTerm("4") shouldBe 4
+        opinionsCountField.sort.deserializeTerm(4) shouldBe "4"
+
+        val companyOpinionsCountField = DynamicDoc.dynamicTemplates.counts.field("company.opinions_count")
+        companyOpinionsCountField.getFieldName() shouldBe "opinions_count"
+        companyOpinionsCountField.sort.getQualifiedFieldName() shouldBe "company.opinions_count.sort"
+
+        shouldThrow<IllegalArgumentException> {
+            DynamicDoc.dynamicTemplates.counts.field("count_of_opinions")
+        }
+
+        val extraTagsField = DynamicDoc.dynamicTemplates.extra.field("extra_tags")
+            .shouldBeInstanceOf<BoundField<Any, Any>>()
+        extraTagsField.deserializeTerm(2) shouldBe 2
+        extraTagsField.deserializeTerm("2") shouldBe "2"
+
+        val usersField = DynamicDoc.dynamicTemplates.users.field("owner")
+            .shouldBeInstanceOf<UserDoc>()
+        usersField.firstName.deserializeTerm(123) shouldBe "123"
+        usersField.lastName.deserializeTerm(321) shouldBe "321"
+    }
+
     @Test
     fun testMetaFieldParams() {
         val emptyDoc = object : Document() {
@@ -445,7 +528,20 @@ class DocumentTests {
     }
 
     @Test
-    fun testMergeDocuments_differentMappingParams() {
+    fun testMergeDocuments_differentMappingOptions() {
+        class Doc1 : Document(dynamic = Dynamic.STRICT)
+        val doc1 = Doc1()
+
+        class Doc2 : Document(dynamic = Dynamic.RUNTIME)
+        val doc2 = Doc2()
+
+        shouldThrow<IllegalArgumentException> {
+            mergeDocuments(doc1, doc2)
+        }
+    }
+
+    @Test
+    fun testMergeDocuments_differentFieldParams() {
         class UserDoc : Document() {
             val name by text(analyzer = "uk")
         }
@@ -462,7 +558,7 @@ class DocumentTests {
     }
 
     @Test
-    fun testMergeDocuments_subDocumentsWithDifferentMappingParams() {
+    fun testMergeDocuments_subDocumentsWithDifferentFieldParams() {
         class OpinionDoc(field: DocSourceField) : SubDocument(field) {
             val stars by float()
         }
@@ -566,7 +662,86 @@ class DocumentTests {
         val exc = shouldThrow<IllegalArgumentException> {
             mergeDocuments(userDoc, companyDoc)
         }
-        exc.message shouldStartWith "fullName has different field params:"
+        exc.message shouldStartWith "'fullName' fields have different field parameters:"
+    }
+
+    @Test
+    fun testMergeDocuments_dynamicTemplates() {
+        val userDoc = object : Document() {
+            override val dynamicTemplates = object : DynamicTemplates() {
+                val names by template(
+                    mapping = Mapping(
+                        store = false,
+                    ),
+                    match = "*_name",
+                    matchMappingType = MatchMappingType.STRING,
+                )
+            }
+        }
+
+        val companyDoc = object : Document() {
+            override val dynamicTemplates = object : DynamicTemplates() {
+                val names by template(
+                    mapping = Mapping(
+                        store = false,
+                    ),
+                    match = "*_name",
+                    matchMappingType = MatchMappingType.STRING,
+                )
+
+                val ids by template(
+                    mapping = long(),
+                    match = "*_id"
+                )
+            }
+        }
+
+        val mergedDoc = mergeDocuments(userDoc, companyDoc)
+
+        val namesTemplate = mergedDoc.dynamicTemplates["names"].shouldNotBeNull()
+        val fullNameField = namesTemplate.field("first_name")
+            .shouldBeInstanceOf<BoundField<String, String>>()
+        fullNameField.deserializeTerm(789) shouldBe "789"
+
+        val idsTemplate = mergedDoc.dynamicTemplates["ids"].shouldNotBeNull()
+        val companyIdField = idsTemplate.field("user_id")
+            .shouldBeInstanceOf<BoundField<Long, Long>>()
+        companyIdField.deserializeTerm("1") shouldBe 1L
+    }
+
+    @Test
+    fun testMergeDocuments_differentDynamicTemplates() {
+        class UserOpinionDoc(field: DocSourceField) : SubDocument(field) {
+            val count by int()
+            val rank by float()
+        }
+
+        class CompanyOpinionDoc(field: DocSourceField) : SubDocument(field) {
+            val count by int()
+            val rank by float()
+        }
+
+        val userDoc = object : Document() {
+            override val dynamicTemplates = object : DynamicTemplates() {
+                val opinions by template(
+                    mapping = obj(::UserOpinionDoc),
+                    match = "*_opinion",
+                )
+            }
+        }
+
+        val companyDoc = object : Document() {
+            override val dynamicTemplates = object : DynamicTemplates() {
+                val opinions by template(
+                    mapping = obj(::CompanyOpinionDoc),
+                    match = "*_opinion",
+                )
+            }
+        }
+
+        shouldThrow<IllegalArgumentException> {
+            mergeDocuments(userDoc, companyDoc)
+        }
     }
 
     // TODO: Tests that must not be compiled

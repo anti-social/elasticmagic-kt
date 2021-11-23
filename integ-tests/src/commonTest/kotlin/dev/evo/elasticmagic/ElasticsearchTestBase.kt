@@ -37,6 +37,9 @@ abstract class ElasticsearchTestBase : TestBase() {
             vararg mappings: Document,
             block: suspend () -> Unit
         ) {
+            if (cluster.indexExists(index.name)) {
+                cluster.deleteIndex(index.name)
+            }
             cluster.createIndex(
                 index.name,
                 mapping = mergeDocuments(*mappings),
@@ -45,11 +48,7 @@ abstract class ElasticsearchTestBase : TestBase() {
                     "index.number_of_replicas" to 0,
                 ),
             )
-            try {
-                block()
-            } finally {
-                cluster.deleteIndex(index.name)
-            }
+            block()
         }
 
         suspend fun ensureIndex(vararg mappings: Document) {

@@ -592,6 +592,10 @@ class DynDocSource private constructor(
         return getFieldValue(path, fieldType::deserialize)
     }
 
+    operator fun <V> get(field: SubFields<V>): V? {
+        return get(field.getBoundField())
+    }
+
     operator fun <V: SubDocument> get(subDoc: V): DynDocSource? {
         val path = checkPathStartsWithPrefix(
             subDoc.getQualifiedFieldName().split('.')
@@ -609,6 +613,10 @@ class DynDocSource private constructor(
             field.getQualifiedFieldName().split('.')
         )
         setFieldValue(path, value, fieldType::serialize)
+    }
+
+    operator fun <V> set(field: SubFields<V>, value: V?) {
+        set(field.getBoundField(), value)
     }
 
     operator fun <V: SubDocument> set(subDoc: V, value: DynDocSource?) {
