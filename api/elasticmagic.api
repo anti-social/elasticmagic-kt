@@ -3537,7 +3537,6 @@ public final class dev/evo/elasticmagic/types/ByteType : dev/evo/elasticmagic/ty
 	public fun getName ()Ljava/lang/String;
 	public fun getTermType ()Lkotlin/reflect/KClass;
 	public fun serialize (B)Ljava/lang/Integer;
-	public synthetic fun serialize (Ljava/lang/Number;)Ljava/lang/Object;
 	public synthetic fun serialize (Ljava/lang/Object;)Ljava/lang/Object;
 }
 
@@ -3726,7 +3725,6 @@ public final class dev/evo/elasticmagic/types/ShortType : dev/evo/elasticmagic/t
 	public fun deserialize (Ljava/lang/Object;Lkotlin/jvm/functions/Function0;)Ljava/lang/Short;
 	public fun getName ()Ljava/lang/String;
 	public fun getTermType ()Lkotlin/reflect/KClass;
-	public synthetic fun serialize (Ljava/lang/Number;)Ljava/lang/Object;
 	public synthetic fun serialize (Ljava/lang/Object;)Ljava/lang/Object;
 	public fun serialize (S)Ljava/lang/Integer;
 }
