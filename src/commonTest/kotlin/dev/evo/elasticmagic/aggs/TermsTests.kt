@@ -1,6 +1,8 @@
 package dev.evo.elasticmagic.aggs
 
+import dev.evo.elasticmagic.query.Script
 import dev.evo.elasticmagic.query.Sort
+import dev.evo.elasticmagic.types.IntType
 
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.maps.shouldContainExactly
@@ -79,6 +81,89 @@ class TermsTests : TestAggregation() {
             docCountErrorUpperBound = 0,
             sumOtherDocCount = 0,
         )
+    }
+
+    @Test
+    fun terms_withScript() {
+        TermsAgg(
+            AggValue.Script(
+                Script.Source(
+                    "(int) doc[params.field].value",
+                    params = mapOf(
+                        "field" to MovieDoc.rating
+                    )
+                ),
+                IntType
+            ),
+            showTermDocCountError = true,
+        ).let { agg ->
+            agg.compile() shouldContainExactly mapOf(
+                "terms" to mapOf(
+                    "script" to mapOf(
+                        "source" to "(int) doc[params.field].value",
+                        "params" to mapOf(
+                            "field" to "rating"
+                        )
+                    ),
+                    "show_term_doc_count_error" to true,
+                )
+            )
+
+            process(
+                agg,
+                mapOf(
+                    "doc_count_error_upper_bound" to 0,
+                    "sum_other_doc_count" to 0,
+                    "buckets" to listOf(
+                        mapOf(
+                            "key" to 7,
+                            "doc_count" to 2,
+                            "doc_count_error_upper_bound" to 1,
+                        ),
+                        mapOf(
+                            "key" to 8,
+                            "doc_count" to 43,
+                            "doc_count_error_upper_bound" to 5,
+                        ),
+                        mapOf(
+                            "key" to 9,
+                            "doc_count" to 32,
+                            "doc_count_error_upper_bound" to 2,
+                        ),
+                    )
+                )
+            ) shouldBe TermsAggResult(
+                buckets = listOf(
+                    TermBucket(7, 2, docCountErrorUpperBound = 1),
+                    TermBucket(8, 43, docCountErrorUpperBound = 5),
+                    TermBucket(9, 32, docCountErrorUpperBound = 2),
+                ),
+                docCountErrorUpperBound = 0,
+                sumOtherDocCount = 0,
+            )
+        }
+    }
+
+    @Test
+    fun terms_withValueScript() {
+        TermsAgg(
+            AggValue.ValueScript(
+                MovieDoc.rating,
+                Script.Source(
+                    "(int) _value",
+                ),
+                IntType
+            )
+        ).let { agg ->
+            agg.compile() shouldContainExactly mapOf(
+                "terms" to mapOf(
+                    "field" to "rating",
+                    "script" to mapOf(
+                        "source" to "(int) _value",
+                    ),
+                )
+            )
+        }
     }
 
     @Test
