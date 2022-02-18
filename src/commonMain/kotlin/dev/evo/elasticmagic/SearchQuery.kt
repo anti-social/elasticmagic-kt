@@ -10,6 +10,7 @@ import dev.evo.elasticmagic.query.QueryExpression
 import dev.evo.elasticmagic.query.QueryExpressionNode
 import dev.evo.elasticmagic.query.Rescore
 import dev.evo.elasticmagic.query.Script
+import dev.evo.elasticmagic.query.SearchExt
 import dev.evo.elasticmagic.query.Sort
 import dev.evo.elasticmagic.query.ToValue
 import dev.evo.elasticmagic.query.collect
@@ -53,6 +54,8 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
     protected var size: Long? = null
     protected var from: Long? = null
     protected var terminateAfter: Long? = null
+
+    protected val extensions: MutableList<SearchExt> = mutableListOf()
 
     protected val params: MutableParams = params.toMutable()
 
@@ -130,6 +133,7 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
             size = size,
             from = from,
             terminateAfter = terminateAfter,
+            extensions = extensions,
             params = params,
         )
     }
@@ -355,6 +359,10 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
         this.terminateAfter = terminateAfter
     }
 
+    fun ext(vararg extensions: SearchExt): T = self {
+        this.extensions += extensions
+    }
+
     fun searchParams(vararg params: Pair<String, Any?>): T = self {
         for ((key, rawValue) in params) {
             val value = if (rawValue is ToValue<*>) {
@@ -455,5 +463,6 @@ data class PreparedSearchQuery<S: BaseDocSource>(
     val size: Long?,
     val from: Long?,
     val terminateAfter: Long?,
+    val extensions: List<SearchExt>,
     val params: Params,
 )

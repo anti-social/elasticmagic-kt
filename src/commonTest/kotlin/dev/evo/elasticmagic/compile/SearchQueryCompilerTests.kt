@@ -20,6 +20,7 @@ import dev.evo.elasticmagic.query.BoolNode
 import dev.evo.elasticmagic.query.DisMax
 import dev.evo.elasticmagic.query.DisMaxNode
 import dev.evo.elasticmagic.query.FieldFormat
+import dev.evo.elasticmagic.query.FieldOperations
 import dev.evo.elasticmagic.query.FunctionScore
 import dev.evo.elasticmagic.query.FunctionScoreNode
 import dev.evo.elasticmagic.query.Ids
@@ -31,7 +32,9 @@ import dev.evo.elasticmagic.query.NodeHandle
 import dev.evo.elasticmagic.query.Script
 import dev.evo.elasticmagic.query.Sort
 import dev.evo.elasticmagic.query.QueryRescore
+import dev.evo.elasticmagic.query.SearchExt
 import dev.evo.elasticmagic.query.match
+import dev.evo.elasticmagic.serde.Serializer
 import dev.evo.elasticmagic.types.LongType
 
 import io.kotest.assertions.throwables.shouldThrow
@@ -1065,6 +1068,56 @@ class SearchQueryCompilerTests : BaseTest() {
                 )
             )
         )
+    }
 
+    @Test
+    fun ext() {
+        // Search extension example for: https://github.com/anti-social/elasticsearch-collapse-extension
+        data class CollapseExtension(
+            val field: FieldOperations<*>,
+            val windowSize: Int,
+            val shardSize: Int,
+            val sort: Sort,
+        ) : SearchExt {
+            override val name = "collapse"
+
+            override fun clone() = copy()
+
+            override fun visit(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
+                ctx.field("field", field.getQualifiedFieldName())
+                ctx.field("window_size", windowSize)
+                ctx.field("shard_size", shardSize)
+                ctx.array("sort") {
+                    compiler.visit(this, listOf(sort))
+                }
+            }
+        }
+
+        val carDoc = object : Document() {
+            val model by keyword()
+            val price by float()
+        }
+
+        val query = SearchQuery().ext(
+            CollapseExtension(carDoc.model, windowSize = 10_000, shardSize = 1000, sort = carDoc.price.asc())
+        )
+
+        val compiled = compile(query)
+        compiled.body shouldContainExactly mapOf(
+            "ext" to mapOf(
+                "collapse" to mapOf(
+                    "field" to "model",
+                    "window_size" to 10000,
+                    "shard_size" to 1000,
+                    "sort" to listOf(
+                        mapOf(
+                            "price" to mapOf(
+                                "order" to "asc"
+                            )
+                        )
+                    )
+                )
+            )
+        )
     }
 }

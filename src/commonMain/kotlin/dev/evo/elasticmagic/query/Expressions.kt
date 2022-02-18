@@ -93,3 +93,5 @@ abstract class QueryExpressionNode<T: QueryExpressionNode<T>> : QueryExpression 
 
     abstract fun toQueryExpression(): QueryExpression
 }
+
+interface SearchExt : NamedExpression
