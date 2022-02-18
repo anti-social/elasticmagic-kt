@@ -2017,7 +2017,6 @@ public class dev/evo/elasticmagic/doc/BoundField : dev/evo/elasticmagic/doc/Mapp
 	public fun <init> (Ljava/lang/String;Ldev/evo/elasticmagic/types/FieldType;Ljava/util/Map;Ldev/evo/elasticmagic/doc/FieldSet;Z)V
 	public synthetic fun <init> (Ljava/lang/String;Ldev/evo/elasticmagic/types/FieldType;Ljava/util/Map;Ldev/evo/elasticmagic/doc/FieldSet;ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun asc (Ldev/evo/elasticmagic/query/Sort$Mode;Ldev/evo/elasticmagic/query/Sort$NumericType;Ldev/evo/elasticmagic/query/Sort$Missing;Ldev/evo/elasticmagic/types/FieldType;Ldev/evo/elasticmagic/query/Sort$Nested;)Ldev/evo/elasticmagic/query/Sort;
-	public fun contains (Ljava/util/List;)Ldev/evo/elasticmagic/query/QueryExpression;
 	public fun desc (Ldev/evo/elasticmagic/query/Sort$Mode;Ldev/evo/elasticmagic/query/Sort$NumericType;Ldev/evo/elasticmagic/query/Sort$Missing;Ldev/evo/elasticmagic/types/FieldType;Ldev/evo/elasticmagic/query/Sort$Nested;)Ldev/evo/elasticmagic/query/Sort;
 	public fun deserializeTerm (Ljava/lang/Object;)Ljava/lang/Object;
 	public fun eq (Ljava/lang/Object;)Ldev/evo/elasticmagic/query/QueryExpression;
@@ -2037,6 +2036,7 @@ public class dev/evo/elasticmagic/doc/BoundField : dev/evo/elasticmagic/doc/Mapp
 	public fun lte (Ljava/lang/Object;)Ldev/evo/elasticmagic/query/QueryExpression;
 	public fun ne (Ljava/lang/Object;)Ldev/evo/elasticmagic/query/QueryExpression;
 	public fun ne (Ljava/lang/Object;Ljava/lang/Double;)Ldev/evo/elasticmagic/query/QueryExpression;
+	public fun oneOf (Ljava/util/List;)Ldev/evo/elasticmagic/query/QueryExpression;
 	public fun range (Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Double;)Ldev/evo/elasticmagic/query/QueryExpression;
 	public fun serializeTerm (Ljava/lang/Object;)Ljava/lang/Object;
 	public synthetic fun toValue ()Ljava/lang/Object;
@@ -2051,7 +2051,6 @@ public final class dev/evo/elasticmagic/doc/BoundJoinField : dev/evo/elasticmagi
 public final class dev/evo/elasticmagic/doc/BoundJoinField$Parent : dev/evo/elasticmagic/query/FieldOperations {
 	public fun <init> (Ldev/evo/elasticmagic/doc/BoundJoinField;Ljava/lang/String;)V
 	public fun asc (Ldev/evo/elasticmagic/query/Sort$Mode;Ldev/evo/elasticmagic/query/Sort$NumericType;Ldev/evo/elasticmagic/query/Sort$Missing;Ldev/evo/elasticmagic/types/FieldType;Ldev/evo/elasticmagic/query/Sort$Nested;)Ldev/evo/elasticmagic/query/Sort;
-	public fun contains (Ljava/util/List;)Ldev/evo/elasticmagic/query/QueryExpression;
 	public fun desc (Ldev/evo/elasticmagic/query/Sort$Mode;Ldev/evo/elasticmagic/query/Sort$NumericType;Ldev/evo/elasticmagic/query/Sort$Missing;Ldev/evo/elasticmagic/types/FieldType;Ldev/evo/elasticmagic/query/Sort$Nested;)Ldev/evo/elasticmagic/query/Sort;
 	public synthetic fun deserializeTerm (Ljava/lang/Object;)Ljava/lang/Object;
 	public fun deserializeTerm (Ljava/lang/Object;)Ljava/lang/String;
@@ -2075,6 +2074,7 @@ public final class dev/evo/elasticmagic/doc/BoundJoinField$Parent : dev/evo/elas
 	public synthetic fun ne (Ljava/lang/Object;Ljava/lang/Double;)Ldev/evo/elasticmagic/query/QueryExpression;
 	public fun ne (Ljava/lang/String;)Ldev/evo/elasticmagic/query/QueryExpression;
 	public fun ne (Ljava/lang/String;Ljava/lang/Double;)Ldev/evo/elasticmagic/query/QueryExpression;
+	public fun oneOf (Ljava/util/List;)Ldev/evo/elasticmagic/query/QueryExpression;
 	public synthetic fun range (Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Double;)Ldev/evo/elasticmagic/query/QueryExpression;
 	public fun range (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Double;)Ldev/evo/elasticmagic/query/QueryExpression;
 	public synthetic fun serializeTerm (Ljava/lang/Object;)Ljava/lang/Object;
@@ -2237,7 +2237,6 @@ public abstract interface class dev/evo/elasticmagic/doc/MappingField : dev/evo/
 
 public final class dev/evo/elasticmagic/doc/MappingField$DefaultImpls {
 	public static fun asc (Ldev/evo/elasticmagic/doc/MappingField;Ldev/evo/elasticmagic/query/Sort$Mode;Ldev/evo/elasticmagic/query/Sort$NumericType;Ldev/evo/elasticmagic/query/Sort$Missing;Ldev/evo/elasticmagic/types/FieldType;Ldev/evo/elasticmagic/query/Sort$Nested;)Ldev/evo/elasticmagic/query/Sort;
-	public static fun contains (Ldev/evo/elasticmagic/doc/MappingField;Ljava/util/List;)Ldev/evo/elasticmagic/query/QueryExpression;
 	public static fun desc (Ldev/evo/elasticmagic/doc/MappingField;Ldev/evo/elasticmagic/query/Sort$Mode;Ldev/evo/elasticmagic/query/Sort$NumericType;Ldev/evo/elasticmagic/query/Sort$Missing;Ldev/evo/elasticmagic/types/FieldType;Ldev/evo/elasticmagic/query/Sort$Nested;)Ldev/evo/elasticmagic/query/Sort;
 	public static fun deserializeTerm (Ldev/evo/elasticmagic/doc/MappingField;Ljava/lang/Object;)Ljava/lang/Object;
 	public static fun eq (Ldev/evo/elasticmagic/doc/MappingField;Ljava/lang/Object;)Ldev/evo/elasticmagic/query/QueryExpression;
@@ -2249,6 +2248,7 @@ public final class dev/evo/elasticmagic/doc/MappingField$DefaultImpls {
 	public static fun lte (Ldev/evo/elasticmagic/doc/MappingField;Ljava/lang/Object;)Ldev/evo/elasticmagic/query/QueryExpression;
 	public static fun ne (Ldev/evo/elasticmagic/doc/MappingField;Ljava/lang/Object;)Ldev/evo/elasticmagic/query/QueryExpression;
 	public static fun ne (Ldev/evo/elasticmagic/doc/MappingField;Ljava/lang/Object;Ljava/lang/Double;)Ldev/evo/elasticmagic/query/QueryExpression;
+	public static fun oneOf (Ldev/evo/elasticmagic/doc/MappingField;Ljava/util/List;)Ldev/evo/elasticmagic/query/QueryExpression;
 	public static fun range (Ldev/evo/elasticmagic/doc/MappingField;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Double;)Ldev/evo/elasticmagic/query/QueryExpression;
 	public static fun serializeTerm (Ldev/evo/elasticmagic/doc/MappingField;Ljava/lang/Object;)Ljava/lang/Object;
 	public static fun toValue (Ldev/evo/elasticmagic/doc/MappingField;)Ljava/lang/String;
@@ -2344,7 +2344,6 @@ public final class dev/evo/elasticmagic/doc/RuntimeFields$RuntimeField : dev/evo
 public abstract class dev/evo/elasticmagic/doc/SubDocument : dev/evo/elasticmagic/doc/BaseDocument, dev/evo/elasticmagic/query/FieldOperations {
 	public fun <init> (Ldev/evo/elasticmagic/doc/BoundField;)V
 	public fun asc (Ldev/evo/elasticmagic/query/Sort$Mode;Ldev/evo/elasticmagic/query/Sort$NumericType;Ldev/evo/elasticmagic/query/Sort$Missing;Ldev/evo/elasticmagic/types/FieldType;Ldev/evo/elasticmagic/query/Sort$Nested;)Ldev/evo/elasticmagic/query/Sort;
-	public fun contains (Ljava/util/List;)Ldev/evo/elasticmagic/query/QueryExpression;
 	public fun desc (Ldev/evo/elasticmagic/query/Sort$Mode;Ldev/evo/elasticmagic/query/Sort$NumericType;Ldev/evo/elasticmagic/query/Sort$Missing;Ldev/evo/elasticmagic/types/FieldType;Ldev/evo/elasticmagic/query/Sort$Nested;)Ldev/evo/elasticmagic/query/Sort;
 	public synthetic fun deserializeTerm (Ljava/lang/Object;)Ljava/lang/Object;
 	public fun deserializeTerm (Ljava/lang/Object;)Ljava/lang/Void;
@@ -2370,6 +2369,7 @@ public abstract class dev/evo/elasticmagic/doc/SubDocument : dev/evo/elasticmagi
 	public synthetic fun ne (Ljava/lang/Object;Ljava/lang/Double;)Ldev/evo/elasticmagic/query/QueryExpression;
 	public fun ne (Ljava/lang/Void;)Ldev/evo/elasticmagic/query/QueryExpression;
 	public fun ne (Ljava/lang/Void;Ljava/lang/Double;)Ldev/evo/elasticmagic/query/QueryExpression;
+	public fun oneOf (Ljava/util/List;)Ldev/evo/elasticmagic/query/QueryExpression;
 	public synthetic fun range (Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Double;)Ldev/evo/elasticmagic/query/QueryExpression;
 	public fun range (Ljava/lang/Void;Ljava/lang/Void;Ljava/lang/Void;Ljava/lang/Void;Ljava/lang/Double;)Ldev/evo/elasticmagic/query/QueryExpression;
 	public synthetic fun serializeTerm (Ljava/lang/Object;)Ljava/lang/Object;
@@ -2635,7 +2635,6 @@ public final class dev/evo/elasticmagic/query/FieldFormat$Impl : dev/evo/elastic
 
 public abstract interface class dev/evo/elasticmagic/query/FieldOperations : dev/evo/elasticmagic/query/BoostedField, dev/evo/elasticmagic/query/FieldFormat, dev/evo/elasticmagic/query/Named, dev/evo/elasticmagic/query/Sort {
 	public abstract fun asc (Ldev/evo/elasticmagic/query/Sort$Mode;Ldev/evo/elasticmagic/query/Sort$NumericType;Ldev/evo/elasticmagic/query/Sort$Missing;Ldev/evo/elasticmagic/types/FieldType;Ldev/evo/elasticmagic/query/Sort$Nested;)Ldev/evo/elasticmagic/query/Sort;
-	public abstract fun contains (Ljava/util/List;)Ldev/evo/elasticmagic/query/QueryExpression;
 	public abstract fun desc (Ldev/evo/elasticmagic/query/Sort$Mode;Ldev/evo/elasticmagic/query/Sort$NumericType;Ldev/evo/elasticmagic/query/Sort$Missing;Ldev/evo/elasticmagic/types/FieldType;Ldev/evo/elasticmagic/query/Sort$Nested;)Ldev/evo/elasticmagic/query/Sort;
 	public abstract fun deserializeTerm (Ljava/lang/Object;)Ljava/lang/Object;
 	public abstract fun eq (Ljava/lang/Object;)Ldev/evo/elasticmagic/query/QueryExpression;
@@ -2648,6 +2647,7 @@ public abstract interface class dev/evo/elasticmagic/query/FieldOperations : dev
 	public abstract fun lte (Ljava/lang/Object;)Ldev/evo/elasticmagic/query/QueryExpression;
 	public abstract fun ne (Ljava/lang/Object;)Ldev/evo/elasticmagic/query/QueryExpression;
 	public abstract fun ne (Ljava/lang/Object;Ljava/lang/Double;)Ldev/evo/elasticmagic/query/QueryExpression;
+	public abstract fun oneOf (Ljava/util/List;)Ldev/evo/elasticmagic/query/QueryExpression;
 	public abstract fun range (Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Double;)Ldev/evo/elasticmagic/query/QueryExpression;
 	public abstract fun serializeTerm (Ljava/lang/Object;)Ljava/lang/Object;
 }
@@ -2655,7 +2655,6 @@ public abstract interface class dev/evo/elasticmagic/query/FieldOperations : dev
 public final class dev/evo/elasticmagic/query/FieldOperations$DefaultImpls {
 	public static fun asc (Ldev/evo/elasticmagic/query/FieldOperations;Ldev/evo/elasticmagic/query/Sort$Mode;Ldev/evo/elasticmagic/query/Sort$NumericType;Ldev/evo/elasticmagic/query/Sort$Missing;Ldev/evo/elasticmagic/types/FieldType;Ldev/evo/elasticmagic/query/Sort$Nested;)Ldev/evo/elasticmagic/query/Sort;
 	public static synthetic fun asc$default (Ldev/evo/elasticmagic/query/FieldOperations;Ldev/evo/elasticmagic/query/Sort$Mode;Ldev/evo/elasticmagic/query/Sort$NumericType;Ldev/evo/elasticmagic/query/Sort$Missing;Ldev/evo/elasticmagic/types/FieldType;Ldev/evo/elasticmagic/query/Sort$Nested;ILjava/lang/Object;)Ldev/evo/elasticmagic/query/Sort;
-	public static fun contains (Ldev/evo/elasticmagic/query/FieldOperations;Ljava/util/List;)Ldev/evo/elasticmagic/query/QueryExpression;
 	public static fun desc (Ldev/evo/elasticmagic/query/FieldOperations;Ldev/evo/elasticmagic/query/Sort$Mode;Ldev/evo/elasticmagic/query/Sort$NumericType;Ldev/evo/elasticmagic/query/Sort$Missing;Ldev/evo/elasticmagic/types/FieldType;Ldev/evo/elasticmagic/query/Sort$Nested;)Ldev/evo/elasticmagic/query/Sort;
 	public static synthetic fun desc$default (Ldev/evo/elasticmagic/query/FieldOperations;Ldev/evo/elasticmagic/query/Sort$Mode;Ldev/evo/elasticmagic/query/Sort$NumericType;Ldev/evo/elasticmagic/query/Sort$Missing;Ldev/evo/elasticmagic/types/FieldType;Ldev/evo/elasticmagic/query/Sort$Nested;ILjava/lang/Object;)Ldev/evo/elasticmagic/query/Sort;
 	public static fun deserializeTerm (Ldev/evo/elasticmagic/query/FieldOperations;Ljava/lang/Object;)Ljava/lang/Object;
@@ -2671,6 +2670,7 @@ public final class dev/evo/elasticmagic/query/FieldOperations$DefaultImpls {
 	public static fun ne (Ldev/evo/elasticmagic/query/FieldOperations;Ljava/lang/Object;)Ldev/evo/elasticmagic/query/QueryExpression;
 	public static fun ne (Ldev/evo/elasticmagic/query/FieldOperations;Ljava/lang/Object;Ljava/lang/Double;)Ldev/evo/elasticmagic/query/QueryExpression;
 	public static synthetic fun ne$default (Ldev/evo/elasticmagic/query/FieldOperations;Ljava/lang/Object;Ljava/lang/Double;ILjava/lang/Object;)Ldev/evo/elasticmagic/query/QueryExpression;
+	public static fun oneOf (Ldev/evo/elasticmagic/query/FieldOperations;Ljava/util/List;)Ldev/evo/elasticmagic/query/QueryExpression;
 	public static fun range (Ldev/evo/elasticmagic/query/FieldOperations;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Double;)Ldev/evo/elasticmagic/query/QueryExpression;
 	public static synthetic fun range$default (Ldev/evo/elasticmagic/query/FieldOperations;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Double;ILjava/lang/Object;)Ldev/evo/elasticmagic/query/QueryExpression;
 	public static fun serializeTerm (Ldev/evo/elasticmagic/query/FieldOperations;Ljava/lang/Object;)Ljava/lang/Object;

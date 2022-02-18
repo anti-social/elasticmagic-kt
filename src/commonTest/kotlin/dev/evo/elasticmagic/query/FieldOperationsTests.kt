@@ -48,6 +48,15 @@ class FieldOperationsTests : BaseExpressionTest() {
     }
 
     @Test
+    fun oneOf() {
+        (MovieDoc.stars.name oneOf listOf("Bruce", "Eddy")).compile() shouldContainExactly mapOf(
+            "terms" to mapOf(
+                "stars.name" to listOf("Bruce", "Eddy")
+            )
+        )
+    }
+
+    @Test
     fun gt() {
         (MovieDoc.rating gt 5.9f).compile() shouldContainExactly mapOf(
             "range" to mapOf(
@@ -85,7 +94,7 @@ class FieldOperationsTests : BaseExpressionTest() {
         (MovieDoc.rating lte 2.5f).compile() shouldContainExactly mapOf(
             "range" to mapOf(
                 "rating" to mapOf(
-                    "lte" to 6f
+                    "lte" to 2.5f
                 )
             )
         )

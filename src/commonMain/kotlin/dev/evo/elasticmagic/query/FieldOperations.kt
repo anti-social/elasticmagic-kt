@@ -89,7 +89,7 @@ interface FieldOperations<T> : Named, FieldFormat, BoostedField, Sort {
 
     infix fun ne(term: T?): QueryExpression = ne(term, boost = null)
 
-    fun contains(terms: List<T>): QueryExpression {
+    infix fun oneOf(terms: List<T>): QueryExpression {
         return Terms(this, terms)
     }
 
