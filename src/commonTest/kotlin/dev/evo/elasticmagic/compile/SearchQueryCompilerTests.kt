@@ -777,7 +777,7 @@ class SearchQueryCompilerTests : BaseTest() {
     @Test
     fun termsQuery() {
         val query = SearchQuery(
-            AnyField("tags").contains(listOf(1, 9))
+            AnyField("tags").oneOf(listOf(1, 9))
         )
         compile(query).body shouldContainExactly mapOf(
             "query" to mapOf(

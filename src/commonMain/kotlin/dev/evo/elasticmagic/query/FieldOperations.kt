@@ -71,34 +71,70 @@ interface FieldOperations<T> : Named, FieldFormat, BoostedField, Sort {
         return getFieldType().deserializeTerm(v)
     }
 
-    fun eq(term: T?): QueryExpression {
+    fun eq(term: T?, boost: Double? = null): QueryExpression {
         if (term == null) {
-            return Bool.mustNot(Exists(this))
+            return Bool.mustNot(Exists(this, boost = boost))
         }
-        return Term(this, term)
+        return Term(this, term, boost = boost)
     }
 
-    fun ne(term: T?): QueryExpression {
+    infix fun eq(term: T?): QueryExpression = eq(term, boost = null)
+
+    fun ne(term: T?, boost: Double? = null): QueryExpression {
         if (term == null) {
             return Exists(this)
         }
         return Bool.mustNot(Term(this, term))
     }
 
-    fun contains(terms: List<T>): QueryExpression {
+    infix fun ne(term: T?): QueryExpression = ne(term, boost = null)
+
+    infix fun oneOf(terms: List<T>): QueryExpression {
         return Terms(this, terms)
     }
 
     fun range(
-        gt: T? = null, gte: T? = null, lt: T? = null, lte: T? = null
-    ): QueryExpression = Range(this, gt = gt, gte = gte, lt = lt, lte = lte)
-    fun gt(other: T?): QueryExpression = range(gt = other)
-    fun gte(other: T?): QueryExpression = range(gte = other)
-    fun lt(other: T?): QueryExpression = range(lt = other)
-    fun lte(other: T?): QueryExpression = range(lte = other)
+        gt: T? = null, gte: T? = null, lt: T? = null, lte: T? = null, boost: Double? = null
+    ): QueryExpression = Range(this, gt = gt, gte = gte, lt = lt, lte = lte, boost = boost)
+    infix fun gt(other: T?): QueryExpression = range(gt = other)
+    infix fun gte(other: T?): QueryExpression = range(gte = other)
+    infix fun lt(other: T?): QueryExpression = range(lt = other)
+    infix fun lte(other: T?): QueryExpression = range(lte = other)
 
-    fun asc(): Sort = Sort(this, order = Sort.Order.ASC)
-    fun desc(): Sort = Sort(this, order = Sort.Order.DESC)
+    fun asc(
+        mode: Sort.Mode? = null,
+        numericType: Sort.NumericType? = null,
+        missing: Sort.Missing? = null,
+        unmappedType: FieldType<*, *>? = null,
+        nested: Sort.Nested? = null,
+    ): Sort {
+        return Sort(
+            this,
+            order = Sort.Order.ASC,
+            mode = mode,
+            numericType = numericType,
+            missing = missing,
+            unmappedType = unmappedType,
+            nested = nested,
+        )
+    }
+    fun desc(
+        mode: Sort.Mode? = null,
+        numericType: Sort.NumericType? = null,
+        missing: Sort.Missing? = null,
+        unmappedType: FieldType<*, *>? = null,
+        nested: Sort.Nested? = null,
+    ): Sort {
+        return Sort(
+            this,
+            order = Sort.Order.DESC,
+            mode = mode,
+            numericType = numericType,
+            missing = missing,
+            unmappedType = unmappedType,
+            nested = nested,
+        )
+    }
 
     fun format(format: String? = null): FieldFormat = FieldFormat.Impl(this, format)
 }
