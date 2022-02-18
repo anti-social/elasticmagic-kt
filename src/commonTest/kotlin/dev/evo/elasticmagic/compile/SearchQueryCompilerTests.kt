@@ -1101,9 +1101,7 @@ class SearchQueryCompilerTests : BaseTest() {
         val query = SearchQuery().ext(
             CollapseExtension(carDoc.model, windowSize = 10_000, shardSize = 1000, sort = carDoc.price.asc())
         )
-
-        val compiled = compile(query)
-        compiled.body shouldContainExactly mapOf(
+        compile(query).body shouldContainExactly mapOf(
             "ext" to mapOf(
                 "collapse" to mapOf(
                     "field" to "model",
@@ -1119,5 +1117,8 @@ class SearchQueryCompilerTests : BaseTest() {
                 )
             )
         )
+
+        query.ext(null)
+        compile(query).body shouldContainExactly emptyMap()
     }
 }

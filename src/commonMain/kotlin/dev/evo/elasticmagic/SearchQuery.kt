@@ -363,6 +363,10 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
         this.extensions += extensions
     }
 
+    fun ext(clear: Nothing?): T = self {
+        this.extensions.clear()
+    }
+
     fun searchParams(vararg params: Pair<String, Any?>): T = self {
         for ((key, rawValue) in params) {
             val value = if (rawValue is ToValue<*>) {
