@@ -136,6 +136,13 @@ open class SearchQueryCompiler(
         if (searchQuery.terminateAfter != null) {
             ctx.field("terminate_after", searchQuery.terminateAfter)
         }
+        if (searchQuery.extensions.isNotEmpty()) {
+            ctx.obj("ext") {
+                for (ext in searchQuery.extensions) {
+                    visit(this, ext)
+                }
+            }
+        }
     }
 
     fun visit(ctx: ObjectCtx, expression: Expression<ObjectCtx>) {
