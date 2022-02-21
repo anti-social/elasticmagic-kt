@@ -212,7 +212,8 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
     /**
      * Clears the existing filters.
      */
-    fun clearFilter(): T = self {
+    @Suppress("UNUSED_PARAMETER")
+    fun filter(clear: Nothing?): T = self {
         filters.clear()
     }
 
@@ -233,7 +234,8 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
     /**
      * Clears the existing post filters.
      */
-    fun clearPostFilter(): T = self {
+    @Suppress("UNUSED_PARAMETER")
+    fun postFilter(clear: Nothing?): T = self {
         postFilters.clear()
     }
 
@@ -255,7 +257,8 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
     /**
      * Clears the existing aggregations.
      */
-    fun clearAggs(): T = self {
+    @Suppress("UNUSED_PARAMETER")
+    fun aggs(clear: Nothing?): T = self {
         aggregations.clear()
     }
 
@@ -274,7 +277,8 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
     /**
      * Clears the existing rescorers.
      */
-    fun clearRescore(): T = self {
+    @Suppress("UNUSED_PARAMETER")
+    fun rescore(clear: Nothing?): T = self {
         rescores.clear()
     }
 
@@ -292,7 +296,8 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
     /**
      * Clears the existing sorts.
      */
-    fun clearSort(): T = self {
+    @Suppress("UNUSED_PARAMETER")
+    fun sort(clear: Nothing?): T = self {
         sorts.clear()
     }
 
@@ -319,7 +324,8 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
         this.fields += fields
     }
 
-    fun clearFields(): T = self {
+    @Suppress("UNUSED_PARAMETER")
+    fun fields(clear: Nothing?): T = self {
         fields.clear()
     }
 
@@ -327,7 +333,8 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
         docvalueFields += fields
     }
 
-    fun clearDocvalueFields(): T = self {
+    @Suppress("UNUSED_PARAMETER")
+    fun docvalueFields(clear: Nothing?): T = self {
         docvalueFields.clear()
     }
 
@@ -335,7 +342,8 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
         storedFields += fields
     }
 
-    fun clearStoredFields(): T = self {
+    @Suppress("UNUSED_PARAMETER")
+    fun storedFields(clear: Nothing?): T = self {
         storedFields.clear()
     }
 
@@ -343,7 +351,8 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
         scriptFields += fields
     }
 
-    fun clearScriptFields(): T = self {
+    @Suppress("UNUSED_PARAMETER")
+    fun scriptFields(clear: Nothing?): T = self {
         scriptFields.clear()
     }
 
@@ -363,6 +372,7 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
         this.extensions += extensions
     }
 
+    @Suppress("UNUSED_PARAMETER")
     fun ext(clear: Nothing?): T = self {
         this.extensions.clear()
     }

@@ -241,7 +241,7 @@ class SearchQueryCompilerTests : BaseTest() {
             )
         }
 
-        query.clearAggs()
+        query.aggs(null)
         compile(query).body shouldContainExactly emptyMap()
     }
 
@@ -371,7 +371,7 @@ class SearchQueryCompilerTests : BaseTest() {
             )
         )
 
-        query.clearFilter()
+        query.filter(null)
         compile(query).body shouldContainExactly mapOf(
             "query" to mapOf(
                 "function_score" to mapOf(
@@ -423,7 +423,7 @@ class SearchQueryCompilerTests : BaseTest() {
             )
         )
 
-        query.clearPostFilter()
+        query.postFilter(null)
         compile(query).body shouldContainExactly emptyMap()
     }
 
@@ -509,7 +509,7 @@ class SearchQueryCompilerTests : BaseTest() {
             )
         )
 
-        query.clearRescore()
+        query.rescore(null)
         compile(query).body shouldContainExactly emptyMap()
     }
 
@@ -521,7 +521,7 @@ class SearchQueryCompilerTests : BaseTest() {
             "sort" to listOf("popularity", "id")
         )
 
-        query.clearSort()
+        query.sort(null)
         compile(query).body shouldContainExactly emptyMap()
     }
 
@@ -661,7 +661,7 @@ class SearchQueryCompilerTests : BaseTest() {
             )
         )
 
-        compile(query.clearDocvalueFields()).body shouldContainExactly emptyMap()
+        compile(query.docvalueFields(null)).body shouldContainExactly emptyMap()
     }
 
     @Test
@@ -674,7 +674,7 @@ class SearchQueryCompilerTests : BaseTest() {
             "stored_fields" to listOf("rank", "opinion.rating")
         )
 
-        compile(query.clearStoredFields()).body shouldContainExactly emptyMap()
+        compile(query.storedFields(null)).body shouldContainExactly emptyMap()
     }
 
     @Test
@@ -695,7 +695,7 @@ class SearchQueryCompilerTests : BaseTest() {
             )
         )
 
-        compile(query.clearScriptFields()).body shouldContainExactly emptyMap()
+        compile(query.scriptFields(null)).body shouldContainExactly emptyMap()
     }
 
     @Test
