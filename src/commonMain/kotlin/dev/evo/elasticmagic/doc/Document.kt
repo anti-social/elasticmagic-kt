@@ -23,6 +23,7 @@ import dev.evo.elasticmagic.types.NestedType
 import dev.evo.elasticmagic.types.ObjectType
 import dev.evo.elasticmagic.types.ShortType
 import dev.evo.elasticmagic.types.TextType
+import dev.evo.elasticmagic.util.OrderedMap
 
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
@@ -346,26 +347,19 @@ interface FieldSetShortcuts {
  * https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping.html
  */
 abstract class FieldSet : FieldSetShortcuts, Named {
-    private val fields: ArrayList<MappingField<*>> = arrayListOf()
-    private val fieldsByName: HashMap<String, Int> = hashMapOf()
+    private val fields: OrderedMap<String, MappingField<*>> = OrderedMap()
 
     // TODO: consider to make it public
     internal fun addField(field: MappingField<*>) {
-        val existingFieldIx = fieldsByName[field.getFieldName()]
-        if (existingFieldIx != null) {
-            fields[existingFieldIx] = field
-        } else {
-            fieldsByName[field.getFieldName()] = fields.size
-            fields.add(field)
-        }
+        fields[field.getFieldName()] = field
     }
 
-    fun getAllFields(): List<MappingField<*>> {
-        return fields.toList()
+    fun getAllFields(): Collection<MappingField<*>> {
+        return fields.values
     }
 
     operator fun get(name: String): MappingField<*>? {
-        return fields[fieldsByName[name] ?: return null]
+        return fields[name]
     }
 
     inline fun <reified T> getFieldByName(name: String): MappingField<T> {
@@ -781,8 +775,7 @@ enum class Dynamic : ToValue<Any> {
  * TODO: Consider moving templates directly into a root document
  */
 open class DynamicTemplates : DocumentShortcuts {
-    private val templates: ArrayList<BoundMappingTemplate<*, *, *>> = arrayListOf()
-    private val templatesByName: HashMap<String, Int> = hashMapOf()
+    private val templates: OrderedMap<String, BoundMappingTemplate<*, *, *>> = OrderedMap()
 
     companion object {
         internal fun <V, T> instantiateField(
@@ -806,21 +799,15 @@ open class DynamicTemplates : DocumentShortcuts {
     }
 
     internal fun addTemplate(template: BoundMappingTemplate<*, *, *>) {
-        val foundTemplateIx = templatesByName[template.name]
-        if (foundTemplateIx != null) {
-            templates[foundTemplateIx] = template
-        } else {
-            templatesByName[template.name] = templates.size
-            templates.add(template)
-        }
+        templates[template.name] = template
     }
 
-    fun getAllTemplates(): List<BoundMappingTemplate<*, *, *>> {
-        return templates
+    fun getAllTemplates(): Collection<BoundMappingTemplate<*, *, *>> {
+        return templates.values
     }
 
     operator fun get(name: String): BoundMappingTemplate<*, *, *>? {
-        return templates[templatesByName[name] ?: return null]
+        return templates[name]
     }
 
     /**
