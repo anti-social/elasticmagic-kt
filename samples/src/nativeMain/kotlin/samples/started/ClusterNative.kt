@@ -4,12 +4,12 @@ import dev.evo.elasticmagic.ElasticsearchCluster
 import dev.evo.elasticmagic.serde.serialization.JsonSerde
 import dev.evo.elasticmagic.transport.ElasticsearchKtorTransport
 
-import io.ktor.client.engine.cio.CIO
+import io.ktor.client.engine.curl.Curl
 
-val esTransport = ElasticsearchKtorTransport(
+actual val esTransport = ElasticsearchKtorTransport(
     "http://localhost:9200",
     serde = JsonSerde,
-    engine = CIO.create {}
+    engine = Curl.create {}
 )
-val cluster = ElasticsearchCluster(esTransport)
-val userIndex = cluster["user"]
+actual val cluster = ElasticsearchCluster(esTransport)
+actual val userIndex = cluster["user"]

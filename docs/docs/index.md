@@ -37,39 +37,45 @@ dependencies {
 First you need to describe a document (represents a mapping in terms of Elasticsearch):
 
 ```kotlin
---8<-- "../samples/src/main/kotlin/samples/started/UserDoc.kt"
+--8<-- "../samples/src/commonMain/kotlin/samples/started/UserDoc.kt"
 ```
 
 Now create `ElasticsearchCluster` object. It is an entry point for executing search queries:
 
 ```kotlin
---8<-- "../samples/src/main/kotlin/samples/started/Cluster.kt"
+--8<-- "../samples/src/jvmMain/kotlin/samples/started/Cluster.kt"
 ```
 
 Create our index if it does not exist or update the mapping otherwise:
 
 ```kotlin
---8<-- "../samples/src/main/kotlin/samples/started/EnsureIndexExists.kt"
+--8<-- "../samples/src/commonMain/kotlin/samples/started/EnsureIndexExists.kt"
 ```
 
 Describe document sources and index them: 
 
 ```kotlin
---8<-- "../samples/src/main/kotlin/samples/started/IndexDocs.kt"
+--8<-- "../samples/src/commonMain/kotlin/samples/started/IndexDocs.kt"
 ```
 
 And finally we can search our data:
 
 ```kotlin
---8<-- "../samples/src/main/kotlin/samples/started/Main.kt"
+--8<-- "../samples/src/commonMain/kotlin/samples/started/Main.kt"
 ```
 
 ### Run the sample
 
-You can find fully working example inside [samples](https://github.com/anti-social/elasticmagic-kt/tree/master/samples/src/main/kotlin/samples/started)
+You can find fully working example inside [samples](https://github.com/anti-social/elasticmagic-kt/tree/master/samples/src/commonMain/kotlin/samples/started)
 
-And run it with (of cause you need Elasticsearch available at `localhost:9200`):
+And run it with as JVM application (of cause you need Elasticsearch available at `localhost:9200`):
 
 ```shell
 ./gradlew :samples:run
+```
+
+or native:
+
+```shell
+./gradlew :samples:runDebugExecutableNative
 ```
