@@ -180,7 +180,8 @@ mkdocs {
     val abbrevRegex = "-\\d+-g.*".toRegex()
     val lastReleasedVersion = abbrevRegex.replace(version.toString(), "")
     extras = mapOf(
-        "version" to lastReleasedVersion
+        "elasticmagic_version" to lastReleasedVersion,
+        "ktor_version" to Versions.ktor,
     )
 }
 

@@ -17,8 +17,8 @@ repositories {
     mavenCentral()
 }
 
-val elasticmagicVersion = "{{ gradle.version }}"
-val ktorVersion = "1.5.2"
+val elasticmagicVersion = "{{ gradle.elasticmagic_version }}"
+val ktorVersion = "{{ gradle.ktor_version }}"
 
 dependencies {
     // Elasticmagic core api
