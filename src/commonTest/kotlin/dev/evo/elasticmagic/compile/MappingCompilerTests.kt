@@ -6,6 +6,8 @@ import dev.evo.elasticmagic.Params
 import dev.evo.elasticmagic.doc.BoundField
 import dev.evo.elasticmagic.doc.DocSourceField
 import dev.evo.elasticmagic.doc.Document
+import dev.evo.elasticmagic.doc.Dynamic
+import dev.evo.elasticmagic.doc.DynamicTemplates
 import dev.evo.elasticmagic.types.KeywordType
 import dev.evo.elasticmagic.doc.RuntimeFields
 import dev.evo.elasticmagic.doc.SubDocument
@@ -32,7 +34,7 @@ class MappingCompilerTests : BaseTest() {
     }
 
     @Test
-    fun testEmptyMapping() {
+    fun emptyMapping() {
         val emptyDoc = object : Document() {}
 
         compile(emptyDoc) shouldContainExactly mapOf(
@@ -41,7 +43,25 @@ class MappingCompilerTests : BaseTest() {
     }
 
     @Test
-    fun testSubFields() {
+    fun mappingOptions() {
+        val docWithOptions = object : Document(
+            dynamic = Dynamic.STRICT,
+            numericDetection = false,
+            dateDetection = true,
+            dynamicDateFormats = listOf("strict_date_optional_time"),
+        ) {}
+
+        compile(docWithOptions) shouldContainExactly mapOf(
+            "dynamic" to "strict",
+            "numeric_detection" to false,
+            "date_detection" to true,
+            "dynamic_date_formats" to listOf("strict_date_optional_time"),
+            "properties" to emptyMap<String, Any>()
+        )
+    }
+
+    @Test
+    fun subFields() {
         class NameFields<V>(field: BoundField<V, V>) : SubFields<V>(field) {
             val sort by keyword(normalizer = "lowercase")
             val autocomplete by text(analyzer = "ngram")
@@ -86,14 +106,16 @@ class MappingCompilerTests : BaseTest() {
     }
 
     @Test
-    fun testSubDocument() {
+    fun subDocument() {
         class OpinionDoc(field: DocSourceField) : SubDocument(field) {
             val count by int()
         }
 
         class CompanyDoc(field: DocSourceField) : SubDocument(field) {
             val name by text(analyzer = "standard")
-            val opinion by obj(::OpinionDoc, params = Params("enabled" to false))
+            val opinion by obj(
+                ::OpinionDoc, dynamic = Dynamic.TRUE, params = Params("enabled" to false)
+            )
         }
 
         val userDoc = object : Document() {
@@ -113,6 +135,7 @@ class MappingCompilerTests : BaseTest() {
                         "opinion" to mapOf(
                             "type" to "object",
                             "enabled" to false,
+                            "dynamic" to true,
                             "properties" to mapOf(
                                 "count" to mapOf(
                                     "type" to "integer"
@@ -134,7 +157,7 @@ class MappingCompilerTests : BaseTest() {
     }
 
     @Test
-    fun testRuntimeFields() {
+    fun runtimeFields() {
         val logDoc = object : Document() {
             // TODO: Replace with date field
             val timestamp by datetime("@timestamp")
@@ -184,7 +207,201 @@ class MappingCompilerTests : BaseTest() {
     }
 
     @Test
-    fun testMergeDocuments() {
+    fun dynamicTemplates_mappingParams() {
+        class MyDoc : Document() {
+            override val dynamicTemplates = object : DynamicTemplates() {
+                val strings by template(
+                    mapping = Mapping(
+                        docValues = false,
+                    ),
+                    matchMappingType = MatchMappingType.STRING,
+                )
+            }
+        }
+        val myDoc = MyDoc()
+
+        compile(myDoc) shouldContainExactly mapOf(
+            "dynamic_templates" to listOf(
+                mapOf(
+                    "strings" to mapOf(
+                        "match_mapping_type" to "string",
+                        "mapping" to mapOf(
+                            "doc_values" to false,
+                        )
+                    )
+                )
+            ),
+            "properties" to emptyMap<String, Nothing>()
+        )
+    }
+
+    @Test
+    fun dynamicTemplates_matchMappingType() {
+        class MyDoc : Document() {
+            override val dynamicTemplates = object : DynamicTemplates() {
+                val strings by template(
+                    mapping = keyword(index = false),
+                    matchMappingType = MatchMappingType.STRING,
+                )
+            }
+        }
+        val myDoc = MyDoc()
+
+        compile(myDoc) shouldContainExactly mapOf(
+            "dynamic_templates" to listOf(
+                mapOf(
+                    "strings" to mapOf(
+                        "match_mapping_type" to "string",
+                        "mapping" to mapOf(
+                            "type" to "keyword",
+                            "index" to false,
+                        )
+                    )
+                )
+            ),
+            "properties" to emptyMap<String, Nothing>()
+        )
+    }
+
+    @Test
+    fun dynamicTemplates_subFields() {
+        class IdSubFields(field: BoundField<Long, Long>) : SubFields<Long>(field) {
+            val id by keyword(docValues = false)
+        }
+
+        class MyDoc : Document() {
+            override val dynamicTemplates = object : DynamicTemplates() {
+                val ids by template(
+                    mapping = long(index = false).subFields(::IdSubFields),
+                    match = "*_id",
+                )
+            }
+        }
+        val myDoc = MyDoc()
+
+        compile(myDoc) shouldContainExactly mapOf(
+            "dynamic_templates" to listOf(
+                mapOf(
+                    "ids" to mapOf(
+                        "match" to "*_id",
+                        "mapping" to mapOf(
+                            "type" to "long",
+                            "index" to false,
+                            "fields" to mapOf(
+                                "id" to mapOf(
+                                    "type" to "keyword",
+                                    "doc_values" to false,
+                                )
+                            )
+                        )
+                    )
+                )
+            ),
+            "properties" to emptyMap<String, Nothing>()
+        )
+    }
+
+    @Test
+    fun dynamicTemplates_subDocument() {
+        class UserDoc(field: DocSourceField) : SubDocument(field) {
+            val id by keyword()
+            val firstName by text("first_name", analyzer="en")
+            val lastName by text("last_name", analyzer="en")
+        }
+
+        class MyDoc : Document() {
+            override val dynamicTemplates = object : DynamicTemplates() {
+                val users by template(
+                    mapping = obj(::UserDoc, dynamic = Dynamic.TRUE),
+                    match = "*_user",
+                )
+            }
+        }
+        val myDoc = MyDoc()
+
+        compile(myDoc) shouldContainExactly mapOf(
+            "dynamic_templates" to listOf(
+                mapOf(
+                    "users" to mapOf(
+                        "match" to "*_user",
+                        "mapping" to mapOf(
+                            "type" to "object",
+                            "dynamic" to true,
+                            "properties" to mapOf(
+                                "id" to mapOf(
+                                    "type" to "keyword",
+                                ),
+                                "first_name" to mapOf(
+                                    "type" to "text",
+                                    "analyzer" to "en",
+                                ),
+                                "last_name" to mapOf(
+                                    "type" to "text",
+                                    "analyzer" to "en",
+                                )
+                            )
+                        )
+                    )
+                )
+            ),
+            "properties" to emptyMap<String, Nothing>()
+        )
+    }
+
+    @Test
+    fun dynamicTemplates_runtimeWithoutType() {
+        class MyDoc : Document() {
+            override val dynamicTemplates = object : DynamicTemplates() {
+                val dates by template(
+                    runtime = Runtime(),
+                    match = "*_dt",
+                )
+            }
+        }
+        val myDoc = MyDoc()
+
+        compile(myDoc) shouldContainExactly mapOf(
+            "dynamic_templates" to listOf(
+                mapOf(
+                    "dates" to mapOf(
+                        "match" to "*_dt",
+                        "runtime" to emptyMap<String, Nothing>()
+                    )
+                )
+            ),
+            "properties" to emptyMap<String, Nothing>()
+        )
+    }
+
+    @Test
+    fun dynamicTemplates_runtimeWithType() {
+        class MyDoc : Document() {
+            override val dynamicTemplates = object : DynamicTemplates() {
+                val dates by template(
+                    runtime = Runtime(int()),
+                    match = "*_count",
+                )
+            }
+        }
+        val myDoc = MyDoc()
+
+        compile(myDoc) shouldContainExactly mapOf(
+            "dynamic_templates" to listOf(
+                mapOf(
+                    "dates" to mapOf(
+                        "match" to "*_count",
+                        "runtime" to mapOf(
+                            "type" to "integer"
+                        )
+                    )
+                )
+            ),
+            "properties" to emptyMap<String, Nothing>()
+        )
+    }
+
+    @Test
+    fun mergeDocuments() {
         open class QADoc : Document() {
             val join by join(relations = mapOf("question" to listOf("answer")))
         }
