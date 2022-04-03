@@ -494,21 +494,7 @@ Use it on your own risk</p>
 <span class="p">}</span>
 </code></pre></div>
 <p>Now create <code>ElasticsearchCluster</code> object. It is an entry point for executing search queries:</p>
-<div class="highlight"><pre><span></span><code><span class="k">package</span> <span class="nn">samples.started</span>
-
-<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.ElasticsearchCluster</span>
-<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.serde.serialization.JsonSerde</span>
-<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.transport.ElasticsearchKtorTransport</span>
-
-<span class="k">import</span> <span class="nn">io.ktor.client.engine.cio.CIO</span>
-
-<span class="kd">val</span> <span class="nv">esTransport</span> <span class="o">=</span> <span class="n">ElasticsearchKtorTransport</span><span class="p">(</span>
-    <span class="s">&quot;http://localhost:9200&quot;</span><span class="p">,</span>
-    <span class="n">serde</span> <span class="o">=</span> <span class="n">JsonSerde</span><span class="p">,</span>
-    <span class="n">engine</span> <span class="o">=</span> <span class="n">CIO</span><span class="p">.</span><span class="na">create</span> <span class="p">{}</span>
-<span class="p">)</span>
-<span class="kd">val</span> <span class="nv">cluster</span> <span class="o">=</span> <span class="n">ElasticsearchCluster</span><span class="p">(</span><span class="n">esTransport</span><span class="p">)</span>
-<span class="kd">val</span> <span class="nv">userIndex</span> <span class="o">=</span> <span class="n">cluster</span><span class="o">[</span><span class="s">&quot;user&quot;</span><span class="o">]</span>
+<div class="highlight"><pre><span></span><code>
 </code></pre></div>
 <p>Create our index if it does not exist or update the mapping otherwise:</p>
 <div class="highlight"><pre><span></span><code><span class="k">package</span> <span class="nn">samples.started</span>
@@ -584,12 +570,14 @@ Use it on your own risk</p>
 <p>And finally we can search our data:</p>
 <div class="highlight"><pre><span></span><code><span class="k">package</span> <span class="nn">samples.started</span>
 
-<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.doc.DynDocSource</span>
 <span class="k">import</span> <span class="nn">dev.evo.elasticmagic.SearchQuery</span>
 <span class="k">import</span> <span class="nn">dev.evo.elasticmagic.SearchQueryResult</span>
 <span class="k">import</span> <span class="nn">dev.evo.elasticmagic.aggs.TermsAgg</span>
 <span class="k">import</span> <span class="nn">dev.evo.elasticmagic.aggs.TermsAggResult</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.doc.DynDocSource</span>
 <span class="k">import</span> <span class="nn">dev.evo.elasticmagic.query.match</span>
+
+<span class="k">import</span> <span class="nn">kotlinx.coroutines.runBlocking</span>
 
 <span class="kd">fun</span> <span class="nf">printUsers</span><span class="p">(</span><span class="n">result</span><span class="p">:</span> <span class="n">SearchQueryResult</span><span class="o">&lt;</span><span class="n">DynDocSource</span><span class="o">&gt;</span><span class="p">)</span> <span class="p">{</span>
     <span class="n">println</span><span class="p">(</span><span class="s">&quot;Found: </span><span class="si">${</span><span class="n">result</span><span class="p">.</span><span class="na">totalHits</span><span class="si">}</span><span class="s"> users&quot;</span><span class="p">)</span>
@@ -607,7 +595,7 @@ Use it on your own risk</p>
     <span class="p">}</span>
 <span class="p">}</span>
 
-<span class="kd">suspend</span> <span class="kd">fun</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+<span class="kd">fun</span> <span class="nf">main</span><span class="p">()</span> <span class="o">=</span> <span class="n">runBlocking</span> <span class="p">{</span>
     <span class="n">ensureIndexExists</span><span class="p">()</span>
     <span class="n">indexDocs</span><span class="p">()</span>
 
@@ -629,9 +617,12 @@ Use it on your own risk</p>
 <span class="p">}</span>
 </code></pre></div>
 <h3 id="run-the-sample">Run the sample<a class="headerlink" href="#run-the-sample" title="Permanent link">&para;</a></h3>
-<p>You can find fully working example inside <a href="https://github.com/anti-social/elasticmagic-kt/tree/master/samples/src/main/kotlin/samples/started">samples</a></p>
-<p>And run it with (of cause you need Elasticsearch available at <code>localhost:9200</code>):</p>
+<p>You can find fully working example inside <a href="https://github.com/anti-social/elasticmagic-kt/tree/master/samples/src/commonMain/kotlin/samples/started">samples</a></p>
+<p>And run it with as JVM application (of cause you need Elasticsearch available at <code>localhost:9200</code>):</p>
 <div class="highlight"><pre><span></span><code>./gradlew :samples:run
+</code></pre></div>
+<p>or native:</p>
+<div class="highlight"><pre><span></span><code>./gradlew :samples:runDebugExecutableNative
 </code></pre></div>
 
               
