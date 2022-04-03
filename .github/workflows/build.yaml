@@ -80,7 +80,7 @@ jobs:
     - name: Compile samples
       run: |
         set -eux
-        ./gradlew compileKotlin -p samples $GRADLE_ARGS
+        ./gradlew compileKotlinJvm compileKotlinNative -p samples $GRADLE_ARGS
 
   integ-tests:
     if: |

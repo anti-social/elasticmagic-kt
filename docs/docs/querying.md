@@ -5,7 +5,7 @@ To build a search query use a [SearchQuery](https://anti-social.github.io/elasti
 In these samples we will utilize following document:
 
 ```kotlin
---8<-- "../samples/src/main/kotlin/samples/querying/UserDoc.kt"
+--8<-- "../samples/src/commonMain/kotlin/samples/querying/UserDoc.kt"
 ```
 
 ## Query
@@ -13,13 +13,13 @@ In these samples we will utilize following document:
 You can pass a query to `SearchQuery` directly via its constructor:
 
 ```kotlin
---8<-- "../samples/src/main/kotlin/samples/querying/Constructor.kt"
+--8<-- "../samples/src/commonMain/kotlin/samples/querying/Constructor.kt"
 ```
 
 Also it is possible to replace existing query using a `query` method: 
 
 ```kotlin
---8<-- "../samples/src/main/kotlin/samples/querying/QueryMethod.kt"
+--8<-- "../samples/src/commonMain/kotlin/samples/querying/QueryMethod.kt"
 ```
 
 See full list of available [query expressions](https://anti-social.github.io/elasticmagic-kt/api/latest/elasticmagic/dev.evo.elasticmagic.query/index.html).
@@ -32,7 +32,7 @@ In the last example `q` and `q2` variables point to the same object. For efficie
 If you want to get independent query instance you should clone it explicitly:
 
 ```kotlin
---8<-- "../samples/src/main/kotlin/samples/querying/Clone.kt"
+--8<-- "../samples/src/commonMain/kotlin/samples/querying/Clone.kt"
 ```
 
 Now you can modify `clonedQuery` without touching its ancestor `q`.
@@ -44,7 +44,7 @@ method you can filter your query. All filters passed to the `filter` method will
 using `AND` operation.
 
 ```kotlin
---8<-- "../samples/src/main/kotlin/samples/querying/Filter.kt"
+--8<-- "../samples/src/commonMain/kotlin/samples/querying/Filter.kt"
 ```
 
 See [Query Filter Context](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-filter-context.html)
@@ -59,7 +59,7 @@ method has 2 flavors:
   expressions
 
 ```kotlin
---8<-- "../samples/src/main/kotlin/samples/querying/Sort.kt"
+--8<-- "../samples/src/commonMain/kotlin/samples/querying/Sort.kt"
 ```
 
 See:
@@ -72,7 +72,7 @@ Use [aggs](https://anti-social.github.io/elasticmagic-kt/api/latest/elasticmagic
 method to define aggregations:
 
 ```kotlin
---8<-- "../samples/src/main/kotlin/samples/querying/Aggs.kt"
+--8<-- "../samples/src/commonMain/kotlin/samples/querying/Aggs.kt"
 ```
 
 See [Search Aggregations](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations.html)
@@ -85,5 +85,5 @@ possible to modify parts of the query after creation using special query express
 method:
 
 ```kotlin
---8<-- "../samples/src/main/kotlin/samples/querying/Nodes.kt"
+--8<-- "../samples/src/commonMain/kotlin/samples/querying/Nodes.kt"
 ```

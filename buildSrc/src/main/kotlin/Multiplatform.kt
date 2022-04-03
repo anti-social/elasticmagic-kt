@@ -1,12 +1,14 @@
 import org.gradle.api.GradleException
 import org.gradle.api.Project
+import org.gradle.api.plugins.JavaApplication
 import org.gradle.kotlin.dsl.*
 import org.jetbrains.kotlin.gradle.dsl.*
 
 fun Project.configureMultiplatform(
     configureJvm: Boolean = true,
     configureJs: Boolean = true,
-    configureNative: Boolean = true
+    configureNative: Boolean = true,
+    entryPointModule: String? = null,
 ) {
     configure<KotlinMultiplatformExtension> {
         if (configureJvm) {
@@ -16,6 +18,12 @@ fun Project.configureMultiplatform(
                 }
                 testRuns["test"].executionTask.configure {
                     useJUnit()
+                }
+                if (entryPointModule != null) {
+                    withJava()
+                    configure<JavaApplication> {
+                        mainClass.set("$entryPointModule.MainKt")
+                    }
                 }
             }
         }
@@ -40,6 +48,13 @@ fun Project.configureMultiplatform(
                 hostOs == "Linux" -> linuxX64("native")
                 hostOs.startsWith("Windows") -> mingwX64("native")
                 else -> throw GradleException("Host OS is not supported in Kotlin/Native.")
+            }
+            if (entryPointModule != null) {
+                nativeTarget.binaries {
+                    executable {
+                        entryPoint("$entryPointModule.main")
+                    }
+                }
             }
         }
 

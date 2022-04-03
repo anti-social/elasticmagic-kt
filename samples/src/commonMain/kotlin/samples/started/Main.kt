@@ -1,11 +1,13 @@
 package samples.started
 
-import dev.evo.elasticmagic.doc.DynDocSource
 import dev.evo.elasticmagic.SearchQuery
 import dev.evo.elasticmagic.SearchQueryResult
 import dev.evo.elasticmagic.aggs.TermsAgg
 import dev.evo.elasticmagic.aggs.TermsAggResult
+import dev.evo.elasticmagic.doc.DynDocSource
 import dev.evo.elasticmagic.query.match
+
+import kotlinx.coroutines.runBlocking
 
 fun printUsers(result: SearchQueryResult<DynDocSource>) {
     println("Found: ${result.totalHits} users")
@@ -23,7 +25,7 @@ fun printGroupsAgg(aggResult: TermsAggResult<String>) {
     }
 }
 
-suspend fun main() {
+fun main() = runBlocking {
     ensureIndexExists()
     indexDocs()
 

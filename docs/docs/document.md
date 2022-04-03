@@ -17,13 +17,13 @@ You can use [field](https://anti-social.github.io/elasticmagic-kt/api/latest/ela
 method to describe a field in a document:
 
 ```kotlin
---8<-- "../samples/src/main/kotlin/samples/document/field/Field.kt"
+--8<-- "../samples/src/commonMain/kotlin/samples/document/field/Field.kt"
 ```
 
 Fields can be used when building a search query:
 
 ```kotlin
---8<-- "../samples/src/main/kotlin/samples/document/field/SearchQuery.kt"
+--8<-- "../samples/src/commonMain/kotlin/samples/document/field/SearchQuery.kt"
 ```
 
 ### Using shortcuts
@@ -32,7 +32,7 @@ There are some nice shortcuts for popular field types.
 You don't need to import all those field types:
 
 ```kotlin
---8<-- "../samples/src/main/kotlin/samples/document/shortcuts/Shortcuts.kt"
+--8<-- "../samples/src/commonMain/kotlin/samples/document/shortcuts/Shortcuts.kt"
 ```
 
 Full list of available shortcuts can be found
@@ -45,13 +45,13 @@ Use [enum](https://anti-social.github.io/elasticmagic-kt/api/latest/elasticmagic
 extension function for that:
 
 ```kotlin
---8<-- "../samples/src/main/kotlin/samples/document/enums/Enum.kt"
+--8<-- "../samples/src/commonMain/kotlin/samples/document/enums/Enum.kt"
 ```
 
 Now you are able to use enum variants in your search queries:
 
 ```kotlin
---8<-- "../samples/src/main/kotlin/samples/document/enums/SearchQuery.kt"
+--8<-- "../samples/src/commonMain/kotlin/samples/document/enums/SearchQuery.kt"
 ```
 
 ### Sub fields
@@ -60,20 +60,20 @@ It is possible to define [sub-fields](https://anti-social.github.io/elasticmagic
 for any simple field:
 
 ```kotlin
---8<-- "../samples/src/main/kotlin/samples/document/subfields/SubFields.kt"
+--8<-- "../samples/src/commonMain/kotlin/samples/document/subfields/SubFields.kt"
 ```
 
 Sub-fields also can be used in search queries:
 
 ```kotlin
---8<-- "../samples/src/main/kotlin/samples/document/subfields/SearchQuery.kt"
+--8<-- "../samples/src/commonMain/kotlin/samples/document/subfields/SearchQuery.kt"
 ```
 
 !!! Note
     It is a mistake to use sub-fields twice. Following example will fail at runtime.
 
 ```kotlin
---8<-- "../samples/src/main/kotlin/samples/document/subfields/mistake/Mistake.kt"
+--8<-- "../samples/src/commonMain/kotlin/samples/document/subfields/mistake/Mistake.kt"
 ```
 
 <details>
@@ -98,7 +98,7 @@ Object type just represents a hierarchical structure. It is similar to sub-field
 in a sub-document can have its own source value:
 
 ```kotlin
---8<-- "../samples/src/main/kotlin/samples/document/object/Object.kt"
+--8<-- "../samples/src/commonMain/kotlin/samples/document/object/Object.kt"
 ```
 
 !!! Note
@@ -116,7 +116,7 @@ In the example below we find all users that have a `moderator` role with both
 `article` and `order` permissions:
 
 ```kotlin
---8<-- "../samples/src/main/kotlin/samples/document/nested/Nested.kt"
+--8<-- "../samples/src/commonMain/kotlin/samples/document/nested/Nested.kt"
 ```
 
 If we tried to make it with `object` type, we would find users that have 
@@ -134,7 +134,7 @@ Parent/child relationship allows you to define a link between documents inside a
 ### Join field
 
 ```kotlin
---8<-- "../samples/src/main/kotlin/samples/document/join/Join.kt"
+--8<-- "../samples/src/commonMain/kotlin/samples/document/join/Join.kt"
 ```
 
 Read more:
@@ -149,7 +149,7 @@ Some of those fields can be customized. In following example we make a value for
 field required and keep only `name` field in document source:
 
 ```kotlin
---8<-- "../samples/src/main/kotlin/samples/document/meta/Meta.kt"
+--8<-- "../samples/src/commonMain/kotlin/samples/document/meta/Meta.kt"
 ```
 
 Now you must provide the required routing value when indexing documents otherwise Elasticsearch
@@ -162,7 +162,7 @@ To create a mapping for multiple documents you can use
 function. Documents that are merged should not contradict each other.
 
 ```kotlin
---8<-- "../samples/src/main/kotlin/samples/document/join/Merge.kt"
+--8<-- "../samples/src/commonMain/kotlin/samples/document/join/Merge.kt"
 ```
 
 Resulting document can be used when creating an index or updating an existing mapping. 

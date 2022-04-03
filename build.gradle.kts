@@ -168,7 +168,7 @@ tasks.dokkaHtml {
     dokkaSourceSets {
         configureEach {
             includes.from("docs/api/packages.md")
-            samples.from("samples/src/main/kotlin")
+            samples.from("samples/src/commonMain/kotlin", "samples/src/jvmMain/kotlin")
         }
     }
 }
@@ -185,13 +185,11 @@ mkdocs {
     )
 }
 
-tasks.getByName("mkdocsBuild").dependsOn(":samples:compileKotlin")
-
 nexusPublishing {
     repositories {
         configureSonatypeRepository(project)
     }
 }
 
-extra["projectUrl"] = uri("https://github.com/anti-social/prometheus-kt")
+extra["projectUrl"] = uri("https://github.com/anti-social/elasticmagic-kt")
 configureMultiplatformPublishing("elasticmagic", "Elasticsearch Kotlin query DSL")
