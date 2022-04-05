@@ -1,10 +1,11 @@
 package dev.evo.elasticmagic.compile
 
-import dev.evo.elasticmagic.BaseSearchQuery
 import dev.evo.elasticmagic.ElasticsearchVersion
+import dev.evo.elasticmagic.MultiSearchQueryResult
 import dev.evo.elasticmagic.PreparedSearchQuery
 import dev.evo.elasticmagic.SearchHit
 import dev.evo.elasticmagic.SearchQueryResult
+import dev.evo.elasticmagic.SearchQueryWithIndex
 import dev.evo.elasticmagic.aggs.AggregationResult
 import dev.evo.elasticmagic.doc.BaseDocSource
 import dev.evo.elasticmagic.query.ArrayExpression
@@ -21,16 +22,51 @@ import dev.evo.elasticmagic.serde.toMap
 import dev.evo.elasticmagic.toRequestParameters
 import dev.evo.elasticmagic.transport.Request
 import dev.evo.elasticmagic.transport.Method
+import dev.evo.elasticmagic.transport.Parameters
 
-class SearchQueryWithIndex<S: BaseDocSource>(
-    val searchQuery: BaseSearchQuery<S, *>,
-    val indexName: String,
-)
-
-fun <S: BaseDocSource> BaseSearchQuery<S, *>.usingIndex(
-    indexName: String
-): SearchQueryWithIndex<S> {
-    return SearchQueryWithIndex(this, indexName)
+class MultiSearchQueryCompiler(
+    esVersion: ElasticsearchVersion,
+    private val searchQueryCompiler: SearchQueryCompiler
+) : BaseCompiler(esVersion) {
+    fun compile(
+        serializer: Serializer, input: List<SearchQueryWithIndex<*>>
+    ): Request<List<ObjectCtx>, MultiSearchQueryResult> {
+        val preparedQueries = mutableListOf<PreparedSearchQuery<*>>()
+        val body = mutableListOf<ObjectCtx>()
+        for (query in input) {
+            val preparedQuery = query.searchQuery.prepare()
+                .also(preparedQueries::add)
+            val compiledQuery = searchQueryCompiler.compile(serializer, preparedQuery, query.indexName)
+            val header = serializer.obj {
+                searchQueryCompiler.visit(this, compiledQuery.parameters)
+                field("index", query.indexName)
+            }
+            body.add(header)
+            body.add(compiledQuery.body ?: serializer.obj {})
+        }
+        return Request(
+            method = Method.POST,
+            path = "_msearch",
+            parameters = Parameters(),
+            body = body,
+            processResult = { ctx ->
+                val took = ctx.longOrNull("took")
+                val responsesCtx = ctx.array("responses")
+                val preparedQueriesIter = preparedQueries.iterator()
+                val results = mutableListOf<SearchQueryResult<*>>()
+                while (responsesCtx.hasNext()) {
+                    val responseCtx = responsesCtx.obj()
+                    results.add(
+                        searchQueryCompiler.processResult(responseCtx, preparedQueriesIter.next())
+                    )
+                }
+                MultiSearchQueryResult(
+                    took = took,
+                    responses = results,
+                )
+            }
+        )
+    }
 }
 
 open class SearchQueryCompiler(
@@ -42,21 +78,26 @@ open class SearchQueryCompiler(
     }
 
     fun <S: BaseDocSource> compile(
-        serializer: Serializer, input: SearchQueryWithIndex<S>
+        serializer: Serializer, input: PreparedSearchQuery<S>, indexName: String
     ): Request<ObjectCtx, SearchQueryResult<S>> {
-        val searchQuery = input.searchQuery.prepare()
         val body = serializer.obj {
-            visit(this, searchQuery)
+            visit(this, input)
         }
         return Request(
             method = Method.POST,
-            path = "${input.indexName}/_search",
-            parameters = searchQuery.params.toRequestParameters(),
+            path = "$indexName/_search",
+            parameters = input.params.toRequestParameters(),
             body = body,
             processResult = { ctx ->
-                processResult(ctx, searchQuery)
+                processResult(ctx, input)
             }
         )
+    }
+
+    fun <S: BaseDocSource> compile(
+        serializer: Serializer, input: SearchQueryWithIndex<S>
+    ): Request<ObjectCtx, SearchQueryResult<S>> {
+        return compile(serializer, input.searchQuery.prepare(), input.indexName)
     }
 
     fun visit(ctx: ObjectCtx, searchQuery: PreparedSearchQuery<*>) {
@@ -230,6 +271,7 @@ open class SearchQueryCompiler(
     ): SearchHit<S> {
         val source = rawHit.objOrNull("_source")?.let { rawSource ->
             preparedSearchQuery.docSourceFactory(rawHit).apply {
+                // TODO: Don't convert to a map
                 fromSource(rawSource.toMap())
             }
         }

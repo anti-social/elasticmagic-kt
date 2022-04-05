@@ -205,8 +205,8 @@ public final class dev/evo/elasticmagic/DeleteIndexResult {
 }
 
 public final class dev/evo/elasticmagic/ElasticsearchCluster {
-	public fun <init> (Ldev/evo/elasticmagic/transport/ElasticsearchTransport;Ldev/evo/elasticmagic/serde/Serde;Ldev/evo/elasticmagic/compile/CompilerSet;)V
-	public synthetic fun <init> (Ldev/evo/elasticmagic/transport/ElasticsearchTransport;Ldev/evo/elasticmagic/serde/Serde;Ldev/evo/elasticmagic/compile/CompilerSet;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Ldev/evo/elasticmagic/transport/ElasticsearchTransport;Ldev/evo/elasticmagic/compile/CompilerSet;)V
+	public synthetic fun <init> (Ldev/evo/elasticmagic/transport/ElasticsearchTransport;Ldev/evo/elasticmagic/compile/CompilerSet;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun createIndex (Ljava/lang/String;Ldev/evo/elasticmagic/doc/Document;Ljava/util/Map;Ljava/util/Map;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun createIndex$default (Ldev/evo/elasticmagic/ElasticsearchCluster;Ljava/lang/String;Ldev/evo/elasticmagic/doc/Document;Ljava/util/Map;Ljava/util/Map;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public final fun deleteIndex (Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
@@ -218,16 +218,20 @@ public final class dev/evo/elasticmagic/ElasticsearchCluster {
 	public final fun getVersion (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public final fun indexExists (Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun indexExists$default (Ldev/evo/elasticmagic/ElasticsearchCluster;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun multiSearch (Ljava/util/List;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public final fun updateMapping (Ljava/lang/String;Ldev/evo/elasticmagic/doc/Document;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun updateMapping$default (Ldev/evo/elasticmagic/ElasticsearchCluster;Ljava/lang/String;Ldev/evo/elasticmagic/doc/Document;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 }
 
 public final class dev/evo/elasticmagic/ElasticsearchIndex {
-	public fun <init> (Ljava/lang/String;Ldev/evo/elasticmagic/transport/ElasticsearchTransport;Ldev/evo/elasticmagic/serde/Serde;Ldev/evo/elasticmagic/ElasticsearchCluster;)V
+	public fun <init> (Ljava/lang/String;Ldev/evo/elasticmagic/ElasticsearchCluster;)V
 	public final fun bulk (Ljava/util/List;Ldev/evo/elasticmagic/bulk/Refresh;Ljava/lang/String;Ljava/util/Map;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun bulk$default (Ldev/evo/elasticmagic/ElasticsearchIndex;Ljava/util/List;Ldev/evo/elasticmagic/bulk/Refresh;Ljava/lang/String;Ljava/util/Map;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public final fun getCluster ()Ldev/evo/elasticmagic/ElasticsearchCluster;
 	public final fun getName ()Ljava/lang/String;
+	public final fun getSerde ()Ldev/evo/elasticmagic/serde/Serde;
+	public final fun getTransport ()Ldev/evo/elasticmagic/transport/ElasticsearchTransport;
+	public final fun multiSearch (Ljava/util/List;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public final fun search (Ldev/evo/elasticmagic/BaseSearchQuery;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
@@ -242,6 +246,19 @@ public final class dev/evo/elasticmagic/ElasticsearchVersion {
 	public final fun getMajor ()I
 	public final fun getMinor ()I
 	public final fun getPatch ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/evo/elasticmagic/MultiSearchQueryResult {
+	public fun <init> (Ljava/lang/Long;Ljava/util/List;)V
+	public final fun component1 ()Ljava/lang/Long;
+	public final fun component2 ()Ljava/util/List;
+	public final fun copy (Ljava/lang/Long;Ljava/util/List;)Ldev/evo/elasticmagic/MultiSearchQueryResult;
+	public static synthetic fun copy$default (Ldev/evo/elasticmagic/MultiSearchQueryResult;Ljava/lang/Long;Ljava/util/List;ILjava/lang/Object;)Ldev/evo/elasticmagic/MultiSearchQueryResult;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getResponses ()Ljava/util/List;
+	public final fun getTook ()Ljava/lang/Long;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
@@ -355,6 +372,10 @@ public final class dev/evo/elasticmagic/SearchQuery$Companion {
 	public static synthetic fun invoke$default (Ldev/evo/elasticmagic/SearchQuery$Companion;Lkotlin/jvm/functions/Function0;Ldev/evo/elasticmagic/query/QueryExpression;Ljava/util/Map;ILjava/lang/Object;)Ldev/evo/elasticmagic/SearchQuery;
 }
 
+public final class dev/evo/elasticmagic/SearchQueryKt {
+	public static final fun usingIndex (Ldev/evo/elasticmagic/BaseSearchQuery;Ljava/lang/String;)Ldev/evo/elasticmagic/SearchQueryWithIndex;
+}
+
 public final class dev/evo/elasticmagic/SearchQueryResult {
 	public fun <init> (Ljava/util/Map;JZLjava/lang/Long;Ljava/lang/String;Ljava/lang/Double;Ljava/util/List;Ljava/util/Map;)V
 	public final fun component1 ()Ljava/util/Map;
@@ -376,6 +397,19 @@ public final class dev/evo/elasticmagic/SearchQueryResult {
 	public final fun getTook ()J
 	public final fun getTotalHits ()Ljava/lang/Long;
 	public final fun getTotalHitsRelation ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/evo/elasticmagic/SearchQueryWithIndex {
+	public fun <init> (Ldev/evo/elasticmagic/BaseSearchQuery;Ljava/lang/String;)V
+	public final fun component1 ()Ldev/evo/elasticmagic/BaseSearchQuery;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun copy (Ldev/evo/elasticmagic/BaseSearchQuery;Ljava/lang/String;)Ldev/evo/elasticmagic/SearchQueryWithIndex;
+	public static synthetic fun copy$default (Ldev/evo/elasticmagic/SearchQueryWithIndex;Ldev/evo/elasticmagic/BaseSearchQuery;Ljava/lang/String;ILjava/lang/Object;)Ldev/evo/elasticmagic/SearchQueryWithIndex;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getIndexName ()Ljava/lang/String;
+	public final fun getSearchQuery ()Ldev/evo/elasticmagic/BaseSearchQuery;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
@@ -1884,6 +1918,7 @@ public final class dev/evo/elasticmagic/compile/CompilerSet {
 	public final fun getCreateIndex ()Ldev/evo/elasticmagic/compile/CreateIndexCompiler;
 	public final fun getFeatures ()Ldev/evo/elasticmagic/compile/ElasticsearchFeatures;
 	public final fun getMapping ()Ldev/evo/elasticmagic/compile/MappingCompiler;
+	public final fun getMultiSearchQuery ()Ldev/evo/elasticmagic/compile/MultiSearchQueryCompiler;
 	public final fun getSearchQuery ()Ldev/evo/elasticmagic/compile/SearchQueryCompiler;
 	public final fun getUpdateMapping ()Ldev/evo/elasticmagic/compile/UpdateMappingCompiler;
 }
@@ -1930,6 +1965,11 @@ public final class dev/evo/elasticmagic/compile/MappingCompiler$Compiled {
 	public fun toString ()Ljava/lang/String;
 }
 
+public final class dev/evo/elasticmagic/compile/MultiSearchQueryCompiler : dev/evo/elasticmagic/compile/BaseCompiler {
+	public fun <init> (Ldev/evo/elasticmagic/ElasticsearchVersion;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
+	public final fun compile (Ldev/evo/elasticmagic/serde/Serializer;Ljava/util/List;)Ldev/evo/elasticmagic/transport/Request;
+}
+
 public final class dev/evo/elasticmagic/compile/PreparedBulk {
 	public fun <init> (Ljava/lang/String;Ljava/util/List;Ldev/evo/elasticmagic/bulk/Refresh;Ljava/lang/String;Ljava/util/Map;)V
 	public synthetic fun <init> (Ljava/lang/String;Ljava/util/List;Ldev/evo/elasticmagic/bulk/Refresh;Ljava/lang/String;Ljava/util/Map;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
@@ -1965,7 +2005,8 @@ public final class dev/evo/elasticmagic/compile/PreparedUpdateMapping {
 
 public class dev/evo/elasticmagic/compile/SearchQueryCompiler : dev/evo/elasticmagic/compile/BaseCompiler {
 	public fun <init> (Ldev/evo/elasticmagic/ElasticsearchVersion;)V
-	public final fun compile (Ldev/evo/elasticmagic/serde/Serializer;Ldev/evo/elasticmagic/compile/SearchQueryWithIndex;)Ldev/evo/elasticmagic/transport/Request;
+	public final fun compile (Ldev/evo/elasticmagic/serde/Serializer;Ldev/evo/elasticmagic/PreparedSearchQuery;Ljava/lang/String;)Ldev/evo/elasticmagic/transport/Request;
+	public final fun compile (Ldev/evo/elasticmagic/serde/Serializer;Ldev/evo/elasticmagic/SearchQueryWithIndex;)Ldev/evo/elasticmagic/transport/Request;
 	public fun dispatch (Ldev/evo/elasticmagic/serde/Serializer$ArrayCtx;Ljava/lang/Object;)V
 	public fun dispatch (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ljava/lang/String;Ljava/lang/Object;)V
 	public final fun processResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;Ldev/evo/elasticmagic/PreparedSearchQuery;)Ldev/evo/elasticmagic/SearchQueryResult;
@@ -1976,16 +2017,6 @@ public class dev/evo/elasticmagic/compile/SearchQueryCompiler : dev/evo/elasticm
 
 public abstract interface class dev/evo/elasticmagic/compile/SearchQueryCompiler$Visitable {
 	public abstract fun accept (Ldev/evo/elasticmagic/serde/Serializer$Ctx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
-}
-
-public final class dev/evo/elasticmagic/compile/SearchQueryCompilerKt {
-	public static final fun usingIndex (Ldev/evo/elasticmagic/BaseSearchQuery;Ljava/lang/String;)Ldev/evo/elasticmagic/compile/SearchQueryWithIndex;
-}
-
-public final class dev/evo/elasticmagic/compile/SearchQueryWithIndex {
-	public fun <init> (Ldev/evo/elasticmagic/BaseSearchQuery;Ljava/lang/String;)V
-	public final fun getIndexName ()Ljava/lang/String;
-	public final fun getSearchQuery ()Ldev/evo/elasticmagic/BaseSearchQuery;
 }
 
 public final class dev/evo/elasticmagic/compile/UpdateMappingCompiler : dev/evo/elasticmagic/compile/BaseCompiler {

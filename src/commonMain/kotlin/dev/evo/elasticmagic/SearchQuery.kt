@@ -456,6 +456,17 @@ open class SearchQuery<S: BaseDocSource>(
     }
 }
 
+data class SearchQueryWithIndex<S: BaseDocSource>(
+    val searchQuery: BaseSearchQuery<S, *>,
+    val indexName: String,
+)
+
+fun <S: BaseDocSource> BaseSearchQuery<S, *>.usingIndex(
+    indexName: String
+): SearchQueryWithIndex<S> {
+    return SearchQueryWithIndex(this, indexName)
+}
+
 /**
  * A prepared search query is a public read-only view to a search query.
  * Mainly it is used to compile a search query.

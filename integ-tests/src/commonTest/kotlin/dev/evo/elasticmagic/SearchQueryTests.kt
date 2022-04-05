@@ -15,6 +15,7 @@ import dev.evo.elasticmagic.doc.DocSource
 import dev.evo.elasticmagic.doc.Document
 import dev.evo.elasticmagic.bulk.DocSourceAndMeta
 import dev.evo.elasticmagic.bulk.withActionMeta
+import dev.evo.elasticmagic.doc.DynDocSource
 import dev.evo.elasticmagic.doc.SubDocument
 import dev.evo.elasticmagic.doc.enum
 import dev.evo.elasticmagic.doc.instant
@@ -30,6 +31,7 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.doubles.shouldBeGreaterThan
+import io.kotest.matchers.types.shouldBeInstanceOf
 
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
@@ -526,6 +528,38 @@ class SearchQueryTests : ElasticsearchTestBase() {
             priceHistAgg.buckets[2].docCount shouldBe 1
             priceHistAgg.buckets[3].key shouldBe 10.0
             priceHistAgg.buckets[3].docCount shouldBe 1
+        }
+    }
+
+    @Test
+    fun multiSearch() = runTestWithTransports {
+        withFixtures(
+            OrderDoc,
+            listOf(
+                karlssonsJam, karlssonsBestDonuts, karlssonsJustDonuts, littleBrotherDogStuff
+            ),
+        ) {
+            val newOrdersQuery = SearchQuery(::OrderDocSource)
+                .filter(OrderDoc.status eq OrderStatus.NEW)
+                .sort(OrderDoc.meta.id)
+            val acceptedOrdersQuery = SearchQuery()
+                .filter(OrderDoc.status eq OrderStatus.ACCEPTED)
+                .sort(OrderDoc.meta.id)
+            val searchResult = index.multiSearch(listOf(newOrdersQuery, acceptedOrdersQuery))
+
+            searchResult.responses.size shouldBe 2
+
+            val newOrdersResult = searchResult.responses[0]
+            newOrdersResult.totalHits shouldBe 3
+            newOrdersResult.hits[0].source.shouldBeInstanceOf<OrderDocSource>()
+            newOrdersResult.hits[0].id shouldBe "101"
+            newOrdersResult.hits[1].id shouldBe "102"
+            newOrdersResult.hits[2].id shouldBe "104"
+
+            val acceptedOrdersResult = searchResult.responses[1]
+            acceptedOrdersResult.totalHits shouldBe 1
+            acceptedOrdersResult.hits[0].source.shouldBeInstanceOf<DynDocSource>()
+            acceptedOrdersResult.hits[0].id shouldBe "103"
         }
     }
 }
