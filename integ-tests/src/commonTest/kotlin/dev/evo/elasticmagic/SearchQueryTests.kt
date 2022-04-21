@@ -459,7 +459,7 @@ class SearchQueryTests : ElasticsearchTestBase() {
         withFixtures(OrderDoc, listOf(
             karlssonsJam, karlssonsBestDonuts, karlssonsJustDonuts, littleBrotherDogStuff
         )) {
-            val interval = if (index.cluster.getVersion().major == 7) {
+            val interval = if (index.cluster.getVersion().major >= 7) {
                 DateHistogramAgg.Interval.Calendar(CalendarInterval.YEAR)
             } else {
                 DateHistogramAgg.Interval.Legacy("1y")
@@ -541,10 +541,10 @@ class SearchQueryTests : ElasticsearchTestBase() {
         ) {
             val newOrdersQuery = SearchQuery(::OrderDocSource)
                 .filter(OrderDoc.status eq OrderStatus.NEW)
-                .sort(OrderDoc.meta.id)
+                .sort(OrderDoc.dateCreated)
             val acceptedOrdersQuery = SearchQuery()
                 .filter(OrderDoc.status eq OrderStatus.ACCEPTED)
-                .sort(OrderDoc.meta.id)
+                .sort(OrderDoc.dateCreated)
             val searchResult = index.multiSearch(listOf(newOrdersQuery, acceptedOrdersQuery))
 
             searchResult.responses.size shouldBe 2

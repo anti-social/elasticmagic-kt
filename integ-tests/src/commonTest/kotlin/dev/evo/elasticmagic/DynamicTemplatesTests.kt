@@ -48,12 +48,12 @@ class DynamicTemplatesTests : ElasticsearchTestBase() {
             listOf(
                 DocSourceAndMeta(IdActionMeta("1"), p1),
                 DocSourceAndMeta(IdActionMeta("2"), p2),
-            )
+            ),
         ) {
             shouldThrow<ElasticsearchException.BadRequest> {
-                // Field is not indexed
+                // Field does not support fielddata
                 SearchQuery()
-                    .filter(companyIdField eq 10)
+                    .sort(companyIdField.id)
                     .execute(index)
             }
             val totalHits = SearchQuery()

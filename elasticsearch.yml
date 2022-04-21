@@ -1,0 +1,5 @@
+cluster.name: "docker-cluster"
+network.host: 0.0.0.0
+
+# Disable security features
+xpack.security.enabled: false

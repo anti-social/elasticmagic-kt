@@ -41,21 +41,21 @@ jobs:
       with:
         path: ~/.gradle/wrapper
         key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
-        restore-keys: ${{ runner.os }}-gradle-wrapper
+        restore-keys: ${{ runner.os }}-gradle-wrapper-
 
     - name: Cache Gradle packages
       uses: actions/cache@v2
       with:
         path: ~/.gradle/caches
-        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle.kts', 'buildSrc') }}
-        restore-keys: ${{ runner.os }}-gradle-caches
+        key: ${{ runner.os }}-gradle-caches-${{ hashFiles('**/*.gradle.kts', 'buildSrc') }}
+        restore-keys: ${{ runner.os }}-gradle-caches-
 
     - name: Cache Kotlin Native
       uses: actions/cache@v2
       with:
         path: ~/.konan
-        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle.kts', 'buildSrc') }}
-        restore-keys: ${{ runner.os }}-konan
+        key: ${{ runner.os }}-konan-${{ hashFiles('**/*.gradle.kts', 'buildSrc') }}
+        restore-keys: ${{ runner.os }}-konan-
     ### End of cache ###
 
     ### Compile ###
@@ -94,12 +94,6 @@ jobs:
         retention-days: 1
     ### End of artifacts ###
 
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v2
-      with:
-        token: ${{ secrets.CODECOV_TOKEN }}
-        verbose: true
-
     - name: Run linter
       run: |
         set -eux
@@ -115,6 +109,12 @@ jobs:
         set -eux
         ./gradlew allTests -x integ-tests:allTests $GRADLE_ARGS
 
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v2
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        verbose: true
+
   integ-tests:
     if: |
       !contains(github.event.head_commit.message, '[skip tests]')
@@ -123,20 +123,24 @@ jobs:
     strategy:
       matrix:
         java-version: [11]
-        es-version: [6.8.18, 7.14.1]
-    services:
-      elasticsearch:
-        image: elasticsearch:${{ matrix.es-version }}
-        ports:
-        - 9200:9200
-        options: >-
-          -e="discovery.type=single-node"
-          --health-cmd="curl http://localhost:9200/_cluster/health"
-          --health-interval=5s
-          --health-timeout=2s
-          --health-retries=10
+        es-version: [6.8.23, 7.17.3, 8.1.2]
     steps:
     - uses: actions/checkout@v2
+
+    - name: Start Elasticsearch
+      run: |
+        set -eux
+        docker run -d \
+          --name elasticsearch \
+          -p 9200:9200 \
+          -v $(pwd)/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml \
+          -e "discovery.type=single-node" \
+          -e "ES_JAVA_OPTS=-Xms128m -Xmx256m" \
+          --health-cmd="curl http://localhost:9200/_cluster/health" \
+          --health-interval=5s \
+          --health-timeout=2s \
+          --health-retries=10 \
+          elasticsearch:${{ matrix.es-version }}
 
     - name: Install libcurl
       run: |
@@ -154,21 +158,21 @@ jobs:
       with:
         path: ~/.gradle/wrapper
         key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
-        restore-keys: ${{ runner.os }}-gradle-wrapper
+        restore-keys: ${{ runner.os }}-gradle-wrapper-
 
     - name: Cache Gradle packages
       uses: actions/cache@v2
       with:
         path: ~/.gradle/caches
-        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle.kts', 'buildSrc') }}
-        restore-keys: ${{ runner.os }}-gradle-caches
+        key: ${{ runner.os }}-gradle-caches-${{ hashFiles('**/*.gradle.kts', 'buildSrc') }}
+        restore-keys: ${{ runner.os }}-gradle-caches-
 
     - name: Cache Kotlin Native
       uses: actions/cache@v2
       with:
         path: ~/.konan
-        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle.kts', 'buildSrc') }}
-        restore-keys: ${{ runner.os }}-konan
+        key: ${{ runner.os }}-konan-${{ hashFiles('**/*.gradle.kts', 'buildSrc') }}
+        restore-keys: ${{ runner.os }}-konan-
     ### End of cache ###
 
     ### Artifacts ###
@@ -230,20 +234,20 @@ jobs:
       with:
         path: ~/.gradle/wrapper
         key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
-        restore-keys: ${{ runner.os }}-gradle-wrapper
+        restore-keys: ${{ runner.os }}-gradle-wrapper-
 
     - name: Cache Gradle packages
       uses: actions/cache@v2
       with:
         path: ~/.gradle/caches
-        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle.kts', 'buildSrc') }}
-        restore-keys: ${{ runner.os }}-gradle-caches
+        key: ${{ runner.os }}-gradle-caches-${{ hashFiles('**/*.gradle.kts', 'buildSrc') }}
+        restore-keys: ${{ runner.os }}-gradle-caches-
 
     - name: Cache Kotlin Native
       uses: actions/cache@v2
       with:
         path: ~/.konan
-        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle.kts', 'buildSrc') }}
+        key: ${{ runner.os }}-konan-${{ hashFiles('**/*.gradle.kts', 'buildSrc') }}
         restore-keys: ${{ runner.os }}-konan
     ### End of cache ###
 

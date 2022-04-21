@@ -58,7 +58,7 @@ class BulkCompiler(
                 ?: itemObjWrapper.objOrNull("create")?.let { it to BulkOpType.CREATE }
                 ?: throw IllegalArgumentException("Unknown bulk item: ${itemObjWrapper.toMap()}")
             val index = itemObj.string("_index")
-            val type = itemObj.string("_type")
+            val type = itemObj.stringOrNull("_type") ?: "_doc"
             val id = itemObj.string("_id")
             val routing = itemObj.stringOrNull("_routing")
             val status = itemObj.int("status")
