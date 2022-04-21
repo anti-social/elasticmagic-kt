@@ -35,6 +35,7 @@ jobs:
       with:
         java-version: ${{ matrix.java-version }}
 
+    ### Cache ###
     - name: Cache gradle wrapper
       uses: actions/cache@v2
       with:
@@ -46,15 +47,58 @@ jobs:
       uses: actions/cache@v2
       with:
         path: ~/.gradle/caches
-        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle', '**/*.gradle.kts', 'buildSrc') }}
-        restore-keys: ${{ runner.os }}-gradle
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle.kts', 'buildSrc') }}
+        restore-keys: ${{ runner.os }}-gradle-caches
 
     - name: Cache Kotlin Native
       uses: actions/cache@v2
       with:
         path: ~/.konan
-        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle', '**/*.gradle.kts', 'buildSrc') }}
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle.kts', 'buildSrc') }}
         restore-keys: ${{ runner.os }}-konan
+    ### End of cache ###
+
+    ### Compile ###
+    - name: Compile JVM
+      run: |
+        set -eux
+        ./gradlew compileTestKotlinJvm $GRADLE_ARGS
+
+    - name: Compile JS
+      run: |
+        set -eux
+        ./gradlew compileTestKotlinJs $GRADLE_ARGS
+
+    - name: Compile native
+      run: |
+        set -eux
+        ./gradlew linkDebugTestNative $GRADLE_ARGS
+
+    - name: Compile samples
+      run: |
+        set -eux
+        ./gradlew compileKotlinJvm compileKotlinNative -p samples $GRADLE_ARGS
+    ### End of compile ###
+
+    ### Artifacts ###
+    - name: Prepare build artifact
+      run: |
+        set -eux
+        find . -type d -name build -print | xargs tar --zstd -cf build.tar.zstd .gradle
+
+    - name: Upload build artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: Build
+        path: build.tar.zstd
+        retention-days: 1
+    ### End of artifacts ###
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v2
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        verbose: true
 
     - name: Run linter
       run: |
@@ -70,17 +114,6 @@ jobs:
       run: |
         set -eux
         ./gradlew allTests -x integ-tests:allTests $GRADLE_ARGS
-
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v2
-      with:
-        token: ${{ secrets.CODECOV_TOKEN }}
-        verbose: true
-
-    - name: Compile samples
-      run: |
-        set -eux
-        ./gradlew compileKotlinJvm compileKotlinNative -p samples $GRADLE_ARGS
 
   integ-tests:
     if: |
@@ -127,22 +160,43 @@ jobs:
       uses: actions/cache@v2
       with:
         path: ~/.gradle/caches
-        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle', '**/*.gradle.kts', 'buildSrc') }}
-        restore-keys: ${{ runner.os }}-gradle
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle.kts', 'buildSrc') }}
+        restore-keys: ${{ runner.os }}-gradle-caches
 
     - name: Cache Kotlin Native
       uses: actions/cache@v2
       with:
         path: ~/.konan
-        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle', '**/*.gradle.kts', 'buildSrc') }}
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle.kts', 'buildSrc') }}
         restore-keys: ${{ runner.os }}-konan
-    ### End of Cache ###
+    ### End of cache ###
+
+    ### Artifacts ###
+    - name: Download build artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: Build
+
+    - name: Unpack build artifact
+      run: |
+        set -eux
+        tar --zstd -xf build.tar.zstd
+    ### End of artifacts ###
 
     - name: Run integration tests
       run: |
         set -eux
-        # JS integration tests are not working at the moment
         ./gradlew :integ-tests:check $GRADLE_ARGS
+
+    - name: Run samples JVM
+      run: |
+        set -eux
+        ./gradlew run -p samples $GRADLE_ARGS
+
+    - name: Run samples native
+      run: |
+        set -eux
+        ./gradlew runDebugExecutableNative -p samples $GRADLE_ARGS
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v2
@@ -182,16 +236,28 @@ jobs:
       uses: actions/cache@v2
       with:
         path: ~/.gradle/caches
-        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle', '**/*.gradle.kts', 'buildSrc') }}
-        restore-keys: ${{ runner.os }}-gradle
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle.kts', 'buildSrc') }}
+        restore-keys: ${{ runner.os }}-gradle-caches
 
     - name: Cache Kotlin Native
       uses: actions/cache@v2
       with:
         path: ~/.konan
-        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle', '**/*.gradle.kts', 'buildSrc') }}
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle.kts', 'buildSrc') }}
         restore-keys: ${{ runner.os }}-konan
-    ### End of Cache ###
+    ### End of cache ###
+
+    ### Artifacts ###
+    - name: Download build artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: Build
+
+    - name: Unpack build artifact
+      run: |
+        set -eux
+        tar --zstd -xf build.tar.zstd
+    ### End of artifacts ###
 
     - name: Prepare publishing
       run: |
@@ -211,3 +277,13 @@ jobs:
           -Psigning.password='${{ secrets.SIGNING_KEY_PASSPHRASE }}' \
           -PsonatypeUser='${{ secrets.SONATYPE_USER }}' \
           -PsonatypePassword='${{ secrets.SONATYPE_PASSWORD }}'
+
+  cleanup:
+    if: always()
+    runs-on: ubuntu-latest
+    needs: publish
+    steps:
+    - uses: geekyeggo/delete-artifact@v1
+      with:
+        name: Build
+        failOnError: false
