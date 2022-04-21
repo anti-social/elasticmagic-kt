@@ -22,6 +22,16 @@ data class SearchQueryResult<S: BaseDocSource>(
     }
 }
 
+data class MultiSearchQueryResult(
+    val took: Long?,
+    val responses: List<SearchQueryResult<*>>
+) {
+    inline fun <reified S: BaseDocSource> get(ix: Int): SearchQueryResult<S> {
+        @Suppress("UNCHECKED_CAST")
+        return responses[ix] as SearchQueryResult<S>
+    }
+}
+
 data class SearchHit<S: BaseDocSource>(
     val index: String,
     val type: String,

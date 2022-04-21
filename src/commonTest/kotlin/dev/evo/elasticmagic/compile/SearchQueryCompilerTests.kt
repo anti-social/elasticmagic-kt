@@ -5,6 +5,7 @@ import dev.evo.elasticmagic.ElasticsearchVersion
 import dev.evo.elasticmagic.Params
 import dev.evo.elasticmagic.SearchQuery
 import dev.evo.elasticmagic.SearchType
+import dev.evo.elasticmagic.usingIndex
 import dev.evo.elasticmagic.aggs.DateHistogramAgg
 import dev.evo.elasticmagic.aggs.FixedInterval
 import dev.evo.elasticmagic.aggs.MinAgg

@@ -1,15 +1,14 @@
 package dev.evo.elasticmagic
 
+import dev.evo.elasticmagic.bulk.Action
+import dev.evo.elasticmagic.bulk.Refresh
 import dev.evo.elasticmagic.compile.ActionCompiler
 import dev.evo.elasticmagic.compile.PreparedBulk
 import dev.evo.elasticmagic.compile.CompilerSet
 import dev.evo.elasticmagic.compile.PreparedCreateIndex
 import dev.evo.elasticmagic.compile.PreparedUpdateMapping
-import dev.evo.elasticmagic.compile.usingIndex
-import dev.evo.elasticmagic.bulk.Action
 import dev.evo.elasticmagic.doc.BaseDocSource
 import dev.evo.elasticmagic.doc.Document
-import dev.evo.elasticmagic.bulk.Refresh
 import dev.evo.elasticmagic.serde.Serde
 import dev.evo.elasticmagic.transport.Request
 import dev.evo.elasticmagic.transport.ElasticsearchException
@@ -25,16 +24,15 @@ internal fun Params.toRequestParameters(): Parameters {
 
 class ElasticsearchCluster(
     val transport: ElasticsearchTransport,
-    serde: Serde? = null,
     private val compilers: CompilerSet? = null,
 ) {
-    val serde = serde ?: transport.serde
+    val serde = transport.serde
 
     private val esVersion = CompletableDeferred<ElasticsearchVersion>()
     private val sniffedCompilers = CompletableDeferred<CompilerSet>()
 
     operator fun get(indexName: String): ElasticsearchIndex {
-        return ElasticsearchIndex(indexName, transport, serde, this)
+        return ElasticsearchIndex(indexName, this)
     }
 
     private suspend fun fetchVersion(): ElasticsearchVersion {
@@ -159,14 +157,21 @@ class ElasticsearchCluster(
             getCompilers().updateMapping.compile(serde.serializer, updateMapping)
         )
     }
+
+    suspend fun multiSearch(searchQueries: List<SearchQueryWithIndex<*>>): MultiSearchQueryResult {
+        val compiled = getCompilers().multiSearchQuery.compile(
+            serde.serializer, searchQueries
+        )
+        return transport.bulkRequest(compiled)
+    }
 }
 
 class ElasticsearchIndex(
     val name: String,
-    private val transport: ElasticsearchTransport,
-    private val serde: Serde,
     val cluster: ElasticsearchCluster,
 ) {
+    val serde: Serde = cluster.serde
+    val transport: ElasticsearchTransport = cluster.transport
 
     suspend fun <S : BaseDocSource> search(
         searchQuery: BaseSearchQuery<S, *>
@@ -175,6 +180,12 @@ class ElasticsearchIndex(
             serde.serializer, searchQuery.usingIndex(name)
         )
         return transport.request(compiled)
+    }
+
+    suspend fun multiSearch(
+        searchQueries: List<BaseSearchQuery<*, *>>
+    ): MultiSearchQueryResult {
+        return cluster.multiSearch(searchQueries.map { query -> query.usingIndex(name) })
     }
 
     suspend fun bulk(
