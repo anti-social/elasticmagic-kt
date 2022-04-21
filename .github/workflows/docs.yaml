@@ -34,14 +34,14 @@ jobs:
       uses: actions/cache@v2
       with:
         path: ~/.gradle/caches
-        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle', '**/*.gradle.kts', 'buildSrc') }}
-        restore-keys: ${{ runner.os }}-gradle
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle.kts', 'buildSrc') }}
+        restore-keys: ${{ runner.os }}-gradle-caches
 
     - name: Cache Kotlin Native
       uses: actions/cache@v2
       with:
         path: ~/.konan
-        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle', '**/*.gradle.kts', 'buildSrc') }}
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle.kts', 'buildSrc') }}
         restore-keys: ${{ runner.os }}-konan
     ### End of Cache ###
 
