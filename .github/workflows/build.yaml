@@ -123,17 +123,27 @@ jobs:
     strategy:
       matrix:
         java-version: [11]
-        es-version: [6.8.23, 7.17.3, 8.1.2]
+        es-major-version: [6, 7, 8]
+        include:
+        - es-major-version: 6
+          es-version: 6.8.23
+          es-config: elasticsearch.yml
+        - es-major-version: 7
+          es-version: 7.17.3
+          es-config: elasticsearch.yml
+        - es-major-version: 8
+          es-version: 8.1.2
+          es-config: elasticsearch-auth.yml
     steps:
     - uses: actions/checkout@v2
 
     - name: Start Elasticsearch
       run: |
-        set -eux
+        set -eu
         docker run -d \
           --name elasticsearch \
           -p 9200:9200 \
-          -v $(pwd)/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml \
+          -v $(pwd)/${{ matrix.es-config }}:/usr/share/elasticsearch/config/elasticsearch.yml \
           -e "discovery.type=single-node" \
           -e "ES_JAVA_OPTS=-Xms128m -Xmx256m" \
           --health-cmd="curl http://localhost:9200/_cluster/health" \
@@ -141,6 +151,22 @@ jobs:
           --health-timeout=2s \
           --health-retries=10 \
           elasticsearch:${{ matrix.es-version }}
+        echo -n "Waiting Elasticsearch "
+        until [ $(docker inspect -f '{{.State.Health.Status}}' elasticsearch) == "healthy" ]; do
+          sleep 1
+          echo -n .
+        done
+
+    - name: Setup Elasticsearch password
+      if: ${{ matrix.es-major-version >= 8 }}
+      run: |
+        set -eux
+        ELASTIC_PASSWORD=$( \
+          docker exec elasticsearch \
+            /usr/share/elasticsearch/bin/elasticsearch-reset-password --batch -u elastic | \
+          awk 'BEGIN { FS=": "; } /^New value:/ { print $2; }' \
+        )
+        echo "ELASTIC_PASSWORD=$ELASTIC_PASSWORD" >> $GITHUB_ENV
 
     - name: Install libcurl
       run: |
@@ -190,16 +216,19 @@ jobs:
     - name: Run integration tests
       run: |
         set -eux
+        export ELASTIC_PASSWORD='${{ env.ELASTIC_PASSWORD }}'
         ./gradlew :integ-tests:check $GRADLE_ARGS
 
     - name: Run samples JVM
       run: |
         set -eux
+        export ELASTIC_PASSWORD='${{ env.ELASTIC_PASSWORD }}'
         ./gradlew run -p samples $GRADLE_ARGS
 
     - name: Run samples native
       run: |
         set -eux
+        export ELASTIC_PASSWORD='${{ env.ELASTIC_PASSWORD }}'
         ./gradlew runDebugExecutableNative -p samples $GRADLE_ARGS
 
     - name: Upload coverage to Codecov

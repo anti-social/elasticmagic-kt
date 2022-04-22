@@ -20,7 +20,11 @@ abstract class ElasticsearchTestBase : TestBase() {
                 "http://localhost:9200",
                 serde = serde,
                 engine = httpEngine,
-            )
+            ) {
+                if (elasticAuth != null) {
+                    auth = elasticAuth
+                }
+            }
             val cluster = ElasticsearchCluster(transport)
             val index = cluster["elasticmagic-tests_$indexName"]
             val testScope = TestScope(cluster, index)

@@ -102,13 +102,18 @@ expect class GzipEncoder() : RequestEncoder
 
 typealias RequestBodyBuilder = RequestEncoder.() -> Unit
 
+sealed class Auth {
+    class Basic(val username: String, val password: String) : Auth()
+}
+
 abstract class ElasticsearchTransport(
     val baseUrl: String,
     val serde: Serde,
-    config: Config,
+    protected val config: Config,
 ) {
     class Config {
         var gzipRequests: Boolean = false
+        var auth: Auth? = null
     }
 
     protected val requestEncoderFactory: RequestEncoderFactory =
