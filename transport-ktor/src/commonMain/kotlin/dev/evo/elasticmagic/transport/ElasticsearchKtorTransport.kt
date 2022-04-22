@@ -5,6 +5,9 @@ import dev.evo.elasticmagic.serde.Serde
 
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.HttpClientEngine
+import io.ktor.client.features.auth.Auth
+import io.ktor.client.features.auth.providers.basic
+import io.ktor.client.features.auth.providers.BasicAuthCredentials
 import io.ktor.client.features.compression.ContentEncoding
 import io.ktor.client.request.request
 import io.ktor.client.statement.readText
@@ -31,6 +34,20 @@ class ElasticsearchKtorTransport(
 
         // Enable compressed response from Elasticsearch
         ContentEncoding()
+
+        when (val auth = config.auth) {
+            is dev.evo.elasticmagic.transport.Auth.Basic -> {
+                install(Auth) {
+                    basic {
+                        credentials {
+                            BasicAuthCredentials(auth.username, auth.password)
+                        }
+                        sendWithoutRequest { true }
+                    }
+                }
+            }
+            null -> {}
+        }
     }
 
     companion object {

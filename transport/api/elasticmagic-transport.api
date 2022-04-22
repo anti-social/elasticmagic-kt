@@ -1,3 +1,12 @@
+public abstract class dev/evo/elasticmagic/transport/Auth {
+}
+
+public final class dev/evo/elasticmagic/transport/Auth$Basic : dev/evo/elasticmagic/transport/Auth {
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;)V
+	public final fun getPassword ()Ljava/lang/String;
+	public final fun getUsername ()Ljava/lang/String;
+}
+
 public class dev/evo/elasticmagic/transport/ElasticsearchException : java/lang/Exception {
 	public static final field Companion Ldev/evo/elasticmagic/transport/ElasticsearchException$Companion;
 	public fun <init> (Ljava/lang/String;)V
@@ -53,6 +62,7 @@ public abstract class dev/evo/elasticmagic/transport/ElasticsearchTransport {
 	protected abstract fun doRequest (Ldev/evo/elasticmagic/transport/Method;Ljava/lang/String;Ljava/util/Map;Ljava/lang/String;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun doRequest$default (Ldev/evo/elasticmagic/transport/ElasticsearchTransport;Ldev/evo/elasticmagic/transport/Method;Ljava/lang/String;Ljava/util/Map;Ljava/lang/String;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public final fun getBaseUrl ()Ljava/lang/String;
+	protected final fun getConfig ()Ldev/evo/elasticmagic/transport/ElasticsearchTransport$Config;
 	protected final fun getRequestEncoderFactory ()Ldev/evo/elasticmagic/transport/RequestEncoderFactory;
 	public final fun getSerde ()Ldev/evo/elasticmagic/serde/Serde;
 	public final fun request (Ldev/evo/elasticmagic/transport/Request;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
@@ -60,7 +70,9 @@ public abstract class dev/evo/elasticmagic/transport/ElasticsearchTransport {
 
 public final class dev/evo/elasticmagic/transport/ElasticsearchTransport$Config {
 	public fun <init> ()V
+	public final fun getAuth ()Ldev/evo/elasticmagic/transport/Auth;
 	public final fun getGzipRequests ()Z
+	public final fun setAuth (Ldev/evo/elasticmagic/transport/Auth;)V
 	public final fun setGzipRequests (Z)V
 }
 

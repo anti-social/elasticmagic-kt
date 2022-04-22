@@ -28,21 +28,21 @@ jobs:
       with:
         path: ~/.gradle/wrapper
         key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
-        restore-keys: ${{ runner.os }}-gradle-wrapper
+        restore-keys: ${{ runner.os }}-gradle-wrapper-
 
     - name: Cache Gradle packages
       uses: actions/cache@v2
       with:
         path: ~/.gradle/caches
-        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle.kts', 'buildSrc') }}
-        restore-keys: ${{ runner.os }}-gradle-caches
+        key: ${{ runner.os }}-gradle-caches-${{ hashFiles('**/*.gradle.kts', 'buildSrc') }}
+        restore-keys: ${{ runner.os }}-gradle-caches-
 
     - name: Cache Kotlin Native
       uses: actions/cache@v2
       with:
         path: ~/.konan
-        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle.kts', 'buildSrc') }}
-        restore-keys: ${{ runner.os }}-konan
+        key: ${{ runner.os }}-konan-${{ hashFiles('**/*.gradle.kts', 'buildSrc') }}
+        restore-keys: ${{ runner.os }}-konan-
     ### End of Cache ###
 
     - name: Build docs

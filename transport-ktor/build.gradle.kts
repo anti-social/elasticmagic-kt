@@ -8,6 +8,7 @@ kotlin {
                 api(project(":elasticmagic-transport"))
                 implementation(Libs.ktorClient("encoding"))
                 implementation(Libs.ktorClient("core"))
+                implementation(Libs.ktorClient("auth"))
             }
         }
         val commonTest by getting {
