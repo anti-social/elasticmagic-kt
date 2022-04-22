@@ -21,7 +21,7 @@ Read [User Guide](https://anti-social.github.io/elasticmagic-kt/document/)
 - Parent child relations (ability to merge multiple documents into a single mapping)
 - Focused on a search API
 - Supports several serialization libraries (`kotlinx.serialization` and `jackson` out of the box)
-- Supports Elasticsearch 6.x and 7.x (autodetect Elasticsearch version)
+- Supports Elasticsearch `6.x`, `7.x` and `8.x` (autodetect Elasticsearch version)
 
 ## Not a goal
 
