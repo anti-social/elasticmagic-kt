@@ -12,6 +12,7 @@ import dev.evo.elasticmagic.query.Rescore
 import dev.evo.elasticmagic.query.Script
 import dev.evo.elasticmagic.query.SearchExt
 import dev.evo.elasticmagic.query.Sort
+import dev.evo.elasticmagic.query.Source
 import dev.evo.elasticmagic.query.ToValue
 import dev.evo.elasticmagic.query.collect
 import dev.evo.elasticmagic.serde.Deserializer
@@ -40,6 +41,7 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
 
     protected val aggregations: MutableMap<String, Aggregation<*>> = mutableMapOf()
 
+    protected var source: Source? = null
     protected val fields: MutableList<FieldFormat> = mutableListOf()
     protected val docvalueFields: MutableList<FieldFormat> = mutableListOf()
     protected val storedFields: MutableList<FieldOperations<*>> = mutableListOf()
@@ -126,6 +128,7 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
             sorts = sorts,
             trackScores = trackScores,
             trackTotalHits = trackTotalHits,
+            source = source,
             fields = fields,
             docvalueFields = docvalueFields,
             storedFields = storedFields,
@@ -320,6 +323,64 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
         this.trackTotalHits = trackTotalHits
     }
 
+    /**
+     * Adds [includes] field lists to the document source fields filtering.
+     *
+     * <b>Note:</b>
+     *
+     * If you want to <i>replace</i> source fields call [source] with `null` argument.
+     *
+     * @see <https://www.elastic.co/guide/en/elasticsearch/reference/current/search-fields.html#source-filtering>
+     */
+    fun source(vararg includes: FieldOperations<*>): T = source(includes.asList())
+
+    /**
+     * Adds [includes] and [excludes] field lists to the document source fields filtering.
+     *
+     * <b>Note:</b>
+     *
+     * If you want to <i>replace</i> source fields call [source] with `null` argument.
+     *
+     * @see <https://www.elastic.co/guide/en/elasticsearch/reference/current/search-fields.html#source-filtering>
+     */
+    fun source(
+        includes: List<FieldOperations<*>> = emptyList(),
+        excludes: List<FieldOperations<*>> = emptyList(),
+    ): T = self {
+        val source = source
+        if (source !is Source.Filter) {
+            this.source = Source.Filter(includes, excludes)
+        } else {
+            this.source = source.copy(
+                includes = source.includes + includes,
+                excludes = source.excludes + excludes,
+            )
+        }
+    }
+
+    /**
+     * Disables or enables document's source filtering.
+     *
+     * @see <https://www.elastic.co/guide/en/elasticsearch/reference/current/search-fields.html#source-filtering>
+     */
+    fun source(enable: Boolean): T = self {
+        source = if (enable) {
+            Source.Enable
+        } else {
+            Source.Disable
+        }
+    }
+
+    /**
+     * Clears source filtering values that were previously set.
+     *
+     * @see <https://www.elastic.co/guide/en/elasticsearch/reference/current/search-fields.html#source-filtering>
+     */
+    @Suppress("UNUSED_PARAMETER")
+    fun source(clear: Nothing?): T = self {
+        this.source = null
+    }
+
     fun fields(vararg fields: FieldFormat): T = self {
         this.fields += fields
     }
@@ -481,6 +542,7 @@ data class PreparedSearchQuery<S: BaseDocSource>(
     val sorts: List<Sort>,
     val trackScores: Boolean?,
     val trackTotalHits: Boolean?,
+    val source: Source?,
     val fields: List<FieldFormat>,
     val docvalueFields: List<FieldFormat>,
     val storedFields: List<FieldOperations<*>>,

@@ -142,6 +142,9 @@ open class SearchQueryCompiler(
         if (searchQuery.trackTotalHits != null) {
             ctx.field("track_total_hits", searchQuery.trackTotalHits)
         }
+        if (searchQuery.source != null) {
+            visit(ctx, searchQuery.source)
+        }
         if (searchQuery.fields.isNotEmpty()) {
             ctx.array("fields") {
                 visit(this, searchQuery.fields)

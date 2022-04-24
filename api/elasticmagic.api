@@ -30,6 +30,7 @@ public abstract class dev/evo/elasticmagic/BaseSearchQuery {
 	protected final fun getScriptFields ()Ljava/util/Map;
 	protected final fun getSize ()Ljava/lang/Long;
 	protected final fun getSorts ()Ljava/util/List;
+	protected final fun getSource ()Ldev/evo/elasticmagic/query/Source;
 	protected final fun getStoredFields ()Ljava/util/List;
 	protected final fun getTerminateAfter ()Ljava/lang/Long;
 	protected final fun getTrackScores ()Ljava/lang/Boolean;
@@ -55,12 +56,18 @@ public abstract class dev/evo/elasticmagic/BaseSearchQuery {
 	protected final fun setQuery (Ldev/evo/elasticmagic/query/QueryExpression;)V
 	protected final fun setQueryNodes (Ljava/util/Map;)V
 	protected final fun setSize (Ljava/lang/Long;)V
+	protected final fun setSource (Ldev/evo/elasticmagic/query/Source;)V
 	protected final fun setTerminateAfter (Ljava/lang/Long;)V
 	protected final fun setTrackScores (Ljava/lang/Boolean;)V
 	protected final fun setTrackTotalHits (Ljava/lang/Boolean;)V
 	public final fun size (Ljava/lang/Long;)Ldev/evo/elasticmagic/BaseSearchQuery;
 	public final fun sort (Ljava/lang/Void;)Ldev/evo/elasticmagic/BaseSearchQuery;
 	public final fun sort ([Ldev/evo/elasticmagic/query/Sort;)Ldev/evo/elasticmagic/BaseSearchQuery;
+	public final fun source (Ljava/lang/Void;)Ldev/evo/elasticmagic/BaseSearchQuery;
+	public final fun source (Ljava/util/List;Ljava/util/List;)Ldev/evo/elasticmagic/BaseSearchQuery;
+	public final fun source (Z)Ldev/evo/elasticmagic/BaseSearchQuery;
+	public final fun source ([Ldev/evo/elasticmagic/query/FieldOperations;)Ldev/evo/elasticmagic/BaseSearchQuery;
+	public static synthetic fun source$default (Ldev/evo/elasticmagic/BaseSearchQuery;Ljava/util/List;Ljava/util/List;ILjava/lang/Object;)Ldev/evo/elasticmagic/BaseSearchQuery;
 	public final fun stats (Ljava/lang/String;)Ldev/evo/elasticmagic/BaseSearchQuery;
 	public final fun storedFields (Ljava/lang/Void;)Ldev/evo/elasticmagic/BaseSearchQuery;
 	public final fun storedFields ([Ldev/evo/elasticmagic/query/FieldOperations;)Ldev/evo/elasticmagic/BaseSearchQuery;
@@ -270,17 +277,18 @@ public final class dev/evo/elasticmagic/ParamsKt {
 }
 
 public final class dev/evo/elasticmagic/PreparedSearchQuery {
-	public fun <init> (Lkotlin/jvm/functions/Function1;Ldev/evo/elasticmagic/query/QueryExpression;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/List;Ljava/util/List;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;Ljava/util/List;Ljava/util/Map;)V
+	public fun <init> (Lkotlin/jvm/functions/Function1;Ldev/evo/elasticmagic/query/QueryExpression;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/List;Ljava/util/List;Ljava/lang/Boolean;Ljava/lang/Boolean;Ldev/evo/elasticmagic/query/Source;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;Ljava/util/List;Ljava/util/Map;)V
 	public final fun component1 ()Lkotlin/jvm/functions/Function1;
-	public final fun component10 ()Ljava/util/List;
+	public final fun component10 ()Ldev/evo/elasticmagic/query/Source;
 	public final fun component11 ()Ljava/util/List;
 	public final fun component12 ()Ljava/util/List;
-	public final fun component13 ()Ljava/util/Map;
-	public final fun component14 ()Ljava/lang/Long;
+	public final fun component13 ()Ljava/util/List;
+	public final fun component14 ()Ljava/util/Map;
 	public final fun component15 ()Ljava/lang/Long;
 	public final fun component16 ()Ljava/lang/Long;
-	public final fun component17 ()Ljava/util/List;
-	public final fun component18 ()Ljava/util/Map;
+	public final fun component17 ()Ljava/lang/Long;
+	public final fun component18 ()Ljava/util/List;
+	public final fun component19 ()Ljava/util/Map;
 	public final fun component2 ()Ldev/evo/elasticmagic/query/QueryExpression;
 	public final fun component3 ()Ljava/util/List;
 	public final fun component4 ()Ljava/util/List;
@@ -289,8 +297,8 @@ public final class dev/evo/elasticmagic/PreparedSearchQuery {
 	public final fun component7 ()Ljava/util/List;
 	public final fun component8 ()Ljava/lang/Boolean;
 	public final fun component9 ()Ljava/lang/Boolean;
-	public final fun copy (Lkotlin/jvm/functions/Function1;Ldev/evo/elasticmagic/query/QueryExpression;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/List;Ljava/util/List;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;Ljava/util/List;Ljava/util/Map;)Ldev/evo/elasticmagic/PreparedSearchQuery;
-	public static synthetic fun copy$default (Ldev/evo/elasticmagic/PreparedSearchQuery;Lkotlin/jvm/functions/Function1;Ldev/evo/elasticmagic/query/QueryExpression;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/List;Ljava/util/List;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;Ljava/util/List;Ljava/util/Map;ILjava/lang/Object;)Ldev/evo/elasticmagic/PreparedSearchQuery;
+	public final fun copy (Lkotlin/jvm/functions/Function1;Ldev/evo/elasticmagic/query/QueryExpression;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/List;Ljava/util/List;Ljava/lang/Boolean;Ljava/lang/Boolean;Ldev/evo/elasticmagic/query/Source;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;Ljava/util/List;Ljava/util/Map;)Ldev/evo/elasticmagic/PreparedSearchQuery;
+	public static synthetic fun copy$default (Ldev/evo/elasticmagic/PreparedSearchQuery;Lkotlin/jvm/functions/Function1;Ldev/evo/elasticmagic/query/QueryExpression;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/List;Ljava/util/List;Ljava/lang/Boolean;Ljava/lang/Boolean;Ldev/evo/elasticmagic/query/Source;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;Ljava/util/List;Ljava/util/Map;ILjava/lang/Object;)Ldev/evo/elasticmagic/PreparedSearchQuery;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getAggregations ()Ljava/util/Map;
 	public final fun getDocSourceFactory ()Lkotlin/jvm/functions/Function1;
@@ -306,6 +314,7 @@ public final class dev/evo/elasticmagic/PreparedSearchQuery {
 	public final fun getScriptFields ()Ljava/util/Map;
 	public final fun getSize ()Ljava/lang/Long;
 	public final fun getSorts ()Ljava/util/List;
+	public final fun getSource ()Ldev/evo/elasticmagic/query/Source;
 	public final fun getStoredFields ()Ljava/util/List;
 	public final fun getTerminateAfter ()Ljava/lang/Long;
 	public final fun getTrackScores ()Ljava/lang/Boolean;
@@ -3853,6 +3862,45 @@ public final class dev/evo/elasticmagic/query/Sort$Script : dev/evo/elasticmagic
 	public final fun getType ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun reduce ()Ldev/evo/elasticmagic/query/Expression;
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract class dev/evo/elasticmagic/query/Source : dev/evo/elasticmagic/query/ObjExpression {
+	public fun children ()Ljava/util/Iterator;
+	public final fun getName ()Ljava/lang/String;
+	public fun reduce ()Ldev/evo/elasticmagic/query/Expression;
+}
+
+public final class dev/evo/elasticmagic/query/Source$Disable : dev/evo/elasticmagic/query/Source {
+	public static final field INSTANCE Ldev/evo/elasticmagic/query/Source$Disable;
+	public synthetic fun accept (Ldev/evo/elasticmagic/serde/Serializer$Ctx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
+	public fun accept (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
+	public synthetic fun clone ()Ldev/evo/elasticmagic/query/Expression;
+	public fun clone ()Ldev/evo/elasticmagic/query/Source$Disable;
+}
+
+public final class dev/evo/elasticmagic/query/Source$Enable : dev/evo/elasticmagic/query/Source {
+	public static final field INSTANCE Ldev/evo/elasticmagic/query/Source$Enable;
+	public synthetic fun accept (Ldev/evo/elasticmagic/serde/Serializer$Ctx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
+	public fun accept (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
+	public synthetic fun clone ()Ldev/evo/elasticmagic/query/Expression;
+	public fun clone ()Ldev/evo/elasticmagic/query/Source$Enable;
+}
+
+public final class dev/evo/elasticmagic/query/Source$Filter : dev/evo/elasticmagic/query/Source {
+	public fun <init> (Ljava/util/List;Ljava/util/List;)V
+	public synthetic fun accept (Ldev/evo/elasticmagic/serde/Serializer$Ctx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
+	public fun accept (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
+	public synthetic fun clone ()Ldev/evo/elasticmagic/query/Expression;
+	public fun clone ()Ldev/evo/elasticmagic/query/Source$Filter;
+	public final fun component1 ()Ljava/util/List;
+	public final fun component2 ()Ljava/util/List;
+	public final fun copy (Ljava/util/List;Ljava/util/List;)Ldev/evo/elasticmagic/query/Source$Filter;
+	public static synthetic fun copy$default (Ldev/evo/elasticmagic/query/Source$Filter;Ljava/util/List;Ljava/util/List;ILjava/lang/Object;)Ldev/evo/elasticmagic/query/Source$Filter;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getExcludes ()Ljava/util/List;
+	public final fun getIncludes ()Ljava/util/List;
+	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
 
