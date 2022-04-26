@@ -29,6 +29,7 @@ import dev.evo.elasticmagic.transport.ElasticsearchException
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.collections.shouldHaveSize
+import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.doubles.shouldBeGreaterThan
 import io.kotest.matchers.types.shouldBeInstanceOf
@@ -111,6 +112,7 @@ class SearchQueryTests : ElasticsearchTestBase() {
             }
         )
         status = OrderStatus.NEW
+        comment = "Call me later"
         dateCreated = LocalDateTime(2019, 4, 30, 12, 29, 35).toInstant(TimeZone.UTC)
     }
         .withActionMeta(id = "101")
@@ -253,6 +255,53 @@ class SearchQueryTests : ElasticsearchTestBase() {
             searchResult.maxScore shouldBe 1.0F
 
             checkOrderHits(searchResult.hits, setOf("101", "102", "103", "104"))
+        }
+    }
+
+    @Test
+    fun source() = runTestWithTransports {
+        withFixtures(OrderDoc, listOf(karlssonsJam)) {
+            val searchResult = SearchQuery(::OrderDocSource)
+                .source(excludes=listOf(OrderDoc.comment))
+                .execute(index)
+
+            searchResult.totalHits shouldBe 1
+            searchResult.maxScore shouldBe 1.0F
+
+            searchResult.hits[0].shouldNotBeNull().let { hit ->
+                val doc = hit.source.shouldNotBeNull()
+                doc.status shouldBe OrderStatus.NEW
+                doc.dateCreated shouldBe LocalDateTime(2019, 4, 30, 12, 29, 35).toInstant(TimeZone.UTC)
+                doc.comment.shouldBeNull()
+            }
+        }
+    }
+
+    @Test
+    fun source_disabled() = runTestWithTransports {
+        withFixtures(OrderDoc, listOf(karlssonsJam)) {
+            val searchResult = SearchQuery(::OrderDocSource)
+                .source(false)
+                .execute(index)
+
+            searchResult.totalHits shouldBe 1
+            searchResult.maxScore shouldBe 1.0F
+
+            searchResult.hits[0].shouldNotBeNull().let { hit ->
+                hit.source.shouldBeNull()
+            }
+        }
+    }
+
+    @Test
+    fun source_missingRequiredField() = runTestWithTransports {
+        withFixtures(OrderDoc, listOf(karlssonsJam)) {
+            val exc = shouldThrow<IllegalStateException> {
+                SearchQuery(::OrderDocSource)
+                    .source(OrderDoc.comment)
+                    .execute(index)
+            }
+            exc.message shouldBe "Field [user] is required"
         }
     }
 

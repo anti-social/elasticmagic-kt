@@ -620,9 +620,53 @@ class SearchQueryCompilerTests : BaseTest() {
     }
 
     @Test
+    fun source() {
+        compile(
+            SearchQuery().source()
+        ).body shouldContainExactly mapOf(
+            "_source" to emptyList<Nothing>()
+        )
+
+        compile(
+            SearchQuery().source(false)
+        ).body shouldContainExactly mapOf(
+            "_source" to false
+        )
+
+        compile(
+            SearchQuery().source(true)
+        ).body shouldContainExactly mapOf(
+            "_source" to true
+        )
+
+        val searchQuery = SearchQuery()
+            .source(AnyField("name"), AnyField("rank"))
+        compile(
+            searchQuery
+        ).body shouldContainExactly mapOf(
+            "_source" to listOf(
+                "name", "rank"
+            )
+        )
+        compile(
+            searchQuery
+                .source(AnyField("desc*"))
+                .source(excludes = listOf(AnyField("description")))
+        ).body shouldContainExactly mapOf(
+            "_source" to mapOf(
+                "includes" to listOf("name", "rank", "desc*"),
+                "excludes" to listOf("description")
+            )
+        )
+        compile(
+            searchQuery.source(null)
+        ).body shouldContainExactly emptyMap()
+    }
+
+    @Test
     fun fields() {
         compile(
-            SearchQuery().fields(*arrayOf<FieldFormat>())
+            SearchQuery().fields(*arrayOf())
         ).body shouldContainExactly emptyMap()
 
         compile(
