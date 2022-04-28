@@ -7,7 +7,6 @@ import dev.evo.elasticmagic.bulk.Refresh
 import dev.evo.elasticmagic.doc.DocSource
 import dev.evo.elasticmagic.doc.Document
 import dev.evo.elasticmagic.doc.Dynamic
-import dev.evo.elasticmagic.doc.DynamicTemplates
 import dev.evo.elasticmagic.query.match
 
 import io.kotest.matchers.shouldBe
@@ -15,14 +14,10 @@ import io.kotest.matchers.shouldBe
 import kotlin.test.Test
 
 object UserV1Doc : Document(dynamic = Dynamic.FALSE) {
-    override val dynamicTemplates = DynamicTemplates()
-
     val id by int()
 }
 
 object UserV2Doc : Document(dynamic = Dynamic.FALSE) {
-    override val dynamicTemplates = DynamicTemplates()
-
     val id by int()
     val name by text()
 }

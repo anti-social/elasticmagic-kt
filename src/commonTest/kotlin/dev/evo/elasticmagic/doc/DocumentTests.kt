@@ -52,15 +52,13 @@ class DocumentTests {
     @Test
     fun testRuntimeFields() {
         val emptyDoc = object : Document() {
-            override val runtime = object : RuntimeFields() {
-                val fullName by runtime(
-                    "full_name",
-                    KeywordType,
-                    Script.Source(
-                        "emit(doc['first_name'].value + doc['last_name'].value)"
-                    )
+            val fullName by runtime(
+                "full_name",
+                KeywordType,
+                Script.Source(
+                    "emit(doc['first_name'].value + doc['last_name'].value)"
                 )
-            }
+            )
         }
 
         emptyDoc.runtime.score.getFieldType() shouldBe DoubleType
@@ -72,9 +70,9 @@ class DocumentTests {
         emptyDoc.runtime.seqNo.getFieldType() shouldBe LongType
         emptyDoc.runtime.seqNo.getFieldName() shouldBe "_seq_no"
         emptyDoc.runtime.seqNo.getQualifiedFieldName() shouldBe "_seq_no"
-        emptyDoc.runtime.fullName.getFieldType() shouldBe KeywordType
-        emptyDoc.runtime.fullName.getFieldName() shouldBe "full_name"
-        emptyDoc.runtime.fullName.getQualifiedFieldName() shouldBe "full_name"
+        emptyDoc.fullName.getFieldType() shouldBe KeywordType
+        emptyDoc.fullName.getFieldName() shouldBe "full_name"
+        emptyDoc.fullName.getQualifiedFieldName() shouldBe "full_name"
     }
 
     class CountSubFields(field: BoundField<Int, Int>) : SubFields<Int>(field) {
@@ -86,7 +84,9 @@ class DocumentTests {
         val lastName by text("last_name")
     }
 
-    class DynamicDocTemplates : DynamicTemplates() {
+    object DynamicDoc : Document() {
+        val count by int().subFields(::CountSubFields)
+
         val strings by template(
             mapping = Mapping(
                 store = true,
@@ -110,12 +110,6 @@ class DocumentTests {
         val users by template(
             mapping = obj(::UserDoc)
         )
-    }
-
-    object DynamicDoc : Document() {
-        val count by int().subFields(::CountSubFields)
-
-        override val dynamicTemplates = DynamicDocTemplates()
 
         val i by int().subFields { field ->
             object : SubFields<Int>(field) {
@@ -126,35 +120,35 @@ class DocumentTests {
 
     @Test
     fun dynamicTemplates() {
-        val nameField = DynamicDoc.dynamicTemplates.strings.field("name")
+        val nameField = DynamicDoc.strings.field("name")
             .shouldBeInstanceOf<BoundField<String, String>>()
         nameField.deserializeTerm(111) shouldBe "111"
 
-        val companyIdField = DynamicDoc.dynamicTemplates.ids.field("company_id")
+        val companyIdField = DynamicDoc.ids.field("company_id")
             .shouldBeInstanceOf<BoundField<Long, Long>>()
         companyIdField.deserializeTerm("1") shouldBe 1L
 
-        val opinionsCountField = DynamicDoc.dynamicTemplates.counts.field("opinions_count")
+        val opinionsCountField = DynamicDoc.counts.field("opinions_count")
             .shouldBeInstanceOf<CountSubFields>()
         opinionsCountField.sort.getQualifiedFieldName() shouldBe "opinions_count.sort"
         opinionsCountField.sort.getFieldType() shouldBe KeywordType
         opinionsCountField.deserializeTerm("4") shouldBe 4
         opinionsCountField.sort.deserializeTerm(4) shouldBe "4"
 
-        val companyOpinionsCountField = DynamicDoc.dynamicTemplates.counts.field("company.opinions_count")
+        val companyOpinionsCountField = DynamicDoc.counts.field("company.opinions_count")
         companyOpinionsCountField.getFieldName() shouldBe "opinions_count"
         companyOpinionsCountField.sort.getQualifiedFieldName() shouldBe "company.opinions_count.sort"
 
         shouldThrow<IllegalArgumentException> {
-            DynamicDoc.dynamicTemplates.counts.field("count_of_opinions")
+            DynamicDoc.counts.field("count_of_opinions")
         }
 
-        val extraTagsField = DynamicDoc.dynamicTemplates.extra.field("extra_tags")
+        val extraTagsField = DynamicDoc.extra.field("extra_tags")
             .shouldBeInstanceOf<BoundField<Any, Any>>()
         extraTagsField.deserializeTerm(2) shouldBe 2
         extraTagsField.deserializeTerm("2") shouldBe "2"
 
-        val usersField = DynamicDoc.dynamicTemplates.users.field("owner")
+        val usersField = DynamicDoc.users.field("owner")
             .shouldBeInstanceOf<UserDoc>()
         usersField.firstName.deserializeTerm(123) shouldBe "123"
         usersField.lastName.deserializeTerm(321) shouldBe "321"
@@ -584,41 +578,37 @@ class DocumentTests {
             val firstName by keyword()
             val lastName by keyword()
 
-            override val runtime = object : RuntimeFields() {
-                val fullName by runtime(
-                    KeywordType,
-                    Script.Source(
-                        "emit(doc[params.firstNameField].value + doc[params.lastNameField].value)",
-                        params = Params(
-                            "firstNameField" to firstName,
-                            "lastNameField" to lastName,
-                        )
+            val fullName by runtime(
+                KeywordType,
+                Script.Source(
+                    "emit(doc[params.firstNameField].value + doc[params.lastNameField].value)",
+                    params = Params(
+                        "firstNameField" to firstName,
+                        "lastNameField" to lastName,
                     )
                 )
-            }
+            )
         }
 
         val companyDoc = object : Document() {
             val firstName by keyword()
             val lastName by keyword()
 
-            override val runtime = object : RuntimeFields() {
-                val fullName by runtime(
-                    KeywordType,
-                    Script.Source(
-                        "emit(doc[params.firstNameField].value + doc[params.lastNameField].value)",
-                        params = Params(
-                            "firstNameField" to firstName,
-                            "lastNameField" to lastName,
-                        )
+            val fullName by runtime(
+                KeywordType,
+                Script.Source(
+                    "emit(doc[params.firstNameField].value + doc[params.lastNameField].value)",
+                    params = Params(
+                        "firstNameField" to firstName,
+                        "lastNameField" to lastName,
                     )
                 )
-            }
+            )
         }
 
         val mergedDoc = mergeDocuments(userDoc, companyDoc)
-        val fullNameField = mergedDoc.runtime["fullName"].shouldNotBeNull()
-        fullNameField shouldBeSameInstanceAs userDoc.runtime.fullName
+        val fullNameField = mergedDoc["fullName"].shouldNotBeNull()
+        fullNameField shouldBeSameInstanceAs userDoc.fullName
     }
 
     @Test
@@ -627,36 +617,32 @@ class DocumentTests {
             val firstName by keyword()
             val lastName by keyword()
 
-            override val runtime = object : RuntimeFields() {
-                val fullName by runtime(
-                    KeywordType,
-                    Script.Source(
-                        "emit(doc[params.firstNameField].value + doc[params.lastNameField].value)",
-                        params = Params(
-                            "firstNameField" to firstName,
-                            "lastNameField" to lastName,
-                        )
+            val fullName by runtime(
+                KeywordType,
+                Script.Source(
+                    "emit(doc[params.firstNameField].value + doc[params.lastNameField].value)",
+                    params = Params(
+                        "firstNameField" to firstName,
+                        "lastNameField" to lastName,
                     )
                 )
-            }
+            )
         }
 
         val companyDoc = object : Document() {
             val firstName by keyword()
             val lastName by keyword()
 
-            override val runtime = object : RuntimeFields() {
-                val fullName by runtime(
-                    KeywordType,
-                    Script.Source(
-                        "emit(doc[params.lastNameField].value + doc[params.firstNameField].value)",
-                        params = Params(
-                            "firstNameField" to firstName,
-                            "lastNameField" to lastName,
-                        )
+            val fullName by runtime(
+                KeywordType,
+                Script.Source(
+                    "emit(doc[params.lastNameField].value + doc[params.firstNameField].value)",
+                    params = Params(
+                        "firstNameField" to firstName,
+                        "lastNameField" to lastName,
                     )
                 )
-            }
+            )
         }
 
         val exc = shouldThrow<IllegalArgumentException> {
@@ -668,42 +654,38 @@ class DocumentTests {
     @Test
     fun testMergeDocuments_dynamicTemplates() {
         val userDoc = object : Document() {
-            override val dynamicTemplates = object : DynamicTemplates() {
-                val names by template(
-                    mapping = Mapping(
-                        store = false,
-                    ),
-                    match = "*_name",
-                    matchMappingType = MatchMappingType.STRING,
-                )
-            }
+            val names by template(
+                mapping = Mapping(
+                    store = false,
+                ),
+                match = "*_name",
+                matchMappingType = MatchMappingType.STRING,
+            )
         }
 
         val companyDoc = object : Document() {
-            override val dynamicTemplates = object : DynamicTemplates() {
-                val names by template(
-                    mapping = Mapping(
-                        store = false,
-                    ),
-                    match = "*_name",
-                    matchMappingType = MatchMappingType.STRING,
-                )
+            val names by template(
+                mapping = Mapping(
+                    store = false,
+                ),
+                match = "*_name",
+                matchMappingType = MatchMappingType.STRING,
+            )
 
-                val ids by template(
-                    mapping = long(),
-                    match = "*_id"
-                )
-            }
+            val ids by template(
+                mapping = long(),
+                match = "*_id"
+            )
         }
 
         val mergedDoc = mergeDocuments(userDoc, companyDoc)
 
-        val namesTemplate = mergedDoc.dynamicTemplates["names"].shouldNotBeNull()
+        val namesTemplate = mergedDoc.getTemplate("names").shouldNotBeNull()
         val fullNameField = namesTemplate.field("first_name")
             .shouldBeInstanceOf<BoundField<String, String>>()
         fullNameField.deserializeTerm(789) shouldBe "789"
 
-        val idsTemplate = mergedDoc.dynamicTemplates["ids"].shouldNotBeNull()
+        val idsTemplate = mergedDoc.getTemplate("ids").shouldNotBeNull()
         val companyIdField = idsTemplate.field("user_id")
             .shouldBeInstanceOf<BoundField<Long, Long>>()
         companyIdField.deserializeTerm("1") shouldBe 1L
@@ -722,21 +704,17 @@ class DocumentTests {
         }
 
         val userDoc = object : Document() {
-            override val dynamicTemplates = object : DynamicTemplates() {
-                val opinions by template(
-                    mapping = obj(::UserOpinionDoc),
-                    match = "*_opinion",
-                )
-            }
+            val opinions by template(
+                mapping = obj(::UserOpinionDoc),
+                match = "*_opinion",
+            )
         }
 
         val companyDoc = object : Document() {
-            override val dynamicTemplates = object : DynamicTemplates() {
-                val opinions by template(
-                    mapping = obj(::CompanyOpinionDoc),
-                    match = "*_opinion",
-                )
-            }
+            val opinions by template(
+                mapping = obj(::CompanyOpinionDoc),
+                match = "*_opinion",
+            )
         }
 
         shouldThrow<IllegalArgumentException> {
