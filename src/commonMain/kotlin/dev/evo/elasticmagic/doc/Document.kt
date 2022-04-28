@@ -138,7 +138,8 @@ class BoundRuntimeField<V>(
     parent: FieldSet,
 ) : BoundField<V, V>(name, type, Params("script" to script), parent)
 
-interface FieldSetShortcuts {
+@Suppress("UnnecessaryAbstractClass")
+abstract class FieldSetShortcuts {
     fun <V, T> field(
         name: String?,
         type: FieldType<V, T>,
@@ -353,7 +354,7 @@ interface FieldSetShortcuts {
  * Base class for any types which hold set of fields:
  * https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping.html
  */
-abstract class FieldSet : FieldSetShortcuts, Named {
+abstract class FieldSet : FieldSetShortcuts(), Named {
     private val fields: OrderedMap<String, MappingField<*>> = OrderedMap()
 
     // TODO: consider to make it public
@@ -514,8 +515,8 @@ internal class SubFieldsField<T>(
     val subFields: SubFields<*>
 ) : WrapperField<T>(field)
 
-interface DocumentShortcuts : FieldSetShortcuts {
-    fun <V, F: SubFields<V>> FieldSet.Field<V, V>.subFields(
+abstract class BaseDocument : FieldSet() {
+    fun <V, F: SubFields<V>> Field<V, V>.subFields(
         factory: (BoundField<V, V>) -> F): SubFields.UnboundSubFields<V, F> {
         return SubFields.UnboundSubFields(this, factory)
     }
@@ -586,8 +587,6 @@ interface DocumentShortcuts : FieldSetShortcuts {
         return nested(null, factory, dynamic, params)
     }
 }
-
-abstract class BaseDocument : FieldSet(), DocumentShortcuts
 
 typealias DocSourceField = BoundField<BaseDocSource, Nothing>
 
@@ -762,10 +761,36 @@ enum class Dynamic : ToValue<Any> {
     }
 }
 
-/**
- * TODO: Consider moving templates directly into a root document
- */
-open class DynamicTemplates : DocumentShortcuts {
+data class MappingOptions(
+    val dynamic: Dynamic? = null,
+    val numericDetection: Boolean? = null,
+    val dateDetection: Boolean? = null,
+    val dynamicDateFormats: List<String>? = null,
+)
+
+open class RootFieldSet : BaseDocument() {
+    companion object : RootFieldSet()
+
+    override fun getFieldName(): String = ""
+
+    override fun getQualifiedFieldName(): String = ""
+}
+
+class BoundMappingTemplate<V, T, F>(
+    val name: String,
+    val mapping: DynamicTemplates.DynamicField<V, T, F>,
+    val matchOptions: DynamicTemplates.MatchOptions,
+) {
+    fun field(fieldPath: String): F {
+        require(matchOptions.matches(fieldPath)) {
+            "[$fieldPath] is not matched: [$matchOptions]"
+        }
+        return mapping.field(fieldPath)
+    }
+}
+
+@Suppress("UnnecessaryAbstractClass")
+abstract class DynamicTemplates : RootFieldSet() {
     private val templates: OrderedMap<String, BoundMappingTemplate<*, *, *>> = OrderedMap()
 
     companion object {
@@ -797,7 +822,7 @@ open class DynamicTemplates : DocumentShortcuts {
         return templates.values
     }
 
-    operator fun get(name: String): BoundMappingTemplate<*, *, *>? {
+    fun getTemplate(name: String): BoundMappingTemplate<*, *, *>? {
         return templates[name]
     }
 
@@ -882,7 +907,7 @@ open class DynamicTemplates : DocumentShortcuts {
      */
     fun <V, T> template(
         name: String? = null,
-        mapping: FieldSet.Field<V, T>,
+        mapping: Field<V, T>,
         matchMappingType: MatchMappingType<*, *>? = null,
         match: String? = null,
         unmatch: String? = null,
@@ -1071,7 +1096,7 @@ open class DynamicTemplates : DocumentShortcuts {
         class Simple(val params: Params) : Runtime()
 
         class Typed<V, T>(
-            val field: FieldSet.Field<V, T>,
+            val field: Field<V, T>,
         ) : Runtime()
 
         companion object {
@@ -1079,7 +1104,7 @@ open class DynamicTemplates : DocumentShortcuts {
                 return Simple(params)
             }
 
-            operator fun <V, T> invoke(field: FieldSet.Field<V, T>): Typed<V, T> {
+            operator fun <V, T> invoke(field: Field<V, T>): Typed<V, T> {
                 return Typed(field)
             }
         }
@@ -1131,8 +1156,8 @@ open class DynamicTemplates : DocumentShortcuts {
         val matchOptions: MatchOptions,
     ) {
         operator fun provideDelegate(
-            thisRef: DynamicTemplates, prop: KProperty<*>
-        ): ReadOnlyProperty<DynamicTemplates, BoundMappingTemplate<V, T, F>> {
+            thisRef: Document, prop: KProperty<*>
+        ): ReadOnlyProperty<Document, BoundMappingTemplate<V, T, F>> {
             val mappingTemplate = BoundMappingTemplate(
                 prop.name,
                 mapping,
@@ -1142,19 +1167,6 @@ open class DynamicTemplates : DocumentShortcuts {
             return ReadOnlyProperty { _, _ ->
                 mappingTemplate
             }
-        }
-    }
-
-    class BoundMappingTemplate<V, T, F>(
-        val name: String,
-        val mapping: DynamicField<V, T, F>,
-        val matchOptions: MatchOptions,
-    ) {
-        fun field(fieldPath: String): F {
-            require(matchOptions.matches(fieldPath)) {
-                "[$fieldPath] is not matched: [$matchOptions]"
-            }
-            return mapping.field(fieldPath)
         }
     }
 
@@ -1179,7 +1191,7 @@ open class DynamicTemplates : DocumentShortcuts {
 
         class FromField<V, T>(
             val mappingKind: MappingKind,
-            val field: FieldSet.Field<V, T>,
+            val field: Field<V, T>,
         ) : DynamicField<V, T, BoundField<V, T>>() {
             override fun field(fieldPath: String): BoundField<V, T> {
                 return instantiateField(fieldPath, field.type, field.params)
@@ -1248,32 +1260,15 @@ open class DynamicTemplates : DocumentShortcuts {
     }
 }
 
-data class MappingOptions(
-    val dynamic: Dynamic? = null,
-    val numericDetection: Boolean? = null,
-    val dateDetection: Boolean? = null,
-    val dynamicDateFormats: List<String>? = null,
-)
-
-open class RootFieldSet : BaseDocument() {
-    companion object : RootFieldSet()
-
-    override fun getFieldName(): String = ""
-
-    override fun getQualifiedFieldName(): String = ""
-}
-
 /**
  * Base class for describing a top level Elasticsearch document.
  */
 @Suppress("UnnecessaryAbstractClass")
 abstract class Document(
     val options: MappingOptions = MappingOptions()
-) : RootFieldSet() {
+) : DynamicTemplates() {
     open val meta = MetaFields()
     val runtime = RuntimeFields()
-
-    open val dynamicTemplates = DynamicTemplates()
 
     constructor(
         dynamic: Dynamic? = null,
@@ -1341,20 +1336,21 @@ fun mergeDocuments(vararg docs: Document): Document {
     return object : Document() {
         override val meta = expectedMeta
 
-        override val dynamicTemplates = object : DynamicTemplates() {
-            init {
-                mergeTemplates(docs.map(Document::dynamicTemplates)).forEach(::addTemplate)
-            }
-        }
+        // override val dynamicTemplates = object : DynamicTemplates() {
+        //     init {
+        //         mergeTemplates(docs.map(Document::dynamicTemplates)).forEach(::addTemplate)
+        //     }
+        // }
 
         init {
+            mergeTemplates(docs.toList()).forEach(::addTemplate)
             mergeFieldSets(docs.toList()).forEach(::addField)
         }
     }
 }
 
-private fun mergeTemplates(templates: List<DynamicTemplates>): List<DynamicTemplates.BoundMappingTemplate<*, *, *>> {
-    val mergedTemplates = mutableListOf<DynamicTemplates.BoundMappingTemplate<*, *, *>>()
+private fun mergeTemplates(templates: List<Document>): List<BoundMappingTemplate<*, *, *>> {
+    val mergedTemplates = mutableListOf<BoundMappingTemplate<*, *, *>>()
     val mergedTemplatesByName = mutableMapOf<String, Int>()
     for (dynamicTemplates in templates) {
         for (template in dynamicTemplates.getAllTemplates()) {
@@ -1519,8 +1515,8 @@ private fun checkMappingFieldsIdentical(
 
 
 private fun checkTemplatesIdentical(
-    template: DynamicTemplates.BoundMappingTemplate<*, *, *>,
-    expected: DynamicTemplates.BoundMappingTemplate<*, *, *>,
+    template: BoundMappingTemplate<*, *, *>,
+    expected: BoundMappingTemplate<*, *, *>,
 ) {
     require(template.matchOptions == expected.matchOptions) {
         "'${template.name}' templates have different match options: " +

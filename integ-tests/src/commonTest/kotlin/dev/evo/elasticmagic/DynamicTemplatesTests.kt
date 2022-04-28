@@ -5,7 +5,6 @@ import dev.evo.elasticmagic.bulk.IdActionMeta
 import dev.evo.elasticmagic.doc.BoundField
 import dev.evo.elasticmagic.doc.Document
 import dev.evo.elasticmagic.doc.DynDocSource
-import dev.evo.elasticmagic.doc.DynamicTemplates
 import dev.evo.elasticmagic.doc.SubFields
 import dev.evo.elasticmagic.transport.ElasticsearchException
 
@@ -18,15 +17,11 @@ class IdSubFields(field: BoundField<Long, Long>) : SubFields<Long>(field) {
     val id by keyword(docValues = false)
 }
 
-object ProductTemplates : DynamicTemplates() {
+object ProductDoc : Document() {
     val ids by template(
         mapping = long(index = false).subFields(::IdSubFields),
         match = "*_id"
     )
-}
-
-object ProductDoc : Document() {
-    override val dynamicTemplates = ProductTemplates
 }
 
 class DynamicTemplatesTests : ElasticsearchTestBase() {
@@ -34,7 +29,7 @@ class DynamicTemplatesTests : ElasticsearchTestBase() {
 
     @Test
     fun dynamicTemplates() = runTestWithTransports {
-        val companyIdField = ProductDoc.dynamicTemplates.ids.field("company_id")
+        val companyIdField = ProductDoc.ids.field("company_id")
 
         val p1 = DynDocSource {
             it[companyIdField] = 10

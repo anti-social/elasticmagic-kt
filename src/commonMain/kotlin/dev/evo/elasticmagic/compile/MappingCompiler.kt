@@ -3,12 +3,14 @@ package dev.evo.elasticmagic.compile
 import dev.evo.elasticmagic.ElasticsearchVersion
 import dev.evo.elasticmagic.doc.MappingField
 import dev.evo.elasticmagic.doc.BaseDocument
+import dev.evo.elasticmagic.doc.BoundMappingTemplate
 import dev.evo.elasticmagic.doc.BoundRuntimeField
 import dev.evo.elasticmagic.doc.Document
 import dev.evo.elasticmagic.doc.DynamicTemplates
 import dev.evo.elasticmagic.doc.FieldSet
+import dev.evo.elasticmagic.doc.MappingOptions
 import dev.evo.elasticmagic.doc.MetaFields
-import dev.evo.elasticmagic.doc.RuntimeFields
+import dev.evo.elasticmagic.doc.SubDocument
 import dev.evo.elasticmagic.doc.SubDocumentField
 import dev.evo.elasticmagic.doc.SubFieldsField
 import dev.evo.elasticmagic.query.ArrayExpression
@@ -65,23 +67,36 @@ open class MappingCompiler(
     }
 
     fun visit(ctx: ObjectCtx, document: Document) {
-        val options = document.options
-        ctx.fieldIfNotNull("dynamic", options.dynamic?.toValue())
-        ctx.fieldIfNotNull("numeric_detection", options.numericDetection)
-        ctx.fieldIfNotNull("date_detection", options.dateDetection)
-        if (options.dynamicDateFormats != null) {
-            ctx.array("dynamic_date_formats") {
-                visit(this, options.dynamicDateFormats)
-            }
-        }
+        visit(ctx, document.options)
         visit(ctx, document.meta)
         visit(ctx, document.runtime)
-        visit(ctx, document.dynamicTemplates)
         visit(ctx, document as BaseDocument)
 
         if (document.getAllFields().any { it is BoundRuntimeField }) {
             ctx.obj("runtime") {
                 visit(this, document as FieldSet) { it is BoundRuntimeField }
+            }
+        }
+
+        val templates = document.getAllTemplates()
+        if (templates.isNotEmpty()) {
+            ctx.array("dynamic_templates") {
+                for (tmpl in templates) {
+                    obj {
+                        visit(this, tmpl)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun visit(ctx: ObjectCtx, mappingOptions: MappingOptions) {
+        ctx.fieldIfNotNull("dynamic", mappingOptions.dynamic?.toValue())
+        ctx.fieldIfNotNull("numeric_detection", mappingOptions.numericDetection)
+        ctx.fieldIfNotNull("date_detection", mappingOptions.dateDetection)
+        if (mappingOptions.dynamicDateFormats != null) {
+            ctx.array("dynamic_date_formats") {
+                visit(this, mappingOptions.dynamicDateFormats)
             }
         }
     }
@@ -98,20 +113,7 @@ open class MappingCompiler(
         }
     }
 
-    private fun visit(ctx: ObjectCtx, dynamicTemplates: DynamicTemplates) {
-        val templates = dynamicTemplates.getAllTemplates()
-        if (templates.isNotEmpty()) {
-            ctx.array("dynamic_templates") {
-                for (tmpl in templates) {
-                    obj {
-                        visit(this, tmpl)
-                    }
-                }
-            }
-        }
-    }
-
-    private fun visit(ctx: ObjectCtx, template: DynamicTemplates.BoundMappingTemplate<*, *, *>) {
+    private fun visit(ctx: ObjectCtx, template: BoundMappingTemplate<*, *, *>) {
         ctx.obj(template.name) {
             visit(this, template.matchOptions)
             visit(this, template.mapping)
@@ -183,6 +185,11 @@ open class MappingCompiler(
         ctx.obj("properties") {
             visit(this, doc as FieldSet) { it !is BoundRuntimeField }
         }
+    }
+
+    private fun visit(ctx: ObjectCtx, doc: SubDocument) {
+        visit(ctx, doc.options)
+        visit(ctx, doc as BaseDocument)
     }
 
     private fun visit(

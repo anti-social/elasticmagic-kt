@@ -7,9 +7,7 @@ import dev.evo.elasticmagic.doc.BoundField
 import dev.evo.elasticmagic.doc.DocSourceField
 import dev.evo.elasticmagic.doc.Document
 import dev.evo.elasticmagic.doc.Dynamic
-import dev.evo.elasticmagic.doc.DynamicTemplates
 import dev.evo.elasticmagic.types.KeywordType
-import dev.evo.elasticmagic.doc.RuntimeFields
 import dev.evo.elasticmagic.doc.SubDocument
 import dev.evo.elasticmagic.doc.SubFields
 import dev.evo.elasticmagic.doc.datetime
@@ -207,14 +205,12 @@ class MappingCompilerTests : BaseTest() {
     @Test
     fun dynamicTemplates_mappingParams() {
         class MyDoc : Document() {
-            override val dynamicTemplates = object : DynamicTemplates() {
-                val strings by template(
-                    mapping = Mapping(
-                        docValues = false,
-                    ),
-                    matchMappingType = MatchMappingType.STRING,
-                )
-            }
+            val strings by template(
+                mapping = Mapping(
+                    docValues = false,
+                ),
+                matchMappingType = MatchMappingType.STRING,
+            )
         }
         val myDoc = MyDoc()
 
@@ -236,12 +232,10 @@ class MappingCompilerTests : BaseTest() {
     @Test
     fun dynamicTemplates_matchMappingType() {
         class MyDoc : Document() {
-            override val dynamicTemplates = object : DynamicTemplates() {
-                val strings by template(
-                    mapping = keyword(index = false),
-                    matchMappingType = MatchMappingType.STRING,
-                )
-            }
+            val strings by template(
+                mapping = keyword(index = false),
+                matchMappingType = MatchMappingType.STRING,
+            )
         }
         val myDoc = MyDoc()
 
@@ -268,12 +262,10 @@ class MappingCompilerTests : BaseTest() {
         }
 
         class MyDoc : Document() {
-            override val dynamicTemplates = object : DynamicTemplates() {
-                val ids by template(
-                    mapping = long(index = false).subFields(::IdSubFields),
-                    match = "*_id",
-                )
-            }
+            val ids by template(
+                mapping = long(index = false).subFields(::IdSubFields),
+                match = "*_id",
+            )
         }
         val myDoc = MyDoc()
 
@@ -308,12 +300,10 @@ class MappingCompilerTests : BaseTest() {
         }
 
         class MyDoc : Document() {
-            override val dynamicTemplates = object : DynamicTemplates() {
-                val users by template(
-                    mapping = obj(::UserDoc, dynamic = Dynamic.TRUE),
-                    match = "*_user",
-                )
-            }
+            val users by template(
+                mapping = obj(::UserDoc, dynamic = Dynamic.TRUE),
+                match = "*_user",
+            )
         }
         val myDoc = MyDoc()
 
@@ -349,12 +339,10 @@ class MappingCompilerTests : BaseTest() {
     @Test
     fun dynamicTemplates_runtimeWithoutType() {
         class MyDoc : Document() {
-            override val dynamicTemplates = object : DynamicTemplates() {
-                val dates by template(
-                    runtime = Runtime(),
-                    match = "*_dt",
-                )
-            }
+            val dates by template(
+                runtime = Runtime(),
+                match = "*_dt",
+            )
         }
         val myDoc = MyDoc()
 
@@ -374,12 +362,10 @@ class MappingCompilerTests : BaseTest() {
     @Test
     fun dynamicTemplates_runtimeWithType() {
         class MyDoc : Document() {
-            override val dynamicTemplates = object : DynamicTemplates() {
-                val dates by template(
-                    runtime = Runtime(int()),
-                    match = "*_count",
-                )
-            }
+            val dates by template(
+                runtime = Runtime(int()),
+                match = "*_count",
+            )
         }
         val myDoc = MyDoc()
 
