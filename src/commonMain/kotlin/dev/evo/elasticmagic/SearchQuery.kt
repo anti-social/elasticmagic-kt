@@ -216,7 +216,7 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
      * Clears the existing filters.
      */
     @Suppress("UNUSED_PARAMETER")
-    fun filter(clear: Nothing?): T = self {
+    fun filter(clear: SearchQuery.CLEAR): T = self {
         filters.clear()
     }
 
@@ -238,7 +238,7 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
      * Clears the existing post filters.
      */
     @Suppress("UNUSED_PARAMETER")
-    fun postFilter(clear: Nothing?): T = self {
+    fun postFilter(clear: SearchQuery.CLEAR): T = self {
         postFilters.clear()
     }
 
@@ -261,12 +261,12 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
      * Clears the existing aggregations.
      */
     @Suppress("UNUSED_PARAMETER")
-    fun aggs(clear: Nothing?): T = self {
+    fun aggs(clear: SearchQuery.CLEAR): T = self {
         aggregations.clear()
     }
 
     /**
-     * Adds [rescorers] to the existing query rescorers. Rescoring is executed after
+     * Adds [rescores] to the existing query rescorers. Rescoring is executed after
      * post filter phase.
      *
      * @sample samples.code.SearchQuery.rescore
@@ -281,7 +281,7 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
      * Clears the existing rescorers.
      */
     @Suppress("UNUSED_PARAMETER")
-    fun rescore(clear: Nothing?): T = self {
+    fun rescore(clear: SearchQuery.CLEAR): T = self {
         rescores.clear()
     }
 
@@ -300,7 +300,7 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
      * Clears the existing sorts.
      */
     @Suppress("UNUSED_PARAMETER")
-    fun sort(clear: Nothing?): T = self {
+    fun sort(clear: SearchQuery.CLEAR): T = self {
         sorts.clear()
     }
 
@@ -377,7 +377,7 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
      * @see <https://www.elastic.co/guide/en/elasticsearch/reference/current/search-fields.html#source-filtering>
      */
     @Suppress("UNUSED_PARAMETER")
-    fun source(clear: Nothing?): T = self {
+    fun source(clear: SearchQuery.CLEAR): T = self {
         this.source = null
     }
 
@@ -386,7 +386,7 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
     }
 
     @Suppress("UNUSED_PARAMETER")
-    fun fields(clear: Nothing?): T = self {
+    fun fields(clear: SearchQuery.CLEAR): T = self {
         fields.clear()
     }
 
@@ -395,7 +395,7 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
     }
 
     @Suppress("UNUSED_PARAMETER")
-    fun docvalueFields(clear: Nothing?): T = self {
+    fun docvalueFields(clear: SearchQuery.CLEAR): T = self {
         docvalueFields.clear()
     }
 
@@ -404,7 +404,7 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
     }
 
     @Suppress("UNUSED_PARAMETER")
-    fun storedFields(clear: Nothing?): T = self {
+    fun storedFields(clear: SearchQuery.CLEAR): T = self {
         storedFields.clear()
     }
 
@@ -413,7 +413,7 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
     }
 
     @Suppress("UNUSED_PARAMETER")
-    fun scriptFields(clear: Nothing?): T = self {
+    fun scriptFields(clear: SearchQuery.CLEAR): T = self {
         scriptFields.clear()
     }
 
@@ -434,7 +434,7 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
     }
 
     @Suppress("UNUSED_PARAMETER")
-    fun ext(clear: Nothing?): T = self {
+    fun ext(clear: SearchQuery.CLEAR): T = self {
         this.extensions.clear()
     }
 
@@ -487,6 +487,8 @@ open class SearchQuery<S: BaseDocSource>(
     params: Params = Params(),
 ) : BaseSearchQuery<S, SearchQuery<S>>(docSourceFactory, query, params) {
 
+    object CLEAR
+
     companion object {
         operator fun <S: BaseDocSource> invoke(
             docSourceFactory: () -> S,
@@ -494,7 +496,7 @@ open class SearchQuery<S: BaseDocSource>(
             params: Params = Params(),
         ): SearchQuery<S> {
             return SearchQuery(
-                { _ -> docSourceFactory() },
+                { docSourceFactory() },
                 query = query,
                 params = params
             )

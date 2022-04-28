@@ -242,7 +242,7 @@ class SearchQueryCompilerTests : BaseTest() {
             )
         }
 
-        query.aggs(null)
+        query.aggs(SearchQuery.CLEAR)
         compile(query).body shouldContainExactly emptyMap()
     }
 
@@ -372,7 +372,7 @@ class SearchQueryCompilerTests : BaseTest() {
             )
         )
 
-        query.filter(null)
+        query.filter(SearchQuery.CLEAR)
         compile(query).body shouldContainExactly mapOf(
             "query" to mapOf(
                 "function_score" to mapOf(
@@ -424,7 +424,7 @@ class SearchQueryCompilerTests : BaseTest() {
             )
         )
 
-        query.postFilter(null)
+        query.postFilter(SearchQuery.CLEAR)
         compile(query).body shouldContainExactly emptyMap()
     }
 
@@ -510,7 +510,7 @@ class SearchQueryCompilerTests : BaseTest() {
             )
         )
 
-        query.rescore(null)
+        query.rescore(SearchQuery.CLEAR)
         compile(query).body shouldContainExactly emptyMap()
     }
 
@@ -522,7 +522,7 @@ class SearchQueryCompilerTests : BaseTest() {
             "sort" to listOf("popularity", "id")
         )
 
-        query.sort(null)
+        query.sort(SearchQuery.CLEAR)
         compile(query).body shouldContainExactly emptyMap()
     }
 
@@ -659,7 +659,7 @@ class SearchQueryCompilerTests : BaseTest() {
             )
         )
         compile(
-            searchQuery.source(null)
+            searchQuery.source(SearchQuery.CLEAR)
         ).body shouldContainExactly emptyMap()
     }
 
@@ -706,7 +706,7 @@ class SearchQueryCompilerTests : BaseTest() {
             )
         )
 
-        compile(query.docvalueFields(null)).body shouldContainExactly emptyMap()
+        compile(query.docvalueFields(SearchQuery.CLEAR)).body shouldContainExactly emptyMap()
     }
 
     @Test
@@ -719,7 +719,7 @@ class SearchQueryCompilerTests : BaseTest() {
             "stored_fields" to listOf("rank", "opinion.rating")
         )
 
-        compile(query.storedFields(null)).body shouldContainExactly emptyMap()
+        compile(query.storedFields(SearchQuery.CLEAR)).body shouldContainExactly emptyMap()
     }
 
     @Test
@@ -740,7 +740,7 @@ class SearchQueryCompilerTests : BaseTest() {
             )
         )
 
-        compile(query.scriptFields(null)).body shouldContainExactly emptyMap()
+        compile(query.scriptFields(SearchQuery.CLEAR)).body shouldContainExactly emptyMap()
     }
 
     @Test
@@ -1163,7 +1163,7 @@ class SearchQueryCompilerTests : BaseTest() {
             )
         )
 
-        query.ext(null)
+        query.ext(SearchQuery.CLEAR)
         compile(query).body shouldContainExactly emptyMap()
     }
 }
