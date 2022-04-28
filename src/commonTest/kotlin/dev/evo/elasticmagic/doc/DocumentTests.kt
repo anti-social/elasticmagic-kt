@@ -52,15 +52,13 @@ class DocumentTests {
     @Test
     fun testRuntimeFields() {
         val emptyDoc = object : Document() {
-            override val runtime = object : RuntimeFields() {
-                val fullName by runtime(
-                    "full_name",
-                    KeywordType,
-                    Script.Source(
-                        "emit(doc['first_name'].value + doc['last_name'].value)"
-                    )
+            val fullName by runtime(
+                "full_name",
+                KeywordType,
+                Script.Source(
+                    "emit(doc['first_name'].value + doc['last_name'].value)"
                 )
-            }
+            )
         }
 
         emptyDoc.runtime.score.getFieldType() shouldBe DoubleType
@@ -72,9 +70,9 @@ class DocumentTests {
         emptyDoc.runtime.seqNo.getFieldType() shouldBe LongType
         emptyDoc.runtime.seqNo.getFieldName() shouldBe "_seq_no"
         emptyDoc.runtime.seqNo.getQualifiedFieldName() shouldBe "_seq_no"
-        emptyDoc.runtime.fullName.getFieldType() shouldBe KeywordType
-        emptyDoc.runtime.fullName.getFieldName() shouldBe "full_name"
-        emptyDoc.runtime.fullName.getQualifiedFieldName() shouldBe "full_name"
+        emptyDoc.fullName.getFieldType() shouldBe KeywordType
+        emptyDoc.fullName.getFieldName() shouldBe "full_name"
+        emptyDoc.fullName.getQualifiedFieldName() shouldBe "full_name"
     }
 
     class CountSubFields(field: BoundField<Int, Int>) : SubFields<Int>(field) {
@@ -584,41 +582,37 @@ class DocumentTests {
             val firstName by keyword()
             val lastName by keyword()
 
-            override val runtime = object : RuntimeFields() {
-                val fullName by runtime(
-                    KeywordType,
-                    Script.Source(
-                        "emit(doc[params.firstNameField].value + doc[params.lastNameField].value)",
-                        params = Params(
-                            "firstNameField" to firstName,
-                            "lastNameField" to lastName,
-                        )
+            val fullName by runtime(
+                KeywordType,
+                Script.Source(
+                    "emit(doc[params.firstNameField].value + doc[params.lastNameField].value)",
+                    params = Params(
+                        "firstNameField" to firstName,
+                        "lastNameField" to lastName,
                     )
                 )
-            }
+            )
         }
 
         val companyDoc = object : Document() {
             val firstName by keyword()
             val lastName by keyword()
 
-            override val runtime = object : RuntimeFields() {
-                val fullName by runtime(
-                    KeywordType,
-                    Script.Source(
-                        "emit(doc[params.firstNameField].value + doc[params.lastNameField].value)",
-                        params = Params(
-                            "firstNameField" to firstName,
-                            "lastNameField" to lastName,
-                        )
+            val fullName by runtime(
+                KeywordType,
+                Script.Source(
+                    "emit(doc[params.firstNameField].value + doc[params.lastNameField].value)",
+                    params = Params(
+                        "firstNameField" to firstName,
+                        "lastNameField" to lastName,
                     )
                 )
-            }
+            )
         }
 
         val mergedDoc = mergeDocuments(userDoc, companyDoc)
-        val fullNameField = mergedDoc.runtime["fullName"].shouldNotBeNull()
-        fullNameField shouldBeSameInstanceAs userDoc.runtime.fullName
+        val fullNameField = mergedDoc["fullName"].shouldNotBeNull()
+        fullNameField shouldBeSameInstanceAs userDoc.fullName
     }
 
     @Test
@@ -627,36 +621,32 @@ class DocumentTests {
             val firstName by keyword()
             val lastName by keyword()
 
-            override val runtime = object : RuntimeFields() {
-                val fullName by runtime(
-                    KeywordType,
-                    Script.Source(
-                        "emit(doc[params.firstNameField].value + doc[params.lastNameField].value)",
-                        params = Params(
-                            "firstNameField" to firstName,
-                            "lastNameField" to lastName,
-                        )
+            val fullName by runtime(
+                KeywordType,
+                Script.Source(
+                    "emit(doc[params.firstNameField].value + doc[params.lastNameField].value)",
+                    params = Params(
+                        "firstNameField" to firstName,
+                        "lastNameField" to lastName,
                     )
                 )
-            }
+            )
         }
 
         val companyDoc = object : Document() {
             val firstName by keyword()
             val lastName by keyword()
 
-            override val runtime = object : RuntimeFields() {
-                val fullName by runtime(
-                    KeywordType,
-                    Script.Source(
-                        "emit(doc[params.lastNameField].value + doc[params.firstNameField].value)",
-                        params = Params(
-                            "firstNameField" to firstName,
-                            "lastNameField" to lastName,
-                        )
+            val fullName by runtime(
+                KeywordType,
+                Script.Source(
+                    "emit(doc[params.lastNameField].value + doc[params.firstNameField].value)",
+                    params = Params(
+                        "firstNameField" to firstName,
+                        "lastNameField" to lastName,
                     )
                 )
-            }
+            )
         }
 
         val exc = shouldThrow<IllegalArgumentException> {

@@ -3,6 +3,7 @@ package dev.evo.elasticmagic.compile
 import dev.evo.elasticmagic.ElasticsearchVersion
 import dev.evo.elasticmagic.doc.MappingField
 import dev.evo.elasticmagic.doc.BaseDocument
+import dev.evo.elasticmagic.doc.BoundRuntimeField
 import dev.evo.elasticmagic.doc.Document
 import dev.evo.elasticmagic.doc.DynamicTemplates
 import dev.evo.elasticmagic.doc.FieldSet
@@ -77,6 +78,12 @@ open class MappingCompiler(
         visit(ctx, document.runtime)
         visit(ctx, document.dynamicTemplates)
         visit(ctx, document as BaseDocument)
+
+        if (document.getAllFields().any { it is BoundRuntimeField }) {
+            ctx.obj("runtime") {
+                visit(this, document as FieldSet) { it is BoundRuntimeField }
+            }
+        }
     }
 
     private fun visit(ctx: ObjectCtx, meta: MetaFields) {
@@ -87,15 +94,6 @@ open class MappingCompiler(
             }
             ctx.obj(metaField.getQualifiedFieldName()) {
                 visit(this, mappingParams)
-            }
-        }
-    }
-
-    private fun visit(ctx: ObjectCtx, runtime: RuntimeFields) {
-        val hasRuntimeFields = runtime.getAllFields().any { !it.isIgnored() }
-        if (hasRuntimeFields) {
-            ctx.obj("runtime") {
-                visit(this, runtime as FieldSet)
             }
         }
     }
@@ -183,13 +181,17 @@ open class MappingCompiler(
 
     private fun visit(ctx: ObjectCtx, doc: BaseDocument) {
         ctx.obj("properties") {
-            visit(this, doc as FieldSet)
+            visit(this, doc as FieldSet) { it !is BoundRuntimeField }
         }
     }
 
-    private fun visit(ctx: ObjectCtx, fieldSet: FieldSet) {
+    private fun visit(
+        ctx: ObjectCtx,
+        fieldSet: FieldSet,
+        fieldPredicate: (MappingField<*>) -> Boolean = { true }
+    ) {
         for (field in fieldSet.getAllFields()) {
-            if (field.isIgnored()) {
+            if (!fieldPredicate(field)) {
                 continue
             }
             ctx.obj(field.getFieldName()) {

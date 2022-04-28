@@ -34,8 +34,6 @@ import kotlin.reflect.KProperty
  */
 interface MappingField<T> : FieldOperations<T> {
     fun getMappingParams(): Params
-
-    fun isIgnored(): Boolean
 }
 
 /**
@@ -51,7 +49,6 @@ open class BoundField<V, T>(
     private val type: FieldType<V, T>,
     private val params: Params,
     private val parent: FieldSet,
-    private val ignored: Boolean = false,
 ) : MappingField<T> {
     private val qualifiedName = run {
         val parentQualifiedName = parent.getQualifiedFieldName()
@@ -72,7 +69,6 @@ open class BoundField<V, T>(
 
     fun getParent(): FieldSet = parent
 
-    override fun isIgnored(): Boolean = ignored
 
     override fun equals(other: Any?): Boolean {
         if (other !is BoundField<*, *>) {
@@ -80,15 +76,13 @@ open class BoundField<V, T>(
         }
         return qualifiedName == other.qualifiedName &&
                 type == other.type &&
-                params == other.params &&
-                ignored == other.ignored
+                params == other.params
     }
 
     override fun hashCode(): Int {
         var h = qualifiedName.hashCode()
         h = 37 * h + type.hashCode()
         h = 37 * h + params.hashCode()
-        h = 37 * h + ignored.hashCode()
         return h
     }
 }
@@ -106,8 +100,7 @@ class BoundJoinField(
     relations: Map<String, List<String>>,
     params: Params,
     parent: FieldSet,
-    ignored: Boolean,
-) : BoundField<Join, String>(name, type, Params(params, "relations" to relations), parent, ignored) {
+) : BoundField<Join, String>(name, type, Params(params, "relations" to relations), parent) {
 
     inner class Parent(private val name: String) : FieldOperations<String> {
         override fun getFieldType(): FieldType<*, String> = KeywordType
@@ -130,6 +123,20 @@ class BoundJoinField(
             )
     }
 }
+
+/**
+ * Represents a runtime field.
+ *
+ * @param script - script to calculate the runtime field
+ *
+ * See more at https://www.elastic.co/guide/en/elasticsearch/reference/current/runtime.html
+ */
+class BoundRuntimeField<V>(
+    name: String,
+    type: FieldType<V, V>,
+    script: Script,
+    parent: FieldSet,
+) : BoundField<V, V>(name, type, Params("script" to script), parent)
 
 interface FieldSetShortcuts {
     fun <V, T> field(
@@ -377,7 +384,6 @@ abstract class FieldSet : FieldSetShortcuts, Named {
         val name: String?,
         val type: FieldType<V, T>,
         val params: Params,
-        val ignored: Boolean = false,
     ) {
         operator fun provideDelegate(
             thisRef: FieldSet, prop: KProperty<*>
@@ -387,7 +393,6 @@ abstract class FieldSet : FieldSetShortcuts, Named {
                 type,
                 params,
                 thisRef,
-                ignored,
             )
             thisRef.addField(field)
             return ReadOnlyProperty { _, _ -> field }
@@ -395,11 +400,11 @@ abstract class FieldSet : FieldSetShortcuts, Named {
     }
 
     class JoinField(
-        name: String?,
-        type: JoinType,
+        val name: String?,
+        val type: JoinType,
         val relations: Map<String, List<String>>,
-        params: Params,
-    ) : Field<Join, String>(name, type, params) {
+        val params: Params,
+    ) {
         operator fun provideDelegate(
             thisRef: BaseDocument, prop: KProperty<*>
         ): ReadOnlyProperty<BaseDocument, BoundJoinField> {
@@ -409,7 +414,6 @@ abstract class FieldSet : FieldSetShortcuts, Named {
                 relations,
                 params,
                 thisRef,
-                ignored,
             )
             thisRef.addField(field)
             return ReadOnlyProperty { _, _ -> field }
@@ -503,7 +507,6 @@ internal open class WrapperField<T>(val field: MappingField<T>) : MappingField<T
     override fun getQualifiedFieldName(): String = field.getQualifiedFieldName()
     override fun getFieldType(): FieldType<*, T> = field.getFieldType()
     override fun getMappingParams(): Params = field.getMappingParams()
-    override fun isIgnored(): Boolean = field.isIgnored()
 }
 
 internal class SubFieldsField<T>(
@@ -737,24 +740,12 @@ open class MetaFields : RootFieldSet() {
 }
 
 /**
- * TODO: Consider moving runtime fields directly into a root document
+ * Fields that are accessible when search query is executing. They are mostly used in scripts.
  */
-open class RuntimeFields : RootFieldSet() {
-    val score by Field("_score", DoubleType, emptyMap(), ignored = true)
-    val doc by Field("_doc", IntType, emptyMap(), ignored = true)
-    val seqNo by Field("_seq_no", LongType, emptyMap(), ignored = true)
-
-    fun <V> runtime(name: String, type: FieldType<V, V>, script: Script): RuntimeField<V> {
-        return RuntimeField(name, type, script)
-    }
-
-    fun <V> runtime(type: FieldType<V, V>, script: Script): RuntimeField<V> {
-        return RuntimeField(null, type, script)
-    }
-
-    class RuntimeField<V>(
-        name: String?, type: FieldType<V, V>, script: Script
-    ) : Field<V, V>(name, type, mapOf("script" to script))
+class RuntimeFields : RootFieldSet() {
+    val score by Field("_score", DoubleType, emptyMap())
+    val doc by Field("_doc", IntType, emptyMap())
+    val seqNo by Field("_seq_no", LongType, emptyMap())
 }
 
 /**
@@ -1280,7 +1271,7 @@ abstract class Document(
     val options: MappingOptions = MappingOptions()
 ) : RootFieldSet() {
     open val meta = MetaFields()
-    open val runtime = RuntimeFields()
+    val runtime = RuntimeFields()
 
     open val dynamicTemplates = DynamicTemplates()
 
@@ -1297,6 +1288,33 @@ abstract class Document(
             dynamicDateFormats = dynamicDateFormats,
         )
     )
+
+    fun <V> runtime(name: String, type: FieldType<V, V>, script: Script): RuntimeField<V> {
+        return RuntimeField(name, type, script)
+    }
+
+    fun <V> runtime(type: FieldType<V, V>, script: Script): RuntimeField<V> {
+        return RuntimeField(null, type, script)
+    }
+
+    class RuntimeField<V>(
+        val name: String?,
+        val type: FieldType<V, V>,
+        val script: Script
+    ) {
+        operator fun provideDelegate(
+            thisRef: Document, prop: KProperty<*>
+        ): ReadOnlyProperty<Document, BoundRuntimeField<V>> {
+            val field = BoundRuntimeField(
+                name ?: prop.name,
+                type,
+                script,
+                thisRef,
+            )
+            thisRef.addField(field)
+            return ReadOnlyProperty { _, _ -> field }
+        }
+    }
 }
 
 fun mergeDocuments(vararg docs: Document): Document {
@@ -1322,11 +1340,7 @@ fun mergeDocuments(vararg docs: Document): Document {
 
     return object : Document() {
         override val meta = expectedMeta
-        override val runtime = object : RuntimeFields() {
-            init {
-                mergeFieldSets(docs.map(Document::runtime)).forEach(::addField)
-            }
-        }
+
         override val dynamicTemplates = object : DynamicTemplates() {
             init {
                 mergeTemplates(docs.map(Document::dynamicTemplates)).forEach(::addTemplate)
@@ -1583,9 +1597,5 @@ private fun checkFieldsIdentical(
     require(field.params == expected.params) {
         "$title have different parameters: " +
                 "${field.params} != ${expected.params}"
-    }
-    require(field.ignored == expected.ignored) {
-        "$title have different 'ignored' attribute: " +
-                "${field.ignored} != ${expected.ignored}"
     }
 }

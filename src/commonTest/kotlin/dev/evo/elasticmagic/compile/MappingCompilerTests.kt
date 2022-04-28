@@ -162,23 +162,21 @@ class MappingCompilerTests : BaseTest() {
             // TODO: Replace with date field
             val timestamp by datetime("@timestamp")
 
-            override val runtime = object : RuntimeFields() {
-                val dayOfWeek by runtime(
-                    "day_of_week",
-                    KeywordType,
-                    Script.Source(
-                        """
-                        emit(
-                            doc[params.timestampField].value
-                                .dayOfWeekEnum
-                                .getDisplayName(TextStyle.FULL, Locale.ROOT)
-                        )""".trimIndent(),
-                        params = Params(
-                            "timestampField" to timestamp
-                        )
+            val dayOfWeek by runtime(
+                "day_of_week",
+                KeywordType,
+                Script.Source(
+                    """
+                    emit(
+                        doc[params.timestampField].value
+                            .dayOfWeekEnum
+                            .getDisplayName(TextStyle.FULL, Locale.ROOT)
+                    )""".trimIndent(),
+                    params = Params(
+                        "timestampField" to timestamp
                     )
                 )
-            }
+            )
         }
 
         compile(logDoc) shouldContainExactly mapOf(
