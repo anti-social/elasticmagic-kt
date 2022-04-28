@@ -30,7 +30,6 @@ class ActionCompiler(
 
 class ActionMetaCompiler(
     esVersion: ElasticsearchVersion,
-    val features: ElasticsearchFeatures,
 ) : BaseCompiler(esVersion) {
     fun compile(serializer: Serializer, input: Action<*>): Serializer.ObjectCtx {
         return serializer.obj {

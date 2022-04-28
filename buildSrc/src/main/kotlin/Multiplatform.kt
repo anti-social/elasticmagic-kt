@@ -1,6 +1,9 @@
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaApplication
+import org.gradle.api.plugins.JavaPluginExtension
+import org.gradle.api.tasks.JavaExec
+import org.gradle.api.tasks.application.CreateStartScripts
 import org.gradle.kotlin.dsl.*
 import org.jetbrains.kotlin.gradle.dsl.*
 
@@ -8,7 +11,7 @@ fun Project.configureMultiplatform(
     configureJvm: Boolean = true,
     configureJs: Boolean = true,
     configureNative: Boolean = true,
-    entryPointModule: String? = null,
+    entryPoints: List<String> = emptyList(),
 ) {
     configure<KotlinMultiplatformExtension> {
         if (configureJvm) {
@@ -19,10 +22,10 @@ fun Project.configureMultiplatform(
                 testRuns["test"].executionTask.configure {
                     useJUnit()
                 }
-                if (entryPointModule != null) {
+                if (entryPoints.isNotEmpty()) {
                     withJava()
                     configure<JavaApplication> {
-                        mainClass.set("$entryPointModule.MainKt")
+                        mainClass.set("samples.${entryPoints[0]}.MainKt")
                     }
                 }
             }
@@ -49,10 +52,10 @@ fun Project.configureMultiplatform(
                 hostOs.startsWith("Windows") -> mingwX64("native")
                 else -> throw GradleException("Host OS is not supported in Kotlin/Native.")
             }
-            if (entryPointModule != null) {
-                nativeTarget.binaries {
-                    executable {
-                        entryPoint("$entryPointModule.main")
+            nativeTarget.binaries {
+                for ((ix, entryPoint) in entryPoints.withIndex()) {
+                    executable(if (ix == 0) "" else entryPoint) {
+                        entryPoint("samples.$entryPoint.main")
                     }
                 }
             }
@@ -97,6 +100,27 @@ fun Project.configureMultiplatform(
         tasks {
             getByName("jvmTest").outputs.upToDateWhen {
                 false
+            }
+
+            if (entryPoints.size > 1) {
+                val sourceSets = extensions.getByType(JavaPluginExtension::class).sourceSets
+                val startScripts = tasks.getByName<CreateStartScripts>("startScripts")
+
+                for (entryPoint in entryPoints.slice(1 until entryPoints.size)) {
+                    val startScript = create("${entryPoint}StartScript", CreateStartScripts::class) {
+                        applicationName = entryPoint
+                        mainClass.set("samples.$entryPoint.MainKt")
+                        classpath = sourceSets.getByName("main").runtimeClasspath
+                        outputDir = startScripts.outputDir
+                    }
+                    startScripts.dependsOn(startScript)
+
+                    register<JavaExec>("run${entryPoint.capitalize()}") {
+                        mainClass.set(startScript.mainClass)
+                        classpath = startScript.classpath!!
+                        standardInput = System.`in`
+                    }
+                }
             }
         }
     }

@@ -22,7 +22,6 @@ class PreparedCreateIndex(
 
 class CreateIndexCompiler(
     esVersion: ElasticsearchVersion,
-    val features: ElasticsearchFeatures,
     val mappingCompiler: MappingCompiler,
 ) : BaseCompiler(esVersion) {
 

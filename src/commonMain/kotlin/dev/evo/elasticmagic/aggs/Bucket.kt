@@ -1,5 +1,6 @@
 package dev.evo.elasticmagic.aggs
 
+import dev.evo.elasticmagic.AggAwareResult
 import dev.evo.elasticmagic.compile.SearchQueryCompiler
 import dev.evo.elasticmagic.query.FieldOperations
 import dev.evo.elasticmagic.query.ObjExpression
@@ -43,13 +44,8 @@ abstract class BucketAggResult<B: BaseBucket> : AggregationResult {
     abstract val buckets: List<B>
 }
 
-abstract class BaseBucket {
+abstract class BaseBucket : AggAwareResult() {
     abstract val docCount: Long
-    abstract val aggs: Map<String, AggregationResult>
-
-    inline fun <reified A: AggregationResult> agg(name: String): A {
-        return (aggs[name] ?: throw IllegalStateException("Unknown aggregation: [$name]")) as A
-    }
 }
 
 data class SingleBucketAggResult(

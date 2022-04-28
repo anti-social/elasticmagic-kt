@@ -53,9 +53,9 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
     protected var trackScores: Boolean? = null
     protected var trackTotalHits: Boolean? = null
 
-    protected var size: Long? = null
-    protected var from: Long? = null
-    protected var terminateAfter: Long? = null
+    protected var size: Int? = null
+    protected var from: Int? = null
+    protected var terminateAfter: Int? = null
 
     protected val extensions: MutableList<SearchExt> = mutableListOf()
 
@@ -258,6 +258,21 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
     }
 
     /**
+     * Adds [aggregations] to the existing query aggregations.
+     *
+     * @param aggregations pairs of the aggregation name and the aggregation itself.
+     * The aggregation name can be used to retrieve an aggregation result using
+     * [SearchQueryResult.aggs] method.
+     *
+     * @sample samples.code.SearchQuery.aggs
+     *
+     * @see <https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations.html>
+     */
+    fun aggs(aggregations: Map<String, Aggregation<*>>): T = self {
+        this.aggregations.putAll(aggregations)
+    }
+
+    /**
      * Clears the existing aggregations.
      */
     @Suppress("UNUSED_PARAMETER")
@@ -417,15 +432,15 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
         scriptFields.clear()
     }
 
-    fun size(size: Long?): T = self {
+    fun size(size: Int?): T = self {
         this.size = size
     }
 
-    fun from(from: Long?): T = self {
+    fun from(from: Int?): T = self {
         this.from = from
     }
 
-    fun terminateAfter(terminateAfter: Long?): T = self {
+    fun terminateAfter(terminateAfter: Int?): T = self {
         this.terminateAfter = terminateAfter
     }
 
@@ -549,9 +564,9 @@ data class PreparedSearchQuery<S: BaseDocSource>(
     val docvalueFields: List<FieldFormat>,
     val storedFields: List<FieldOperations<*>>,
     val scriptFields: Map<String, Script>,
-    val size: Long?,
-    val from: Long?,
-    val terminateAfter: Long?,
+    val size: Int?,
+    val from: Int?,
+    val terminateAfter: Int?,
     val extensions: List<SearchExt>,
     val params: Params,
 )

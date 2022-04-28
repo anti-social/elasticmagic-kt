@@ -8,6 +8,7 @@ include(
     "transport",
     "transport-ktor",
     "kotlinx-datetime",
+    "query-filters",
     "integ-tests",
     "samples",
 )
@@ -18,3 +19,4 @@ project(":serde-jackson-json").name = "elasticmagic-serde-jackson-json"
 project(":transport").name = "elasticmagic-transport"
 project(":transport-ktor").name = "elasticmagic-transport-ktor"
 project(":kotlinx-datetime").name = "elasticmagic-kotlinx-datetime"
+project(":query-filters").name = "elasticmagic-query-filters"

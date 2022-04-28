@@ -28,10 +28,14 @@ data class Bool(
     override val name = "bool"
 
     companion object {
-        fun filter(vararg expressions: QueryExpression) = Bool(filter = expressions.toList())
-        fun should(vararg expressions: QueryExpression) = Bool(should = expressions.toList())
-        fun must(vararg expressions: QueryExpression) = Bool(must = expressions.toList())
-        fun mustNot(vararg expressions: QueryExpression) = Bool(mustNot = expressions.toList())
+        fun filter(expressions: List<QueryExpression>) = Bool(filter = expressions)
+        fun filter(vararg expressions: QueryExpression) = filter(expressions.toList())
+        fun should(expressions: List<QueryExpression>) = Bool(should = expressions)
+        fun should(vararg expressions: QueryExpression) = should(expressions.toList())
+        fun must(expressions: List<QueryExpression>) = Bool(must = expressions)
+        fun must(vararg expressions: QueryExpression) = must(expressions.toList())
+        fun mustNot(expressions: List<QueryExpression>) = Bool(mustNot = expressions)
+        fun mustNot(vararg expressions: QueryExpression) = mustNot(expressions.toList())
     }
 
     override fun clone() = copy()

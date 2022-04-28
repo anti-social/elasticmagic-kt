@@ -9,6 +9,8 @@ import dev.evo.elasticmagic.serde.Serializer.ObjectCtx
 abstract class BaseCompiler(
     val esVersion: ElasticsearchVersion,
 ) {
+    val features = ElasticsearchFeatures(esVersion)
+
     open fun dispatch(ctx: ArrayCtx, value: Any?) {
         ctx.value(value)
     }
@@ -72,36 +74,41 @@ abstract class BaseCompiler(
 @Suppress("UnnecessaryAbstractClass")
 abstract class ElasticsearchFeatures {
     abstract val requiresMappingTypeName: Boolean
+    abstract val supportsTrackingOfTotalHits: Boolean
+
+    companion object {
+        @Suppress("MagicNumber")
+        operator fun invoke(esVersion: ElasticsearchVersion) = when (esVersion.major) {
+            6 -> ElasticsearchFeatures_6_0
+            in 7..Int.MAX_VALUE -> ElasticsearchFeatures_7_0
+            else -> throw IllegalArgumentException(
+                "Elasticsearch version is not supported: $esVersion"
+            )
+        }
+    }
 }
 
 @Suppress("ClassNaming")
 object ElasticsearchFeatures_6_0 : ElasticsearchFeatures() {
     override val requiresMappingTypeName = true
+    override val supportsTrackingOfTotalHits = false
 }
 
 @Suppress("ClassNaming")
 object ElasticsearchFeatures_7_0 : ElasticsearchFeatures() {
     override val requiresMappingTypeName = false
+    override val supportsTrackingOfTotalHits = true
 }
 
 class CompilerSet(esVersion: ElasticsearchVersion) {
-    @Suppress("MagicNumber")
-    val features = when (esVersion.major) {
-        6 -> ElasticsearchFeatures_6_0
-        in 7..Int.MAX_VALUE -> ElasticsearchFeatures_7_0
-        else -> throw IllegalArgumentException(
-            "Elasticsearch version is not supported: $esVersion"
-        )
-    }
-
     val searchQuery: SearchQueryCompiler = SearchQueryCompiler(esVersion)
     val multiSearchQuery: MultiSearchQueryCompiler = MultiSearchQueryCompiler(esVersion, searchQuery)
 
     val mapping: MappingCompiler = MappingCompiler(esVersion, searchQuery)
-    val createIndex: CreateIndexCompiler = CreateIndexCompiler(esVersion, features, mapping)
-    val updateMapping: UpdateMappingCompiler = UpdateMappingCompiler(esVersion, features, mapping)
+    val createIndex: CreateIndexCompiler = CreateIndexCompiler(esVersion, mapping)
+    val updateMapping: UpdateMappingCompiler = UpdateMappingCompiler(esVersion, mapping)
 
-    val actionMetaCompiler: ActionMetaCompiler = ActionMetaCompiler(esVersion, features)
+    val actionMetaCompiler: ActionMetaCompiler = ActionMetaCompiler(esVersion)
     val actionSourceCompiler: ActionSourceCompiler = ActionSourceCompiler(esVersion, searchQuery)
     val actionCompiler: ActionCompiler = ActionCompiler(
         esVersion, actionMetaCompiler, actionSourceCompiler

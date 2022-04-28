@@ -7,6 +7,14 @@ import dev.evo.elasticmagic.doc.BoundField
 import dev.evo.elasticmagic.bulk.IdActionMeta
 import dev.evo.elasticmagic.query.FieldOperations
 
+abstract class AggAwareResult {
+    abstract val aggs: Map<String, AggregationResult>
+
+    inline fun <reified A: AggregationResult> agg(name: String): A {
+        return aggs[name] as A
+    }
+}
+
 data class SearchQueryResult<S: BaseDocSource>(
     val rawResult: Map<String, Any?>?,
     val took: Long,
@@ -15,12 +23,8 @@ data class SearchQueryResult<S: BaseDocSource>(
     val totalHitsRelation: String?,
     val maxScore: Double?,
     val hits: List<SearchHit<S>>,
-    val aggs: Map<String, AggregationResult>,
-) {
-    inline fun <reified A: AggregationResult> agg(name: String): A {
-        return aggs[name] as A
-    }
-}
+    override val aggs: Map<String, AggregationResult>,
+) : AggAwareResult()
 
 data class MultiSearchQueryResult(
     val took: Long?,
