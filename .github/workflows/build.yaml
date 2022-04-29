@@ -225,6 +225,7 @@ jobs:
   docs:
     needs: publish
     if: |
+      always() &&
       github.event_name == 'push' && (
         startsWith(github.ref, 'refs/tags/v') ||
         github.ref == 'refs/heads/master' ||
