@@ -1,0 +1,16 @@
+name: Download build artifact
+description: Download build artifact
+
+runs:
+  using: composite
+  steps:
+  - name: Download build artifact
+    uses: actions/download-artifact@v3
+    with:
+      name: Build
+
+  - name: Unpack build artifact
+    shell: bash
+    run: |
+      set -eux
+      tar --zstd -xf build.tar.zstd

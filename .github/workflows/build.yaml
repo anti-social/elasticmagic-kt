@@ -35,28 +35,8 @@ jobs:
       with:
         java-version: ${{ matrix.java-version }}
 
-    ### Cache ###
-    - name: Cache gradle wrapper
-      uses: actions/cache@v2
-      with:
-        path: ~/.gradle/wrapper
-        key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
-        restore-keys: ${{ runner.os }}-gradle-wrapper-
-
-    - name: Cache Gradle packages
-      uses: actions/cache@v2
-      with:
-        path: ~/.gradle/caches
-        key: ${{ runner.os }}-gradle-caches-${{ hashFiles('**/*.gradle.kts', 'buildSrc') }}
-        restore-keys: ${{ runner.os }}-gradle-caches-
-
-    - name: Cache Kotlin Native
-      uses: actions/cache@v2
-      with:
-        path: ~/.konan
-        key: ${{ runner.os }}-konan-${{ hashFiles('**/*.gradle.kts', 'buildSrc') }}
-        restore-keys: ${{ runner.os }}-konan-
-    ### End of cache ###
+    - name: Load caches
+      uses: ./.github/cache
 
     ### Compile ###
     - name: Compile JVM
@@ -80,19 +60,8 @@ jobs:
         ./gradlew compileKotlinJvm compileKotlinNative -p samples $GRADLE_ARGS
     ### End of compile ###
 
-    ### Artifacts ###
-    - name: Prepare build artifact
-      run: |
-        set -eux
-        find . -type d -name build -print | xargs tar --zstd -cf build.tar.zstd .gradle
-
     - name: Upload build artifact
-      uses: actions/upload-artifact@v3
-      with:
-        name: Build
-        path: build.tar.zstd
-        retention-days: 1
-    ### End of artifacts ###
+      uses: ./.github/upload-artifact
 
     - name: Run linter
       run: |
@@ -178,40 +147,11 @@ jobs:
       with:
         java-version: ${{ matrix.java-version }}
 
-    ### Cache ###
-    - name: Cache gradle wrapper
-      uses: actions/cache@v2
-      with:
-        path: ~/.gradle/wrapper
-        key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
-        restore-keys: ${{ runner.os }}-gradle-wrapper-
+    - name: Load caches
+      uses: ./.github/cache
 
-    - name: Cache Gradle packages
-      uses: actions/cache@v2
-      with:
-        path: ~/.gradle/caches
-        key: ${{ runner.os }}-gradle-caches-${{ hashFiles('**/*.gradle.kts', 'buildSrc') }}
-        restore-keys: ${{ runner.os }}-gradle-caches-
-
-    - name: Cache Kotlin Native
-      uses: actions/cache@v2
-      with:
-        path: ~/.konan
-        key: ${{ runner.os }}-konan-${{ hashFiles('**/*.gradle.kts', 'buildSrc') }}
-        restore-keys: ${{ runner.os }}-konan-
-    ### End of cache ###
-
-    ### Artifacts ###
     - name: Download build artifact
-      uses: actions/download-artifact@v3
-      with:
-        name: Build
-
-    - name: Unpack build artifact
-      run: |
-        set -eux
-        tar --zstd -xf build.tar.zstd
-    ### End of artifacts ###
+      uses: ./.github/download-artifact
 
     - name: Run integration tests
       run: |
@@ -257,28 +197,8 @@ jobs:
       with:
         java-version: 11
 
-    ### Cache ###
-    - name: Cache gradle wrapper
-      uses: actions/cache@v2
-      with:
-        path: ~/.gradle/wrapper
-        key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
-        restore-keys: ${{ runner.os }}-gradle-wrapper-
-
-    - name: Cache Gradle packages
-      uses: actions/cache@v2
-      with:
-        path: ~/.gradle/caches
-        key: ${{ runner.os }}-gradle-caches-${{ hashFiles('**/*.gradle.kts', 'buildSrc') }}
-        restore-keys: ${{ runner.os }}-gradle-caches-
-
-    - name: Cache Kotlin Native
-      uses: actions/cache@v2
-      with:
-        path: ~/.konan
-        key: ${{ runner.os }}-konan-${{ hashFiles('**/*.gradle.kts', 'buildSrc') }}
-        restore-keys: ${{ runner.os }}-konan
-    ### End of cache ###
+    - name: Load caches
+      uses: ./.github/cache
 
     ### Artifacts ###
     - name: Download build artifact
