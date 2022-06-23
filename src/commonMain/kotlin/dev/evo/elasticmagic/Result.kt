@@ -10,8 +10,12 @@ import dev.evo.elasticmagic.query.FieldOperations
 abstract class AggAwareResult {
     abstract val aggs: Map<String, AggregationResult>
 
+    inline fun <reified A: AggregationResult> aggIfExists(name: String): A? {
+        return (aggs[name] ?: return null) as A
+    }
+
     inline fun <reified A: AggregationResult> agg(name: String): A {
-        return aggs[name] as A
+        return aggIfExists(name) ?: throw NoSuchElementException(name)
     }
 }
 

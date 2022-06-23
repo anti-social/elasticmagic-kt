@@ -9,7 +9,7 @@ import dev.evo.elasticmagic.types.IntType
 /**
  * [PageFilter] allows to paginate search query results.
  *
- * @param name - a name of the [PageFilter]
+ * @param name - name of the [PageFilter]
  * @param defaultPageSize - default number of hits per page
  * @param availablePageSizes - list of available of per page variants
  * @param maxHits - maximum number of hits to available for a pagination
@@ -71,7 +71,7 @@ class PageFilter(
 }
 
 /**
- * Temporal storage for some [PageFilter] parameters.
+ * Temporal storage for [PageFilter] parameters.
  */
 class PageFilterContext(
     name: String,
@@ -90,8 +90,8 @@ class PageFilterContext(
  * @param page - number of the current page
  * @param perPage - number of hits per page
  * @param totalPages - total number of pages
- * @param from - value used in [SearchQuery.from]
- * @param size - value used in [SearchQuery.size]
+ * @param from - value applied to [SearchQuery.from]
+ * @param size - value applied to [SearchQuery.size]
  */
 data class PageFilterResult(
     override val name: String,

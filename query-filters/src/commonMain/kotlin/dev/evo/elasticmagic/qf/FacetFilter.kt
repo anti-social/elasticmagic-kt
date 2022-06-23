@@ -33,10 +33,10 @@ enum class FacetFilterMode {
  * [FacetFilter] calculates counts for a field values and allows a search query
  * to be filtered by those values.
  *
- * @param field - a field where values are stored
- * @param name - an optional filter name. If omitted, name of a property will be used
- * @param mode - a mode to use when combining selected values. See [FacetFilterMode]
- * @param aggFactory - a function that creates an aggregation for the [FacetFilter].
+ * @param field - field where values are stored
+ * @param name - optional filter name. If omitted, name of a property will be used
+ * @param mode - mode to use when combining selected values. See [FacetFilterMode]
+ * @param aggFactory - function that creates an aggregation for the [FacetFilter].
  *   Can be used to change aggregation arguments: [TermsAgg.size], [TermsAgg.minDocCount] and others
  */
 class FacetFilter<T>(
@@ -147,10 +147,10 @@ class FacetFilterContext(
 /**
  * [FacetFilterResult] represents result of a [FacetFilter].
  *
- * @param name - a name of the [FacetFilter]
- * @param mode - a mode of the [FacetFilter]
- * @param values - a list of facet filter values that keep a value and a count
- * @param selected - a flag whether there is at least one selected value in the [FacetFilter]
+ * @param name - name of the [FacetFilter]
+ * @param mode - mode of the [FacetFilter]
+ * @param values - list of facet filter values that keep a value and a count
+ * @param selected - flag whether there is at least one selected value in the [FacetFilter]
  */
 data class FacetFilterResult<T>(
     override val name: String,
@@ -166,9 +166,9 @@ data class FacetFilterResult<T>(
 /**
  * [FacetFilterValue] represents bucket of the corresponding terms aggregation.
  *
- * @param value - a value of the [FacetFilter]
- * @param count - a number of the documents that have such a value
- * @param selected - a flag whether the value is selected
+ * @param value - value of the [FacetFilter]
+ * @param count - number of the documents that have such a value
+ * @param selected - flag whether the value is selected
  */
 data class FacetFilterValue<T>(
     val value: T,
