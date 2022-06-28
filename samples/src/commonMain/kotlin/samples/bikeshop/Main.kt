@@ -6,7 +6,7 @@ import dev.evo.elasticmagic.bulk.Refresh
 import dev.evo.elasticmagic.qf.FacetFilterResult
 import dev.evo.elasticmagic.qf.MutableQueryFilterParams
 import dev.evo.elasticmagic.qf.QueryFiltersResult
-import dev.evo.elasticmagic.qf.RangeFacetFilterResult
+import dev.evo.elasticmagic.qf.FacetRangeFilterResult
 import dev.evo.elasticmagic.qf.SortFilter
 import dev.evo.elasticmagic.query.ToValue
 import kotlinx.coroutines.runBlocking
@@ -33,10 +33,10 @@ fun main() = runBlocking {
     mainLoop@while (true) {
         println("Query filter params: $qfParams")
         val searchQuery = SearchQuery(::BikeDocSource)
-        val qfCtx = BikeShopQueryFilters.apply(searchQuery, qfParams)
+        val appliedFilters = BikeShopQueryFilters.apply(searchQuery, qfParams)
         val searchResult = searchQuery.execute(bikeShopIndex)
 
-        val qfResult = BikeShopQueryFilters.processResult(searchResult, qfCtx)
+        val qfResult = appliedFilters.processResult(searchResult)
 
         println()
         val filtersColumn = Column(30).apply {
@@ -102,7 +102,7 @@ fun MutableQueryFilterParams.processFacetFilterCmd(arg: String?, result: QueryFi
         return false
     }
 
-    val filters = result.filter { it is FacetFilterResult<*> || it is RangeFacetFilterResult<*> }
+    val filters = result.filter { it is FacetFilterResult<*> || it is FacetRangeFilterResult<*> }
 
     val argParts = arg.split(" ", limit = 2)
     if (argParts.isEmpty()) {
@@ -156,7 +156,7 @@ fun MutableQueryFilterParams.processFacetFilterCmd(arg: String?, result: QueryFi
                     paramValues.add(valueStr)
                 }
             }
-            is RangeFacetFilterResult<*> -> {
+            is FacetRangeFilterResult<*> -> {
                 val valueParts = argParts[1].split(" ", limit = 3)
                 if (valueParts.isEmpty()) {
                     println("Invalid range filter value")

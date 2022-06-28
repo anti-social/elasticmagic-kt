@@ -89,6 +89,15 @@ data class FilterAgg(
     override fun visit(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
         compiler.visit(ctx, filter)
     }
+
+    // TODO: Reduce for aggregations
+    // override fun reduce(): FilterAgg {
+    //     val reducedFilter = filter.reduce()
+    //     if (reducedFilter != filter && reducedFilter != null) {
+    //         return copy(filter = reducedFilter)
+    //     }
+    //     return this
+    // }
 }
 
 // TODO: Anonymous filters. Possibly we need another class: AnonymousFiltersAgg

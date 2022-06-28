@@ -11,6 +11,7 @@ include(
     "query-filters",
     "integ-tests",
     "samples",
+    "test-utils",
 )
 
 project(":serde").name = "elasticmagic-serde"

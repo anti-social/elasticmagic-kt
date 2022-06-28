@@ -71,33 +71,38 @@ abstract class BaseCompiler(
     }
 }
 
-@Suppress("UnnecessaryAbstractClass")
-abstract class ElasticsearchFeatures {
-    abstract val requiresMappingTypeName: Boolean
-    abstract val supportsTrackingOfTotalHits: Boolean
+enum class ElasticsearchFeatures(
+    val requiresMappingTypeName: Boolean,
+    val supportsTrackingOfTotalHits: Boolean,
+) {
+    ES_6_0(
+        requiresMappingTypeName = true,
+        supportsTrackingOfTotalHits = false,
+    ),
+    ES_7_0(
+        requiresMappingTypeName = false,
+        supportsTrackingOfTotalHits = true,
+    ),
+    ;
 
     companion object {
+        val VERSION_FEATURES = listOf(
+            ElasticsearchVersion(6, 0, 0) to ES_6_0,
+            ElasticsearchVersion(7, 0, 0) to ES_7_0,
+        )
+
         @Suppress("MagicNumber")
-        operator fun invoke(esVersion: ElasticsearchVersion) = when (esVersion.major) {
-            6 -> ElasticsearchFeatures_6_0
-            in 7..Int.MAX_VALUE -> ElasticsearchFeatures_7_0
-            else -> throw IllegalArgumentException(
+        operator fun invoke(esVersion: ElasticsearchVersion): ElasticsearchFeatures {
+            for (versionToFeature in VERSION_FEATURES.reversed()) {
+                if (esVersion >= versionToFeature.first) {
+                    return versionToFeature.second
+                }
+            }
+            throw IllegalArgumentException(
                 "Elasticsearch version is not supported: $esVersion"
             )
         }
     }
-}
-
-@Suppress("ClassNaming")
-object ElasticsearchFeatures_6_0 : ElasticsearchFeatures() {
-    override val requiresMappingTypeName = true
-    override val supportsTrackingOfTotalHits = false
-}
-
-@Suppress("ClassNaming")
-object ElasticsearchFeatures_7_0 : ElasticsearchFeatures() {
-    override val requiresMappingTypeName = false
-    override val supportsTrackingOfTotalHits = true
 }
 
 class CompilerSet(esVersion: ElasticsearchVersion) {

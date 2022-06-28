@@ -7,12 +7,20 @@ import dev.evo.elasticmagic.query.Sort
 import dev.evo.elasticmagic.types.KeywordType
 
 class SortFilter(
-    private vararg val sortValues: SortFilterValue,
+    vararg val sortValues: SortFilterValue,
     name: String? = null,
 ) : Filter<SortFilterContext, SortFilterResult>(name) {
     init {
-        require(sortValues.isNotEmpty()) {
-            "Expected at least one sort value"
+        if (sortValues.isEmpty()) {
+            throw IllegalArgumentException("Expected at least one sort value")
+        }
+    }
+
+    companion object {
+        operator fun invoke(vararg sortValues: Pair<String, List<Sort>>): SortFilter {
+            return SortFilter(
+                *sortValues.map { (name, sorts) -> SortFilterValue(name, sorts) }.toTypedArray()
+            )
         }
     }
 
@@ -20,31 +28,11 @@ class SortFilter(
 
     val values = sortValues.toList()
 
-    override fun prepareContext(name: String, params: QueryFilterParams): SortFilterContext {
+    override fun prepare(name: String, params: QueryFilterParams): SortFilterContext {
         val selectedValue = params.decodeLastValue(name to "", KeywordType)
             ?.let { sorts[it] }
             ?: sortValues[0]
-        return SortFilterContext(name, selectedValue)
-    }
-
-    override fun apply(
-        searchQuery: SearchQuery<*>,
-        filterCtx: FilterContext,
-        otherFacetFilterExpressions: List<QueryExpression>
-    ) {
-        val ctx = filterCtx.cast<SortFilterContext>()
-        searchQuery.sort(*ctx.selectedValue.sorts.toTypedArray())
-    }
-
-    override fun processResult(
-        searchQueryResult: SearchQueryResult<*>,
-        filterCtx: FilterContext
-    ): SortFilterResult {
-        val ctx = filterCtx.cast<SortFilterContext>()
-        return SortFilterResult(
-            ctx.name,
-            values = sortValues.map { SortFilterValueResult(it.value, it == ctx.selectedValue) }
-        )
+        return SortFilterContext(this, name, selectedValue)
     }
 }
 
@@ -54,9 +42,26 @@ class SortFilterValue(
 )
 
 class SortFilterContext(
+    val filter: SortFilter,
     name: String,
     val selectedValue: SortFilterValue,
-) : FilterContext(name, null)
+) : PreparedFilter<SortFilterResult>(name, null) {
+    override fun apply(
+        searchQuery: SearchQuery<*>,
+        otherFacetFilterExpressions: List<QueryExpression>
+    ) {
+        searchQuery.sort(selectedValue.sorts)
+    }
+
+    override fun processResult(
+        searchQueryResult: SearchQueryResult<*>,
+    ): SortFilterResult {
+        return SortFilterResult(
+            name,
+            values = filter.sortValues.map { SortFilterValueResult(it.value, it == selectedValue) }
+        )
+    }
+}
 
 data class SortFilterResult(
     override val name: String,

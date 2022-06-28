@@ -312,6 +312,17 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
     }
 
     /**
+     * Adds [sorts] from a list to the existing query sorting expressions.
+     *
+     * @sample samples.code.SearchQuery.sort
+     *
+     * @see <https://www.elastic.co/guide/en/elasticsearch/reference/current/sort-search-results.html>
+     */
+    fun sort(sorts: List<Sort>): T = self {
+        this.sorts += sorts
+    }
+
+    /**
      * Clears the existing sorts.
      */
     @Suppress("UNUSED_PARAMETER")
@@ -521,7 +532,12 @@ open class SearchQuery<S: BaseDocSource>(
             query: QueryExpression? = null,
             params: Params = Params(),
         ): SearchQuery<DynDocSource> {
-            return SearchQuery(::DynDocSource, query = query, params = params)
+            return SearchQuery(::dynDocSourceFactory, query = query, params = params)
+        }
+
+        @Suppress("UnusedPrivateMember")
+        private fun dynDocSourceFactory(obj: Deserializer.ObjectCtx): DynDocSource {
+            return DynDocSource()
         }
     }
 

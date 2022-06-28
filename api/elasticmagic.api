@@ -68,6 +68,7 @@ public abstract class dev/evo/elasticmagic/BaseSearchQuery {
 	protected final fun setTrackTotalHits (Ljava/lang/Boolean;)V
 	public final fun size (Ljava/lang/Integer;)Ldev/evo/elasticmagic/BaseSearchQuery;
 	public final fun sort (Ldev/evo/elasticmagic/SearchQuery$CLEAR;)Ldev/evo/elasticmagic/BaseSearchQuery;
+	public final fun sort (Ljava/util/List;)Ldev/evo/elasticmagic/BaseSearchQuery;
 	public final fun sort ([Ldev/evo/elasticmagic/query/Sort;)Ldev/evo/elasticmagic/BaseSearchQuery;
 	public final fun source (Ldev/evo/elasticmagic/SearchQuery$CLEAR;)Ldev/evo/elasticmagic/BaseSearchQuery;
 	public final fun source (Ljava/util/List;Ljava/util/List;)Ldev/evo/elasticmagic/BaseSearchQuery;
@@ -248,8 +249,10 @@ public final class dev/evo/elasticmagic/ElasticsearchIndex {
 	public final fun search (Ldev/evo/elasticmagic/BaseSearchQuery;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
-public final class dev/evo/elasticmagic/ElasticsearchVersion {
+public final class dev/evo/elasticmagic/ElasticsearchVersion : java/lang/Comparable {
 	public fun <init> (III)V
+	public fun compareTo (Ldev/evo/elasticmagic/ElasticsearchVersion;)I
+	public synthetic fun compareTo (Ljava/lang/Object;)I
 	public final fun component1 ()I
 	public final fun component2 ()I
 	public final fun component3 ()I
@@ -1226,6 +1229,7 @@ public final class dev/evo/elasticmagic/aggs/HistogramBounds$Companion {
 
 public final class dev/evo/elasticmagic/aggs/HistogramBucket : dev/evo/elasticmagic/aggs/KeyedBucket {
 	public fun <init> (DJLjava/util/Map;Ljava/lang/String;)V
+	public synthetic fun <init> (DJLjava/util/Map;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()D
 	public final fun component2 ()J
 	public final fun component3 ()Ljava/util/Map;
@@ -1955,27 +1959,19 @@ public final class dev/evo/elasticmagic/compile/CreateIndexCompiler : dev/evo/el
 	public final fun processResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;)Ldev/evo/elasticmagic/CreateIndexResult;
 }
 
-public abstract class dev/evo/elasticmagic/compile/ElasticsearchFeatures {
+public final class dev/evo/elasticmagic/compile/ElasticsearchFeatures : java/lang/Enum {
 	public static final field Companion Ldev/evo/elasticmagic/compile/ElasticsearchFeatures$Companion;
-	public fun <init> ()V
-	public abstract fun getRequiresMappingTypeName ()Z
-	public abstract fun getSupportsTrackingOfTotalHits ()Z
+	public static final field ES_6_0 Ldev/evo/elasticmagic/compile/ElasticsearchFeatures;
+	public static final field ES_7_0 Ldev/evo/elasticmagic/compile/ElasticsearchFeatures;
+	public final fun getRequiresMappingTypeName ()Z
+	public final fun getSupportsTrackingOfTotalHits ()Z
+	public static fun valueOf (Ljava/lang/String;)Ldev/evo/elasticmagic/compile/ElasticsearchFeatures;
+	public static fun values ()[Ldev/evo/elasticmagic/compile/ElasticsearchFeatures;
 }
 
 public final class dev/evo/elasticmagic/compile/ElasticsearchFeatures$Companion {
+	public final fun getVERSION_FEATURES ()Ljava/util/List;
 	public final fun invoke (Ldev/evo/elasticmagic/ElasticsearchVersion;)Ldev/evo/elasticmagic/compile/ElasticsearchFeatures;
-}
-
-public final class dev/evo/elasticmagic/compile/ElasticsearchFeatures_6_0 : dev/evo/elasticmagic/compile/ElasticsearchFeatures {
-	public static final field INSTANCE Ldev/evo/elasticmagic/compile/ElasticsearchFeatures_6_0;
-	public fun getRequiresMappingTypeName ()Z
-	public fun getSupportsTrackingOfTotalHits ()Z
-}
-
-public final class dev/evo/elasticmagic/compile/ElasticsearchFeatures_7_0 : dev/evo/elasticmagic/compile/ElasticsearchFeatures {
-	public static final field INSTANCE Ldev/evo/elasticmagic/compile/ElasticsearchFeatures_7_0;
-	public fun getRequiresMappingTypeName ()Z
-	public fun getSupportsTrackingOfTotalHits ()Z
 }
 
 public class dev/evo/elasticmagic/compile/MappingCompiler : dev/evo/elasticmagic/compile/BaseCompiler {

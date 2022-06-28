@@ -1,11 +1,8 @@
 package dev.evo.elasticmagic.compile
 
-import dev.evo.elasticmagic.BaseTest
-import dev.evo.elasticmagic.ElasticsearchVersion
 import dev.evo.elasticmagic.Params
 import dev.evo.elasticmagic.SearchQuery
 import dev.evo.elasticmagic.SearchType
-import dev.evo.elasticmagic.usingIndex
 import dev.evo.elasticmagic.aggs.DateHistogramAgg
 import dev.evo.elasticmagic.aggs.FixedInterval
 import dev.evo.elasticmagic.aggs.MinAgg
@@ -40,7 +37,6 @@ import dev.evo.elasticmagic.types.LongType
 
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.maps.shouldContainExactly
-import io.kotest.matchers.types.shouldBeInstanceOf
 
 import kotlinx.datetime.LocalDateTime
 
@@ -72,39 +68,7 @@ class StringField(name: String) : BoundField<String, String>(
     RootFieldSet
 )
 
-class SearchQueryCompilerTests : BaseTest() {
-    private val compilers = listOf(
-        SearchQueryCompiler(ElasticsearchVersion(6, 0, 0)),
-        SearchQueryCompiler(ElasticsearchVersion(7, 0, 0)),
-    )
-
-    // TODO: Parametrized tests
-    private fun testWithCompiler(block: SearchQueryCompiler.() -> Unit) {
-        for (compiler in compilers) {
-            // TODO: Inject Elasticsearch version into assertion message
-            block(compiler)
-            // try {
-            //     block(compiler)
-            // } catch (ex: AssertionError) {
-            //     // throw RuntimeException(ex.message, ex)
-            //     throw ex
-            // }
-        }
-    }
-
-    private fun SearchQueryCompiler.compile(query: SearchQuery<*>): CompiledSearchQuery {
-        val compiled = this.compile(serializer, query.usingIndex("test"))
-        return CompiledSearchQuery(
-            params = compiled.parameters,
-            body = compiled.body.shouldBeInstanceOf<TestSerializer.ObjectCtx>().toMap(),
-        )
-    }
-
-    class CompiledSearchQuery(
-        val params: Params,
-        val body: Map<String, Any?>,
-    )
-
+class SearchQueryCompilerTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQueryCompiler) {
     @Test
     fun fieldTypeSerialization() = testWithCompiler {
         val userDoc = object : Document() {

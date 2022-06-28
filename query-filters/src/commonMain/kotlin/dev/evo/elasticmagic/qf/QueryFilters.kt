@@ -44,56 +44,48 @@ open class QueryFilters : Iterable<BoundFilter<*, *>> {
         return filters.values.iterator()
     }
 
-    fun apply(searchQuery: SearchQuery<*>, params: QueryFilterParams): Map<String, FilterContext> {
-        val filterContexts = prepareContexts(params)
-        apply(searchQuery, filterContexts)
-        return filterContexts
+    fun apply(searchQuery: SearchQuery<*>, params: QueryFilterParams): AppliedQueryFilters {
+        val preparedFilters = prepare(params)
+        apply(searchQuery, preparedFilters)
+        return AppliedQueryFilters(filters, preparedFilters)
     }
 
-    private fun prepareContexts(params: QueryFilterParams): Map<String, FilterContext> {
-        val appliedFilters = mutableMapOf<String, FilterContext>()
+    private fun prepare(params: QueryFilterParams): Map<String, PreparedFilter<*>> {
+        val appliedFilters = mutableMapOf<String, PreparedFilter<*>>()
         for (filter in filters.values) {
-            appliedFilters[filter.name] = filter.prepareContext(params)
+            appliedFilters[filter.name] = filter.prepare(params)
         }
         return appliedFilters
     }
 
-    private fun apply(searchQuery: SearchQuery<*>, filterContexts: Map<String, FilterContext>) {
-        val preparedSearchQuery = searchQuery.prepare()
-        val postFilters = preparedSearchQuery.postFilters.toList()
-
+    private fun apply(searchQuery: SearchQuery<*>, preparedFilters: Map<String, PreparedFilter<*>>) {
         for (filter in filters.values) {
-            val filterContext = filterContexts[filter.name]
-                ?: throw IllegalStateException("Missing context for filter name: ${filter.name}")
-            val otherFacetFilterExpressions = buildList {
-                addAll(postFilters)
-                for ((filterName, filterCtx) in filterContexts) {
-                    if (filterName == filter.name) {
-                        continue
-                    }
-                    if (filterCtx.facetFilterExpr == null) {
-                        continue
-                    }
-                    add(filterCtx.facetFilterExpr)
+            val preparedFilter = preparedFilters[filter.name]
+                ?: throw IllegalStateException("Missing prepared filter for a name: ${filter.name}")
+
+            val otherFacetFilterExpressions = preparedFilters.mapNotNull { (n, f) ->
+                if (n != filter.name && f.facetFilterExpr != null) {
+                    f.facetFilterExpr
+                } else {
+                    null
                 }
             }
-            if (filterContext.facetFilterExpr != null) {
-                searchQuery.postFilter(filterContext.facetFilterExpr)
-            }
-            filter.apply(searchQuery, filterContext, otherFacetFilterExpressions)
+            preparedFilter.apply(searchQuery, otherFacetFilterExpressions)
         }
     }
 
-    fun processResult(
-        searchQueryResult: SearchQueryResult<*>, filterContexts: Map<String, FilterContext>
-    ): QueryFiltersResult {
+}
+
+class AppliedQueryFilters(
+    private val queryFilters: OrderedMap<String, BoundFilter<*, *>>,
+    private val preparedFilters: Map<String, PreparedFilter<*>>
+) {
+    fun processResult(searchQueryResult: SearchQueryResult<*>): QueryFiltersResult {
         val results = OrderedMap<String, FilterResult>()
-        for (filter in filters.values) {
-            val filterContext = filterContexts[filter.name]
-                ?: throw IllegalStateException("Missing context for filter name: ${filter.name}")
-            results[filter.name] = filter.processResult(
-                searchQueryResult, filterContext
-            )
+        for (filter in queryFilters.values) {
+            val preparedFilter = preparedFilters[filter.name]
+                ?: throw IllegalStateException("Missing prepared filter for a name: ${filter.name}")
+            results[filter.name] = preparedFilter.processResult(searchQueryResult)
         }
         return QueryFiltersResult(results)
     }
@@ -112,18 +104,8 @@ class QueryFiltersResult(
     }
 }
 
-abstract class Filter<C: FilterContext, R: FilterResult>(private val name: String?) {
-    abstract fun prepareContext(name: String, params: QueryFilterParams): C
-
-    abstract fun apply(
-        searchQuery: SearchQuery<*>,
-        filterCtx: FilterContext,
-        otherFacetFilterExpressions: List<QueryExpression>
-    )
-
-    abstract fun processResult(
-        searchQueryResult: SearchQueryResult<*>, filterCtx: FilterContext
-    ): R
+abstract class Filter<C: PreparedFilter<R>, R: FilterResult>(private val name: String?) {
+    abstract fun prepare(name: String, params: QueryFilterParams): C
 
     operator fun provideDelegate(
         thisRef: QueryFilters, property: KProperty<*>
@@ -136,36 +118,26 @@ abstract class Filter<C: FilterContext, R: FilterResult>(private val name: Strin
     }
 }
 
-open class FilterContext(
+abstract class PreparedFilter<R: FilterResult>(
     val name: String,
     val facetFilterExpr: QueryExpression?,
 ) {
-    inline fun <reified T: FilterContext> cast(): T {
-        require(this is T) {
-            "Filter context must be of type ${T::class}"
-        }
-        return this
-    }
+    abstract fun apply(
+        searchQuery: SearchQuery<*>,
+        otherFacetFilterExpressions: List<QueryExpression>
+    )
+
+    abstract fun processResult(
+        searchQueryResult: SearchQueryResult<*>
+    ): R
 }
 
 interface FilterResult {
     val name: String
 }
 
-class BoundFilter<C: FilterContext, R: FilterResult>(val name: String, val filter: Filter<C, R>) {
-    fun prepareContext(params: QueryFilterParams): C {
-        return filter.prepareContext(name, params)
-    }
-
-    fun apply(
-        searchQuery: SearchQuery<*>,
-        filterCtx: FilterContext,
-        otherFacetFilterExpressions: List<QueryExpression>,
-    ) {
-        filter.apply(searchQuery, filterCtx, otherFacetFilterExpressions)
-    }
-
-    fun processResult(searchQueryResult: SearchQueryResult<*>, filterCtx: FilterContext): R {
-        return filter.processResult(searchQueryResult, filterCtx)
+class BoundFilter<C: PreparedFilter<R>, R: FilterResult>(val name: String, val filter: Filter<C, R>) {
+    fun prepare(params: QueryFilterParams): C {
+        return filter.prepare(name, params)
     }
 }

@@ -16,12 +16,24 @@ import dev.evo.elasticmagic.types.IntType
  */
 class PageFilter(
     name: String? = null,
-    private val defaultPageSize: Int = 10,
-    @Suppress("MagicNumber")
-    private val availablePageSizes: List<Int> = listOf(10, 50, 100),
-    private val maxHits: Int = 10_000,
+    val availablePageSizes: List<Int> = DEFAULT_AVAILABLE_PAGE_SIZES,
+    defaultPageSize: Int? = null,
+    val maxHits: Int = DEFAULT_MAX_HITS,
 ) : Filter<PageFilterContext, PageFilterResult>(name) {
-    override fun prepareContext(name: String, params: QueryFilterParams): PageFilterContext {
+    init {
+        if (availablePageSizes.isEmpty()) {
+            throw IllegalArgumentException("availablePageSizes argument should not be empty")
+        }
+    }
+
+    val defaultPageSize = defaultPageSize ?: availablePageSizes[0]
+
+    companion object {
+        const val DEFAULT_MAX_HITS = 10_000
+        val DEFAULT_AVAILABLE_PAGE_SIZES = listOf(10, 50, 100)
+    }
+
+    override fun prepare(name: String, params: QueryFilterParams): PageFilterContext {
         val page = params.decodeLastValue(name to "", IntType)?.coerceAtLeast(1) ?: 1
         val pageSize = params.decodeLastValue(name to "size", IntType)?.coerceAtLeast(1)
             ?: defaultPageSize
@@ -30,42 +42,15 @@ class PageFilter(
         } else {
             defaultPageSize
         }
-        val from = ((page - 1) * perPage).coerceAtMost(maxHits - 1)
+        val from = ((page - 1) * perPage).coerceAtMost(maxHits)
         val size = perPage.coerceAtMost(maxHits - from)
         return PageFilterContext(
+            this,
             name,
             page = page,
             perPage = perPage,
             from = from,
             size = size,
-        )
-    }
-
-    override fun apply(
-        searchQuery: SearchQuery<*>,
-        filterCtx: FilterContext,
-        otherFacetFilterExpressions: List<QueryExpression>
-    ) {
-        val ctx = filterCtx.cast<PageFilterContext>()
-        searchQuery.trackTotalHits(true).from(ctx.from).size(ctx.size)
-    }
-
-    override fun processResult(
-        searchQueryResult: SearchQueryResult<*>,
-        filterCtx: FilterContext
-    ): PageFilterResult {
-        val ctx = filterCtx.cast<PageFilterContext>()
-        val totalHits = searchQueryResult.totalHits
-            ?: throw IllegalArgumentException("Expected total hits")
-        return PageFilterResult(
-            ctx.name,
-            hits = searchQueryResult.hits,
-            totalHits = totalHits,
-            page = ctx.page,
-            perPage = ctx.perPage,
-            totalPages = ((totalHits - 1) / ctx.perPage).toInt() + 1,
-            from = ctx.from,
-            size = ctx.size,
         )
     }
 }
@@ -74,12 +59,38 @@ class PageFilter(
  * Temporal storage for [PageFilter] parameters.
  */
 class PageFilterContext(
+    val filter: PageFilter,
     name: String,
     val page: Int,
     val perPage: Int,
     val from: Int,
     val size: Int,
-) : FilterContext(name, null)
+) : PreparedFilter<PageFilterResult>(name, null) {
+    override fun apply(
+        searchQuery: SearchQuery<*>,
+        otherFacetFilterExpressions: List<QueryExpression>
+    ) {
+        searchQuery.trackTotalHits(true).from(from).size(size)
+    }
+
+    override fun processResult(
+        searchQueryResult: SearchQueryResult<*>,
+    ): PageFilterResult {
+        val totalHits = searchQueryResult.totalHits
+            ?: throw IllegalArgumentException("Expected total hits")
+        val maxTotalPages = (filter.maxHits - 1) / perPage + 1
+        return PageFilterResult(
+            name,
+            hits = searchQueryResult.hits,
+            totalHits = totalHits,
+            page = page,
+            perPage = perPage,
+            totalPages = (((totalHits - 1) / perPage).toInt() + 1).coerceAtMost(maxTotalPages),
+            from = from,
+            size = size,
+        )
+    }
+}
 
 /**
  * [PageFilterResult] holds result of a [PageFilter].

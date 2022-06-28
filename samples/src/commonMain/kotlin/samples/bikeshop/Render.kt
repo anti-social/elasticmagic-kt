@@ -3,7 +3,7 @@ package samples.bikeshop
 import dev.evo.elasticmagic.qf.FacetFilterResult
 import dev.evo.elasticmagic.qf.PageFilterResult
 import dev.evo.elasticmagic.qf.QueryFiltersResult
-import dev.evo.elasticmagic.qf.RangeFacetFilterResult
+import dev.evo.elasticmagic.qf.FacetRangeFilterResult
 import dev.evo.elasticmagic.qf.SortFilterResult
 
 class Column(val width: Int, val padding: Int = 1) {
@@ -55,7 +55,7 @@ fun Column.renderFilters(qfResult: QueryFiltersResult) {
                 renderFacetFilter(ix,  filterResult)
                 ix++
             }
-            is RangeFacetFilterResult<*> -> {
+            is FacetRangeFilterResult<*> -> {
                 renderRangeFacetFilter(ix, filterResult)
                 ix++
             }
@@ -72,7 +72,7 @@ fun Column.renderFacetFilter(filterIx: Int, filter: FacetFilterResult<*>) {
     }
 }
 
-fun Column.renderRangeFacetFilter(filterIx: Int, filter: RangeFacetFilterResult<*>) {
+fun Column.renderRangeFacetFilter(filterIx: Int, filter: FacetRangeFilterResult<*>) {
     val title = FILTER_TITLES.getOrElse(filter.name) { filter.name.title() }
     println("$filterIx. $title")
     println("  ${filter.from ?: "-∞"} - ${filter.to ?: "∞"}")
