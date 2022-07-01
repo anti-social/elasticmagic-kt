@@ -1,5 +1,7 @@
 package dev.evo.elasticmagic.serde
 
+
+@Suppress("UnnecessaryAbstractClass")
 abstract class StdDeserializer : Deserializer {
     companion object {
         // We cannot distinguish double from int on JS platform

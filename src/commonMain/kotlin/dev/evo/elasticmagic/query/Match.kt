@@ -10,6 +10,7 @@ import dev.evo.elasticmagic.serde.Serializer
  * @see <https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-minimum-should-match.html>
  */
 sealed class MinimumShouldMatch : ToValue<Any> {
+    @Suppress("UnnecessaryAbstractClass")
     abstract class Simple : MinimumShouldMatch()
 
     /**

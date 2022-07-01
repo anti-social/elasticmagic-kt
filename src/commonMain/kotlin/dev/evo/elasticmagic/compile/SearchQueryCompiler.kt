@@ -101,6 +101,7 @@ open class SearchQueryCompiler(
         return compile(serializer, input.searchQuery.prepare(), input.indexName)
     }
 
+    @Suppress("ComplexMethod")
     fun visit(ctx: ObjectCtx, searchQuery: PreparedSearchQuery<*>) {
         val query = searchQuery.query?.reduce()
         val filteredQuery = if (searchQuery.filters.isNotEmpty()) {
