@@ -5,7 +5,7 @@ import dev.evo.elasticmagic.ElasticsearchVersion
 import dev.evo.elasticmagic.UpdateMappingResult
 import dev.evo.elasticmagic.serde.Deserializer
 import dev.evo.elasticmagic.serde.Serializer
-import dev.evo.elasticmagic.transport.Request
+import dev.evo.elasticmagic.transport.JsonRequest
 import dev.evo.elasticmagic.transport.Method
 import dev.evo.elasticmagic.transport.Parameters
 
@@ -27,14 +27,14 @@ class UpdateMappingCompiler(
     fun compile(
         serializer: Serializer,
         input: PreparedUpdateMapping
-    ): Request<Serializer.ObjectCtx, UpdateMappingResult> {
+    ): JsonRequest<UpdateMappingResult> {
         val path = if (features.requiresMappingTypeName) {
             "${input.indexName}/_mapping/_doc"
         } else {
             "${input.indexName}/_mapping"
 
         }
-        return Request(
+        return JsonRequest(
             method = Method.PUT,
             path = path,
             parameters = Parameters(
