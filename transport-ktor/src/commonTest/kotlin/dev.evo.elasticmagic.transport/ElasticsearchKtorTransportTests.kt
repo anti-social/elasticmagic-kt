@@ -55,7 +55,7 @@ class ElasticsearchKtorTransportTests {
             }
         )
         val result = client.request(
-            Request(
+            JsonRequest(
                 Method.HEAD,
                 "products",
                 processResult = Deserializer.ObjectCtx::toMap
@@ -89,7 +89,7 @@ class ElasticsearchKtorTransportTests {
             }
         }
         val result = client.request(
-            Request(
+            JsonRequest(
                 Method.PUT,
                 "products/_settings",
                 parameters = emptyMap(),
@@ -121,7 +121,7 @@ class ElasticsearchKtorTransportTests {
              }
          )
          val result = client.request(
-             Request(Method.DELETE, "products_v2", processResult = Deserializer.ObjectCtx::toMap)
+             JsonRequest(Method.DELETE, "products_v2", processResult = Deserializer.ObjectCtx::toMap)
          )
          result shouldContainExactly mapOf(
              "acknowledge" to true
@@ -170,8 +170,8 @@ class ElasticsearchKtorTransportTests {
                 field("_index", "test")
             }
         }
-         val result = client.bulkRequest(
-             Request(
+         val result = client.request(
+             BulkRequest(
                  Method.POST, "_bulk",
                  body = listOf(body),
                  processResult = Deserializer.ObjectCtx::toMap
@@ -193,6 +193,34 @@ class ElasticsearchKtorTransportTests {
      }
 
     @Test
+    fun catRequest() = runTest {
+        val client = ElasticsearchKtorTransport(
+            "http://example.com:9200",
+            JsonSerde,
+            MockEngine { request ->
+                request.method shouldBe HttpMethod.Get
+                request.url.encodedPath shouldBe "/_cat/nodes"
+                request.body.contentType.shouldBeNull()
+                respond(
+                    """
+                        192.168.163.48  58 99 51 6.59 5.83 5.62 cdfhimrstw - es-01
+                        192.168.163.47  45 99 44 4.64 5.02 5.24 cdfhimrstw - es-02
+                        192.168.163.156 48 99 57 5.25 5.97 6.47 cdfhimrstw * es-03
+                    """.trimIndent()
+                )
+            }
+        )
+        val result = client.request(
+            CatRequest("nodes")
+        )
+        result shouldBe listOf(
+            listOf("192.168.163.48", "58", "99", "51", "6.59", "5.83", "5.62", "cdfhimrstw", "-", "es-01"),
+            listOf("192.168.163.47", "45", "99", "44", "4.64", "5.02", "5.24", "cdfhimrstw", "-", "es-02"),
+            listOf("192.168.163.156", "48", "99", "57", "5.25", "5.97", "6.47", "cdfhimrstw", "*", "es-03"),
+        )
+    }
+
+    @Test
     fun requestWithTimeout() = runTest {
         val client = ElasticsearchKtorTransport(
             "http://example.com:9200",
@@ -208,7 +236,7 @@ class ElasticsearchKtorTransportTests {
         )
         val ex = shouldThrow<ElasticsearchException.GatewayTimeout> {
             client.request(
-                Request(
+                JsonRequest(
                     Method.POST,
                     "products_v2/_forcemerge",
                     parameters = mapOf("max_num_segments" to listOf("1"))

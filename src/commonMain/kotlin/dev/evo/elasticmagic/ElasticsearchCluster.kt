@@ -10,9 +10,10 @@ import dev.evo.elasticmagic.compile.PreparedUpdateMapping
 import dev.evo.elasticmagic.doc.BaseDocSource
 import dev.evo.elasticmagic.doc.Document
 import dev.evo.elasticmagic.serde.Serde
-import dev.evo.elasticmagic.transport.Request
+import dev.evo.elasticmagic.transport.BulkRequest
 import dev.evo.elasticmagic.transport.ElasticsearchException
 import dev.evo.elasticmagic.transport.ElasticsearchTransport
+import dev.evo.elasticmagic.transport.JsonRequest
 import dev.evo.elasticmagic.transport.Method
 import dev.evo.elasticmagic.transport.Parameters
 
@@ -37,7 +38,7 @@ class ElasticsearchCluster(
 
     private suspend fun fetchVersion(): ElasticsearchVersion {
         val result = transport.request(
-            Request(Method.GET,"")
+            JsonRequest(Method.GET,"")
         )
         val versionObj = result.obj("version")
         val rawEsVersion = versionObj.string("number")
@@ -95,7 +96,7 @@ class ElasticsearchCluster(
         masterTimeout: String? = null,
         timeout: String? = null,
     ): DeleteIndexResult {
-        val request = Request(
+        val request = JsonRequest(
             method = Method.DELETE,
             path = indexName,
             parameters = Parameters(
@@ -118,7 +119,7 @@ class ElasticsearchCluster(
         allowNoIndices: Boolean? = null,
         ignoreUnavailable: Boolean? = null,
     ): Boolean {
-        val request = Request(
+        val request = JsonRequest(
             method = Method.HEAD,
             path = indexName,
             parameters = Parameters(
@@ -162,7 +163,7 @@ class ElasticsearchCluster(
         val compiled = getCompilers().multiSearchQuery.compile(
             serde.serializer, searchQueries
         )
-        return transport.bulkRequest(compiled)
+        return transport.request(compiled)
     }
 }
 
@@ -202,12 +203,12 @@ class ElasticsearchIndex(
             params = params,
         )
         val compiled = cluster.getCompilers().bulk.compile(serde.serializer, bulk)
-        return transport.bulkRequest(
-            Request(
-                compiled.method,
+        return transport.request(
+            BulkRequest(
+                Method.POST,
                 compiled.path,
                 parameters = compiled.parameters,
-                body = compiled.body?.flatMap(ActionCompiler.Compiled::toList),
+                body = compiled.body.flatMap(ActionCompiler.Compiled::toList),
                 processResult = compiled.processResult,
             )
         )

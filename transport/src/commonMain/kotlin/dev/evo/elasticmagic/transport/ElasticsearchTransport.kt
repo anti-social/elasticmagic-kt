@@ -35,30 +35,6 @@ fun parameterToString(v: Any?): String? {
     }
 }
 
-class Request<out B, out R>(
-    val method: Method,
-    val path: String,
-    val parameters: Parameters = emptyMap(),
-    val body: B? = null,
-    val processResult: (Deserializer.ObjectCtx) -> R,
-) {
-    companion object {
-        operator fun <B> invoke(
-            method: Method,
-            path: String,
-            parameters: Parameters = emptyMap(),
-            body: B? = null,
-        ): Request<B, Deserializer.ObjectCtx> {
-            return Request(
-                method = method,
-                path = path,
-                parameters = parameters,
-                body = body
-            ) { obj -> obj }
-        }
-    }
-}
-
 interface RequestEncoderFactory {
     val encoding: String?
     fun create(): RequestEncoder
@@ -106,6 +82,131 @@ sealed class Auth {
     class Basic(val username: String, val password: String) : Auth()
 }
 
+abstract class Request<out B, T, out R>(
+    val method: Method,
+    val path: String,
+    val parameters: Parameters = emptyMap(),
+    val body: B? = null,
+    val processResult: (T) -> R,
+) {
+    open val contentType: String? = null
+
+    abstract fun serializeRequest(encoder: RequestEncoder)
+    abstract fun deserializeResponse(response: String, serde: Serde): T
+}
+
+class JsonRequest<R>(
+    method: Method,
+    path: String,
+    parameters: Parameters = emptyMap(),
+    body: Serializer.ObjectCtx? = null,
+    processResult: (Deserializer.ObjectCtx) -> R
+) : Request<Serializer.ObjectCtx, Deserializer.ObjectCtx, R>(
+    method,
+    path,
+    parameters = parameters,
+    body = body,
+    processResult = processResult
+) {
+    companion object {
+        operator fun invoke(
+            method: Method,
+            path: String,
+            parameters: Parameters = emptyMap(),
+            body: Serializer.ObjectCtx? = null,
+        ): JsonRequest<Deserializer.ObjectCtx> {
+            return JsonRequest(method, path, parameters = parameters, body = body) { res -> res}
+        }
+    }
+    override val contentType = "application/json"
+
+    override fun serializeRequest(encoder: RequestEncoder) {
+        if (body != null) {
+            encoder.append(body.serialize())
+        }
+    }
+
+    override fun deserializeResponse(response: String, serde: Serde): Deserializer.ObjectCtx {
+        // HEAD requests return empty response body
+        return serde.deserializer.objFromString(
+            response.ifBlank { "{}" }
+        )
+    }
+}
+
+class BulkRequest<R>(
+    method: Method,
+    path: String,
+    parameters: Parameters = emptyMap(),
+    body: List<Serializer.ObjectCtx>,
+    processResult: (Deserializer.ObjectCtx) -> R
+) : Request<List<Serializer.ObjectCtx>, Deserializer.ObjectCtx, R>(
+    method,
+    path,
+    parameters = parameters,
+    body = body,
+    processResult = processResult
+) {
+    companion object {
+        operator fun invoke(
+            method: Method,
+            path: String,
+            parameters: Parameters = emptyMap(),
+            body: List<Serializer.ObjectCtx>,
+        ): BulkRequest<Deserializer.ObjectCtx> {
+            return BulkRequest(method, path, parameters = parameters, body = body) { res -> res}
+        }
+    }
+
+    override val contentType = "application/x-ndjson"
+
+    override fun serializeRequest(encoder: RequestEncoder) {
+        if (body != null) {
+            for (row in body) {
+                encoder.append(row.serialize())
+                encoder.append("\n")
+            }
+        }
+    }
+
+    override fun deserializeResponse(response: String, serde: Serde): Deserializer.ObjectCtx {
+        // HEAD requests return empty response body
+        return serde.deserializer.objFromString(
+            response.ifBlank { "{}" }
+        )
+    }
+}
+
+class CatRequest<R>(
+    path: String,
+    parameters: Parameters = emptyMap(),
+    processResult: (List<List<String>>) -> R
+) : Request<Nothing, List<List<String>>, R>(
+    Method.GET,
+    "_cat/$path",
+    parameters = parameters,
+    body = null,
+    processResult = processResult
+) {
+    companion object {
+        operator fun invoke(
+            path: String,
+            parameters: Parameters = emptyMap(),
+        ): CatRequest<List<List<String>>> {
+            return CatRequest(path, parameters = parameters) { res -> res}
+        }
+    }
+
+    override fun serializeRequest(encoder: RequestEncoder) {}
+
+    override fun deserializeResponse(response: String, serde: Serde): List<List<String>> {
+        return response.split("\n").mapNotNull { row ->
+            if (row.isBlank()) null else row.split("\\s+".toRegex())
+        }
+    }
+}
+
+
 abstract class ElasticsearchTransport(
     val baseUrl: String,
     val serde: Serde,
@@ -123,43 +224,17 @@ abstract class ElasticsearchTransport(
             StringEncoderFactory()
         }
 
-    suspend fun <R> request(request: Request<Serializer.ObjectCtx, R>): R {
+    suspend fun <B, T, R> request(
+        request: Request<B, T, R>
+    ): R {
         val response = doRequest(
             request.method,
             request.path,
             request.parameters,
-            contentType = serde.contentType,
-        ) {
-            if (request.body != null) {
-                append(request.body.serialize())
-            }
-        }
-        // HEAD requests return empty response body
-        val result = serde.deserializer.objFromString(
-            response.ifBlank { "{}" }
+            contentType = request.contentType,
+            bodyBuilder = request::serializeRequest
         )
-        return request.processResult(result)
-    }
-
-    suspend fun <R> bulkRequest(request: Request<List<Serializer.ObjectCtx>, R>): R {
-        val response = doRequest(
-            request.method,
-            request.path,
-            request.parameters,
-            contentType = "application/x-ndjson",
-        ) {
-            if (request.body != null) {
-                for (row in request.body) {
-                    append(row.serialize())
-                    append("\n")
-                }
-            }
-        }
-        // HEAD requests return empty response body
-        val result = serde.deserializer.objFromString(
-            response.ifBlank { "{}" }
-        )
-        return request.processResult(result)
+        return request.processResult(request.deserializeResponse(response, serde))
     }
 
     protected abstract suspend fun doRequest(

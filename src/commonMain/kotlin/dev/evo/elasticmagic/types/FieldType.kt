@@ -96,6 +96,7 @@ abstract class SimpleFieldType<V> : FieldType<V, V> {
  *
  * See: <https://www.elastic.co/guide/en/elasticsearch/reference/current/number.html>
  */
+@Suppress("UnnecessaryAbstractClass")
 abstract class NumberType<V: Number> : SimpleFieldType<V>()
 
 /**

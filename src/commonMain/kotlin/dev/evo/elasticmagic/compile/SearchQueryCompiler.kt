@@ -20,7 +20,8 @@ import dev.evo.elasticmagic.serde.Serializer.ObjectCtx
 import dev.evo.elasticmagic.serde.toList
 import dev.evo.elasticmagic.serde.toMap
 import dev.evo.elasticmagic.toRequestParameters
-import dev.evo.elasticmagic.transport.Request
+import dev.evo.elasticmagic.transport.BulkRequest
+import dev.evo.elasticmagic.transport.JsonRequest
 import dev.evo.elasticmagic.transport.Method
 import dev.evo.elasticmagic.transport.Parameters
 
@@ -30,7 +31,7 @@ class MultiSearchQueryCompiler(
 ) : BaseCompiler(esVersion) {
     fun compile(
         serializer: Serializer, input: List<SearchQueryWithIndex<*>>
-    ): Request<List<ObjectCtx>, MultiSearchQueryResult> {
+    ): BulkRequest<MultiSearchQueryResult> {
         val preparedQueries = mutableListOf<PreparedSearchQuery<*>>()
         val body = mutableListOf<ObjectCtx>()
         for (query in input) {
@@ -44,7 +45,7 @@ class MultiSearchQueryCompiler(
             body.add(header)
             body.add(compiledQuery.body ?: serializer.obj {})
         }
-        return Request(
+        return BulkRequest(
             method = Method.POST,
             path = "_msearch",
             parameters = Parameters(),
@@ -79,11 +80,11 @@ open class SearchQueryCompiler(
 
     fun <S: BaseDocSource> compile(
         serializer: Serializer, input: PreparedSearchQuery<S>, indexName: String
-    ): Request<ObjectCtx, SearchQueryResult<S>> {
+    ): JsonRequest<SearchQueryResult<S>> {
         val body = serializer.obj {
             visit(this, input)
         }
-        return Request(
+        return JsonRequest(
             method = Method.POST,
             path = "$indexName/_search",
             parameters = input.params.toRequestParameters(),
@@ -96,10 +97,11 @@ open class SearchQueryCompiler(
 
     fun <S: BaseDocSource> compile(
         serializer: Serializer, input: SearchQueryWithIndex<S>
-    ): Request<ObjectCtx, SearchQueryResult<S>> {
+    ): JsonRequest<SearchQueryResult<S>> {
         return compile(serializer, input.searchQuery.prepare(), input.indexName)
     }
 
+    @Suppress("ComplexMethod")
     fun visit(ctx: ObjectCtx, searchQuery: PreparedSearchQuery<*>) {
         val query = searchQuery.query?.reduce()
         val filteredQuery = if (searchQuery.filters.isNotEmpty()) {

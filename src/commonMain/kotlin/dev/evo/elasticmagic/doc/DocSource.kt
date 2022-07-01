@@ -62,8 +62,8 @@ object DocSourceFactory {
 }
 
 open class DocSource : BaseDocSource() {
-    private var fieldProps: ArrayList<FieldValueProperty<*>> = arrayListOf()
-    private var fieldPropsByName: HashMap<String, FieldValueProperty<*>> = hashMapOf()
+    private val fieldProps: ArrayList<FieldValueProperty<*>> = arrayListOf()
+    private val fieldPropsByName: HashMap<String, FieldValueProperty<*>> = hashMapOf()
     private var joinFieldProperty: FieldValueProperty<*>? = null
 
     fun getJoinFieldName(): String? {

@@ -6,7 +6,7 @@ import dev.evo.elasticmagic.ElasticsearchVersion
 import dev.evo.elasticmagic.Params
 import dev.evo.elasticmagic.serde.Deserializer
 import dev.evo.elasticmagic.serde.Serializer
-import dev.evo.elasticmagic.transport.Request
+import dev.evo.elasticmagic.transport.JsonRequest
 import dev.evo.elasticmagic.transport.Method
 import dev.evo.elasticmagic.transport.Parameters
 
@@ -29,8 +29,8 @@ class CreateIndexCompiler(
     fun compile(
         serializer: Serializer,
         input: PreparedCreateIndex
-    ): Request<Serializer.ObjectCtx, CreateIndexResult> {
-        return Request(
+    ): JsonRequest<CreateIndexResult> {
+        return JsonRequest(
             method = Method.PUT,
             path = input.indexName,
             parameters = Parameters(

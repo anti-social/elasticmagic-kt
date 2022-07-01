@@ -894,6 +894,7 @@ class SearchQueryCompilerTests : BaseTest() {
 
     @Test
     fun disMaxNodeQuery() {
+        @Suppress("VariableNaming")
         val LANG_HANDLE = NodeHandle<DisMaxNode>()
         val query = SearchQuery(
             DisMaxNode(LANG_HANDLE)
@@ -1016,7 +1017,9 @@ class SearchQueryCompilerTests : BaseTest() {
 
     @Test
     fun testNodes() {
+        @Suppress("VariableNaming")
         val BOOL_HANDLE = NodeHandle<BoolNode>("bool")
+        @Suppress("VariableNaming")
         val AD_BOOST_HANDLE = NodeHandle<FunctionScoreNode>("ad_boost")
 
         val query = SearchQuery(

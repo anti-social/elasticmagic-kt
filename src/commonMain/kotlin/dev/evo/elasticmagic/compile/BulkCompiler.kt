@@ -12,8 +12,7 @@ import dev.evo.elasticmagic.serde.Deserializer
 import dev.evo.elasticmagic.serde.Serializer
 import dev.evo.elasticmagic.serde.toMap
 import dev.evo.elasticmagic.toRequestParameters
-import dev.evo.elasticmagic.transport.Request
-import dev.evo.elasticmagic.transport.Method
+import dev.evo.elasticmagic.transport.Parameters
 
 class PreparedBulk(
     val indexName: String,
@@ -27,17 +26,24 @@ class BulkCompiler(
     esVersion: ElasticsearchVersion,
     private val actionCompiler: ActionCompiler,
 ) : BaseCompiler(esVersion) {
+
+    class Compiled(
+        val path: String,
+        val parameters: Parameters,
+        val body: List<ActionCompiler.Compiled>,
+        val processResult: (Deserializer.ObjectCtx) -> BulkResult
+    )
+
     fun compile(
         serializer: Serializer,
         input: PreparedBulk
-    ): Request<List<ActionCompiler.Compiled>, BulkResult> {
+    ): Compiled {
         val params = Params(
             input.params,
             "refresh" to input.refresh?.toValue(),
             "timeout" to input.timeout,
         )
-        return Request(
-            method = Method.POST,
+        return Compiled(
             path = "${input.indexName}/_bulk",
             parameters = params.toRequestParameters(),
             body = input.actions.map { action ->

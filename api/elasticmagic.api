@@ -1918,8 +1918,16 @@ public abstract class dev/evo/elasticmagic/compile/BaseCompiler {
 
 public final class dev/evo/elasticmagic/compile/BulkCompiler : dev/evo/elasticmagic/compile/BaseCompiler {
 	public fun <init> (Ldev/evo/elasticmagic/ElasticsearchVersion;Ldev/evo/elasticmagic/compile/ActionCompiler;)V
-	public final fun compile (Ldev/evo/elasticmagic/serde/Serializer;Ldev/evo/elasticmagic/compile/PreparedBulk;)Ldev/evo/elasticmagic/transport/Request;
+	public final fun compile (Ldev/evo/elasticmagic/serde/Serializer;Ldev/evo/elasticmagic/compile/PreparedBulk;)Ldev/evo/elasticmagic/compile/BulkCompiler$Compiled;
 	public final fun processResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;)Ldev/evo/elasticmagic/BulkResult;
+}
+
+public final class dev/evo/elasticmagic/compile/BulkCompiler$Compiled {
+	public fun <init> (Ljava/lang/String;Ljava/util/Map;Ljava/util/List;Lkotlin/jvm/functions/Function1;)V
+	public final fun getBody ()Ljava/util/List;
+	public final fun getParameters ()Ljava/util/Map;
+	public final fun getPath ()Ljava/lang/String;
+	public final fun getProcessResult ()Lkotlin/jvm/functions/Function1;
 }
 
 public final class dev/evo/elasticmagic/compile/CompilerSet {
@@ -1938,7 +1946,7 @@ public final class dev/evo/elasticmagic/compile/CompilerSet {
 
 public final class dev/evo/elasticmagic/compile/CreateIndexCompiler : dev/evo/elasticmagic/compile/BaseCompiler {
 	public fun <init> (Ldev/evo/elasticmagic/ElasticsearchVersion;Ldev/evo/elasticmagic/compile/ElasticsearchFeatures;Ldev/evo/elasticmagic/compile/MappingCompiler;)V
-	public final fun compile (Ldev/evo/elasticmagic/serde/Serializer;Ldev/evo/elasticmagic/compile/PreparedCreateIndex;)Ldev/evo/elasticmagic/transport/Request;
+	public final fun compile (Ldev/evo/elasticmagic/serde/Serializer;Ldev/evo/elasticmagic/compile/PreparedCreateIndex;)Ldev/evo/elasticmagic/transport/JsonRequest;
 	public final fun getFeatures ()Ldev/evo/elasticmagic/compile/ElasticsearchFeatures;
 	public final fun getMappingCompiler ()Ldev/evo/elasticmagic/compile/MappingCompiler;
 	public final fun processResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;)Ldev/evo/elasticmagic/CreateIndexResult;
@@ -1980,7 +1988,7 @@ public final class dev/evo/elasticmagic/compile/MappingCompiler$Compiled {
 
 public final class dev/evo/elasticmagic/compile/MultiSearchQueryCompiler : dev/evo/elasticmagic/compile/BaseCompiler {
 	public fun <init> (Ldev/evo/elasticmagic/ElasticsearchVersion;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
-	public final fun compile (Ldev/evo/elasticmagic/serde/Serializer;Ljava/util/List;)Ldev/evo/elasticmagic/transport/Request;
+	public final fun compile (Ldev/evo/elasticmagic/serde/Serializer;Ljava/util/List;)Ldev/evo/elasticmagic/transport/BulkRequest;
 }
 
 public final class dev/evo/elasticmagic/compile/PreparedBulk {
@@ -2018,8 +2026,8 @@ public final class dev/evo/elasticmagic/compile/PreparedUpdateMapping {
 
 public class dev/evo/elasticmagic/compile/SearchQueryCompiler : dev/evo/elasticmagic/compile/BaseCompiler {
 	public fun <init> (Ldev/evo/elasticmagic/ElasticsearchVersion;)V
-	public final fun compile (Ldev/evo/elasticmagic/serde/Serializer;Ldev/evo/elasticmagic/PreparedSearchQuery;Ljava/lang/String;)Ldev/evo/elasticmagic/transport/Request;
-	public final fun compile (Ldev/evo/elasticmagic/serde/Serializer;Ldev/evo/elasticmagic/SearchQueryWithIndex;)Ldev/evo/elasticmagic/transport/Request;
+	public final fun compile (Ldev/evo/elasticmagic/serde/Serializer;Ldev/evo/elasticmagic/PreparedSearchQuery;Ljava/lang/String;)Ldev/evo/elasticmagic/transport/JsonRequest;
+	public final fun compile (Ldev/evo/elasticmagic/serde/Serializer;Ldev/evo/elasticmagic/SearchQueryWithIndex;)Ldev/evo/elasticmagic/transport/JsonRequest;
 	public fun dispatch (Ldev/evo/elasticmagic/serde/Serializer$ArrayCtx;Ljava/lang/Object;)V
 	public fun dispatch (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ljava/lang/String;Ljava/lang/Object;)V
 	public final fun processResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;Ldev/evo/elasticmagic/PreparedSearchQuery;)Ldev/evo/elasticmagic/SearchQueryResult;
@@ -2034,7 +2042,7 @@ public abstract interface class dev/evo/elasticmagic/compile/SearchQueryCompiler
 
 public final class dev/evo/elasticmagic/compile/UpdateMappingCompiler : dev/evo/elasticmagic/compile/BaseCompiler {
 	public fun <init> (Ldev/evo/elasticmagic/ElasticsearchVersion;Ldev/evo/elasticmagic/compile/ElasticsearchFeatures;Ldev/evo/elasticmagic/compile/MappingCompiler;)V
-	public final fun compile (Ldev/evo/elasticmagic/serde/Serializer;Ldev/evo/elasticmagic/compile/PreparedUpdateMapping;)Ldev/evo/elasticmagic/transport/Request;
+	public final fun compile (Ldev/evo/elasticmagic/serde/Serializer;Ldev/evo/elasticmagic/compile/PreparedUpdateMapping;)Ldev/evo/elasticmagic/transport/JsonRequest;
 	public final fun getFeatures ()Ldev/evo/elasticmagic/compile/ElasticsearchFeatures;
 	public final fun processResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;)Ldev/evo/elasticmagic/UpdateMappingResult;
 }

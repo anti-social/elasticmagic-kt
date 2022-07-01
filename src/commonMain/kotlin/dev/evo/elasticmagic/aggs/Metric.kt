@@ -7,6 +7,7 @@ import dev.evo.elasticmagic.query.Script
 import dev.evo.elasticmagic.serde.Deserializer
 import dev.evo.elasticmagic.serde.Serializer
 
+@Suppress("UnnecessaryAbstractClass")
 abstract class MetricAggregation<R: AggregationResult> : Aggregation<R>
 
 data class SingleValueMetricAggResult<T>(
