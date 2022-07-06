@@ -327,8 +327,8 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#run-query-filters-sample" class="md-nav__link">
-    Run query filters sample
+  <a href="#run-a-full-fledged-query-filters-sample" class="md-nav__link">
+    Run a full-fledged query filters sample
   </a>
   
 </li>
@@ -390,8 +390,8 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#run-query-filters-sample" class="md-nav__link">
-    Run query filters sample
+  <a href="#run-a-full-fledged-query-filters-sample" class="md-nav__link">
+    Run a full-fledged query filters sample
   </a>
   
 </li>
@@ -415,42 +415,118 @@
 
 
 <h1 id="query-filters">Query Filters<a class="headerlink" href="#query-filters" title="Permanent link">&para;</a></h1>
-<p>Query filters allow you to describe search query modifications declaratively:</p>
-<div class="highlight"><pre><span></span><code><span class="k">package</span> <span class="nn">samples.bikeshop</span>
+<p>Query filters allow you to describe search query modifications declaratively. It is possible to
+filter, sort, paginate and build facets using query filters.</p>
+<p>Let's describe our new document:</p>
+<div class="highlight"><pre><span></span><code><span class="k">package</span> <span class="nn">samples.qf</span>
+
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.doc.Document</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.doc.enum</span>
+
+<span class="kd">enum</span> <span class="kd">class</span> <span class="nc">BikeKind</span> <span class="p">{</span>
+    <span class="n">BMX</span><span class="p">,</span> <span class="n">MTB</span><span class="p">,</span> <span class="n">CITY</span><span class="p">,</span> <span class="n">ROAD</span><span class="p">,</span> <span class="n">CYCLOCROSS</span><span class="p">,</span> <span class="n">GRAVEL</span><span class="p">,</span> <span class="n">EBIKE</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">object</span> <span class="nc">BikeDoc</span> <span class="p">:</span> <span class="n">Document</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">val</span> <span class="nv">price</span> <span class="k">by</span> <span class="n">float</span><span class="p">()</span>
+    <span class="kd">val</span> <span class="nv">manufacturer</span> <span class="k">by</span> <span class="n">keyword</span><span class="p">()</span>
+    <span class="kd">val</span> <span class="nv">model</span> <span class="k">by</span> <span class="n">text</span><span class="p">()</span>
+    <span class="kd">val</span> <span class="nv">kind</span> <span class="k">by</span> <span class="n">keyword</span><span class="p">().</span><span class="na">enum</span><span class="p">(</span><span class="n">BikeKind</span><span class="o">::</span><span class="n">name</span><span class="p">)</span>
+    <span class="kd">val</span> <span class="nv">weight</span> <span class="k">by</span> <span class="n">float</span><span class="p">()</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Now we can describe query filters for the <code>BikeDoc</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="k">package</span> <span class="nn">samples.qf</span>
 
 <span class="k">import</span> <span class="nn">dev.evo.elasticmagic.qf.FacetFilter</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.qf.FacetRangeFilter</span>
 <span class="k">import</span> <span class="nn">dev.evo.elasticmagic.qf.PageFilter</span>
 <span class="k">import</span> <span class="nn">dev.evo.elasticmagic.qf.QueryFilters</span>
-<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.qf.FacetRangeFilter</span>
 <span class="k">import</span> <span class="nn">dev.evo.elasticmagic.qf.SortFilter</span>
 <span class="k">import</span> <span class="nn">dev.evo.elasticmagic.qf.SortFilterValue</span>
-<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.query.Sort</span>
 
-<span class="kd">object</span> <span class="nc">BikeShopQueryFilters</span> <span class="p">:</span> <span class="n">QueryFilters</span><span class="p">()</span> <span class="p">{</span>
+<span class="kd">object</span> <span class="nc">BikeQueryFilters</span> <span class="p">:</span> <span class="n">QueryFilters</span><span class="p">()</span> <span class="p">{</span>
     <span class="kd">val</span> <span class="nv">price</span> <span class="k">by</span> <span class="n">FacetRangeFilter</span><span class="p">(</span><span class="n">BikeDoc</span><span class="p">.</span><span class="na">price</span><span class="p">)</span>
+    <span class="kd">val</span> <span class="nv">manufacturer</span> <span class="k">by</span> <span class="n">FacetFilter</span><span class="p">(</span><span class="n">BikeDoc</span><span class="p">.</span><span class="na">manufacturer</span><span class="p">)</span>
     <span class="kd">val</span> <span class="nv">kind</span> <span class="k">by</span> <span class="n">FacetFilter</span><span class="p">(</span><span class="n">BikeDoc</span><span class="p">.</span><span class="na">kind</span><span class="p">)</span>
-    <span class="kd">val</span> <span class="nv">brand</span> <span class="k">by</span> <span class="n">FacetFilter</span><span class="p">(</span><span class="n">BikeDoc</span><span class="p">.</span><span class="na">brand</span><span class="p">)</span>
-    <span class="kd">val</span> <span class="nv">matherial</span> <span class="k">by</span> <span class="n">FacetFilter</span><span class="p">(</span><span class="n">BikeDoc</span><span class="p">.</span><span class="na">frameMaterial</span><span class="p">)</span>
-    <span class="kd">val</span> <span class="nv">wheelSize</span> <span class="k">by</span> <span class="n">FacetFilter</span><span class="p">(</span><span class="n">BikeDoc</span><span class="p">.</span><span class="na">wheelSize</span><span class="p">)</span>
-    <span class="kd">val</span> <span class="nv">size</span> <span class="k">by</span> <span class="n">FacetFilter</span><span class="p">(</span><span class="n">BikeDoc</span><span class="p">.</span><span class="na">frameSize</span><span class="p">)</span>
-    <span class="kd">val</span> <span class="nv">roadSize</span> <span class="k">by</span> <span class="n">FacetRangeFilter</span><span class="p">(</span><span class="n">BikeDoc</span><span class="p">.</span><span class="na">roadFrameSize</span><span class="p">)</span>
     <span class="kd">val</span> <span class="nv">weight</span> <span class="k">by</span> <span class="n">FacetRangeFilter</span><span class="p">(</span><span class="n">BikeDoc</span><span class="p">.</span><span class="na">weight</span><span class="p">)</span>
 
     <span class="kd">val</span> <span class="nv">sort</span> <span class="k">by</span> <span class="n">SortFilter</span><span class="p">(</span>
-        <span class="n">SortFilterValue</span><span class="p">(</span><span class="s">&quot;price&quot;</span><span class="p">,</span> <span class="n">listOf</span><span class="p">(</span><span class="n">BikeDoc</span><span class="p">.</span><span class="na">price</span><span class="p">,</span> <span class="n">BikeDoc</span><span class="p">.</span><span class="na">id</span><span class="p">)),</span>
-        <span class="n">SortFilterValue</span><span class="p">(</span><span class="s">&quot;-price&quot;</span><span class="p">,</span> <span class="n">listOf</span><span class="p">(</span><span class="n">BikeDoc</span><span class="p">.</span><span class="na">price</span><span class="p">.</span><span class="na">desc</span><span class="p">(),</span> <span class="n">BikeDoc</span><span class="p">.</span><span class="na">id</span><span class="p">.</span><span class="na">desc</span><span class="p">())),</span>
-        <span class="n">SortFilterValue</span><span class="p">(</span><span class="s">&quot;weight&quot;</span><span class="p">,</span> <span class="n">listOf</span><span class="p">(</span><span class="n">BikeDoc</span><span class="p">.</span><span class="na">weight</span><span class="p">.</span><span class="na">asc</span><span class="p">(</span><span class="n">missing</span> <span class="o">=</span> <span class="n">Sort</span><span class="p">.</span><span class="na">Missing</span><span class="p">.</span><span class="na">Last</span><span class="p">),</span> <span class="n">BikeDoc</span><span class="p">.</span><span class="na">id</span><span class="p">)),</span>
+        <span class="n">SortFilterValue</span><span class="p">(</span><span class="s">&quot;price&quot;</span><span class="p">,</span> <span class="n">listOf</span><span class="p">(</span><span class="n">BikeDoc</span><span class="p">.</span><span class="na">price</span><span class="p">)),</span>
+        <span class="n">SortFilterValue</span><span class="p">(</span><span class="s">&quot;-price&quot;</span><span class="p">,</span> <span class="n">listOf</span><span class="p">(</span><span class="n">BikeDoc</span><span class="p">.</span><span class="na">price</span><span class="p">.</span><span class="na">desc</span><span class="p">())),</span>
+        <span class="n">SortFilterValue</span><span class="p">(</span><span class="s">&quot;weight&quot;</span><span class="p">,</span> <span class="n">listOf</span><span class="p">(</span><span class="n">BikeDoc</span><span class="p">.</span><span class="na">weight</span><span class="p">)),</span>
     <span class="p">)</span>
 
-    <span class="kd">val</span> <span class="nv">page</span> <span class="k">by</span> <span class="n">PageFilter</span><span class="p">(</span><span class="n">defaultPageSize</span> <span class="o">=</span> <span class="m">5</span><span class="p">)</span>
+    <span class="kd">val</span> <span class="nv">page</span> <span class="k">by</span> <span class="n">PageFilter</span><span class="p">()</span>
 <span class="p">}</span>
-
-<span class="kd">val</span> <span class="nv">FILTER_TITLES</span> <span class="o">=</span> <span class="n">mapOf</span><span class="p">(</span>
-    <span class="n">BikeShopQueryFilters</span><span class="p">.</span><span class="na">wheelSize</span><span class="p">.</span><span class="na">name</span> <span class="n">to</span> <span class="s">&quot;Wheel Size (inches)&quot;</span><span class="p">,</span>
-    <span class="n">BikeShopQueryFilters</span><span class="p">.</span><span class="na">roadSize</span><span class="p">.</span><span class="na">name</span> <span class="n">to</span> <span class="s">&quot;Road Frame Size&quot;</span><span class="p">,</span>
-<span class="p">)</span>
 </code></pre></div>
-<h2 id="run-query-filters-sample">Run query filters sample<a class="headerlink" href="#run-query-filters-sample" title="Permanent link">&para;</a></h2>
+<p>To apply it to a search query you need query filter parameters. They are just a mapping where keys
+are a pair of filter name and an operation, and values are a list of strings. For example, it
+could be transformed from http query parameters.</p>
+<div class="highlight"><pre><span></span><code><span class="k">package</span> <span class="nn">samples.qf</span>
+
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.SearchQuery</span>
+
+<span class="c1">// You can imagine it could be converted from following http query parameters:</span>
+<span class="c1">// manufacturer=Giant&amp;manufacturer=Cannondale&amp;</span>
+<span class="c1">// kind=CITY&amp;kind=CYCLOCROSS&amp;kind=GRAVEL&amp;</span>
+<span class="c1">// price__lte=2000&amp;</span>
+<span class="c1">// sort=weight&amp;</span>
+<span class="c1">// page=2&amp;</span>
+<span class="kd">val</span> <span class="nv">qfParams</span> <span class="o">=</span> <span class="n">mapOf</span><span class="p">(</span>
+    <span class="p">(</span><span class="s">&quot;manufacturer&quot;</span> <span class="n">to</span> <span class="s">&quot;&quot;</span><span class="p">)</span> <span class="n">to</span> <span class="n">listOf</span><span class="p">(</span><span class="s">&quot;Giant&quot;</span><span class="p">,</span> <span class="s">&quot;Cannondale&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&quot;kind&quot;</span> <span class="n">to</span> <span class="s">&quot;&quot;</span><span class="p">)</span> <span class="n">to</span> <span class="n">listOf</span><span class="p">(</span><span class="s">&quot;CITY&quot;</span><span class="p">,</span> <span class="s">&quot;CYCLOCROSS&quot;</span><span class="p">,</span> <span class="s">&quot;GRAVEL&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&quot;price&quot;</span> <span class="n">to</span> <span class="s">&quot;lte&quot;</span><span class="p">)</span> <span class="n">to</span> <span class="n">listOf</span><span class="p">(</span><span class="s">&quot;2000&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&quot;sort&quot;</span> <span class="n">to</span> <span class="s">&quot;&quot;</span><span class="p">)</span> <span class="n">to</span> <span class="n">listOf</span><span class="p">(</span><span class="s">&quot;weight&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&quot;page&quot;</span> <span class="n">to</span> <span class="s">&quot;&quot;</span><span class="p">)</span> <span class="n">to</span> <span class="n">listOf</span><span class="p">(</span><span class="s">&quot;2&quot;</span><span class="p">),</span>
+<span class="p">)</span>
+
+<span class="kd">val</span> <span class="nv">searchQuery</span> <span class="o">=</span> <span class="n">SearchQuery</span><span class="p">()</span>
+
+<span class="kd">val</span> <span class="nv">appliedFilters</span> <span class="o">=</span> <span class="n">BikeQueryFilters</span><span class="p">.</span><span class="na">apply</span><span class="p">(</span><span class="n">searchQuery</span><span class="p">,</span> <span class="n">qfParams</span><span class="p">)</span>
+
+<span class="c1">// Now searchQuery is filtered, sorted, paginated and corresponding aggregations</span>
+<span class="c1">// to calculate facets are added</span>
+</code></pre></div>
+<p>After executing query we are able to process its results:</p>
+<div class="highlight"><pre><span></span><code><span class="k">package</span> <span class="nn">samples.qf</span>
+
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.doc.DynDocSource</span>
+<span class="k">import</span> <span class="nn">samples.started.cluster</span>
+
+<span class="kd">suspend</span> <span class="kd">fun</span> <span class="nf">process</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">val</span> <span class="nv">filtersResult</span> <span class="o">=</span> <span class="n">appliedFilters</span><span class="p">.</span><span class="na">processResult</span><span class="p">(</span><span class="n">searchQuery</span><span class="p">.</span><span class="na">execute</span><span class="p">(</span><span class="n">cluster</span><span class="o">[</span><span class="s">&quot;bike&quot;</span><span class="o">]</span><span class="p">))</span>
+
+    <span class="kd">val</span> <span class="nv">manufacturerFacet</span> <span class="o">=</span> <span class="n">filtersResult</span><span class="o">[</span><span class="n">BikeQueryFilters</span><span class="p">.</span><span class="na">manufacturer</span><span class="o">]</span>
+    <span class="n">println</span><span class="p">(</span><span class="s">&quot;Manufacturers:&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">manufacturer</span> <span class="k">in</span> <span class="n">manufacturerFacet</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">val</span> <span class="nv">selectedMark</span> <span class="o">=</span> <span class="k">if</span> <span class="p">(</span><span class="n">manufacturer</span><span class="p">.</span><span class="na">selected</span><span class="p">)</span> <span class="s">&quot;x&quot;</span> <span class="k">else</span> <span class="s">&quot; &quot;</span>
+        <span class="n">println</span><span class="p">(</span><span class="s">&quot;  [</span><span class="si">$</span><span class="n">selectedMark</span><span class="s">] </span><span class="si">${</span><span class="n">manufacturer</span><span class="p">.</span><span class="na">value</span><span class="si">}</span><span class="s"> (</span><span class="si">${</span><span class="n">manufacturer</span><span class="p">.</span><span class="na">count</span><span class="si">}</span><span class="s">)&quot;</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="n">println</span><span class="p">()</span>
+
+    <span class="kd">val</span> <span class="nv">kindFacet</span> <span class="o">=</span> <span class="n">filtersResult</span><span class="o">[</span><span class="n">BikeQueryFilters</span><span class="p">.</span><span class="na">kind</span><span class="o">]</span>
+    <span class="n">println</span><span class="p">(</span><span class="s">&quot;Kinds:&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">kind</span> <span class="k">in</span> <span class="n">kindFacet</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">val</span> <span class="nv">selectedMark</span> <span class="o">=</span> <span class="k">if</span> <span class="p">(</span><span class="n">kind</span><span class="p">.</span><span class="na">selected</span><span class="p">)</span> <span class="s">&quot;x&quot;</span> <span class="k">else</span> <span class="s">&quot; &quot;</span>
+        <span class="n">println</span><span class="p">(</span><span class="s">&quot;  [</span><span class="si">$</span><span class="n">selectedMark</span><span class="s">] </span><span class="si">${</span><span class="n">kind</span><span class="p">.</span><span class="na">value</span><span class="si">}</span><span class="s"> (</span><span class="si">${</span><span class="n">kind</span><span class="p">.</span><span class="na">count</span><span class="si">}</span><span class="s">)&quot;</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="n">println</span><span class="p">()</span>
+
+    <span class="kd">val</span> <span class="nv">page</span> <span class="o">=</span> <span class="n">filtersResult</span><span class="o">[</span><span class="n">BikeQueryFilters</span><span class="p">.</span><span class="na">page</span><span class="o">]</span>
+    <span class="n">println</span><span class="p">(</span><span class="s">&quot;Results:&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">hit</span> <span class="k">in</span> <span class="n">page</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">val</span> <span class="nv">source</span> <span class="o">=</span> <span class="n">requireNotNull</span><span class="p">(</span><span class="n">hit</span><span class="p">.</span><span class="na">source</span><span class="p">)</span> <span class="k">as</span> <span class="n">DynDocSource</span>
+
+        <span class="n">println</span><span class="p">(</span><span class="s">&quot;  </span><span class="si">${</span><span class="n">source</span><span class="o">[</span><span class="n">BikeDoc</span><span class="p">.</span><span class="na">manufacturer</span><span class="o">]</span><span class="si">}</span><span class="s"> </span><span class="si">${</span><span class="n">source</span><span class="o">[</span><span class="n">BikeDoc</span><span class="p">.</span><span class="na">model</span><span class="o">]</span><span class="si">}</span><span class="s"> - </span><span class="si">${</span><span class="n">source</span><span class="o">[</span><span class="n">BikeDoc</span><span class="p">.</span><span class="na">price</span><span class="o">]</span><span class="si">}</span><span class="s">&quot;</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="n">println</span><span class="p">()</span>
+    <span class="n">println</span><span class="p">(</span><span class="s">&quot;Current page: </span><span class="si">${</span><span class="n">page</span><span class="p">.</span><span class="na">page</span><span class="si">}</span><span class="s">&quot;</span><span class="p">)</span>
+    <span class="n">println</span><span class="p">(</span><span class="s">&quot;Total pages: </span><span class="si">${</span><span class="n">page</span><span class="p">.</span><span class="na">totalPages</span><span class="si">}</span><span class="s">&quot;</span><span class="p">)</span>
+    <span class="n">println</span><span class="p">()</span>
+<span class="p">}</span>
+</code></pre></div>
+<h2 id="run-a-full-fledged-query-filters-sample">Run a full-fledged query filters sample<a class="headerlink" href="#run-a-full-fledged-query-filters-sample" title="Permanent link">&para;</a></h2>
 <p>JVM version:</p>
 <div class="highlight"><pre><span></span><code>./gradlew :samples:runBikeshop -q --console<span class="o">=</span>plain
 </code></pre></div>
