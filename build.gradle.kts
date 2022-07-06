@@ -43,11 +43,13 @@ apiValidation {
     )
 }
 
+group = "dev.evo.elasticmagic"
+version = gitDescribe.trimStart('v')
 extra["projectUrl"] = uri("https://github.com/anti-social/elasticmagic-kt")
 
 subprojects {
-    group = "dev.evo.elasticmagic"
-    version = gitDescribe.trimStart('v')
+    group = rootProject.group
+    version = rootProject.version
 
     if (name == "samples") {
         return@subprojects
