@@ -21,7 +21,6 @@ class PreparedUpdateMapping(
 
 class UpdateMappingCompiler(
     esVersion: ElasticsearchVersion,
-    val features: ElasticsearchFeatures,
     private val mappingCompiler: MappingCompiler,
 ) : BaseCompiler(esVersion) {
     fun compile(

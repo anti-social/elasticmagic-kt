@@ -169,8 +169,8 @@ data class HistogramAggResult(
 data class HistogramBucket(
     override val key: Double,
     override val docCount: Long,
-    override val aggs: Map<String, AggregationResult>,
-    val keyAsString: String?,
+    override val aggs: Map<String, AggregationResult> = emptyMap(),
+    val keyAsString: String? = null,
 ) : KeyedBucket<Double>()
 
 enum class CalendarInterval : ToValue<String> {

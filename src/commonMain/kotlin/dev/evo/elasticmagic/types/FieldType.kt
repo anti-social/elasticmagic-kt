@@ -481,12 +481,11 @@ class EnumFieldType<V: Enum<V>>(
     }
 
     override fun deserialize(v: Any, valueFactory: (() -> V)?): V {
+        if (v::class == termType) {
+            @Suppress("UNCHECKED_CAST")
+            return v as V
+        }
         return valueToEnumValue[type.deserialize(v)]
-            ?: deErr(v, this::class.simpleName ?: "<unknown>")
-    }
-
-    override fun deserializeTerm(v: Any): V {
-        return valueToEnumValue[type.deserializeTerm(v)]
             ?: deErr(v, this::class.simpleName ?: "<unknown>")
     }
 }

@@ -1,25 +1,32 @@
 package dev.evo.elasticmagic.util
 
-internal class OrderedMap<K, V> {
+class OrderedMap<K, V>() {
     private val ixs: HashMap<K, Int> = hashMapOf()
-    private val ents: ArrayList<Map.Entry<K, V>> = arrayListOf()
+    private val ents: ArrayList<Map.Entry<K, V>?> = arrayListOf()
+    private var numberOfTombstones = 0
 
     class Entry<K, V>(
         override val key: K,
         override val value: V
     ) : Map.Entry<K, V>
 
+    constructor(vararg entries: Pair<K, V>) : this() {
+        entries.forEach { (k, v) ->
+            put(k, v)
+        }
+    }
+
     val size: Int
         get() = ents.size
 
     val values: Collection<V>
-        get() = ents.map { it.value }
+        get() = ents.filterNotNull().map { it.value }
 
     val keys: Collection<K>
-        get() = ents.map { it.key }
+        get() = ents.filterNotNull().map { it.key }
 
     val entries: Collection<Map.Entry<K, V>>
-        get() = ents
+        get() = ents.filterNotNull()
 
     fun isEmpty(): Boolean {
         return ents.isEmpty()
@@ -30,11 +37,12 @@ internal class OrderedMap<K, V> {
     }
 
     fun containsValue(value: V): Boolean {
-        return ents.any { it.value == value }
+        return ents.any { it?.value == value }
     }
 
     operator fun get(key: K): V? {
-        return ents[ixs[key] ?: return null].value
+        val ix = ixs[key] ?: return null
+        return ents[ix]?.value
     }
 
     fun put(key: K, value: V): V? {
@@ -44,7 +52,7 @@ internal class OrderedMap<K, V> {
             ents.add(Entry(key, value))
             null
         } else {
-            val oldValue = ents[ix].value
+            val oldValue = ents[ix]?.value
             ents[ix] = Entry(key, value)
             oldValue
         }
@@ -65,8 +73,11 @@ internal class OrderedMap<K, V> {
         return if (ix == null) {
             null
         } else {
+            numberOfTombstones++
             ixs.remove(key)
-            ents.removeAt(ix).value
+            val oldValue = ents[ix]?.value
+            ents[ix] = null
+            oldValue
         }
     }
 

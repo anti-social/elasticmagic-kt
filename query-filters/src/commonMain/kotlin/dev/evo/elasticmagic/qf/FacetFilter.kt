@@ -1,0 +1,213 @@
+package dev.evo.elasticmagic.qf
+
+import dev.evo.elasticmagic.AggAwareResult
+import dev.evo.elasticmagic.SearchQuery
+import dev.evo.elasticmagic.SearchQueryResult
+import dev.evo.elasticmagic.aggs.AggregationResult
+import dev.evo.elasticmagic.aggs.FilterAgg
+import dev.evo.elasticmagic.aggs.SingleBucketAggResult
+import dev.evo.elasticmagic.aggs.TermBucket
+import dev.evo.elasticmagic.aggs.TermsAgg
+import dev.evo.elasticmagic.aggs.TermsAggResult
+import dev.evo.elasticmagic.query.Bool
+import dev.evo.elasticmagic.query.FieldOperations
+import dev.evo.elasticmagic.query.QueryExpression
+import dev.evo.elasticmagic.util.OrderedMap
+
+/**
+ * [FacetFilterMode] determines a way how values should be filtered:
+ *
+ * - [UNION] - 2 or more selected values are combined with *OR* operator.
+ *   Most of the facet filters should use this mode. For example, you are buying car wheels
+ *   of one of the sizes: R16 or R17. So after you choose corresponding values, a search query
+ *   will be filtered with in following way: `wheel_size == R16 || wheel_size == R17`
+ * - [INTERSECT] - 2 or more selected values are combined using *AND* operator.
+ *   Especially useful with multi-valued fields. For example, you want to buy a charger
+ *   that supports AA, AAA and 18650 battery types. So when you choose all the required values,
+ *   a generated search query should be filtered with
+ *   `battery_type == AA && battery_type == AAA && battery_type == 18650`
+ */
+enum class FacetFilterMode {
+    UNION, INTERSECT
+}
+
+/**
+ * [FacetFilter] calculates counts for a field values and allows a search query
+ * to be filtered by those values.
+ *
+ * @param field - field where values are stored
+ * @param name - optional filter name. If omitted, name of a property will be used
+ * @param mode - mode to use when combining selected values. See [FacetFilterMode]
+ * @param termsAgg - terms aggregation for the [FacetFilter].
+ *   Can be used to change aggregation arguments: [TermsAgg.size], [TermsAgg.minDocCount] and others
+ */
+class FacetFilter<T, V>(
+    val field: FieldOperations<V>,
+    name: String? = null,
+    val mode: FacetFilterMode = FacetFilterMode.UNION,
+    val termsAgg: TermsAgg<T>
+) : Filter<PreparedFacetFilter<T>, FacetFilterResult<T>>(name) {
+
+    companion object {
+        operator fun <T> invoke(
+            field: FieldOperations<T>,
+            name: String? = null,
+            mode: FacetFilterMode = FacetFilterMode.UNION,
+        ): FacetFilter<T, T> {
+            return FacetFilter(field, name = name, mode = mode, termsAgg = TermsAgg(field))
+        }
+
+        operator fun <T> invoke(
+            field: FieldOperations<T>,
+            name: String? = null,
+            mode: FacetFilterMode = FacetFilterMode.UNION,
+            termsAggFactory: (FieldOperations<T>) -> TermsAgg<T>
+        ): FacetFilter<T, T> {
+            return FacetFilter(field, name = name, mode = mode, termsAgg = termsAggFactory(field))
+        }
+    }
+
+    override fun prepare(name: String, params: QueryFilterParams): PreparedFacetFilter<T> {
+        val filterValues = params.decodeValues(name to "", field.getFieldType())
+        val filterExpr = when (filterValues.size) {
+            0 -> null
+            1 -> field.eq(filterValues[0])
+            else -> {
+                when (mode) {
+                    FacetFilterMode.UNION -> field.oneOf(filterValues)
+                    FacetFilterMode.INTERSECT -> Bool.filter(filterValues.map { field eq it })
+                }
+
+            }
+        }
+        return PreparedFacetFilter(
+            this, name, filterExpr,
+            selectedValues = params.decodeValues(name to "", termsAgg.value.getValueType()),
+        )
+    }
+}
+
+/**
+ * [PreparedFacetFilter] is a storage of a [FacetFilter] with parsed query filter parameters.
+ */
+class PreparedFacetFilter<T>(
+    val filter: FacetFilter<T, *>,
+    name: String,
+    facetFilterExpr: QueryExpression?,
+    val selectedValues: List<Any?>,
+) : PreparedFilter<FacetFilterResult<T>>(name, facetFilterExpr) {
+    private val termsAggName = "qf:$name"
+
+    private val filterAggName = "qf:$name.filter"
+
+    override fun apply(
+        searchQuery: SearchQuery<*>,
+        otherFacetFilterExpressions: List<QueryExpression>
+    ) {
+        val aggs = if (otherFacetFilterExpressions.isNotEmpty()) {
+            val aggFilters = if (filter.mode == FacetFilterMode.INTERSECT && facetFilterExpr != null) {
+                otherFacetFilterExpressions + listOf(facetFilterExpr)
+            } else {
+                otherFacetFilterExpressions
+            }
+            mapOf(
+                filterAggName to FilterAgg(
+                    if (aggFilters.size == 1) aggFilters[0] else Bool(filter = aggFilters),
+                    aggs = mapOf(termsAggName to filter.termsAgg)
+                )
+            )
+        } else {
+            mapOf(termsAggName to filter.termsAgg)
+        }
+        searchQuery.aggs(aggs)
+        if (facetFilterExpr != null) {
+            searchQuery.postFilter(facetFilterExpr)
+        }
+    }
+
+    override fun processResult(
+        searchQueryResult: SearchQueryResult<*>,
+    ): FacetFilterResult<T> {
+        val selectedValues = OrderedMap(
+            *selectedValues
+                .map { it to true }
+                .toTypedArray()
+        )
+        val isSelected = !selectedValues.isEmpty()
+        val values = mutableListOf<FacetFilterValue<T>>()
+        for (bucket in getTermsAggResult(searchQueryResult).buckets) {
+            values.add(
+                FacetFilterValue(
+                    bucket, selectedValues.containsKey(bucket.key)
+                )
+            )
+            selectedValues.remove(bucket.key)
+        }
+
+        for (selectedValue in selectedValues.keys) {
+            if (selectedValue == null) {
+                continue
+            }
+            val bucketValue = filter.termsAgg.value.deserializeTerm(selectedValue)
+            values.add(
+                FacetFilterValue(
+                    TermBucket(bucketValue, 0, 0), true
+                )
+            )
+        }
+        return FacetFilterResult(name, filter.mode, values, isSelected)
+    }
+
+    private fun getTermsAggResult(
+        searchQueryResult: SearchQueryResult<*>
+    ): TermsAggResult<T> {
+        var aggResult: AggAwareResult = searchQueryResult
+        if (aggResult.aggs.containsKey(filterAggName)) {
+            aggResult = aggResult.agg<SingleBucketAggResult>(filterAggName)
+        }
+        return aggResult.agg(termsAggName)
+    }
+}
+
+/**
+ * [FacetFilterResult] represents result of a [FacetFilter].
+ *
+ * @param name - name of the [FacetFilter]
+ * @param mode - mode of the [FacetFilter]
+ * @param values - list of facet filter values that keep a value and a count
+ * @param selected - flag whether there is at least one selected value in the [FacetFilter]
+ */
+data class FacetFilterResult<T>(
+    override val name: String,
+    val mode: FacetFilterMode,
+    val values: List<FacetFilterValue<T>>,
+    val selected: Boolean,
+) : FilterResult, Iterable<FacetFilterValue<T>> {
+    override fun iterator(): Iterator<FacetFilterValue<T>> {
+        return values.iterator()
+    }
+}
+
+/**
+ * [FacetFilterValue] represents bucket of the corresponding terms aggregation.
+ *
+ * @param bucket - corresponding aggregation bucket
+ * @param selected - flag whether the value is selected
+ */
+data class FacetFilterValue<T>(
+    val bucket: TermBucket<T>,
+    val selected: Boolean,
+) : AggAwareResult() {
+    /**
+     * Value of the [FacetFilter]
+     */
+    val value: T = bucket.key
+
+    /**
+     * Number of the documents that have such a value
+     */
+    val count: Long = bucket.docCount
+
+    override val aggs: Map<String, AggregationResult>
+        get() = bucket.aggs
+}

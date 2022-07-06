@@ -1,6 +1,5 @@
 package samples.started
 
-import dev.evo.elasticmagic.ElasticsearchCluster
 import dev.evo.elasticmagic.serde.serialization.JsonSerde
 import dev.evo.elasticmagic.transport.Auth
 import dev.evo.elasticmagic.transport.ElasticsearchKtorTransport
@@ -12,7 +11,7 @@ import kotlinx.cinterop.toKString
 import platform.posix.getenv
 
 actual val esTransport = ElasticsearchKtorTransport(
-    "http://localhost:9200",
+    getenv("ELASTIC_URL")?.toKString() ?: "http://localhost:9200",
     serde = JsonSerde,
     engine = Curl.create {}
 ) {
@@ -21,5 +20,3 @@ actual val esTransport = ElasticsearchKtorTransport(
         auth = Auth.Basic("elastic", elasticPassword)
     }
 }
-actual val cluster = ElasticsearchCluster(esTransport)
-actual val userIndex = cluster["user"]

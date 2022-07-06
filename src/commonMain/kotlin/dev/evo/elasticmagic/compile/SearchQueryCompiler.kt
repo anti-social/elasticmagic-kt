@@ -73,7 +73,6 @@ class MultiSearchQueryCompiler(
 open class SearchQueryCompiler(
     esVersion: ElasticsearchVersion,
 ) : BaseCompiler(esVersion) {
-
     interface Visitable<T: Serializer.Ctx> {
         fun accept(ctx: T, compiler: SearchQueryCompiler)
     }
@@ -108,19 +107,24 @@ open class SearchQueryCompiler(
             if (query != null) {
                 Bool(must = listOf(query), filter = searchQuery.filters)
             } else {
-                Bool(filter = searchQuery.filters)
+                Bool.filter(searchQuery.filters)
             }
         } else {
             query
         }
         if (filteredQuery != null) {
             ctx.obj("query") {
-                filteredQuery.accept(this, this@SearchQueryCompiler)
+                visit(this, filteredQuery)
             }
         }
         if (searchQuery.postFilters.isNotEmpty()) {
-            ctx.array("post_filter") {
-                visit(this, searchQuery.postFilters)
+            ctx.obj("post_filter") {
+                val postFilterExpr = if (searchQuery.postFilters.size == 1) {
+                    searchQuery.postFilters[0]
+                } else {
+                    Bool.filter(searchQuery.postFilters)
+                }
+                visit(this, postFilterExpr)
             }
         }
         if (searchQuery.aggregations.isNotEmpty()) {
@@ -141,7 +145,7 @@ open class SearchQueryCompiler(
         if (searchQuery.trackScores != null) {
             ctx.field("track_scores", searchQuery.trackScores)
         }
-        if (searchQuery.trackTotalHits != null) {
+        if (searchQuery.trackTotalHits != null && features.supportsTrackingOfTotalHits) {
             ctx.field("track_total_hits", searchQuery.trackTotalHits)
         }
         if (searchQuery.source != null) {

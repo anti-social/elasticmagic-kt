@@ -1,5 +1,6 @@
 package dev.evo.elasticmagic.aggs
 
+import dev.evo.elasticmagic.AggAwareResult
 import dev.evo.elasticmagic.compile.SearchQueryCompiler
 import dev.evo.elasticmagic.query.FieldOperations
 import dev.evo.elasticmagic.query.ObjExpression
@@ -43,13 +44,8 @@ abstract class BucketAggResult<B: BaseBucket> : AggregationResult {
     abstract val buckets: List<B>
 }
 
-abstract class BaseBucket {
+abstract class BaseBucket : AggAwareResult() {
     abstract val docCount: Long
-    abstract val aggs: Map<String, AggregationResult>
-
-    inline fun <reified A: AggregationResult> agg(name: String): A {
-        return (aggs[name] ?: throw IllegalStateException("Unknown aggregation: [$name]")) as A
-    }
 }
 
 data class SingleBucketAggResult(
@@ -93,6 +89,15 @@ data class FilterAgg(
     override fun visit(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
         compiler.visit(ctx, filter)
     }
+
+    // TODO: Reduce for aggregations
+    // override fun reduce(): FilterAgg {
+    //     val reducedFilter = filter.reduce()
+    //     if (reducedFilter != filter && reducedFilter != null) {
+    //         return copy(filter = reducedFilter)
+    //     }
+    //     return this
+    // }
 }
 
 // TODO: Anonymous filters. Possibly we need another class: AnonymousFiltersAgg

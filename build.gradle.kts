@@ -54,6 +54,9 @@ allprojects {
         plugin("io.gitlab.arturbosch.detekt")
     }
 
+    val jacoco = project.extensions.getByType(JacocoPluginExtension::class)
+    jacoco.toolVersion = Versions.jacoco
+
     if (this in publishProjects) {
         apply {
             plugin("maven-publish")
@@ -157,6 +160,7 @@ configure<KotlinMultiplatformExtension> {
         val commonTest by getting {
             dependencies {
                 api(project(":elasticmagic-kotlinx-datetime"))
+                implementation(project(":test-utils"))
             }
         }
     }

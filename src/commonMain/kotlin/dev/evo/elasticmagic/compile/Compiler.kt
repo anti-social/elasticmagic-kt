@@ -9,6 +9,8 @@ import dev.evo.elasticmagic.serde.Serializer.ObjectCtx
 abstract class BaseCompiler(
     val esVersion: ElasticsearchVersion,
 ) {
+    val features = ElasticsearchFeatures(esVersion)
+
     open fun dispatch(ctx: ArrayCtx, value: Any?) {
         ctx.value(value)
     }
@@ -69,39 +71,49 @@ abstract class BaseCompiler(
     }
 }
 
-@Suppress("UnnecessaryAbstractClass")
-abstract class ElasticsearchFeatures {
-    abstract val requiresMappingTypeName: Boolean
-}
+enum class ElasticsearchFeatures(
+    val requiresMappingTypeName: Boolean,
+    val supportsTrackingOfTotalHits: Boolean,
+) {
+    ES_6_0(
+        requiresMappingTypeName = true,
+        supportsTrackingOfTotalHits = false,
+    ),
+    ES_7_0(
+        requiresMappingTypeName = false,
+        supportsTrackingOfTotalHits = true,
+    ),
+    ;
 
-@Suppress("ClassNaming")
-object ElasticsearchFeatures_6_0 : ElasticsearchFeatures() {
-    override val requiresMappingTypeName = true
-}
+    companion object {
+        val VERSION_FEATURES = listOf(
+            ElasticsearchVersion(6, 0, 0) to ES_6_0,
+            ElasticsearchVersion(7, 0, 0) to ES_7_0,
+        )
 
-@Suppress("ClassNaming")
-object ElasticsearchFeatures_7_0 : ElasticsearchFeatures() {
-    override val requiresMappingTypeName = false
+        @Suppress("MagicNumber")
+        operator fun invoke(esVersion: ElasticsearchVersion): ElasticsearchFeatures {
+            for (versionToFeature in VERSION_FEATURES.reversed()) {
+                if (esVersion >= versionToFeature.first) {
+                    return versionToFeature.second
+                }
+            }
+            throw IllegalArgumentException(
+                "Elasticsearch version is not supported: $esVersion"
+            )
+        }
+    }
 }
 
 class CompilerSet(esVersion: ElasticsearchVersion) {
-    @Suppress("MagicNumber")
-    val features = when (esVersion.major) {
-        6 -> ElasticsearchFeatures_6_0
-        in 7..Int.MAX_VALUE -> ElasticsearchFeatures_7_0
-        else -> throw IllegalArgumentException(
-            "Elasticsearch version is not supported: $esVersion"
-        )
-    }
-
     val searchQuery: SearchQueryCompiler = SearchQueryCompiler(esVersion)
     val multiSearchQuery: MultiSearchQueryCompiler = MultiSearchQueryCompiler(esVersion, searchQuery)
 
     val mapping: MappingCompiler = MappingCompiler(esVersion, searchQuery)
-    val createIndex: CreateIndexCompiler = CreateIndexCompiler(esVersion, features, mapping)
-    val updateMapping: UpdateMappingCompiler = UpdateMappingCompiler(esVersion, features, mapping)
+    val createIndex: CreateIndexCompiler = CreateIndexCompiler(esVersion, mapping)
+    val updateMapping: UpdateMappingCompiler = UpdateMappingCompiler(esVersion, mapping)
 
-    val actionMetaCompiler: ActionMetaCompiler = ActionMetaCompiler(esVersion, features)
+    val actionMetaCompiler: ActionMetaCompiler = ActionMetaCompiler(esVersion)
     val actionSourceCompiler: ActionSourceCompiler = ActionSourceCompiler(esVersion, searchQuery)
     val actionCompiler: ActionCompiler = ActionCompiler(
         esVersion, actionMetaCompiler, actionSourceCompiler

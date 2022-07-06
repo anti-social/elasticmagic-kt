@@ -1,11 +1,8 @@
 package dev.evo.elasticmagic.compile
 
-import dev.evo.elasticmagic.BaseTest
-import dev.evo.elasticmagic.ElasticsearchVersion
 import dev.evo.elasticmagic.Params
 import dev.evo.elasticmagic.SearchQuery
 import dev.evo.elasticmagic.SearchType
-import dev.evo.elasticmagic.usingIndex
 import dev.evo.elasticmagic.aggs.DateHistogramAgg
 import dev.evo.elasticmagic.aggs.FixedInterval
 import dev.evo.elasticmagic.aggs.MinAgg
@@ -40,7 +37,6 @@ import dev.evo.elasticmagic.types.LongType
 
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.maps.shouldContainExactly
-import io.kotest.matchers.types.shouldBeInstanceOf
 
 import kotlinx.datetime.LocalDateTime
 
@@ -72,26 +68,9 @@ class StringField(name: String) : BoundField<String, String>(
     RootFieldSet
 )
 
-class SearchQueryCompilerTests : BaseTest() {
-    private val compiler = SearchQueryCompiler(
-        ElasticsearchVersion(6, 0, 0),
-    )
-
-    private fun compile(query: SearchQuery<*>): CompiledSearchQuery {
-        val compiled = compiler.compile(serializer, query.usingIndex("test"))
-        return CompiledSearchQuery(
-            params = compiled.parameters,
-            body = compiled.body.shouldBeInstanceOf<TestSerializer.ObjectCtx>().toMap(),
-        )
-    }
-
-    class CompiledSearchQuery(
-        val params: Params,
-        val body: Map<String, Any?>,
-    )
-
+class SearchQueryCompilerTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQueryCompiler) {
     @Test
-    fun fieldTypeSerialization() {
+    fun fieldTypeSerialization() = testWithCompiler {
         val userDoc = object : Document() {
             val lastLoggedAt by datetime()
         }
@@ -111,13 +90,13 @@ class SearchQueryCompilerTests : BaseTest() {
     }
 
     @Test
-    fun empty() {
+    fun empty() = testWithCompiler {
         val compiled = compile(SearchQuery())
         compiled.body shouldContainExactly emptyMap()
     }
 
     @Test
-    fun query() {
+    fun query() = testWithCompiler {
         val query = SearchQuery(StringField("name").match("Tesla"))
         compile(query).let { compiled ->
             compiled.body shouldContainExactly mapOf(
@@ -160,7 +139,7 @@ class SearchQueryCompilerTests : BaseTest() {
     }
 
     @Test
-    fun aggs() {
+    fun aggs() = testWithCompiler {
         val query = SearchQuery()
         query.aggs(
             "statuses" to TermsAgg(
@@ -247,7 +226,7 @@ class SearchQueryCompilerTests : BaseTest() {
     }
 
     @Test
-    fun composeFilters() {
+    fun composeFilters() = testWithCompiler {
         val userDoc = object : Document() {
             val status by int()
             val rank by float()
@@ -290,7 +269,7 @@ class SearchQueryCompilerTests : BaseTest() {
     }
 
     @Test
-    fun filter() {
+    fun filter() = testWithCompiler {
         class OpinionDoc(field: BoundField<BaseDocSource, Nothing>) : SubDocument(field) {
             val count by int()
         }
@@ -411,14 +390,34 @@ class SearchQueryCompilerTests : BaseTest() {
     }
 
     @Test
-    fun postFilter() {
+    fun postFilter() = testWithCompiler {
         val query = SearchQuery()
             .postFilter(AnyField("status").eq(0))
         compile(query).body shouldContainExactly mapOf(
-            "post_filter" to listOf(
-                mapOf(
-                    "term" to mapOf(
-                        "status" to 0
+            "post_filter" to mapOf(
+                "term" to mapOf(
+                    "status" to 0
+                )
+            )
+        )
+
+        query.postFilter(AnyField("rank").lt(8.5))
+        compile(query).body shouldContainExactly mapOf(
+            "post_filter" to mapOf(
+                "bool" to mapOf(
+                    "filter" to listOf(
+                        mapOf(
+                            "term" to mapOf(
+                                "status" to 0
+                            )
+                        ),
+                        mapOf(
+                            "range" to mapOf(
+                                "rank" to mapOf(
+                                    "lt" to 8.5
+                                )
+                            )
+                        )
                     )
                 )
             )
@@ -429,7 +428,7 @@ class SearchQueryCompilerTests : BaseTest() {
     }
 
     @Test
-    fun rescore() {
+    fun rescore() = testWithCompiler {
         val query = SearchQuery()
 
         query.rescore(
@@ -515,7 +514,7 @@ class SearchQueryCompilerTests : BaseTest() {
     }
 
     @Test
-    fun sort_fieldSimplified() {
+    fun sort_fieldSimplified() = testWithCompiler {
         val query = SearchQuery()
             .sort(AnyField("popularity"), Sort(AnyField("id")))
         compile(query).body shouldContainExactly mapOf(
@@ -527,7 +526,7 @@ class SearchQueryCompilerTests : BaseTest() {
     }
 
     @Test
-    fun sort_fieldOrder() {
+    fun sort_fieldOrder() = testWithCompiler {
         compile(
             SearchQuery()
                 .sort(Sort(AnyField("popularity"), order = Sort.Order.DESC))
@@ -543,7 +542,7 @@ class SearchQueryCompilerTests : BaseTest() {
     }
 
     @Test
-    fun sort_fieldAllParams() {
+    fun sort_fieldAllParams() = testWithCompiler {
         compile(
             SearchQuery()
                 .sort(
@@ -572,7 +571,7 @@ class SearchQueryCompilerTests : BaseTest() {
     }
 
     @Test
-    fun sort_scriptWithOrder() {
+    fun sort_scriptWithOrder() = testWithCompiler {
         compile(
             SearchQuery()
                 .sort(
@@ -606,21 +605,26 @@ class SearchQueryCompilerTests : BaseTest() {
     }
 
     @Test
-    fun trackScores() {
+    fun trackScores() = testWithCompiler {
         compile(SearchQuery().trackScores(true)).body shouldContainExactly mapOf(
             "track_scores" to true
         )
     }
 
     @Test
-    fun trackTotalHits() {
-        compile(SearchQuery().trackTotalHits(true)).body shouldContainExactly mapOf(
-            "track_total_hits" to true
-        )
+    fun trackTotalHits() = testWithCompiler {
+        val searchQueryBody = compile(SearchQuery().trackTotalHits(true)).body
+        if (esVersion.major <= 6) {
+            searchQueryBody shouldContainExactly emptyMap()
+        } else {
+            searchQueryBody shouldContainExactly mapOf(
+                "track_total_hits" to true
+            )
+        }
     }
 
     @Test
-    fun source() {
+    fun source() = testWithCompiler {
         compile(
             SearchQuery().source()
         ).body shouldContainExactly mapOf(
@@ -664,7 +668,7 @@ class SearchQueryCompilerTests : BaseTest() {
     }
 
     @Test
-    fun fields() {
+    fun fields() = testWithCompiler {
         compile(
             SearchQuery().fields(*arrayOf())
         ).body shouldContainExactly emptyMap()
@@ -685,7 +689,7 @@ class SearchQueryCompilerTests : BaseTest() {
     }
 
     @Test
-    fun docvalueFields() {
+    fun docvalueFields() = testWithCompiler {
         val query = SearchQuery().docvalueFields(*arrayOf())
         compile(query).body shouldContainExactly emptyMap()
 
@@ -710,7 +714,7 @@ class SearchQueryCompilerTests : BaseTest() {
     }
 
     @Test
-    fun storedFields() {
+    fun storedFields() = testWithCompiler {
         val query = SearchQuery().storedFields(*arrayOf())
         compile(query).body shouldContainExactly emptyMap()
 
@@ -723,7 +727,7 @@ class SearchQueryCompilerTests : BaseTest() {
     }
 
     @Test
-    fun scriptFields() {
+    fun scriptFields() = testWithCompiler {
         val query = SearchQuery().scriptFields(*arrayOf())
         compile(query).body shouldContainExactly emptyMap()
 
@@ -744,30 +748,30 @@ class SearchQueryCompilerTests : BaseTest() {
     }
 
     @Test
-    fun sizeAndFrom() {
+    fun sizeAndFrom() = testWithCompiler {
         val query = SearchQuery()
             .size(100)
             .from(200)
 
         val compiled = compile(query)
         compiled.body shouldContainExactly mapOf(
-            "size" to 100L,
-            "from" to 200L,
+            "size" to 100,
+            "from" to 200,
         )
     }
 
     @Test
-    fun terminateAfter() {
+    fun terminateAfter() = testWithCompiler {
         val query = SearchQuery().terminateAfter(10_000)
 
         val compiled = compile(query)
         compiled.body shouldContainExactly mapOf(
-            "terminate_after" to 10_000L,
+            "terminate_after" to 10_000,
         )
     }
 
     @Test
-    fun searchParams() {
+    fun searchParams() = testWithCompiler {
         val query = SearchQuery(params = Params("routing" to "111"))
 
         compile(query).params shouldContainExactly mapOf(
@@ -823,7 +827,7 @@ class SearchQueryCompilerTests : BaseTest() {
     }
 
     @Test
-    fun termsQuery() {
+    fun termsQuery() = testWithCompiler {
         val query = SearchQuery(
             AnyField("tags").oneOf(listOf(1, 9))
         )
@@ -837,7 +841,7 @@ class SearchQueryCompilerTests : BaseTest() {
     }
 
     @Test
-    fun idsQuery() {
+    fun idsQuery() = testWithCompiler {
         val query = SearchQuery(
             Ids(listOf(
                 "order~3",
@@ -855,7 +859,7 @@ class SearchQueryCompilerTests : BaseTest() {
     }
 
     @Test
-    fun disMaxQuery() {
+    fun disMaxQuery() = testWithCompiler {
         val query = SearchQuery(
             DisMax(
                 listOf(
@@ -893,7 +897,7 @@ class SearchQueryCompilerTests : BaseTest() {
     }
 
     @Test
-    fun disMaxNodeQuery() {
+    fun disMaxNodeQuery() = testWithCompiler {
         @Suppress("VariableNaming")
         val LANG_HANDLE = NodeHandle<DisMaxNode>()
         val query = SearchQuery(
@@ -946,7 +950,7 @@ class SearchQueryCompilerTests : BaseTest() {
     }
 
     @Test
-    fun functionScoreQuery_scriptScore() {
+    fun functionScoreQuery_scriptScore() = testWithCompiler {
         val query = SearchQuery(
             FunctionScore(
                 query = null,
@@ -989,7 +993,7 @@ class SearchQueryCompilerTests : BaseTest() {
     }
 
     @Test
-    fun docvalueFields_simple() {
+    fun docvalueFields_simple() = testWithCompiler {
         val query = SearchQuery()
             .docvalueFields(AnyField("name"), AnyField("rank"))
 
@@ -1000,7 +1004,7 @@ class SearchQueryCompilerTests : BaseTest() {
     }
 
     @Test
-    fun docvalueFields_formatted() {
+    fun docvalueFields_formatted() = testWithCompiler {
         val query = SearchQuery()
             .docvalueFields(FieldFormat(AnyField("date_created"), format = "epoch_millis"))
 
@@ -1015,8 +1019,7 @@ class SearchQueryCompilerTests : BaseTest() {
         )
     }
 
-    @Test
-    fun testNodes() {
+    fun queryNodes() = testWithCompiler {
         @Suppress("VariableNaming")
         val BOOL_HANDLE = NodeHandle<BoolNode>("bool")
         @Suppress("VariableNaming")
@@ -1119,7 +1122,7 @@ class SearchQueryCompilerTests : BaseTest() {
     }
 
     @Test
-    fun ext() {
+    fun ext() = testWithCompiler {
         // Search extension example for: https://github.com/anti-social/elasticsearch-collapse-extension
         data class CollapseExtension(
             val field: FieldOperations<*>,

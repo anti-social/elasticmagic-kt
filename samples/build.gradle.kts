@@ -11,7 +11,10 @@ repositories {
 
 configureMultiplatform(
     configureJs = false,
-    entryPointModule = "samples.started"
+    entryPoints = listOf(
+        "started",
+        "bikeshop",
+    )
 )
 
 configure<org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension> {
@@ -25,6 +28,7 @@ configure<org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension> {
         getByName("commonMain") {
             dependencies {
                 implementation(project(":"))
+                implementation(project(":elasticmagic-query-filters"))
                 implementation(project(":elasticmagic-serde-serialization-json"))
                 implementation(project(":elasticmagic-transport-ktor"))
 
@@ -57,6 +61,7 @@ val Project.sourceSets: SourceSetContainer
 
 tasks {
     val startScripts by getting(CreateStartScripts::class)
+
     val subFieldsMistakeStartScript by creating(CreateStartScripts::class) {
         applicationName = "subfields-mistake"
         mainClass.set("samples.document.subfields.mistake.MistakeKt")
