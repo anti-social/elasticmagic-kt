@@ -188,6 +188,15 @@ public abstract class dev/evo/elasticmagic/qf/PreparedFilter {
 	public abstract fun processResult (Ldev/evo/elasticmagic/SearchQueryResult;)Ldev/evo/elasticmagic/qf/FilterResult;
 }
 
+public final class dev/evo/elasticmagic/qf/PreparedSortFilter : dev/evo/elasticmagic/qf/PreparedFilter {
+	public fun <init> (Ldev/evo/elasticmagic/qf/SortFilter;Ljava/lang/String;Ldev/evo/elasticmagic/qf/SortFilterValue;)V
+	public fun apply (Ldev/evo/elasticmagic/SearchQuery;Ljava/util/List;)V
+	public final fun getFilter ()Ldev/evo/elasticmagic/qf/SortFilter;
+	public final fun getSelectedValue ()Ldev/evo/elasticmagic/qf/SortFilterValue;
+	public synthetic fun processResult (Ldev/evo/elasticmagic/SearchQueryResult;)Ldev/evo/elasticmagic/qf/FilterResult;
+	public fun processResult (Ldev/evo/elasticmagic/SearchQueryResult;)Ldev/evo/elasticmagic/qf/SortFilterResult;
+}
+
 public class dev/evo/elasticmagic/qf/QueryFilters : java/lang/Iterable, kotlin/jvm/internal/markers/KMappedMarker {
 	public fun <init> ()V
 	public final fun addFilter (Ldev/evo/elasticmagic/qf/BoundFilter;)V
@@ -210,23 +219,14 @@ public final class dev/evo/elasticmagic/qf/SortFilter : dev/evo/elasticmagic/qf/
 	public static final field Companion Ldev/evo/elasticmagic/qf/SortFilter$Companion;
 	public fun <init> ([Ldev/evo/elasticmagic/qf/SortFilterValue;Ljava/lang/String;)V
 	public synthetic fun <init> ([Ldev/evo/elasticmagic/qf/SortFilterValue;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public final fun getSortValues ()[Ldev/evo/elasticmagic/qf/SortFilterValue;
 	public final fun getValues ()Ljava/util/List;
 	public synthetic fun prepare (Ljava/lang/String;Ljava/util/Map;)Ldev/evo/elasticmagic/qf/PreparedFilter;
-	public fun prepare (Ljava/lang/String;Ljava/util/Map;)Ldev/evo/elasticmagic/qf/SortFilterContext;
+	public fun prepare (Ljava/lang/String;Ljava/util/Map;)Ldev/evo/elasticmagic/qf/PreparedSortFilter;
 }
 
 public final class dev/evo/elasticmagic/qf/SortFilter$Companion {
-	public final fun invoke ([Lkotlin/Pair;)Ldev/evo/elasticmagic/qf/SortFilter;
-}
-
-public final class dev/evo/elasticmagic/qf/SortFilterContext : dev/evo/elasticmagic/qf/PreparedFilter {
-	public fun <init> (Ldev/evo/elasticmagic/qf/SortFilter;Ljava/lang/String;Ldev/evo/elasticmagic/qf/SortFilterValue;)V
-	public fun apply (Ldev/evo/elasticmagic/SearchQuery;Ljava/util/List;)V
-	public final fun getFilter ()Ldev/evo/elasticmagic/qf/SortFilter;
-	public final fun getSelectedValue ()Ldev/evo/elasticmagic/qf/SortFilterValue;
-	public synthetic fun processResult (Ldev/evo/elasticmagic/SearchQueryResult;)Ldev/evo/elasticmagic/qf/FilterResult;
-	public fun processResult (Ldev/evo/elasticmagic/SearchQueryResult;)Ldev/evo/elasticmagic/qf/SortFilterResult;
+	public final fun invoke ([Lkotlin/Pair;Ljava/lang/String;)Ldev/evo/elasticmagic/qf/SortFilter;
+	public static synthetic fun invoke$default (Ldev/evo/elasticmagic/qf/SortFilter$Companion;[Lkotlin/Pair;Ljava/lang/String;ILjava/lang/Object;)Ldev/evo/elasticmagic/qf/SortFilter;
 }
 
 public final class dev/evo/elasticmagic/qf/SortFilterResult : dev/evo/elasticmagic/qf/FilterResult {

@@ -4,7 +4,7 @@ kotlin {
     sourceSets {
         getByName("commonMain") {
             dependencies {
-                implementation(project(":"))
+                implementation(project(":elasticmagic"))
                 implementation(Libs.kotest("assertions-core"))
             }
         }

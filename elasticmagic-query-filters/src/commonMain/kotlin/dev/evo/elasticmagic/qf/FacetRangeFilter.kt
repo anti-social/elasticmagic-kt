@@ -14,7 +14,14 @@ import dev.evo.elasticmagic.query.FieldOperations
 import dev.evo.elasticmagic.query.QueryExpression
 
 /**
+ * [FacetRangeFilter] filters a search query using a [dev.evo.elasticmagic.query.Range] query.
+ * Also calculates number of documents that have value in the [FacetRangeFilter.field].
  *
+ * @param field - field to filter a search query with
+ * @param name - optional filter name. If omitted, name of a property will be used
+ * @param aggs - mapping with aggregations. Can be used to calculate aggregation for a
+ *   [FacetRangeFilter.field]. For example, minimum and maximum values or a histogram can be
+ *   calculated.
  */
 class FacetRangeFilter<T>(
     val field: FieldOperations<T>,
@@ -22,6 +29,14 @@ class FacetRangeFilter<T>(
     val aggs: Map<String, Aggregation<*>> = emptyMap(),
 ) : Filter<PreparedFacetRangeFilter<T>, FacetRangeFilterResult<T>>(name) {
 
+    /**
+     * Parses [params] and prepares the [FacetRangeFilter] for applying.
+     *
+     * @param name - name of the filter
+     * @param params - parameters that should be applied to a search query.
+     *   Supports 2 operations: `gte` and `lte`. Examples:
+     *   - `mapOf(("price" to "gte") to listOf("10"), ("price" to "lte") to listOf("150")))`
+     */
     override fun prepare(name: String, params: QueryFilterParams): PreparedFacetRangeFilter<T> {
         val from = params.decodeLastValue(name to "gte", field.getFieldType())
         val to = params.decodeLastValue(name to "lte", field.getFieldType())
@@ -34,6 +49,9 @@ class FacetRangeFilter<T>(
     }
 }
 
+/**
+ * Filter that is ready for applying to a search query.
+ */
 class PreparedFacetRangeFilter<T>(
     val filter: FacetRangeFilter<T>,
     name: String,
@@ -93,6 +111,15 @@ class PreparedFacetRangeFilter<T>(
     }
 }
 
+/**
+ * [FacetRangeFilterResult] contains result of a [FacetRangeFilter].
+ *
+ * @param name - name of the [FacetRangeFilter]
+ * @param from - value that was applied to a search query via [FieldOperations.gte]
+ * @param to - value that was applied to a search query via [FieldOperations.lte]
+ * @param count - number of documents that have a value in the [FacetRangeFilter.field]
+ * @param aggs - results of additional aggregations
+ */
 data class FacetRangeFilterResult<T>(
     override val name: String,
     val from: T?,

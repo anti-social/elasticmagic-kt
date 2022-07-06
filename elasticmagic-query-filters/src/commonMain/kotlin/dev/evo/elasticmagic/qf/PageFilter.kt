@@ -10,8 +10,8 @@ import dev.evo.elasticmagic.types.IntType
  * [PageFilter] allows to paginate search query results.
  *
  * @param name - name of the [PageFilter]
- * @param defaultPageSize - default number of hits per page
  * @param availablePageSizes - list of available of per page variants
+ * @param defaultPageSize - default number of hits per page
  * @param maxHits - maximum number of hits to available for a pagination
  */
 class PageFilter(
@@ -33,6 +33,17 @@ class PageFilter(
         val DEFAULT_AVAILABLE_PAGE_SIZES = listOf(10, 50, 100)
     }
 
+    /**
+     * Parses [params] and prepares the [PageFilter] for applying.
+     *
+     * @param name - name of the filter
+     * @param params - parameters that should be applied to a search query.
+     *   Supports 2 operations:
+     *   - `""` specifies current page
+     *   - `"size"` sets number of documents on a page
+     *   Examples:
+     *   - `mapOf(("page" to "") to listOf("2"), ("page", "size") to listOf("100"))`
+     */
     override fun prepare(name: String, params: QueryFilterParams): PageFilterContext {
         val page = params.decodeLastValue(name to "", IntType)?.coerceAtLeast(1) ?: 1
         val pageSize = params.decodeLastValue(name to "size", IntType)?.coerceAtLeast(1)
@@ -56,7 +67,7 @@ class PageFilter(
 }
 
 /**
- * Temporal storage for [PageFilter] parameters.
+ * Filter that is ready for applying to a search query.
  */
 class PageFilterContext(
     val filter: PageFilter,
