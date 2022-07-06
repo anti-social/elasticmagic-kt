@@ -124,4 +124,8 @@ data class PageFilterResult(
     val totalPages: Int,
     val from: Int,
     val size: Int,
-) : FilterResult
+) : FilterResult, Iterable<SearchHit<*>> {
+    override fun iterator(): Iterator<SearchHit<*>> {
+        return hits.iterator()
+    }
+}

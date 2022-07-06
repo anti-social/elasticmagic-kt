@@ -136,7 +136,7 @@ public final class dev/evo/elasticmagic/qf/PageFilterContext : dev/evo/elasticma
 	public fun processResult (Ldev/evo/elasticmagic/SearchQueryResult;)Ldev/evo/elasticmagic/qf/PageFilterResult;
 }
 
-public final class dev/evo/elasticmagic/qf/PageFilterResult : dev/evo/elasticmagic/qf/FilterResult {
+public final class dev/evo/elasticmagic/qf/PageFilterResult : dev/evo/elasticmagic/qf/FilterResult, java/lang/Iterable, kotlin/jvm/internal/markers/KMappedMarker {
 	public fun <init> (Ljava/lang/String;Ljava/util/List;JIIIII)V
 	public final fun component1 ()Ljava/lang/String;
 	public final fun component2 ()Ljava/util/List;
@@ -158,6 +158,7 @@ public final class dev/evo/elasticmagic/qf/PageFilterResult : dev/evo/elasticmag
 	public final fun getTotalHits ()J
 	public final fun getTotalPages ()I
 	public fun hashCode ()I
+	public fun iterator ()Ljava/util/Iterator;
 	public fun toString ()Ljava/lang/String;
 }
 

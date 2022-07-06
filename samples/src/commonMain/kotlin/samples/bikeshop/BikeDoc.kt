@@ -65,7 +65,7 @@ object BikeDoc : Document() {
     val fullSuspension by boolean()
     val frontSpeeds by int()
     val rearSpeeds by int()
-    val elctronicShifts by boolean()
+    val electronicShifts by boolean()
     val weight by float()
 }
 
@@ -88,6 +88,6 @@ class BikeDocSource : DocSource() {
     var fullSuspension by BikeDoc.fullSuspension
     var frontSpeeds by BikeDoc.frontSpeeds
     var rearSpeeds by BikeDoc.rearSpeeds
-    var electronicShifts by BikeDoc.elctronicShifts
+    var electronicShifts by BikeDoc.electronicShifts
     var weight by BikeDoc.weight
 }
