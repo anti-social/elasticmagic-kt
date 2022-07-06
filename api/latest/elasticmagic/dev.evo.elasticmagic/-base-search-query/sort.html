@@ -51,6 +51,31 @@ searchQuery.sort(UserDoc.runtime.score, UserDoc.id.desc())
 <div class="divergent-group" data-filterable-current=":dokkaHtml/commonMain" data-filterable-set=":dokkaHtml/commonMain"><div class="with-platform-tags"><span class="pull-right"></span></div>
 
   <div>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":dokkaHtml/commonMain"><div class="symbol monospace">fun <a href="sort.html">sort</a>(sorts: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html">List</a>&lt;<a href="../../dev.evo.elasticmagic.query/-sort/index.html">Sort</a>&gt;): <a href="index.html">T</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+  </div>
+<p class="paragraph">Adds <a href="sort.html">sorts</a> from a list to the existing query sorting expressions.</p><h2 class="">Samples</h2><div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Samples"><div class="content sourceset-depenent-content" data-active="" data-togglable=":dokkaHtml/commonMain"><div class="sample-container"><code class="runnablesample monospace" theme="idea"><pre>import dev.evo.elasticmagic.SearchQuery
+import dev.evo.elasticmagic.aggs.HistogramAgg
+import dev.evo.elasticmagic.aggs.TermsAgg
+import dev.evo.elasticmagic.doc.Document
+import dev.evo.elasticmagic.query.Bool
+import dev.evo.elasticmagic.query.FunctionScore
+import dev.evo.elasticmagic.query.FunctionScoreNode
+import dev.evo.elasticmagic.query.MatchPhrase
+import dev.evo.elasticmagic.query.MultiMatch
+import dev.evo.elasticmagic.query.NodeHandle
+import dev.evo.elasticmagic.query.QueryRescore
+import dev.evo.elasticmagic.query.match
+
+import kotlin.random.Random
+fun main() { 
+   //sampleStart 
+   // Sort query by a document score and a user id
+searchQuery.sort(UserDoc.runtime.score, UserDoc.id.desc()) 
+   //sampleEnd
+}</pre></code></div></div></div><h2 class="">See also</h2><div data-togglable="See also"><div class="platform-hinted WithExtraAttributes" data-platform-hinted="data-platform-hinted" data-togglable="See also"><div class="content sourceset-depenent-content" data-active="" data-togglable=":dokkaHtml/commonMain"><div data-togglable="See also"><div class="table" data-togglable="See also"><div class="table-row" data-filterable-current=":dokkaHtml/commonMain" data-filterable-set=":dokkaHtml/commonMain"><div class="main-subrow keyValue WithExtraAttributes RowTitle"><div class=""><span class="inline-flex"></span><span class="inline-flex"><div data-togglable="See also"><p class="paragraph"><a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/sort-search-results.html">https://www.elastic.co/guide/en/elasticsearch/reference/current/sort-search-results.html</a></p></div></span></div><div></div></div></div></div></div></div></div></div></div>
+<div class="divergent-group" data-filterable-current=":dokkaHtml/commonMain" data-filterable-set=":dokkaHtml/commonMain"><div class="with-platform-tags"><span class="pull-right"></span></div>
+
+  <div>
     <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":dokkaHtml/commonMain"><div class="symbol monospace">fun <a href="sort.html">sort</a>(clear: <a href="../-search-query/-c-l-e-a-r/index.html">SearchQuery.CLEAR</a>): <a href="index.html">T</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
   </div>
 <p class="paragraph">Clears the existing sorts.</p></div>
