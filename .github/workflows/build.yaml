@@ -253,7 +253,7 @@ jobs:
       run: ./gradlew mkdocsBuild --info
 
     - name: Build API docs
-      run: ./gradlew dokkaHtml --info
+      run: ./gradlew dokkaHtmlMultiModule --info
 
     - name: Publish docs
       uses: peaceiris/actions-gh-pages@v3
