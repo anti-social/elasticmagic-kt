@@ -1,0 +1,21 @@
+name: Setup
+description: Setup java and system libraries
+
+inputs:
+  java-version:
+    description: Java version
+    required: true
+
+runs:
+  using: composite
+  steps:
+  - name: Install libcurl
+    shell: bash
+    run: |
+      sudo apt-get -y update
+      sudo apt-get -y --no-install-recommends install libcurl4 libcurl4-openssl-dev
+
+  - name: Set up Java ${{ matrix.java-version }}
+    uses: actions/setup-java@v1
+    with:
+      java-version: ${{ inputs.java-version }}
