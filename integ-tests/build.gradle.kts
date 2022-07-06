@@ -4,7 +4,7 @@ kotlin {
     sourceSets {
         val commonTest by getting {
             dependencies {
-                implementation(project(":"))
+                implementation(project(":elasticmagic"))
 
                 implementation(project(":elasticmagic-serde-serialization-json"))
 

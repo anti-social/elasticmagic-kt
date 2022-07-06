@@ -27,7 +27,7 @@ configure<org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension> {
     sourceSets {
         getByName("commonMain") {
             dependencies {
-                implementation(project(":"))
+                implementation(project(":elasticmagic"))
                 implementation(project(":elasticmagic-query-filters"))
                 implementation(project(":elasticmagic-serde-serialization-json"))
                 implementation(project(":elasticmagic-transport-ktor"))

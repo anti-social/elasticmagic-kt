@@ -49,6 +49,9 @@ class FacetFilter<T, V>(
 ) : Filter<PreparedFacetFilter<T>, FacetFilterResult<T>>(name) {
 
     companion object {
+        /**
+         * A shortcut to create a [FacetFilter] without a custom terms aggregation.
+         */
         operator fun <T> invoke(
             field: FieldOperations<T>,
             name: String? = null,
@@ -57,6 +60,12 @@ class FacetFilter<T, V>(
             return FacetFilter(field, name = name, mode = mode, termsAgg = TermsAgg(field))
         }
 
+        /**
+         * A shortcut to create a [FacetFilter] with a custom terms aggregation using a lambda
+         * which accepts filter's [FacetFilter.field] and returns the aggregation.
+         *
+         * @param termsAggFactory - factory that creates terms aggregation for a [FacetFilter.field]
+         */
         operator fun <T> invoke(
             field: FieldOperations<T>,
             name: String? = null,
@@ -67,6 +76,14 @@ class FacetFilter<T, V>(
         }
     }
 
+    /**
+     * Parses [params] and prepares the [FacetFilter] for applying.
+     *
+     * @param name - name of the filter
+     * @param params - parameters that should be applied to a search query.
+     *   Examples:
+     *   - `mapOf(("manufacturer" to "") to listOf("Giant", "Cube"))`
+     */
     override fun prepare(name: String, params: QueryFilterParams): PreparedFacetFilter<T> {
         val filterValues = params.decodeValues(name to "", field.getFieldType())
         val filterExpr = when (filterValues.size) {
@@ -88,7 +105,7 @@ class FacetFilter<T, V>(
 }
 
 /**
- * [PreparedFacetFilter] is a storage of a [FacetFilter] with parsed query filter parameters.
+ * Filter that is ready for applying to a search query.
  */
 class PreparedFacetFilter<T>(
     val filter: FacetFilter<T, *>,

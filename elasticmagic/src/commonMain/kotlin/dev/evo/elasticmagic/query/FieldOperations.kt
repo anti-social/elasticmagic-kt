@@ -95,11 +95,11 @@ interface FieldOperations<T> : Named, FieldFormat, BoostedField, Sort {
 
     fun range(
         gt: T? = null, gte: T? = null, lt: T? = null, lte: T? = null, boost: Double? = null
-    ): QueryExpression = Range(this, gt = gt, gte = gte, lt = lt, lte = lte, boost = boost)
-    infix fun gt(other: T?): QueryExpression = range(gt = other)
-    infix fun gte(other: T?): QueryExpression = range(gte = other)
-    infix fun lt(other: T?): QueryExpression = range(lt = other)
-    infix fun lte(other: T?): QueryExpression = range(lte = other)
+    ): Range<T> = Range(this, gt = gt, gte = gte, lt = lt, lte = lte, boost = boost)
+    infix fun gt(other: T?): Range<T> = range(gt = other)
+    infix fun gte(other: T?): Range<T> = range(gte = other)
+    infix fun lt(other: T?): Range<T> = range(lt = other)
+    infix fun lte(other: T?): Range<T> = range(lte = other)
 
     fun asc(
         mode: Sort.Mode? = null,

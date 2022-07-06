@@ -4,7 +4,7 @@ kotlin {
     sourceSets {
         getByName("commonMain") {
             dependencies {
-                api(project(":"))
+                api(project(":elasticmagic"))
             }
         }
         getByName("commonTest") {

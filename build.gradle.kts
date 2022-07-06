@@ -1,4 +1,5 @@
-import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import org.jetbrains.dokka.gradle.DokkaMultiModuleTask
+import org.jetbrains.dokka.gradle.DokkaTaskPartial
 
 plugins {
     `maven-publish`
@@ -10,6 +11,10 @@ plugins {
     id("ru.vyarus.mkdocs") version Versions.mkdocs
     id("org.ajoberstar.grgit") version Versions.grgit
     id("io.github.gradle-nexus.publish-plugin")
+}
+
+repositories {
+    mavenCentral()
 }
 
 val gitDescribe = grgit.describe(mapOf("match" to listOf("v*"), "tags" to true))
@@ -38,14 +43,14 @@ apiValidation {
     )
 }
 
-allprojects {
+extra["projectUrl"] = uri("https://github.com/anti-social/elasticmagic-kt")
+
+subprojects {
     group = "dev.evo.elasticmagic"
     version = gitDescribe.trimStart('v')
 
-    // We could make `samples` a separate project,
-    // but then we should open it as different project in IDE for working code completion
     if (name == "samples") {
-        return@allprojects
+        return@subprojects
     }
 
     apply {
@@ -59,6 +64,7 @@ allprojects {
 
     if (this in publishProjects) {
         apply {
+            plugin("org.jetbrains.dokka")
             plugin("maven-publish")
             plugin("signing")
         }
@@ -143,38 +149,29 @@ allprojects {
             dependsOn(detektJvm, detektOthers)
         }
         tasks.getByName("check").dependsOn(detektAll)
-    }
-}
 
-configureMultiplatform()
+        tasks.withType<DokkaTaskPartial> {
+            failOnWarning.set(true)
 
-configure<KotlinMultiplatformExtension> {
-    sourceSets {
-        val commonMain by getting {
-            dependencies {
-                api(project(":elasticmagic-serde"))
-                api(project(":elasticmagic-transport"))
-                implementation(Libs.kotlinxCoroutines("core"))
-            }
-        }
-        val commonTest by getting {
-            dependencies {
-                api(project(":elasticmagic-kotlinx-datetime"))
-                implementation(project(":test-utils"))
+            dokkaSourceSets {
+                configureEach {
+                    val packageDocs = "${rootProject.projectDir}/docs/api/${project.name}.md"
+                    if (file(packageDocs).exists()) {
+                        includes.from(packageDocs)
+                    }
+                    samples.from(
+                        "${rootProject.projectDir}/samples/src/commonMain/kotlin",
+                        "${rootProject.projectDir}/samples/src/jvmMain/kotlin"
+                    )
+                }
             }
         }
     }
 }
 
-tasks.dokkaHtml {
+tasks.withType<DokkaMultiModuleTask> {
     outputDirectory.set(buildDir.resolve("mkdocs/api/latest"))
-
-    dokkaSourceSets {
-        configureEach {
-            includes.from("docs/api/packages.md")
-            samples.from("samples/src/commonMain/kotlin", "samples/src/jvmMain/kotlin")
-        }
-    }
+    this.impliesSubProjects
 }
 
 mkdocs {
@@ -194,6 +191,3 @@ nexusPublishing {
         configureSonatypeRepository(project)
     }
 }
-
-extra["projectUrl"] = uri("https://github.com/anti-social/elasticmagic-kt")
-configureMultiplatformPublishing("elasticmagic", "Elasticsearch Kotlin query DSL")
