@@ -59,6 +59,11 @@ fun Project.configureMultiplatform(
                     }
                 }
             }
+            targets.withType(org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget::class.java) {
+                binaries.all {
+                    binaryOptions["memoryModel"] = "experimental"
+                }
+            }
         }
 
         sourceSets {
