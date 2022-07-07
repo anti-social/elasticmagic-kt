@@ -1,6 +1,5 @@
 package dev.evo.elasticmagic.compile
 
-import dev.evo.elasticmagic.ElasticsearchVersion
 import dev.evo.elasticmagic.MultiSearchQueryResult
 import dev.evo.elasticmagic.PreparedSearchQuery
 import dev.evo.elasticmagic.SearchHit
@@ -26,9 +25,9 @@ import dev.evo.elasticmagic.transport.Method
 import dev.evo.elasticmagic.transport.Parameters
 
 class MultiSearchQueryCompiler(
-    esVersion: ElasticsearchVersion,
+    features: ElasticsearchFeatures,
     private val searchQueryCompiler: SearchQueryCompiler
-) : BaseCompiler(esVersion) {
+) : BaseCompiler(features) {
     fun compile(
         serializer: Serializer, input: List<SearchQueryWithIndex<*>>
     ): BulkRequest<MultiSearchQueryResult> {
@@ -71,8 +70,8 @@ class MultiSearchQueryCompiler(
 }
 
 open class SearchQueryCompiler(
-    esVersion: ElasticsearchVersion,
-) : BaseCompiler(esVersion) {
+    features: ElasticsearchFeatures,
+) : BaseCompiler(features) {
     interface Visitable<T: Serializer.Ctx> {
         fun accept(ctx: T, compiler: SearchQueryCompiler)
     }

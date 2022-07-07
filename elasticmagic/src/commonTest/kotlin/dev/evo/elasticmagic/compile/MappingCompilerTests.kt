@@ -1,7 +1,6 @@
 package dev.evo.elasticmagic.compile
 
 import dev.evo.elasticmagic.BaseTest
-import dev.evo.elasticmagic.ElasticsearchVersion
 import dev.evo.elasticmagic.Params
 import dev.evo.elasticmagic.doc.BoundField
 import dev.evo.elasticmagic.doc.DocSourceField
@@ -20,10 +19,10 @@ import io.kotest.matchers.types.shouldBeInstanceOf
 import kotlin.test.Test
 
 class MappingCompilerTests : BaseTest() {
-    val esVersion = ElasticsearchVersion(6, 0, 0)
+    val esFeatures = ElasticsearchFeatures.ES_6_0
     private val compiler = MappingCompiler(
-        esVersion,
-        SearchQueryCompiler(esVersion)
+        esFeatures,
+        SearchQueryCompiler(esFeatures)
     )
 
     private fun compile(doc: Document): Map<String, Any?> {

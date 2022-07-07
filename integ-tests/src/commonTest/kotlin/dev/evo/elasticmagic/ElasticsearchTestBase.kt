@@ -17,7 +17,7 @@ abstract class ElasticsearchTestBase : TestBase() {
     protected fun runTestWithTransports(block: suspend TestScope.() -> Unit) {
         for (serde in serdes) {
             val transport = ElasticsearchKtorTransport(
-                "http://localhost:9200",
+                elasticUrl,
                 serde = serde,
                 engine = httpEngine,
             ) {

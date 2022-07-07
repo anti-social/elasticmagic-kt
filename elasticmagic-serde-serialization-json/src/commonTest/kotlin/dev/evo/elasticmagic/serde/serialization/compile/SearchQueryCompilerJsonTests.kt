@@ -1,8 +1,8 @@
 package dev.evo.elasticmagic.serde.serialization.compile
 
 import dev.evo.elasticmagic.doc.Document
-import dev.evo.elasticmagic.ElasticsearchVersion
 import dev.evo.elasticmagic.SearchQuery
+import dev.evo.elasticmagic.compile.ElasticsearchFeatures
 import dev.evo.elasticmagic.usingIndex
 import dev.evo.elasticmagic.compile.SearchQueryCompiler
 import dev.evo.elasticmagic.serde.serialization.JsonSerializer
@@ -20,7 +20,7 @@ import kotlin.test.Test
 
 class SearchQueryCompilerJsonTests {
     private val compiler = SearchQueryCompiler(
-        ElasticsearchVersion(6, 0, 0),
+        ElasticsearchFeatures.ES_6_0
     )
 
     @Test

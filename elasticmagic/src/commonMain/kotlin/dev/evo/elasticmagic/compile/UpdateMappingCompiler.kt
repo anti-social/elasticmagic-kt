@@ -1,7 +1,6 @@
 package dev.evo.elasticmagic.compile
 
 import dev.evo.elasticmagic.doc.Document
-import dev.evo.elasticmagic.ElasticsearchVersion
 import dev.evo.elasticmagic.UpdateMappingResult
 import dev.evo.elasticmagic.serde.Deserializer
 import dev.evo.elasticmagic.serde.Serializer
@@ -20,9 +19,9 @@ class PreparedUpdateMapping(
 )
 
 class UpdateMappingCompiler(
-    esVersion: ElasticsearchVersion,
+    features: ElasticsearchFeatures,
     private val mappingCompiler: MappingCompiler,
-) : BaseCompiler(esVersion) {
+) : BaseCompiler(features) {
     fun compile(
         serializer: Serializer,
         input: PreparedUpdateMapping

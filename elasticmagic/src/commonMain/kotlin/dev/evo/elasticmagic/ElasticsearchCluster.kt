@@ -29,26 +29,32 @@ class ElasticsearchCluster(
 ) {
     val serde = transport.serde
 
-    private val esVersion = CompletableDeferred<ElasticsearchVersion>()
+    private val esVersion = CompletableDeferred<Version<*>>()
     private val sniffedCompilers = CompletableDeferred<CompilerSet>()
 
     operator fun get(indexName: String): ElasticsearchIndex {
         return ElasticsearchIndex(indexName, this)
     }
 
-    private suspend fun fetchVersion(): ElasticsearchVersion {
+    private suspend fun fetchVersion(): Version<*> {
         val result = transport.request(
             JsonRequest(Method.GET,"")
         )
         val versionObj = result.obj("version")
+        val distribution = versionObj.stringOrNull("distribution") ?: "elasticsearch"
         val rawEsVersion = versionObj.string("number")
-        val (major, minor, patch) = rawEsVersion.split('.')
-        return ElasticsearchVersion(
-            major.toInt(), minor.toInt(), patch.toInt()
-        )
+        val versionParts = rawEsVersion.split('.')
+        val major = versionParts[0].toInt()
+        val minor = versionParts[1].toInt()
+        val patch = versionParts[2].toInt()
+        return when (distribution) {
+            "opensearch" -> Version.Opensearch(major, minor, patch)
+            "elasticsearch" -> Version.Elasticsearch(major, minor, patch)
+            else -> throw IllegalStateException("Unknown distribution: $distribution")
+        }
     }
 
-    suspend fun getVersion(): ElasticsearchVersion {
+    suspend fun getVersion(): Version<*> {
         if (!esVersion.isCompleted) {
             // Only first value will be set
             esVersion.complete(fetchVersion())

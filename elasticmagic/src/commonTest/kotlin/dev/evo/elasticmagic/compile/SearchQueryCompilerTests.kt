@@ -614,12 +614,12 @@ class SearchQueryCompilerTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQ
     @Test
     fun trackTotalHits() = testWithCompiler {
         val searchQueryBody = compile(SearchQuery().trackTotalHits(true)).body
-        if (esVersion.major <= 6) {
-            searchQueryBody shouldContainExactly emptyMap()
-        } else {
+        if (features.supportsTrackingOfTotalHits) {
             searchQueryBody shouldContainExactly mapOf(
                 "track_total_hits" to true
             )
+        } else {
+            searchQueryBody shouldContainExactly emptyMap()
         }
     }
 

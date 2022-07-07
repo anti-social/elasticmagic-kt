@@ -12,12 +12,19 @@ external interface Process {
 }
 
 external object ProcessEnvVariables {
+    val ELASTIC_URL: String?
+    val ELASTIC_USER: String?
     val ELASTIC_PASSWORD: String?
 }
+
+actual val elasticUrl: String = process.env.ELASTIC_URL ?: DEFAULT_ELASTIC_URL
 
 actual val httpEngine: HttpClientEngine = Js.create {}
 
 actual val elasticAuth: Auth? = when (val elasticPassword = process.env.ELASTIC_PASSWORD) {
     null -> null
-    else -> Auth.Basic("elastic", elasticPassword)
+    else -> Auth.Basic(
+        process.env.ELASTIC_USER ?: DEFAULT_ELASTIC_USER,
+        elasticPassword
+    )
 }

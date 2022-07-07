@@ -1,7 +1,6 @@
 package dev.evo.elasticmagic.compile
 
 import dev.evo.elasticmagic.BaseTest
-import dev.evo.elasticmagic.ElasticsearchVersion
 import dev.evo.elasticmagic.Params
 import dev.evo.elasticmagic.SearchQuery
 import dev.evo.elasticmagic.usingIndex
@@ -10,10 +9,10 @@ import io.kotest.matchers.types.shouldBeInstanceOf
 
 @Suppress("UnnecessaryAbstractClass")
 abstract class BaseCompilerTest<T: BaseCompiler>(
-    compilerFactory: (ElasticsearchVersion) -> T
+    compilerFactory: (ElasticsearchFeatures) -> T
 ) : BaseTest() {
-    protected open val compilers: List<T> = ElasticsearchFeatures.VERSION_FEATURES
-        .map { compilerFactory(it.first) }
+    protected open val compilers: List<T> = ElasticsearchFeatures.values()
+        .map(compilerFactory)
 
     // TODO: Parametrized tests
     protected fun testWithCompiler(block: T.() -> Unit) {

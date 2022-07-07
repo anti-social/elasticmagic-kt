@@ -1,7 +1,7 @@
 package dev.evo.elasticmagic.query
 
 import dev.evo.elasticmagic.BaseTest
-import dev.evo.elasticmagic.ElasticsearchVersion
+import dev.evo.elasticmagic.compile.ElasticsearchFeatures
 import dev.evo.elasticmagic.compile.SearchQueryCompiler
 import dev.evo.elasticmagic.doc.BaseDocSource
 import dev.evo.elasticmagic.doc.BoundField
@@ -17,7 +17,7 @@ import io.kotest.matchers.types.shouldNotBeSameInstanceAs
 @Suppress("UnnecessaryAbstractClass")
 abstract class BaseExpressionTest : BaseTest() {
     protected val compiler = SearchQueryCompiler(
-        ElasticsearchVersion(6, 0, 0),
+        ElasticsearchFeatures.ES_6_0
     )
 
     protected fun Expression<Serializer.ObjectCtx>.compile(): Map<String, Any?> {

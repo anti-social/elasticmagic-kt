@@ -2,7 +2,6 @@ package dev.evo.elasticmagic.compile
 
 import dev.evo.elasticmagic.CreateIndexResult
 import dev.evo.elasticmagic.doc.Document
-import dev.evo.elasticmagic.ElasticsearchVersion
 import dev.evo.elasticmagic.Params
 import dev.evo.elasticmagic.serde.Deserializer
 import dev.evo.elasticmagic.serde.Serializer
@@ -21,9 +20,9 @@ class PreparedCreateIndex(
 )
 
 class CreateIndexCompiler(
-    esVersion: ElasticsearchVersion,
+    features: ElasticsearchFeatures,
     val mappingCompiler: MappingCompiler,
-) : BaseCompiler(esVersion) {
+) : BaseCompiler(features) {
 
     fun compile(
         serializer: Serializer,

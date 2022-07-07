@@ -10,7 +10,7 @@ import kotlin.test.Test
 
 class ElasticsearchTransportTests : TestBase() {
     val transport = ElasticsearchKtorTransport(
-        "http://localhost:9200",
+        elasticUrl,
         serde = JsonSerde,
         engine = httpEngine,
     ) {
@@ -21,7 +21,7 @@ class ElasticsearchTransportTests : TestBase() {
 
     @Test
     fun catRequest() = runTest {
-        val nodes = transport.request(CatRequest("nodes", ))
+        val nodes = transport.request(CatRequest("nodes"))
         nodes.size shouldBe 1
         nodes[0].size shouldBe 10
         nodes[0][nodes[0].size - 2] shouldBe "*"
