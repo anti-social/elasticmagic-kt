@@ -480,7 +480,7 @@ Use it on your own risk</p>
     <span class="n">mavenCentral</span><span class="p">()</span>
 <span class="p">}</span>
 
-<span class="kd">val</span> <span class="nv">elasticmagicVersion</span> <span class="o">=</span> <span class="s">&quot;unspecified&quot;</span>
+<span class="kd">val</span> <span class="nv">elasticmagicVersion</span> <span class="o">=</span> <span class="s">&quot;0.0.14&quot;</span>
 <span class="kd">val</span> <span class="nv">ktorVersion</span> <span class="o">=</span> <span class="s">&quot;1.6.8&quot;</span>
 
 <span class="n">dependencies</span> <span class="p">{</span>
@@ -508,7 +508,86 @@ Use it on your own risk</p>
 <span class="p">}</span>
 </code></pre></div>
 <p>Now create <code>ElasticsearchCluster</code> object. It is an entry point for executing search queries:</p>
-<div class="highlight"><pre><span></span><code>
+<div class="highlight"><pre><span></span><code><span class="k">package</span> <span class="nn">samples.started</span>
+
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.ElasticsearchCluster</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.transport.ElasticsearchKtorTransport</span>
+
+<span class="kd">const</span> <span class="kd">val</span> <span class="nv">DEFAULT_ELASTIC_URL</span> <span class="o">=</span> <span class="s">&quot;http://localhost:9200&quot;</span>
+<span class="kd">const</span> <span class="kd">val</span> <span class="nv">DEFAULT_ELASTIC_USER</span> <span class="o">=</span> <span class="s">&quot;elastic&quot;</span>
+
+<span class="kd">expect</span> <span class="kd">val</span> <span class="nv">esTransport</span><span class="p">:</span> <span class="n">ElasticsearchKtorTransport</span>
+<span class="kd">val</span> <span class="nv">cluster</span> <span class="o">=</span> <span class="n">ElasticsearchCluster</span><span class="p">(</span><span class="n">esTransport</span><span class="p">)</span>
+<span class="kd">val</span> <span class="nv">userIndex</span> <span class="o">=</span> <span class="n">cluster</span><span class="o">[</span><span class="s">&quot;elasticmagic-samples_user&quot;</span><span class="o">]</span>
+</code></pre></div>
+<p>Any <code>ElasticsearchCluster</code> needs an <code>ElasticsearchTransport</code>. We will use
+the <code>ElasticsearchKtorTransport</code> that utilises <a href="https://ktor.io/docs/create-client.html">Ktor</a>
+http client.</p>
+<p>Here are examples of creating transports for the cluster.</p>
+<p>JVM:</p>
+<div class="highlight"><pre><span></span><code><span class="k">package</span> <span class="nn">samples.started</span>
+
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.serde.serialization.JsonSerde</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.transport.Auth</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.transport.ElasticsearchKtorTransport</span>
+
+<span class="k">import</span> <span class="nn">io.ktor.client.engine.cio.CIO</span>
+
+<span class="k">import</span> <span class="nn">java.security.cert.X509Certificate</span>
+<span class="k">import</span> <span class="nn">javax.net.ssl.X509TrustManager</span>
+
+<span class="kd">actual</span> <span class="kd">val</span> <span class="nv">esTransport</span> <span class="o">=</span> <span class="n">ElasticsearchKtorTransport</span><span class="p">(</span>
+    <span class="n">System</span><span class="p">.</span><span class="na">getenv</span><span class="p">(</span><span class="s">&quot;ELASTIC_URL&quot;</span><span class="p">)</span> <span class="o">?:</span> <span class="n">DEFAULT_ELASTIC_URL</span><span class="p">,</span>
+    <span class="n">serde</span> <span class="o">=</span> <span class="n">JsonSerde</span><span class="p">,</span>
+    <span class="n">engine</span> <span class="o">=</span> <span class="n">CIO</span><span class="p">.</span><span class="na">create</span> <span class="p">{</span>
+        <span class="n">https</span> <span class="p">{</span>
+            <span class="n">trustManager</span> <span class="o">=</span> <span class="n">object</span><span class="p">:</span> <span class="n">X509TrustManager</span> <span class="p">{</span>
+                <span class="kd">override</span> <span class="kd">fun</span> <span class="nf">checkClientTrusted</span><span class="p">(</span>
+                    <span class="n">chain</span><span class="p">:</span> <span class="n">Array</span><span class="o">&lt;</span><span class="k">out</span> <span class="n">X509Certificate</span><span class="o">&gt;?</span><span class="p">,</span> <span class="n">authType</span><span class="p">:</span> <span class="kt">String?</span>
+                <span class="p">)</span> <span class="p">{}</span>
+
+                <span class="kd">override</span> <span class="kd">fun</span> <span class="nf">checkServerTrusted</span><span class="p">(</span>
+                    <span class="n">chain</span><span class="p">:</span> <span class="n">Array</span><span class="o">&lt;</span><span class="k">out</span> <span class="n">X509Certificate</span><span class="o">&gt;?</span><span class="p">,</span> <span class="n">authType</span><span class="p">:</span> <span class="kt">String?</span>
+                <span class="p">)</span> <span class="p">{}</span>
+
+                <span class="kd">override</span> <span class="kd">fun</span> <span class="nf">getAcceptedIssuers</span><span class="p">():</span> <span class="n">Array</span><span class="o">&lt;</span><span class="n">X509Certificate</span><span class="o">&gt;?</span> <span class="o">=</span> <span class="kc">null</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">)</span> <span class="p">{</span>
+    <span class="kd">val</span> <span class="nv">elasticUser</span> <span class="o">=</span> <span class="n">System</span><span class="p">.</span><span class="na">getenv</span><span class="p">(</span><span class="s">&quot;ELASTIC_USER&quot;</span><span class="p">)</span> <span class="o">?:</span> <span class="n">DEFAULT_ELASTIC_USER</span>
+    <span class="kd">val</span> <span class="nv">elasticPassword</span> <span class="o">=</span> <span class="n">System</span><span class="p">.</span><span class="na">getenv</span><span class="p">(</span><span class="s">&quot;ELASTIC_PASSWORD&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">elasticPassword</span><span class="p">.</span><span class="na">isNullOrEmpty</span><span class="p">())</span> <span class="p">{</span>
+        <span class="n">auth</span> <span class="o">=</span> <span class="n">Auth</span><span class="p">.</span><span class="na">Basic</span><span class="p">(</span><span class="n">elasticUser</span><span class="p">,</span> <span class="n">elasticPassword</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Native:</p>
+<div class="highlight"><pre><span></span><code><span class="k">package</span> <span class="nn">samples.started</span>
+
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.serde.serialization.JsonSerde</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.transport.Auth</span>
+<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.transport.ElasticsearchKtorTransport</span>
+
+<span class="k">import</span> <span class="nn">io.ktor.client.engine.curl.Curl</span>
+
+<span class="k">import</span> <span class="nn">kotlinx.cinterop.toKString</span>
+
+<span class="k">import</span> <span class="nn">platform.posix.getenv</span>
+
+<span class="kd">actual</span> <span class="kd">val</span> <span class="nv">esTransport</span> <span class="o">=</span> <span class="n">ElasticsearchKtorTransport</span><span class="p">(</span>
+    <span class="n">getenv</span><span class="p">(</span><span class="s">&quot;ELASTIC_URL&quot;</span><span class="p">)</span><span class="o">?.</span><span class="na">toKString</span><span class="p">()</span> <span class="o">?:</span> <span class="n">DEFAULT_ELASTIC_URL</span><span class="p">,</span>
+    <span class="n">serde</span> <span class="o">=</span> <span class="n">JsonSerde</span><span class="p">,</span>
+    <span class="n">engine</span> <span class="o">=</span> <span class="n">Curl</span><span class="p">.</span><span class="na">create</span> <span class="p">{</span>
+        <span class="n">sslVerify</span> <span class="o">=</span> <span class="kc">false</span>
+    <span class="p">}</span>
+<span class="p">)</span> <span class="p">{</span>
+    <span class="kd">val</span> <span class="nv">elasticUser</span> <span class="o">=</span> <span class="n">getenv</span><span class="p">(</span><span class="s">&quot;ELASTIC_USER&quot;</span><span class="p">)</span><span class="o">?.</span><span class="na">toKString</span><span class="p">()</span> <span class="o">?:</span> <span class="n">DEFAULT_ELASTIC_USER</span>
+    <span class="kd">val</span> <span class="nv">elasticPassword</span> <span class="o">=</span> <span class="n">getenv</span><span class="p">(</span><span class="s">&quot;ELASTIC_PASSWORD&quot;</span><span class="p">)</span><span class="o">?.</span><span class="na">toKString</span><span class="p">()</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">elasticPassword</span><span class="p">.</span><span class="na">isNullOrEmpty</span><span class="p">())</span> <span class="p">{</span>
+        <span class="n">auth</span> <span class="o">=</span> <span class="n">Auth</span><span class="p">.</span><span class="na">Basic</span><span class="p">(</span><span class="n">elasticUser</span><span class="p">,</span> <span class="n">elasticPassword</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
 </code></pre></div>
 <p>Create our index if it does not exist or update the mapping otherwise:</p>
 <div class="highlight"><pre><span></span><code><span class="k">package</span> <span class="nn">samples.started</span>
