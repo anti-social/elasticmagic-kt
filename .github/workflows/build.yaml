@@ -11,7 +11,7 @@ on:
     - master
 
 env:
-  GRADLE_ARGS: "--info --stacktrace"
+  GRADLE_ARGS: "--info"
 
 
 jobs:
