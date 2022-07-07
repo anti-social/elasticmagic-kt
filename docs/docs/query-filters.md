@@ -43,3 +43,15 @@ Native version:
 ./gradlew :samples:linkBikeshopDebugExecutableNative
 ./samples/build/bin/native/bikeshopDebugExecutable/bikeshop.kexe
 ```
+
+Both versions support following environment variables:
+
+- `ELASTIC_URL` - URL to your Elasticsearch cluster. Default is `http://localhost:9200`.
+  If you want to use TLS change it to `https://localhost:9200`. Elasticsearch `8.x` and
+  Opensearch `2.x` turn on TLS by default.
+- `ELASTIC_USER` - user for a basic authentication. Default is `elastic`.
+  Change it to `admin` if you use Opensearch.
+- `ELASTIC_PASSWORD` - if this variable is set, basic authentication will be used.
+  Set it to a real password of your cluster or leave empty if your cluster doesn't require
+  authentication. Password for default configuration of Elasticsearch `8.x` can be found in logs.
+  Default password for Opensearch `2.x` is `admin`.

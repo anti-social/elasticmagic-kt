@@ -5,7 +5,6 @@ import dev.evo.elasticmagic.BulkError
 import dev.evo.elasticmagic.BulkItem
 import dev.evo.elasticmagic.BulkOpType
 import dev.evo.elasticmagic.BulkResult
-import dev.evo.elasticmagic.ElasticsearchVersion
 import dev.evo.elasticmagic.Params
 import dev.evo.elasticmagic.bulk.Refresh
 import dev.evo.elasticmagic.serde.Deserializer
@@ -23,9 +22,9 @@ class PreparedBulk(
 )
 
 class BulkCompiler(
-    esVersion: ElasticsearchVersion,
+    features: ElasticsearchFeatures,
     private val actionCompiler: ActionCompiler,
-) : BaseCompiler(esVersion) {
+) : BaseCompiler(features) {
 
     class Compiled(
         val path: String,

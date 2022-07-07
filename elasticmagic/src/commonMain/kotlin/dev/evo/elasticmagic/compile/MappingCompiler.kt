@@ -1,6 +1,5 @@
 package dev.evo.elasticmagic.compile
 
-import dev.evo.elasticmagic.ElasticsearchVersion
 import dev.evo.elasticmagic.doc.MappingField
 import dev.evo.elasticmagic.doc.BaseDocument
 import dev.evo.elasticmagic.doc.BoundMappingTemplate
@@ -23,9 +22,9 @@ import dev.evo.elasticmagic.types.AnyFieldType
 import dev.evo.elasticmagic.types.ObjectType
 
 open class MappingCompiler(
-    esVersion: ElasticsearchVersion,
+    features: ElasticsearchFeatures,
     private val searchQueryCompiler: SearchQueryCompiler,
-) : BaseCompiler(esVersion) {
+) : BaseCompiler(features) {
 
     data class Compiled(val body: ObjectCtx?)
 

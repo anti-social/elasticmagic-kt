@@ -43,7 +43,25 @@ First you need to describe a document (represents a mapping in terms of Elastics
 Now create `ElasticsearchCluster` object. It is an entry point for executing search queries:
 
 ```kotlin
---8<-- "../samples/src/jvmMain/kotlin/samples/started/Cluster.kt"
+--8<-- "../samples/src/commonMain/kotlin/samples/started/Cluster.kt"
+```
+
+Any `ElasticsearchCluster` needs an `ElasticsearchTransport`. We will use
+the `ElasticsearchKtorTransport` that utilises [Ktor](https://ktor.io/docs/create-client.html)
+http client.
+
+Here are examples of creating transports for the cluster.
+
+JVM:
+
+```kotlin
+--8<-- "../samples/src/jvmMain/kotlin/samples/started/ClusterJvm.kt"
+```
+
+Native:
+
+```kotlin
+--8<-- "../samples/src/nativeMain/kotlin/samples/started/ClusterNative.kt"
 ```
 
 Create our index if it does not exist or update the mapping otherwise:

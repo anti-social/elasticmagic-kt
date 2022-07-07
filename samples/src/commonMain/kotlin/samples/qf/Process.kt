@@ -4,7 +4,9 @@ import dev.evo.elasticmagic.doc.DynDocSource
 import samples.started.cluster
 
 suspend fun process() {
-    val filtersResult = appliedFilters.processResult(searchQuery.execute(cluster["bike"]))
+    val filtersResult = appliedFilters.processResult(
+        searchQuery.execute(cluster["elasticmagic-samples_bike"])
+    )
 
     val manufacturerFacet = filtersResult[BikeQueryFilters.manufacturer]
     println("Manufacturers:")

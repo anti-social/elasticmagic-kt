@@ -11,12 +11,15 @@ import kotlinx.cinterop.toKString
 import platform.posix.getenv
 
 actual val esTransport = ElasticsearchKtorTransport(
-    getenv("ELASTIC_URL")?.toKString() ?: "http://localhost:9200",
+    getenv("ELASTIC_URL")?.toKString() ?: DEFAULT_ELASTIC_URL,
     serde = JsonSerde,
-    engine = Curl.create {}
+    engine = Curl.create {
+        sslVerify = false
+    }
 ) {
+    val elasticUser = getenv("ELASTIC_USER")?.toKString() ?: DEFAULT_ELASTIC_USER
     val elasticPassword = getenv("ELASTIC_PASSWORD")?.toKString()
     if (!elasticPassword.isNullOrEmpty()) {
-        auth = Auth.Basic("elastic", elasticPassword)
+        auth = Auth.Basic(elasticUser, elasticPassword)
     }
 }

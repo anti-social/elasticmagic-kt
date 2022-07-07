@@ -1,16 +1,14 @@
 package dev.evo.elasticmagic.compile
 
-import dev.evo.elasticmagic.ElasticsearchVersion
+import dev.evo.elasticmagic.Version
 import dev.evo.elasticmagic.query.Named
 import dev.evo.elasticmagic.serde.Serializer.ArrayCtx
 import dev.evo.elasticmagic.serde.Serializer.ObjectCtx
 
 @Suppress("UnnecessaryAbstractClass")
 abstract class BaseCompiler(
-    val esVersion: ElasticsearchVersion,
+    val features: ElasticsearchFeatures
 ) {
-    val features = ElasticsearchFeatures(esVersion)
-
     open fun dispatch(ctx: ArrayCtx, value: Any?) {
         ctx.value(value)
     }
@@ -86,14 +84,26 @@ enum class ElasticsearchFeatures(
     ;
 
     companion object {
-        val VERSION_FEATURES = listOf(
-            ElasticsearchVersion(6, 0, 0) to ES_6_0,
-            ElasticsearchVersion(7, 0, 0) to ES_7_0,
+        val ES_VERSION_FEATURES = listOf(
+            Version.Elasticsearch(6, 0, 0) to ES_6_0,
+            Version.Elasticsearch(7, 0, 0) to ES_7_0,
+        )
+        val OS_VERSION_FEATURES = listOf(
+            Version.Opensearch(1, 0, 0) to ES_7_0,
         )
 
         @Suppress("MagicNumber")
-        operator fun invoke(esVersion: ElasticsearchVersion): ElasticsearchFeatures {
-            for (versionToFeature in VERSION_FEATURES.reversed()) {
+        operator fun invoke(esVersion: Version<*>): ElasticsearchFeatures {
+            return when(esVersion) {
+                is Version.Elasticsearch -> findFeatures(esVersion, ES_VERSION_FEATURES)
+                is Version.Opensearch -> findFeatures(esVersion, OS_VERSION_FEATURES)
+            }
+        }
+
+        private fun <T: Version<T>> findFeatures(
+            esVersion: T, features: List<Pair<T, ElasticsearchFeatures>>
+        ): ElasticsearchFeatures {
+            for (versionToFeature in features.reversed()) {
                 if (esVersion >= versionToFeature.first) {
                     return versionToFeature.second
                 }
@@ -105,19 +115,21 @@ enum class ElasticsearchFeatures(
     }
 }
 
-class CompilerSet(esVersion: ElasticsearchVersion) {
-    val searchQuery: SearchQueryCompiler = SearchQueryCompiler(esVersion)
-    val multiSearchQuery: MultiSearchQueryCompiler = MultiSearchQueryCompiler(esVersion, searchQuery)
+class CompilerSet(esVersion: Version<*>) {
+    val features: ElasticsearchFeatures = ElasticsearchFeatures(esVersion)
 
-    val mapping: MappingCompiler = MappingCompiler(esVersion, searchQuery)
-    val createIndex: CreateIndexCompiler = CreateIndexCompiler(esVersion, mapping)
-    val updateMapping: UpdateMappingCompiler = UpdateMappingCompiler(esVersion, mapping)
+    val searchQuery: SearchQueryCompiler = SearchQueryCompiler(features)
+    val multiSearchQuery: MultiSearchQueryCompiler = MultiSearchQueryCompiler(features, searchQuery)
 
-    val actionMetaCompiler: ActionMetaCompiler = ActionMetaCompiler(esVersion)
-    val actionSourceCompiler: ActionSourceCompiler = ActionSourceCompiler(esVersion, searchQuery)
+    val mapping: MappingCompiler = MappingCompiler(features, searchQuery)
+    val createIndex: CreateIndexCompiler = CreateIndexCompiler(features, mapping)
+    val updateMapping: UpdateMappingCompiler = UpdateMappingCompiler(features, mapping)
+
+    val actionMetaCompiler: ActionMetaCompiler = ActionMetaCompiler(features)
+    val actionSourceCompiler: ActionSourceCompiler = ActionSourceCompiler(features, searchQuery)
     val actionCompiler: ActionCompiler = ActionCompiler(
-        esVersion, actionMetaCompiler, actionSourceCompiler
+        features, actionMetaCompiler, actionSourceCompiler
     )
-    val bulk: BulkCompiler = BulkCompiler(esVersion, actionCompiler)
+    val bulk: BulkCompiler = BulkCompiler(features, actionCompiler)
 
 }

@@ -1,6 +1,5 @@
 package dev.evo.elasticmagic.compile
 
-import dev.evo.elasticmagic.ElasticsearchVersion
 import dev.evo.elasticmagic.bulk.Action
 import dev.evo.elasticmagic.bulk.ActionMeta
 import dev.evo.elasticmagic.bulk.ConcurrencyControl
@@ -11,10 +10,10 @@ import dev.evo.elasticmagic.bulk.UpdateSource
 import dev.evo.elasticmagic.serde.Serializer
 
 class ActionCompiler(
-    esVersion: ElasticsearchVersion,
+    features: ElasticsearchFeatures,
     private val actionMetaCompiler: ActionMetaCompiler,
     private val actionSourceCompiler: ActionSourceCompiler,
-) : BaseCompiler(esVersion) {
+) : BaseCompiler(features) {
 
     data class Compiled(val header: Serializer.ObjectCtx, val source: Serializer.ObjectCtx?) {
         fun toList(): List<Serializer.ObjectCtx> = listOfNotNull(header, source)
@@ -29,8 +28,8 @@ class ActionCompiler(
 }
 
 class ActionMetaCompiler(
-    esVersion: ElasticsearchVersion,
-) : BaseCompiler(esVersion) {
+    features: ElasticsearchFeatures,
+) : BaseCompiler(features) {
     fun compile(serializer: Serializer, input: Action<*>): Serializer.ObjectCtx {
         return serializer.obj {
             visit(this, input)
@@ -70,9 +69,9 @@ class ActionMetaCompiler(
 }
 
 class ActionSourceCompiler(
-    esVersion: ElasticsearchVersion,
+    features: ElasticsearchFeatures,
     private val searchQueryCompiler: SearchQueryCompiler,
-) : BaseCompiler(esVersion) {
+) : BaseCompiler(features) {
     fun compile(serializer: Serializer, input: Action<*>): Serializer.ObjectCtx? {
         if (input is DeleteAction) {
             return null

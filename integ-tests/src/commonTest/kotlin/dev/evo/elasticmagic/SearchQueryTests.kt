@@ -231,13 +231,22 @@ class SearchQueryTests : ElasticsearchTestBase() {
                         scriptType = "number"
                     )
                 )
-            if (cluster.getVersion().major < 7) {
-                shouldThrow<ElasticsearchException.Internal> {
-                    query.execute(index)
+            when (val version = cluster.getVersion()) {
+                is Version.Opensearch -> {
+                    shouldThrow<ElasticsearchException.BadRequest> {
+                        query.execute(index)
+                    }
                 }
-            } else {
-                shouldThrow<ElasticsearchException.BadRequest> {
-                    query.execute(index)
+                is Version.Elasticsearch -> {
+                    if (version.major < 7) {
+                        shouldThrow<ElasticsearchException.Internal> {
+                            query.execute(index)
+                        }
+                    } else {
+                        shouldThrow<ElasticsearchException.BadRequest> {
+                            query.execute(index)
+                        }
+                    }
                 }
             }
         }
@@ -508,7 +517,11 @@ class SearchQueryTests : ElasticsearchTestBase() {
         withFixtures(OrderDoc, listOf(
             karlssonsJam, karlssonsBestDonuts, karlssonsJustDonuts, littleBrotherDogStuff
         )) {
-            val interval = if (index.cluster.getVersion().major >= 7) {
+            val version = index.cluster.getVersion()
+            val interval = if (
+                version is Version.Opensearch ||
+                version is Version.Elasticsearch && version.major >= 7
+            ) {
                 DateHistogramAgg.Interval.Calendar(CalendarInterval.YEAR)
             } else {
                 DateHistogramAgg.Interval.Legacy("1y")
