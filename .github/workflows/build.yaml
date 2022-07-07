@@ -104,18 +104,23 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        java-version: [11]
-        es-major-version: [6, 7, 8]
         include:
-        - es-major-version: 6
-          es-version: 6.8.23
-          es-config: elasticsearch.yml
-        - es-major-version: 7
-          es-version: 7.17.3
-          es-config: elasticsearch.yml
-        - es-major-version: 8
-          es-version: 8.1.2
-          es-config: elasticsearch-auth.yml
+        - es-distribution: elasticsearch
+          es-major-version: 6
+          es-image: elasticsearch:6.8.23
+          es-url: http://localhost:9200
+        - es-distribution: elasticsearch
+          es-major-version: 7
+          es-image: elasticsearch:7.17.3
+          es-url: http://localhost:9200
+        - es-distribution: elasticsearch
+          es-major-version: 8
+          es-image: elasticsearch:8.1.2
+          es-url: https://localhost:9200
+        - es-distribution: opensearch
+          es-major-version: 2
+          es-image: opensearchproject/opensearch:2.0.1
+          es-url: https://localhost:9200
     steps:
     - uses: actions/checkout@v2
 
@@ -125,35 +130,45 @@ jobs:
         docker run -d \
           --name elasticsearch \
           -p 9200:9200 \
-          -v $(pwd)/${{ matrix.es-config }}:/usr/share/elasticsearch/config/elasticsearch.yml \
           -e "discovery.type=single-node" \
           -e "ES_JAVA_OPTS=-Xms128m -Xmx256m" \
-          --health-cmd="curl http://localhost:9200/_cluster/health" \
+          --health-cmd="curl ${{ matrix.es-url }} --insecure" \
           --health-interval=5s \
           --health-timeout=2s \
           --health-retries=10 \
-          elasticsearch:${{ matrix.es-version }}
+          ${{ matrix.es-image }}
         echo -n "Waiting Elasticsearch "
         until [ $(docker inspect -f '{{.State.Health.Status}}' elasticsearch) == "healthy" ]; do
           sleep 1
           echo -n .
         done
+        echo "ELASTIC_URL=http://localhost:9200" >> $GITHUB_ENV
 
     - name: Setup Elasticsearch password
-      if: ${{ matrix.es-major-version >= 8 }}
+      if: matrix.es-distribution == 'elasticsearch' && matrix.es-major-version >= 8
       run: |
-        set -eux
+        set -eu
         ELASTIC_PASSWORD=$( \
           docker exec elasticsearch \
             /usr/share/elasticsearch/bin/elasticsearch-reset-password --batch -u elastic | \
           awk 'BEGIN { FS=": "; } /^New value:/ { print $2; }' \
         )
+        echo "ELASTIC_URL=https://localhost:9200" >> $GITHUB_ENV
+        echo "ELASTIC_USER=elastic" >> $GITHUB_ENV
         echo "ELASTIC_PASSWORD=$ELASTIC_PASSWORD" >> $GITHUB_ENV
+
+    - name: Opensearch settings
+      if: matrix.es-distribution == 'opensearch'
+      run: |
+        set -eu
+        echo "ELASTIC_URL=https://localhost:9200" >> $GITHUB_ENV
+        echo "ELASTIC_USER=admin" >> $GITHUB_ENV
+        echo "ELASTIC_PASSWORD=admin" >> $GITHUB_ENV
 
     - name: Setup
       uses: ./.github/setup
       with:
-        java-version: ${{ matrix.java-version }}
+        java-version: 11
 
     - name: Load caches
       uses: ./.github/cache
@@ -164,18 +179,26 @@ jobs:
     - name: Run integration tests
       run: |
         set -eux
+        # Allow self-signed certificates for JS engine: https://stackoverflow.com/a/66476468/473308
+        export NODE_TLS_REJECT_UNAUTHORIZED=0
+        export ELASTIC_URL='${{ env.ELASTIC_URL }}'
+        export ELASTIC_USER='${{ env.ELASTIC_USER }}'
         export ELASTIC_PASSWORD='${{ env.ELASTIC_PASSWORD }}'
         ./gradlew :integ-tests:check $GRADLE_ARGS
 
     - name: Run samples JVM
       run: |
         set -eux
+        export ELASTIC_URL='${{ env.ELASTIC_URL }}'
+        export ELASTIC_USER='${{ env.ELASTIC_USER }}'
         export ELASTIC_PASSWORD='${{ env.ELASTIC_PASSWORD }}'
         ./gradlew run -p samples $GRADLE_ARGS
 
     - name: Run samples native
       run: |
         set -eux
+        export ELASTIC_URL='${{ env.ELASTIC_URL }}'
+        export ELASTIC_USER='${{ env.ELASTIC_USER }}'
         export ELASTIC_PASSWORD='${{ env.ELASTIC_PASSWORD }}'
         ./gradlew runDebugExecutableNative -p samples $GRADLE_ARGS
 
