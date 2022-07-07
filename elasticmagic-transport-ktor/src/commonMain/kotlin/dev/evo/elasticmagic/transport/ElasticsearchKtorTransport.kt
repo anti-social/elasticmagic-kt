@@ -5,18 +5,20 @@ import dev.evo.elasticmagic.serde.Serde
 
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.HttpClientEngine
-import io.ktor.client.features.auth.Auth
-import io.ktor.client.features.auth.providers.basic
-import io.ktor.client.features.auth.providers.BasicAuthCredentials
-import io.ktor.client.features.compression.ContentEncoding
+import io.ktor.client.plugins.auth.Auth
+import io.ktor.client.plugins.auth.providers.basic
+import io.ktor.client.plugins.auth.providers.BasicAuthCredentials
+import io.ktor.client.plugins.compression.ContentEncoding
 import io.ktor.client.request.request
-import io.ktor.client.statement.readText
+import io.ktor.client.request.setBody
+import io.ktor.client.statement.bodyAsText
 import io.ktor.client.statement.HttpResponse
 import io.ktor.content.ByteArrayContent
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.Parameters
+import io.ktor.http.path
 import io.ktor.http.takeFrom
 
 class ElasticsearchKtorTransport(
@@ -33,7 +35,7 @@ class ElasticsearchKtorTransport(
         expectSuccess = false
 
         // Enable compressed response from Elasticsearch
-        ContentEncoding()
+        install(ContentEncoding)
 
         when (val auth = config.auth) {
             is dev.evo.elasticmagic.transport.Auth.Basic -> {
@@ -79,7 +81,7 @@ class ElasticsearchKtorTransport(
             Parameters.Empty
         }
 
-        val response = client.request<HttpResponse> {
+        val response = client.request {
             this.method = ktorHttpMethod
             url {
                 takeFrom(baseUrl)
@@ -102,7 +104,7 @@ class ElasticsearchKtorTransport(
                 }
                 val content = requestEncoder.toByteArray()
                 if (content.isNotEmpty()) {
-                    this.body = ByteArrayContent(content, contentType)
+                    this.setBody(ByteArrayContent(content, contentType))
                 }
             }
         }
@@ -111,7 +113,7 @@ class ElasticsearchKtorTransport(
 
     private suspend fun processResponse(response: HttpResponse): String {
         val statusCode = response.status.value
-        val content = response.readText()
+        val content = response.bodyAsText()
         return when (statusCode) {
             in HTTP_OK_CODES -> content
             else -> {

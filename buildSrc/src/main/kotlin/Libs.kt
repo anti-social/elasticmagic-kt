@@ -22,7 +22,7 @@ object Versions {
     const val kotlinxSerialization = "1.3.1"
     const val kotlinxCoroutines = "1.6.0-native-mt"
     const val kotlinxDatetime = "0.3.2"
-    const val ktor = "1.6.8"
+    const val ktor = "2.0.3"
 
     // Other dependencies
     const val jackson = "2.12.2"
