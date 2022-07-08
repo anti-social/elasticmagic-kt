@@ -8,7 +8,7 @@
 
 Elasticsearch query DSL for Kotlin
 
-Read [User Guide](https://anti-social.github.io/elasticmagic-kt/document/)
+Read [User Guide](https://anti-social.github.io/elasticmagic-kt/latest/document/)
 
 ## Features
 

@@ -186,11 +186,15 @@ mkdocs {
     // With strict it will fail because of 'api' directory is missing
     strict = false
 
+    val isLatest = grgit.branch.current().name == "master" && docsVersion != "dev"
     publish.apply {
         docPath = docsVersion
-        rootRedirect = grgit.branch.current().name == "master" && docsVersion != "dev"
-        rootRedirectTo = docsVersion
+        rootRedirect = isLatest
         generateVersionsFile = true
+        if (isLatest) {
+            rootRedirectTo = "latest"
+            setVersionAliases("latest")
+        }
     }
 
     extras = mapOf(
