@@ -1,0 +1,27 @@
+$dokka.format:html-v1
+$dokka.linkExtension:html
+$dokka.location:dev.evo.elasticmagic.transport/GzipEncoder/append/#kotlin.CharSequence?/PointingToDeclaration/elasticmagic-transport/dev.evo.elasticmagic.transport/-gzip-encoder/[native]append.html
+$dokka.location:dev.evo.elasticmagic.transport/GzipEncoder/toByteArray/#/PointingToDeclaration/elasticmagic-transport/dev.evo.elasticmagic.transport/-gzip-encoder/[native]to-byte-array.html
+module:elasticmagic
+dev.evo.elasticmagic
+dev.evo.elasticmagic.aggs
+dev.evo.elasticmagic.bulk
+dev.evo.elasticmagic.compile
+dev.evo.elasticmagic.doc
+dev.evo.elasticmagic.query
+dev.evo.elasticmagic.types
+dev.evo.elasticmagic.util
+module:elasticmagic-kotlinx-datetime
+dev.evo.elasticmagic.doc
+module:elasticmagic-query-filters
+dev.evo.elasticmagic.qf
+module:elasticmagic-serde
+dev.evo.elasticmagic.serde
+module:elasticmagic-serde-jackson-json
+dev.evo.elasticmagic.serde.jackson
+module:elasticmagic-serde-serialization-json
+dev.evo.elasticmagic.serde.serialization
+module:elasticmagic-transport
+dev.evo.elasticmagic.transport
+module:elasticmagic-transport-ktor
+dev.evo.elasticmagic.transport
