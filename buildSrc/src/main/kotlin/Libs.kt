@@ -15,7 +15,7 @@ object Versions {
     const val detekt = "1.21.0-RC2"
     const val dokka = "1.5.0"
     const val mkdocs = "2.3.0"
-    const val binaryCompatibilityValidator = "0.8.0"
+    const val binaryCompatibilityValidator = "0.10.1"
 
     // Kotlin and libs
     val kotlin = versionProps["kotlin"]!!.toString()
