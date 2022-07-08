@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-         <loc>https://anti-social.github.io/elasticmagic-kt/</loc>
+         <loc>https://anti-social.github.io/elasticmagic-kt/0.0.15/</loc>
          <lastmod>2022-07-08</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://anti-social.github.io/elasticmagic-kt/docsource/</loc>
+         <loc>https://anti-social.github.io/elasticmagic-kt/0.0.15/docsource/</loc>
          <lastmod>2022-07-08</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://anti-social.github.io/elasticmagic-kt/document/</loc>
+         <loc>https://anti-social.github.io/elasticmagic-kt/0.0.15/document/</loc>
          <lastmod>2022-07-08</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://anti-social.github.io/elasticmagic-kt/query-filters/</loc>
+         <loc>https://anti-social.github.io/elasticmagic-kt/0.0.15/query-filters/</loc>
          <lastmod>2022-07-08</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://anti-social.github.io/elasticmagic-kt/querying/</loc>
+         <loc>https://anti-social.github.io/elasticmagic-kt/0.0.15/querying/</loc>
          <lastmod>2022-07-08</lastmod>
          <changefreq>daily</changefreq>
     </url>

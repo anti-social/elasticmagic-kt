@@ -10,10 +10,10 @@
         <meta name="author" content="Alexandr Koval">
       
       
-        <link rel="canonical" href="https://anti-social.github.io/elasticmagic-kt/query-filters/">
+        <link rel="canonical" href="https://anti-social.github.io/elasticmagic-kt/0.0.15/query-filters/">
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.2.8">
+      <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.3.6">
     
     
       
@@ -21,11 +21,12 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.644de097.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.4a0965b7.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.e6a45f82.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/palette.cbb835fc.min.css">
         
+      
       
     
     
@@ -52,12 +53,16 @@
   
     
     
+      
     
     
     
-    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="none" data-md-color-accent="none">
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="" data-md-color-accent="">
   
     
+    
+      <script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
     
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
@@ -74,6 +79,12 @@
       
     </div>
     
+      <div data-md-component="outdated" hidden>
+        <aside class="md-banner md-banner--warning">
+          
+        </aside>
+      </div>
+    
     
       
 
@@ -82,11 +93,11 @@
     <a href=".." title="elasticmagic" class="md-header__button md-logo" aria-label="elasticmagic" data-md-component="logo">
       
   
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
     </label>
     <div class="md-header__title" data-md-component="header-title">
       <div class="md-header__ellipsis">
@@ -105,10 +116,32 @@
       </div>
     </div>
     
+      <form class="md-header__option" data-md-component="palette">
+        
+          
+          
+          <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="" data-md-color-accent=""  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+          
+            <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 6H7c-3.31 0-6 2.69-6 6s2.69 6 6 6h10c3.31 0 6-2.69 6-6s-2.69-6-6-6zm0 10H7c-2.21 0-4-1.79-4-4s1.79-4 4-4h10c2.21 0 4 1.79 4 4s-1.79 4-4 4zM7 9c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+            </label>
+          
+        
+          
+          
+          <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="" data-md-color-accent=""  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_2">
+          
+            <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3Z"/></svg>
+            </label>
+          
+        
+      </form>
+    
     
     
       <label class="md-header__button md-icon" for="__search">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
       </label>
       <div class="md-search" data-md-component="search" role="dialog">
   <label class="md-search__overlay" for="__search"></label>
@@ -116,13 +149,13 @@
     <form class="md-search__form" name="search">
       <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
       <label class="md-search__icon md-icon" for="__search">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
       </label>
       <nav class="md-search__options" aria-label="Search">
         
         <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
         </button>
       </nav>
       
@@ -180,7 +213,7 @@
     <a href=".." title="elasticmagic" class="md-nav__button md-logo" aria-label="elasticmagic" data-md-component="logo">
       
   
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
 
     </a>
     elasticmagic
@@ -408,9 +441,9 @@
             <article class="md-content__inner md-typeset">
               
                 
-<a href="http://github.com/anti-social/elasticmagic-kt/edit/master/docs/query-filters.md" title="Edit this page" class="md-content__button md-icon">
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
-</a>
+  <a href="http://github.com/anti-social/elasticmagic-kt/edit/master/docs/query-filters.md" title="Edit this page" class="md-content__button md-icon">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25Z"/></svg>
+  </a>
 
 
 
@@ -418,115 +451,115 @@
 <p>Query filters allow you to describe search query modifications declaratively. It is possible to
 filter, sort, paginate and build facets using query filters.</p>
 <p>Let's describe our new document:</p>
-<div class="highlight"><pre><span></span><code><span class="k">package</span> <span class="nn">samples.qf</span>
+<div class="highlight"><pre><span></span><code><span class="k">package</span><span class="w"> </span><span class="nn">samples.qf</span><span class="w"></span>
 
-<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.doc.Document</span>
-<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.doc.enum</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.doc.Document</span><span class="w"></span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.doc.enum</span><span class="w"></span>
 
-<span class="kd">enum</span> <span class="kd">class</span> <span class="nc">BikeKind</span> <span class="p">{</span>
-    <span class="n">BMX</span><span class="p">,</span> <span class="n">MTB</span><span class="p">,</span> <span class="n">CITY</span><span class="p">,</span> <span class="n">ROAD</span><span class="p">,</span> <span class="n">CYCLOCROSS</span><span class="p">,</span> <span class="n">GRAVEL</span><span class="p">,</span> <span class="n">EBIKE</span><span class="p">;</span>
-<span class="p">}</span>
+<span class="kd">enum</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">BikeKind</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">BMX</span><span class="p">,</span><span class="w"> </span><span class="n">MTB</span><span class="p">,</span><span class="w"> </span><span class="n">CITY</span><span class="p">,</span><span class="w"> </span><span class="n">ROAD</span><span class="p">,</span><span class="w"> </span><span class="n">CYCLOCROSS</span><span class="p">,</span><span class="w"> </span><span class="n">GRAVEL</span><span class="p">,</span><span class="w"> </span><span class="n">EBIKE</span><span class="p">;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 
-<span class="kd">object</span> <span class="nc">BikeDoc</span> <span class="p">:</span> <span class="n">Document</span><span class="p">()</span> <span class="p">{</span>
-    <span class="kd">val</span> <span class="nv">price</span> <span class="k">by</span> <span class="n">float</span><span class="p">()</span>
-    <span class="kd">val</span> <span class="nv">manufacturer</span> <span class="k">by</span> <span class="n">keyword</span><span class="p">()</span>
-    <span class="kd">val</span> <span class="nv">model</span> <span class="k">by</span> <span class="n">text</span><span class="p">()</span>
-    <span class="kd">val</span> <span class="nv">kind</span> <span class="k">by</span> <span class="n">keyword</span><span class="p">().</span><span class="na">enum</span><span class="p">(</span><span class="n">BikeKind</span><span class="o">::</span><span class="n">name</span><span class="p">)</span>
-    <span class="kd">val</span> <span class="nv">weight</span> <span class="k">by</span> <span class="n">float</span><span class="p">()</span>
-<span class="p">}</span>
+<span class="kd">object</span><span class="w"> </span><span class="nc">BikeDoc</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Document</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">price</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">float</span><span class="p">()</span><span class="w"></span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">manufacturer</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">keyword</span><span class="p">()</span><span class="w"></span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">model</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">text</span><span class="p">()</span><span class="w"></span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">kind</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">keyword</span><span class="p">().</span><span class="na">enum</span><span class="p">(</span><span class="n">BikeKind</span><span class="o">::</span><span class="n">name</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">weight</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">float</span><span class="p">()</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </code></pre></div>
 <p>Now we can describe query filters for the <code>BikeDoc</code>:</p>
-<div class="highlight"><pre><span></span><code><span class="k">package</span> <span class="nn">samples.qf</span>
+<div class="highlight"><pre><span></span><code><span class="k">package</span><span class="w"> </span><span class="nn">samples.qf</span><span class="w"></span>
 
-<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.qf.FacetFilter</span>
-<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.qf.FacetRangeFilter</span>
-<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.qf.PageFilter</span>
-<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.qf.QueryFilters</span>
-<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.qf.SortFilter</span>
-<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.qf.SortFilterValue</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.qf.FacetFilter</span><span class="w"></span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.qf.FacetRangeFilter</span><span class="w"></span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.qf.PageFilter</span><span class="w"></span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.qf.QueryFilters</span><span class="w"></span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.qf.SortFilter</span><span class="w"></span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.qf.SortFilterValue</span><span class="w"></span>
 
-<span class="kd">object</span> <span class="nc">BikeQueryFilters</span> <span class="p">:</span> <span class="n">QueryFilters</span><span class="p">()</span> <span class="p">{</span>
-    <span class="kd">val</span> <span class="nv">price</span> <span class="k">by</span> <span class="n">FacetRangeFilter</span><span class="p">(</span><span class="n">BikeDoc</span><span class="p">.</span><span class="na">price</span><span class="p">)</span>
-    <span class="kd">val</span> <span class="nv">manufacturer</span> <span class="k">by</span> <span class="n">FacetFilter</span><span class="p">(</span><span class="n">BikeDoc</span><span class="p">.</span><span class="na">manufacturer</span><span class="p">)</span>
-    <span class="kd">val</span> <span class="nv">kind</span> <span class="k">by</span> <span class="n">FacetFilter</span><span class="p">(</span><span class="n">BikeDoc</span><span class="p">.</span><span class="na">kind</span><span class="p">)</span>
-    <span class="kd">val</span> <span class="nv">weight</span> <span class="k">by</span> <span class="n">FacetRangeFilter</span><span class="p">(</span><span class="n">BikeDoc</span><span class="p">.</span><span class="na">weight</span><span class="p">)</span>
+<span class="kd">object</span><span class="w"> </span><span class="nc">BikeQueryFilters</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">QueryFilters</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">price</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">FacetRangeFilter</span><span class="p">(</span><span class="n">BikeDoc</span><span class="p">.</span><span class="na">price</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">manufacturer</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">FacetFilter</span><span class="p">(</span><span class="n">BikeDoc</span><span class="p">.</span><span class="na">manufacturer</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">kind</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">FacetFilter</span><span class="p">(</span><span class="n">BikeDoc</span><span class="p">.</span><span class="na">kind</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">weight</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">FacetRangeFilter</span><span class="p">(</span><span class="n">BikeDoc</span><span class="p">.</span><span class="na">weight</span><span class="p">)</span><span class="w"></span>
 
-    <span class="kd">val</span> <span class="nv">sort</span> <span class="k">by</span> <span class="n">SortFilter</span><span class="p">(</span>
-        <span class="n">SortFilterValue</span><span class="p">(</span><span class="s">&quot;price&quot;</span><span class="p">,</span> <span class="n">listOf</span><span class="p">(</span><span class="n">BikeDoc</span><span class="p">.</span><span class="na">price</span><span class="p">)),</span>
-        <span class="n">SortFilterValue</span><span class="p">(</span><span class="s">&quot;-price&quot;</span><span class="p">,</span> <span class="n">listOf</span><span class="p">(</span><span class="n">BikeDoc</span><span class="p">.</span><span class="na">price</span><span class="p">.</span><span class="na">desc</span><span class="p">())),</span>
-        <span class="n">SortFilterValue</span><span class="p">(</span><span class="s">&quot;weight&quot;</span><span class="p">,</span> <span class="n">listOf</span><span class="p">(</span><span class="n">BikeDoc</span><span class="p">.</span><span class="na">weight</span><span class="p">)),</span>
-    <span class="p">)</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">sort</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">SortFilter</span><span class="p">(</span><span class="w"></span>
+<span class="w">        </span><span class="n">SortFilterValue</span><span class="p">(</span><span class="s">&quot;price&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">listOf</span><span class="p">(</span><span class="n">BikeDoc</span><span class="p">.</span><span class="na">price</span><span class="p">)),</span><span class="w"></span>
+<span class="w">        </span><span class="n">SortFilterValue</span><span class="p">(</span><span class="s">&quot;-price&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">listOf</span><span class="p">(</span><span class="n">BikeDoc</span><span class="p">.</span><span class="na">price</span><span class="p">.</span><span class="na">desc</span><span class="p">())),</span><span class="w"></span>
+<span class="w">        </span><span class="n">SortFilterValue</span><span class="p">(</span><span class="s">&quot;weight&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">listOf</span><span class="p">(</span><span class="n">BikeDoc</span><span class="p">.</span><span class="na">weight</span><span class="p">)),</span><span class="w"></span>
+<span class="w">    </span><span class="p">)</span><span class="w"></span>
 
-    <span class="kd">val</span> <span class="nv">page</span> <span class="k">by</span> <span class="n">PageFilter</span><span class="p">()</span>
-<span class="p">}</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">page</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">PageFilter</span><span class="p">()</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </code></pre></div>
 <p>To apply it to a search query you need query filter parameters. They are just a mapping where keys
 are a pair of filter name and an operation, and values are a list of strings. For example, it
 could be transformed from http query parameters.</p>
-<div class="highlight"><pre><span></span><code><span class="k">package</span> <span class="nn">samples.qf</span>
+<div class="highlight"><pre><span></span><code><span class="k">package</span><span class="w"> </span><span class="nn">samples.qf</span><span class="w"></span>
 
-<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.SearchQuery</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.SearchQuery</span><span class="w"></span>
 
-<span class="c1">// You can imagine it could be converted from following http query parameters:</span>
-<span class="c1">// manufacturer=Giant&amp;manufacturer=Cannondale&amp;</span>
-<span class="c1">// kind=CITY&amp;kind=CYCLOCROSS&amp;kind=GRAVEL&amp;</span>
-<span class="c1">// price__lte=2000&amp;</span>
-<span class="c1">// sort=weight&amp;</span>
-<span class="c1">// page=2&amp;</span>
-<span class="kd">val</span> <span class="nv">qfParams</span> <span class="o">=</span> <span class="n">mapOf</span><span class="p">(</span>
-    <span class="p">(</span><span class="s">&quot;manufacturer&quot;</span> <span class="n">to</span> <span class="s">&quot;&quot;</span><span class="p">)</span> <span class="n">to</span> <span class="n">listOf</span><span class="p">(</span><span class="s">&quot;Giant&quot;</span><span class="p">,</span> <span class="s">&quot;Cannondale&quot;</span><span class="p">),</span>
-    <span class="p">(</span><span class="s">&quot;kind&quot;</span> <span class="n">to</span> <span class="s">&quot;&quot;</span><span class="p">)</span> <span class="n">to</span> <span class="n">listOf</span><span class="p">(</span><span class="s">&quot;CITY&quot;</span><span class="p">,</span> <span class="s">&quot;CYCLOCROSS&quot;</span><span class="p">,</span> <span class="s">&quot;GRAVEL&quot;</span><span class="p">),</span>
-    <span class="p">(</span><span class="s">&quot;price&quot;</span> <span class="n">to</span> <span class="s">&quot;lte&quot;</span><span class="p">)</span> <span class="n">to</span> <span class="n">listOf</span><span class="p">(</span><span class="s">&quot;2000&quot;</span><span class="p">),</span>
-    <span class="p">(</span><span class="s">&quot;sort&quot;</span> <span class="n">to</span> <span class="s">&quot;&quot;</span><span class="p">)</span> <span class="n">to</span> <span class="n">listOf</span><span class="p">(</span><span class="s">&quot;weight&quot;</span><span class="p">),</span>
-    <span class="p">(</span><span class="s">&quot;page&quot;</span> <span class="n">to</span> <span class="s">&quot;&quot;</span><span class="p">)</span> <span class="n">to</span> <span class="n">listOf</span><span class="p">(</span><span class="s">&quot;2&quot;</span><span class="p">),</span>
-<span class="p">)</span>
+<span class="c1">// You can imagine it could be converted from following http query parameters:</span><span class="w"></span>
+<span class="c1">// manufacturer=Giant&amp;manufacturer=Cannondale&amp;</span><span class="w"></span>
+<span class="c1">// kind=CITY&amp;kind=CYCLOCROSS&amp;kind=GRAVEL&amp;</span><span class="w"></span>
+<span class="c1">// price__lte=2000&amp;</span><span class="w"></span>
+<span class="c1">// sort=weight&amp;</span><span class="w"></span>
+<span class="c1">// page=2&amp;</span><span class="w"></span>
+<span class="kd">val</span><span class="w"> </span><span class="nv">qfParams</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mapOf</span><span class="p">(</span><span class="w"></span>
+<span class="w">    </span><span class="p">(</span><span class="s">&quot;manufacturer&quot;</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">)</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">listOf</span><span class="p">(</span><span class="s">&quot;Giant&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Cannondale&quot;</span><span class="p">),</span><span class="w"></span>
+<span class="w">    </span><span class="p">(</span><span class="s">&quot;kind&quot;</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">)</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">listOf</span><span class="p">(</span><span class="s">&quot;CITY&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;CYCLOCROSS&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;GRAVEL&quot;</span><span class="p">),</span><span class="w"></span>
+<span class="w">    </span><span class="p">(</span><span class="s">&quot;price&quot;</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="s">&quot;lte&quot;</span><span class="p">)</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">listOf</span><span class="p">(</span><span class="s">&quot;2000&quot;</span><span class="p">),</span><span class="w"></span>
+<span class="w">    </span><span class="p">(</span><span class="s">&quot;sort&quot;</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">)</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">listOf</span><span class="p">(</span><span class="s">&quot;weight&quot;</span><span class="p">),</span><span class="w"></span>
+<span class="w">    </span><span class="p">(</span><span class="s">&quot;page&quot;</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">)</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">listOf</span><span class="p">(</span><span class="s">&quot;2&quot;</span><span class="p">),</span><span class="w"></span>
+<span class="p">)</span><span class="w"></span>
 
-<span class="kd">val</span> <span class="nv">searchQuery</span> <span class="o">=</span> <span class="n">SearchQuery</span><span class="p">()</span>
+<span class="kd">val</span><span class="w"> </span><span class="nv">searchQuery</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SearchQuery</span><span class="p">()</span><span class="w"></span>
 
-<span class="kd">val</span> <span class="nv">appliedFilters</span> <span class="o">=</span> <span class="n">BikeQueryFilters</span><span class="p">.</span><span class="na">apply</span><span class="p">(</span><span class="n">searchQuery</span><span class="p">,</span> <span class="n">qfParams</span><span class="p">)</span>
+<span class="kd">val</span><span class="w"> </span><span class="nv">appliedFilters</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">BikeQueryFilters</span><span class="p">.</span><span class="na">apply</span><span class="p">(</span><span class="n">searchQuery</span><span class="p">,</span><span class="w"> </span><span class="n">qfParams</span><span class="p">)</span><span class="w"></span>
 
-<span class="c1">// Now searchQuery is filtered, sorted, paginated and corresponding aggregations</span>
-<span class="c1">// to calculate facets are added</span>
+<span class="c1">// Now searchQuery is filtered, sorted, paginated and corresponding aggregations</span><span class="w"></span>
+<span class="c1">// to calculate facets are added</span><span class="w"></span>
 </code></pre></div>
 <p>After executing query we are able to process its results:</p>
-<div class="highlight"><pre><span></span><code><span class="k">package</span> <span class="nn">samples.qf</span>
+<div class="highlight"><pre><span></span><code><span class="k">package</span><span class="w"> </span><span class="nn">samples.qf</span><span class="w"></span>
 
-<span class="k">import</span> <span class="nn">dev.evo.elasticmagic.doc.DynDocSource</span>
-<span class="k">import</span> <span class="nn">samples.started.cluster</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.doc.DynDocSource</span><span class="w"></span>
+<span class="k">import</span><span class="w"> </span><span class="nn">samples.started.cluster</span><span class="w"></span>
 
-<span class="kd">suspend</span> <span class="kd">fun</span> <span class="nf">process</span><span class="p">()</span> <span class="p">{</span>
-    <span class="kd">val</span> <span class="nv">filtersResult</span> <span class="o">=</span> <span class="n">appliedFilters</span><span class="p">.</span><span class="na">processResult</span><span class="p">(</span>
-        <span class="n">searchQuery</span><span class="p">.</span><span class="na">execute</span><span class="p">(</span><span class="n">cluster</span><span class="o">[</span><span class="s">&quot;elasticmagic-samples_bike&quot;</span><span class="o">]</span><span class="p">)</span>
-    <span class="p">)</span>
+<span class="kd">suspend</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">process</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">filtersResult</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">appliedFilters</span><span class="p">.</span><span class="na">processResult</span><span class="p">(</span><span class="w"></span>
+<span class="w">        </span><span class="n">searchQuery</span><span class="p">.</span><span class="na">execute</span><span class="p">(</span><span class="n">cluster</span><span class="o">[</span><span class="s">&quot;elasticmagic-samples_bike&quot;</span><span class="o">]</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="p">)</span><span class="w"></span>
 
-    <span class="kd">val</span> <span class="nv">manufacturerFacet</span> <span class="o">=</span> <span class="n">filtersResult</span><span class="o">[</span><span class="n">BikeQueryFilters</span><span class="p">.</span><span class="na">manufacturer</span><span class="o">]</span>
-    <span class="n">println</span><span class="p">(</span><span class="s">&quot;Manufacturers:&quot;</span><span class="p">)</span>
-    <span class="k">for</span> <span class="p">(</span><span class="n">manufacturer</span> <span class="k">in</span> <span class="n">manufacturerFacet</span><span class="p">)</span> <span class="p">{</span>
-        <span class="kd">val</span> <span class="nv">selectedMark</span> <span class="o">=</span> <span class="k">if</span> <span class="p">(</span><span class="n">manufacturer</span><span class="p">.</span><span class="na">selected</span><span class="p">)</span> <span class="s">&quot;x&quot;</span> <span class="k">else</span> <span class="s">&quot; &quot;</span>
-        <span class="n">println</span><span class="p">(</span><span class="s">&quot;  [</span><span class="si">$</span><span class="n">selectedMark</span><span class="s">] </span><span class="si">${</span><span class="n">manufacturer</span><span class="p">.</span><span class="na">value</span><span class="si">}</span><span class="s"> (</span><span class="si">${</span><span class="n">manufacturer</span><span class="p">.</span><span class="na">count</span><span class="si">}</span><span class="s">)&quot;</span><span class="p">)</span>
-    <span class="p">}</span>
-    <span class="n">println</span><span class="p">()</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">manufacturerFacet</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">filtersResult</span><span class="o">[</span><span class="n">BikeQueryFilters</span><span class="p">.</span><span class="na">manufacturer</span><span class="o">]</span><span class="w"></span>
+<span class="w">    </span><span class="n">println</span><span class="p">(</span><span class="s">&quot;Manufacturers:&quot;</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">manufacturer</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">manufacturerFacet</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="kd">val</span><span class="w"> </span><span class="nv">selectedMark</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">manufacturer</span><span class="p">.</span><span class="na">selected</span><span class="p">)</span><span class="w"> </span><span class="s">&quot;x&quot;</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s">&quot; &quot;</span><span class="w"></span>
+<span class="w">        </span><span class="n">println</span><span class="p">(</span><span class="s">&quot;  [</span><span class="si">$</span><span class="n">selectedMark</span><span class="s">] </span><span class="si">${</span><span class="n">manufacturer</span><span class="p">.</span><span class="na">value</span><span class="si">}</span><span class="s"> (</span><span class="si">${</span><span class="n">manufacturer</span><span class="p">.</span><span class="na">count</span><span class="si">}</span><span class="s">)&quot;</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="w">    </span><span class="n">println</span><span class="p">()</span><span class="w"></span>
 
-    <span class="kd">val</span> <span class="nv">kindFacet</span> <span class="o">=</span> <span class="n">filtersResult</span><span class="o">[</span><span class="n">BikeQueryFilters</span><span class="p">.</span><span class="na">kind</span><span class="o">]</span>
-    <span class="n">println</span><span class="p">(</span><span class="s">&quot;Kinds:&quot;</span><span class="p">)</span>
-    <span class="k">for</span> <span class="p">(</span><span class="n">kind</span> <span class="k">in</span> <span class="n">kindFacet</span><span class="p">)</span> <span class="p">{</span>
-        <span class="kd">val</span> <span class="nv">selectedMark</span> <span class="o">=</span> <span class="k">if</span> <span class="p">(</span><span class="n">kind</span><span class="p">.</span><span class="na">selected</span><span class="p">)</span> <span class="s">&quot;x&quot;</span> <span class="k">else</span> <span class="s">&quot; &quot;</span>
-        <span class="n">println</span><span class="p">(</span><span class="s">&quot;  [</span><span class="si">$</span><span class="n">selectedMark</span><span class="s">] </span><span class="si">${</span><span class="n">kind</span><span class="p">.</span><span class="na">value</span><span class="si">}</span><span class="s"> (</span><span class="si">${</span><span class="n">kind</span><span class="p">.</span><span class="na">count</span><span class="si">}</span><span class="s">)&quot;</span><span class="p">)</span>
-    <span class="p">}</span>
-    <span class="n">println</span><span class="p">()</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">kindFacet</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">filtersResult</span><span class="o">[</span><span class="n">BikeQueryFilters</span><span class="p">.</span><span class="na">kind</span><span class="o">]</span><span class="w"></span>
+<span class="w">    </span><span class="n">println</span><span class="p">(</span><span class="s">&quot;Kinds:&quot;</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">kind</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">kindFacet</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="kd">val</span><span class="w"> </span><span class="nv">selectedMark</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">kind</span><span class="p">.</span><span class="na">selected</span><span class="p">)</span><span class="w"> </span><span class="s">&quot;x&quot;</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s">&quot; &quot;</span><span class="w"></span>
+<span class="w">        </span><span class="n">println</span><span class="p">(</span><span class="s">&quot;  [</span><span class="si">$</span><span class="n">selectedMark</span><span class="s">] </span><span class="si">${</span><span class="n">kind</span><span class="p">.</span><span class="na">value</span><span class="si">}</span><span class="s"> (</span><span class="si">${</span><span class="n">kind</span><span class="p">.</span><span class="na">count</span><span class="si">}</span><span class="s">)&quot;</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="w">    </span><span class="n">println</span><span class="p">()</span><span class="w"></span>
 
-    <span class="kd">val</span> <span class="nv">page</span> <span class="o">=</span> <span class="n">filtersResult</span><span class="o">[</span><span class="n">BikeQueryFilters</span><span class="p">.</span><span class="na">page</span><span class="o">]</span>
-    <span class="n">println</span><span class="p">(</span><span class="s">&quot;Results:&quot;</span><span class="p">)</span>
-    <span class="k">for</span> <span class="p">(</span><span class="n">hit</span> <span class="k">in</span> <span class="n">page</span><span class="p">)</span> <span class="p">{</span>
-        <span class="kd">val</span> <span class="nv">source</span> <span class="o">=</span> <span class="n">requireNotNull</span><span class="p">(</span><span class="n">hit</span><span class="p">.</span><span class="na">source</span><span class="p">)</span> <span class="k">as</span> <span class="n">DynDocSource</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">page</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">filtersResult</span><span class="o">[</span><span class="n">BikeQueryFilters</span><span class="p">.</span><span class="na">page</span><span class="o">]</span><span class="w"></span>
+<span class="w">    </span><span class="n">println</span><span class="p">(</span><span class="s">&quot;Results:&quot;</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">hit</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">page</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="kd">val</span><span class="w"> </span><span class="nv">source</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">requireNotNull</span><span class="p">(</span><span class="n">hit</span><span class="p">.</span><span class="na">source</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">DynDocSource</span><span class="w"></span>
 
-        <span class="n">println</span><span class="p">(</span><span class="s">&quot;  </span><span class="si">${</span><span class="n">source</span><span class="o">[</span><span class="n">BikeDoc</span><span class="p">.</span><span class="na">manufacturer</span><span class="o">]</span><span class="si">}</span><span class="s"> </span><span class="si">${</span><span class="n">source</span><span class="o">[</span><span class="n">BikeDoc</span><span class="p">.</span><span class="na">model</span><span class="o">]</span><span class="si">}</span><span class="s"> - </span><span class="si">${</span><span class="n">source</span><span class="o">[</span><span class="n">BikeDoc</span><span class="p">.</span><span class="na">price</span><span class="o">]</span><span class="si">}</span><span class="s">&quot;</span><span class="p">)</span>
-    <span class="p">}</span>
-    <span class="n">println</span><span class="p">()</span>
-    <span class="n">println</span><span class="p">(</span><span class="s">&quot;Current page: </span><span class="si">${</span><span class="n">page</span><span class="p">.</span><span class="na">page</span><span class="si">}</span><span class="s">&quot;</span><span class="p">)</span>
-    <span class="n">println</span><span class="p">(</span><span class="s">&quot;Total pages: </span><span class="si">${</span><span class="n">page</span><span class="p">.</span><span class="na">totalPages</span><span class="si">}</span><span class="s">&quot;</span><span class="p">)</span>
-    <span class="n">println</span><span class="p">()</span>
-<span class="p">}</span>
+<span class="w">        </span><span class="n">println</span><span class="p">(</span><span class="s">&quot;  </span><span class="si">${</span><span class="n">source</span><span class="o">[</span><span class="n">BikeDoc</span><span class="p">.</span><span class="na">manufacturer</span><span class="o">]</span><span class="si">}</span><span class="s"> </span><span class="si">${</span><span class="n">source</span><span class="o">[</span><span class="n">BikeDoc</span><span class="p">.</span><span class="na">model</span><span class="o">]</span><span class="si">}</span><span class="s"> - </span><span class="si">${</span><span class="n">source</span><span class="o">[</span><span class="n">BikeDoc</span><span class="p">.</span><span class="na">price</span><span class="o">]</span><span class="si">}</span><span class="s">&quot;</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="w">    </span><span class="n">println</span><span class="p">()</span><span class="w"></span>
+<span class="w">    </span><span class="n">println</span><span class="p">(</span><span class="s">&quot;Current page: </span><span class="si">${</span><span class="n">page</span><span class="p">.</span><span class="na">page</span><span class="si">}</span><span class="s">&quot;</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="n">println</span><span class="p">(</span><span class="s">&quot;Total pages: </span><span class="si">${</span><span class="n">page</span><span class="p">.</span><span class="na">totalPages</span><span class="si">}</span><span class="s">&quot;</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="n">println</span><span class="p">()</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </code></pre></div>
 <h2 id="run-a-full-fledged-query-filters-sample">Run a full-fledged query filters sample<a class="headerlink" href="#run-a-full-fledged-query-filters-sample" title="Permanent link">&para;</a></h2>
 <p>JVM version:</p>
@@ -551,19 +584,26 @@ could be transformed from http query parameters.</p>
 
               
             </article>
+            
           </div>
         </div>
+        
+          <a href="#" class="md-top md-icon" data-md-component="top" hidden>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+            Back to top
+          </a>
         
       </main>
       
         <footer class="md-footer">
   
-    <nav class="md-footer__inner md-grid" aria-label="Footer">
+    
+    <nav class="md-footer__inner md-grid" aria-label="Footer" >
       
         
         <a href="../querying/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Querying" rel="prev">
           <div class="md-footer__button md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
           </div>
           <div class="md-footer__title">
             <div class="md-ellipsis">
@@ -598,10 +638,10 @@ could be transformed from http query parameters.</p>
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.5e67fbfe.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tracking", "navigation.top"], "search": "../assets/javascripts/workers/search.85cb4492.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.c44cc438.min.js"></script>
+      <script src="../assets/javascripts/bundle.a877e258.min.js"></script>
       
     
   </body>
