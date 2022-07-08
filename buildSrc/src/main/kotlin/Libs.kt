@@ -21,7 +21,7 @@ object Versions {
     val kotlin = versionProps["kotlin"]!!.toString()
     const val kotlinxSerialization = "1.3.3"
     const val kotlinxCoroutines = "1.6.3-native-mt"
-    const val kotlinxDatetime = "0.3.2"
+    const val kotlinxDatetime = "0.3.3"
     const val ktor = "2.0.3"
 
     // Other dependencies
