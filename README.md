@@ -28,3 +28,15 @@ Read [User Guide](https://anti-social.github.io/elasticmagic-kt/document/)
 ## Not a goal
 
 - Covering full Elasticsearch API
+
+## Compatibility policy
+
+- versions before `0.1` (`0.1.x`) can be binary and source incompatible; backward incompatible changes are allowed
+- versions greater or equal `0.1` but before `1.0` (`0.x.y`):
+  - different minor versions can be binary and source incompatible
+  - 2 versions with the same minor version should be binary compatible
+- versions higher or equal `1.0`:
+  - different major versions may require changing the source codes
+  - the same major but different minor versions should be source compatible.
+    Update from `1.2.0` to `1.3.0` may require recompilation
+  - same major and minor version mean that you can freely upgrade version of the library
