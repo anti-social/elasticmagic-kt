@@ -171,19 +171,31 @@ subprojects {
     }
 }
 
+val docsVersion = if ("-\\d+-g.*".toRegex().containsMatchIn(version.toString())) {
+    "dev"
+} else {
+    version.toString()
+}
+
 tasks.withType<DokkaMultiModuleTask> {
-    outputDirectory.set(buildDir.resolve("mkdocs/api/latest"))
-    this.impliesSubProjects
+    outputDirectory.set(buildDir.resolve("mkdocs/$docsVersion/api"))
 }
 
 mkdocs {
     sourcesDir = "docs"
-    publish.docPath = ""
+    // With strict it will fail because of 'api' directory is missing
+    strict = false
 
-    val abbrevRegex = "-\\d+-g.*".toRegex()
-    val lastReleasedVersion = abbrevRegex.replace(version.toString(), "")
+    publish.apply {
+        docPath = docsVersion
+        rootRedirect = grgit.branch.current().name == "master" && docsVersion != "dev"
+        rootRedirectTo = docsVersion
+        generateVersionsFile = true
+    }
+
     extras = mapOf(
-        "elasticmagic_version" to lastReleasedVersion,
+        "version" to docsVersion,
+        "elasticmagic_version" to version.toString(),
         "ktor_version" to Versions.ktor,
     )
 }

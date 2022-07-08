@@ -278,18 +278,24 @@ jobs:
       uses: ./.github/download-artifact
 
     - name: Build docs
-      run: ./gradlew mkdocsBuild --info
+      run: |
+        set -eu
+        ./gradlew mkdocsBuild --info
+        ./gradlew mkdocsVersionFile --info
 
     - name: Build API docs
       run: ./gradlew dokkaHtmlMultiModule --info
 
-    - name: Publish docs
+    - name: Copy docs
+      run: ./gradlew gitPublishCopy --info
+
+    - name: Publish documentation
       uses: peaceiris/actions-gh-pages@v3
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./build/mkdocs
+        publish_dir: ./.gradle/gh-pages
         # keep_files: true
-        full_commit_message: Publish documentation
+        full_commit_message: Publish documentation for ${{ github.ref }}
 
   cleanup:
     if: always()

@@ -16,8 +16,21 @@ repo_url: http://github.com/anti-social/elasticmagic-kt
 # Meterial theme
 theme:
   name: 'material'
-  feature:
-    tabs: false
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/toggle-switch-off-outline
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to light mode
+  features:
+    - navigation.tracking
+    - navigation.top
+
 
 plugins:
   - search
@@ -28,6 +41,10 @@ plugins:
 #  palette:
 #    primary: 'indigo'
 #    accent: 'indigo'
+
+extra:
+  version:
+    provider: mike
 
 extra_css:
 - extra.css
@@ -74,4 +91,4 @@ nav:
     - Document source: docsource.md
     - Querying: querying.md
     - Query Filters: query-filters.md
-  - Api: "https://anti-social.github.io/elasticmagic-kt/api/latest"
+  - Api: "api"

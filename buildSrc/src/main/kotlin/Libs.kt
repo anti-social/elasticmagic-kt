@@ -14,7 +14,7 @@ object Versions {
     const val grgit = "4.1.1"
     const val detekt = "1.21.0-RC2"
     const val dokka = "1.5.0"
-    const val mkdocs = "2.3.0"
+    const val mkdocs = "2.4.0"
     const val binaryCompatibilityValidator = "0.10.1"
 
     // Kotlin and libs
