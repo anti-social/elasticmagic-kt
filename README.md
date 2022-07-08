@@ -31,7 +31,7 @@ Read [User Guide](https://anti-social.github.io/elasticmagic-kt/latest/document/
 
 ## Compatibility policy
 
-- versions before `0.1` (`0.1.x`) can be binary and source incompatible; backward incompatible changes are allowed
+- versions before `0.1` (`0.0.x`) can be binary and source incompatible; backward incompatible changes are allowed
 - versions greater or equal `0.1` but before `1.0` (`0.x.y`):
   - different minor versions can be binary and source incompatible
   - 2 versions with the same minor version should be binary compatible
