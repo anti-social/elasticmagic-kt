@@ -577,7 +577,7 @@ public final class dev/evo/elasticmagic/aggs/Aggregation$DefaultImpls {
 public abstract interface class dev/evo/elasticmagic/aggs/AggregationResult {
 }
 
-public final class dev/evo/elasticmagic/aggs/AvgAgg : dev/evo/elasticmagic/aggs/SingleDoubleValueAgg {
+public final class dev/evo/elasticmagic/aggs/AvgAgg : dev/evo/elasticmagic/aggs/NumericValueAgg {
 	public fun <init> (Ldev/evo/elasticmagic/aggs/AggValue;Ljava/lang/Object;Ljava/lang/String;)V
 	public synthetic fun <init> (Ldev/evo/elasticmagic/aggs/AggValue;Ljava/lang/Object;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun <init> (Ldev/evo/elasticmagic/query/FieldOperations;Ljava/lang/Object;Ljava/lang/String;)V
@@ -748,7 +748,7 @@ public final class dev/evo/elasticmagic/aggs/CalendarInterval : java/lang/Enum, 
 	public static fun values ()[Ldev/evo/elasticmagic/aggs/CalendarInterval;
 }
 
-public final class dev/evo/elasticmagic/aggs/CardinalityAgg : dev/evo/elasticmagic/aggs/SingleLongValueAgg {
+public final class dev/evo/elasticmagic/aggs/CardinalityAgg : dev/evo/elasticmagic/aggs/NumericValueAgg {
 	public fun <init> (Ldev/evo/elasticmagic/aggs/AggValue;Ljava/lang/Object;)V
 	public synthetic fun <init> (Ldev/evo/elasticmagic/aggs/AggValue;Ljava/lang/Object;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun <init> (Ldev/evo/elasticmagic/query/FieldOperations;Ljava/lang/Object;)V
@@ -966,6 +966,26 @@ public final class dev/evo/elasticmagic/aggs/DateRangeBucket : dev/evo/elasticma
 	public fun toString ()Ljava/lang/String;
 }
 
+public final class dev/evo/elasticmagic/aggs/DoubleValueAggResult : dev/evo/elasticmagic/aggs/SingleValueMetricAggResult {
+	public static final field Companion Ldev/evo/elasticmagic/aggs/DoubleValueAggResult$Companion;
+	public fun <init> (DLjava/lang/String;)V
+	public synthetic fun <init> (DLjava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()D
+	public final fun component2 ()Ljava/lang/String;
+	public final fun copy (DLjava/lang/String;)Ldev/evo/elasticmagic/aggs/DoubleValueAggResult;
+	public static synthetic fun copy$default (Ldev/evo/elasticmagic/aggs/DoubleValueAggResult;DLjava/lang/String;ILjava/lang/Object;)Ldev/evo/elasticmagic/aggs/DoubleValueAggResult;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getValue ()Ljava/lang/Double;
+	public synthetic fun getValue ()Ljava/lang/Object;
+	public fun getValueAsString ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/evo/elasticmagic/aggs/DoubleValueAggResult$Companion {
+	public final fun invoke (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;)Ldev/evo/elasticmagic/aggs/DoubleValueAggResult;
+}
+
 public final class dev/evo/elasticmagic/aggs/ExtendedStatsAgg : dev/evo/elasticmagic/aggs/NumericValueAgg {
 	public fun <init> (Ldev/evo/elasticmagic/aggs/AggValue;Ljava/lang/Object;Ljava/lang/String;)V
 	public synthetic fun <init> (Ldev/evo/elasticmagic/aggs/AggValue;Ljava/lang/Object;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
@@ -984,12 +1004,11 @@ public final class dev/evo/elasticmagic/aggs/ExtendedStatsAgg : dev/evo/elasticm
 	public fun getName ()Ljava/lang/String;
 	public fun getValue ()Ldev/evo/elasticmagic/aggs/AggValue;
 	public fun hashCode ()I
-	public synthetic fun processResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;)Ldev/evo/elasticmagic/aggs/AggregationResult;
-	public fun processResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;)Ldev/evo/elasticmagic/aggs/ExtendedStatsAggResult;
 	public fun toString ()Ljava/lang/String;
 }
 
 public final class dev/evo/elasticmagic/aggs/ExtendedStatsAggResult : dev/evo/elasticmagic/aggs/AggregationResult {
+	public static final field Companion Ldev/evo/elasticmagic/aggs/ExtendedStatsAggResult$Companion;
 	public fun <init> (JLjava/lang/Double;Ljava/lang/Double;Ljava/lang/Double;DLjava/lang/Double;Ljava/lang/Double;Ljava/lang/Double;Ldev/evo/elasticmagic/aggs/ExtendedStatsAggResult$StdDeviationBounds;)V
 	public final fun component1 ()J
 	public final fun component2 ()Ljava/lang/Double;
@@ -1014,6 +1033,10 @@ public final class dev/evo/elasticmagic/aggs/ExtendedStatsAggResult : dev/evo/el
 	public final fun getVariance ()Ljava/lang/Double;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/evo/elasticmagic/aggs/ExtendedStatsAggResult$Companion {
+	public final fun invoke (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;)Ldev/evo/elasticmagic/aggs/ExtendedStatsAggResult;
 }
 
 public final class dev/evo/elasticmagic/aggs/ExtendedStatsAggResult$StdDeviationBounds {
@@ -1276,7 +1299,27 @@ public abstract class dev/evo/elasticmagic/aggs/KeyedBucket : dev/evo/elasticmag
 	public abstract fun getKey ()Ljava/lang/Object;
 }
 
-public final class dev/evo/elasticmagic/aggs/MaxAgg : dev/evo/elasticmagic/aggs/SingleDoubleValueAgg {
+public final class dev/evo/elasticmagic/aggs/LongValueAggResult : dev/evo/elasticmagic/aggs/SingleValueMetricAggResult {
+	public static final field Companion Ldev/evo/elasticmagic/aggs/LongValueAggResult$Companion;
+	public fun <init> (JLjava/lang/String;)V
+	public synthetic fun <init> (JLjava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()J
+	public final fun component2 ()Ljava/lang/String;
+	public final fun copy (JLjava/lang/String;)Ldev/evo/elasticmagic/aggs/LongValueAggResult;
+	public static synthetic fun copy$default (Ldev/evo/elasticmagic/aggs/LongValueAggResult;JLjava/lang/String;ILjava/lang/Object;)Ldev/evo/elasticmagic/aggs/LongValueAggResult;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getValue ()Ljava/lang/Long;
+	public synthetic fun getValue ()Ljava/lang/Object;
+	public fun getValueAsString ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/evo/elasticmagic/aggs/LongValueAggResult$Companion {
+	public final fun invoke (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;)Ldev/evo/elasticmagic/aggs/LongValueAggResult;
+}
+
+public final class dev/evo/elasticmagic/aggs/MaxAgg : dev/evo/elasticmagic/aggs/NumericValueAgg {
 	public fun <init> (Ldev/evo/elasticmagic/aggs/AggValue;Ljava/lang/Object;Ljava/lang/String;)V
 	public synthetic fun <init> (Ldev/evo/elasticmagic/aggs/AggValue;Ljava/lang/Object;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun <init> (Ldev/evo/elasticmagic/query/FieldOperations;Ljava/lang/Object;Ljava/lang/String;)V
@@ -1297,7 +1340,7 @@ public final class dev/evo/elasticmagic/aggs/MaxAgg : dev/evo/elasticmagic/aggs/
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class dev/evo/elasticmagic/aggs/MedianAbsoluteDeviationAgg : dev/evo/elasticmagic/aggs/SingleDoubleValueAgg {
+public final class dev/evo/elasticmagic/aggs/MedianAbsoluteDeviationAgg : dev/evo/elasticmagic/aggs/NumericValueAgg {
 	public fun <init> (Ldev/evo/elasticmagic/aggs/AggValue;Ljava/lang/Object;)V
 	public synthetic fun <init> (Ldev/evo/elasticmagic/aggs/AggValue;Ljava/lang/Object;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun <init> (Ldev/evo/elasticmagic/query/FieldOperations;Ljava/lang/Object;)V
@@ -1324,7 +1367,7 @@ public abstract class dev/evo/elasticmagic/aggs/MetricAggregation : dev/evo/elas
 	public fun reduce ()Ldev/evo/elasticmagic/query/Expression;
 }
 
-public final class dev/evo/elasticmagic/aggs/MinAgg : dev/evo/elasticmagic/aggs/SingleDoubleValueAgg {
+public final class dev/evo/elasticmagic/aggs/MinAgg : dev/evo/elasticmagic/aggs/NumericValueAgg {
 	public fun <init> (Ldev/evo/elasticmagic/aggs/AggValue;Ljava/lang/Object;Ljava/lang/String;)V
 	public synthetic fun <init> (Ldev/evo/elasticmagic/aggs/AggValue;Ljava/lang/Object;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun <init> (Ldev/evo/elasticmagic/query/FieldOperations;Ljava/lang/Object;Ljava/lang/String;)V
@@ -1363,10 +1406,31 @@ public final class dev/evo/elasticmagic/aggs/NestedAgg : dev/evo/elasticmagic/ag
 }
 
 public abstract class dev/evo/elasticmagic/aggs/NumericValueAgg : dev/evo/elasticmagic/aggs/MetricAggregation {
-	public fun <init> ()V
+	public fun <init> (Lkotlin/jvm/functions/Function1;)V
 	public abstract fun getMissing ()Ljava/lang/Object;
 	public abstract fun getValue ()Ldev/evo/elasticmagic/aggs/AggValue;
+	public fun processResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;)Ldev/evo/elasticmagic/aggs/AggregationResult;
 	public fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
+}
+
+public final class dev/evo/elasticmagic/aggs/OptionalDoubleValueAggResult : dev/evo/elasticmagic/aggs/SingleValueMetricAggResult {
+	public static final field Companion Ldev/evo/elasticmagic/aggs/OptionalDoubleValueAggResult$Companion;
+	public fun <init> (Ljava/lang/Double;Ljava/lang/String;)V
+	public synthetic fun <init> (Ljava/lang/Double;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/Double;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/Double;Ljava/lang/String;)Ldev/evo/elasticmagic/aggs/OptionalDoubleValueAggResult;
+	public static synthetic fun copy$default (Ldev/evo/elasticmagic/aggs/OptionalDoubleValueAggResult;Ljava/lang/Double;Ljava/lang/String;ILjava/lang/Object;)Ldev/evo/elasticmagic/aggs/OptionalDoubleValueAggResult;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getValue ()Ljava/lang/Double;
+	public synthetic fun getValue ()Ljava/lang/Object;
+	public fun getValueAsString ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/evo/elasticmagic/aggs/OptionalDoubleValueAggResult$Companion {
+	public final fun invoke (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;)Ldev/evo/elasticmagic/aggs/OptionalDoubleValueAggResult;
 }
 
 public final class dev/evo/elasticmagic/aggs/RangeAgg : dev/evo/elasticmagic/aggs/BaseRangeAgg {
@@ -1543,30 +1607,10 @@ public abstract class dev/evo/elasticmagic/aggs/SingleBucketAggregation : dev/ev
 	public fun processResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;)Ldev/evo/elasticmagic/aggs/SingleBucketAggResult;
 }
 
-public abstract class dev/evo/elasticmagic/aggs/SingleDoubleValueAgg : dev/evo/elasticmagic/aggs/NumericValueAgg {
+public abstract class dev/evo/elasticmagic/aggs/SingleValueMetricAggResult : dev/evo/elasticmagic/aggs/AggregationResult {
 	public fun <init> ()V
-	public synthetic fun processResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;)Ldev/evo/elasticmagic/aggs/AggregationResult;
-	public fun processResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;)Ldev/evo/elasticmagic/aggs/SingleValueMetricAggResult;
-}
-
-public abstract class dev/evo/elasticmagic/aggs/SingleLongValueAgg : dev/evo/elasticmagic/aggs/NumericValueAgg {
-	public fun <init> ()V
-	public synthetic fun processResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;)Ldev/evo/elasticmagic/aggs/AggregationResult;
-	public fun processResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;)Ldev/evo/elasticmagic/aggs/SingleValueMetricAggResult;
-}
-
-public final class dev/evo/elasticmagic/aggs/SingleValueMetricAggResult : dev/evo/elasticmagic/aggs/AggregationResult {
-	public fun <init> (Ljava/lang/Object;Ljava/lang/String;)V
-	public synthetic fun <init> (Ljava/lang/Object;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public final fun component1 ()Ljava/lang/Object;
-	public final fun component2 ()Ljava/lang/String;
-	public final fun copy (Ljava/lang/Object;Ljava/lang/String;)Ldev/evo/elasticmagic/aggs/SingleValueMetricAggResult;
-	public static synthetic fun copy$default (Ldev/evo/elasticmagic/aggs/SingleValueMetricAggResult;Ljava/lang/Object;Ljava/lang/String;ILjava/lang/Object;)Ldev/evo/elasticmagic/aggs/SingleValueMetricAggResult;
-	public fun equals (Ljava/lang/Object;)Z
-	public final fun getValue ()Ljava/lang/Object;
-	public final fun getValueAsString ()Ljava/lang/String;
-	public fun hashCode ()I
-	public fun toString ()Ljava/lang/String;
+	public abstract fun getValue ()Ljava/lang/Object;
+	public abstract fun getValueAsString ()Ljava/lang/String;
 }
 
 public final class dev/evo/elasticmagic/aggs/StatsAgg : dev/evo/elasticmagic/aggs/NumericValueAgg {
@@ -1587,12 +1631,11 @@ public final class dev/evo/elasticmagic/aggs/StatsAgg : dev/evo/elasticmagic/agg
 	public fun getName ()Ljava/lang/String;
 	public fun getValue ()Ldev/evo/elasticmagic/aggs/AggValue;
 	public fun hashCode ()I
-	public synthetic fun processResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;)Ldev/evo/elasticmagic/aggs/AggregationResult;
-	public fun processResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;)Ldev/evo/elasticmagic/aggs/StatsAggResult;
 	public fun toString ()Ljava/lang/String;
 }
 
 public final class dev/evo/elasticmagic/aggs/StatsAggResult : dev/evo/elasticmagic/aggs/AggregationResult {
+	public static final field Companion Ldev/evo/elasticmagic/aggs/StatsAggResult$Companion;
 	public fun <init> (JLjava/lang/Double;Ljava/lang/Double;Ljava/lang/Double;DLjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
 	public final fun component1 ()J
 	public final fun component2 ()Ljava/lang/Double;
@@ -1619,7 +1662,11 @@ public final class dev/evo/elasticmagic/aggs/StatsAggResult : dev/evo/elasticmag
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class dev/evo/elasticmagic/aggs/SumAgg : dev/evo/elasticmagic/aggs/SingleDoubleValueAgg {
+public final class dev/evo/elasticmagic/aggs/StatsAggResult$Companion {
+	public final fun invoke (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;)Ldev/evo/elasticmagic/aggs/StatsAggResult;
+}
+
+public final class dev/evo/elasticmagic/aggs/SumAgg : dev/evo/elasticmagic/aggs/NumericValueAgg {
 	public fun <init> (Ldev/evo/elasticmagic/aggs/AggValue;Ljava/lang/Number;Ljava/lang/String;)V
 	public synthetic fun <init> (Ldev/evo/elasticmagic/aggs/AggValue;Ljava/lang/Number;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun <init> (Ldev/evo/elasticmagic/query/FieldOperations;Ljava/lang/Number;Ljava/lang/String;)V
@@ -1720,7 +1767,7 @@ public final class dev/evo/elasticmagic/aggs/TermsAggResult : dev/evo/elasticmag
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class dev/evo/elasticmagic/aggs/ValueCountAgg : dev/evo/elasticmagic/aggs/SingleLongValueAgg {
+public final class dev/evo/elasticmagic/aggs/ValueCountAgg : dev/evo/elasticmagic/aggs/NumericValueAgg {
 	public fun <init> (Ldev/evo/elasticmagic/aggs/AggValue;Ljava/lang/Object;)V
 	public synthetic fun <init> (Ldev/evo/elasticmagic/aggs/AggValue;Ljava/lang/Object;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun <init> (Ldev/evo/elasticmagic/query/FieldOperations;Ljava/lang/Object;)V
@@ -1756,7 +1803,7 @@ public final class dev/evo/elasticmagic/aggs/WeightedAvgAgg : dev/evo/elasticmag
 	public final fun getWeight ()Ldev/evo/elasticmagic/aggs/WeightedAvgAgg$ValueSource;
 	public fun hashCode ()I
 	public synthetic fun processResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;)Ldev/evo/elasticmagic/aggs/AggregationResult;
-	public fun processResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;)Ldev/evo/elasticmagic/aggs/SingleValueMetricAggResult;
+	public fun processResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;)Ldev/evo/elasticmagic/aggs/OptionalDoubleValueAggResult;
 	public fun toString ()Ljava/lang/String;
 	public fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
 }

@@ -4,9 +4,9 @@ import dev.evo.elasticmagic.SearchHit
 import dev.evo.elasticmagic.SearchQuery
 import dev.evo.elasticmagic.SearchQueryResult
 import dev.evo.elasticmagic.aggs.AggregationResult
-import dev.evo.elasticmagic.aggs.SingleValueMetricAggResult
 import dev.evo.elasticmagic.aggs.TermBucket
 import dev.evo.elasticmagic.aggs.TermsAggResult
+import dev.evo.elasticmagic.aggs.ValueCountAggResult
 import dev.evo.elasticmagic.compile.BaseCompilerTest
 import dev.evo.elasticmagic.compile.SearchQueryCompiler
 import dev.evo.elasticmagic.doc.DynDocSource
@@ -79,7 +79,7 @@ class QueryFiltersTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQueryCom
                 453,
                 emptyList(),
                 mapOf(
-                    "qf:price.count" to SingleValueMetricAggResult(439L),
+                    "qf:price.count" to ValueCountAggResult(439L),
                     "qf:manufacturer" to TermsAggResult(
                         listOf(
                             TermBucket("Giant", 84),
@@ -127,7 +127,7 @@ class QueryFiltersTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQueryCom
                 453,
                 emptyList(),
                 mapOf(
-                    "qf:price.count" to SingleValueMetricAggResult(439L),
+                    "qf:price.count" to ValueCountAggResult(439L),
                     "qf:manufacturer" to TermsAggResult(
                         listOf(
                             TermBucket("Giant", 84),

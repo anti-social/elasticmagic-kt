@@ -19,13 +19,13 @@ import kotlin.test.Test
 
 class MetricTests : TestAggregation() {
     @Test
-    fun min_max_avg_sum() {
-        table<String, (FieldOperations<Float>, Float?) -> SingleDoubleValueAgg<Float>>(
+    fun min_max_avg() {
+        table<String, (FieldOperations<Float>, Float?) -> NumericValueAgg<Float, OptionalDoubleValueAggResult>>(
             headers("aggName", "aggFn"),
             row("min", ::MinAgg),
             row("max", ::MaxAgg),
             row("avg", ::AvgAgg),
-            row("sum", ::SumAgg),
+            // row("sum", ::SumAgg),
             row("median_absolute_deviation", ::MedianAbsoluteDeviationAgg),
         ).forAll { aggName, aggFn ->
             val agg = aggFn(
@@ -59,6 +59,33 @@ class MetricTests : TestAggregation() {
     }
 
     @Test
+    fun sum() {
+        val agg = SumAgg(MovieDoc.rating, 0.0F)
+        agg.compile() shouldContainExactly mapOf(
+            "sum" to mapOf(
+                "field" to "rating",
+                "missing" to 0.0F
+            )
+        )
+        shouldThrow<IllegalStateException> {
+            process(
+                agg,
+                mapOf("value" to null)
+            )
+        }
+        process(
+            agg,
+            mapOf(
+                "value" to 1.1,
+                "value_as_string" to "1.1",
+            )
+        ).let { res ->
+            res.value shouldBe 1.1
+            res.valueAsString shouldBe "1.1"
+        }
+    }
+
+    @Test
     fun min_booleanType() {
         MinAgg(MovieDoc.isColored, missing = true).let { agg ->
             agg.compile() shouldContainExactly mapOf(
@@ -83,7 +110,7 @@ class MetricTests : TestAggregation() {
 
     @Test
     fun valueCount_cardinality() {
-        table<String, (FieldOperations<Int>, Int?) -> SingleLongValueAgg<Int>>(
+        table<String, (FieldOperations<Int>, Int?) -> NumericValueAgg<Int, LongValueAggResult>>(
             headers("aggName", "aggFn"),
             row("value_count", ::ValueCountAgg),
             row("cardinality", ::CardinalityAgg),

@@ -5,12 +5,14 @@ import dev.evo.elasticmagic.aggs.HistogramAgg
 import dev.evo.elasticmagic.aggs.HistogramAggResult
 import dev.evo.elasticmagic.aggs.HistogramBucket
 import dev.evo.elasticmagic.aggs.MaxAgg
+import dev.evo.elasticmagic.aggs.MaxAggResult
 import dev.evo.elasticmagic.aggs.MinAgg
-import dev.evo.elasticmagic.aggs.SingleValueMetricAggResult
+import dev.evo.elasticmagic.aggs.MinAggResult
+import dev.evo.elasticmagic.aggs.ValueCountAggResult
 import dev.evo.elasticmagic.compile.BaseCompilerTest
 import dev.evo.elasticmagic.compile.SearchQueryCompiler
-import io.kotest.matchers.maps.shouldBeEmpty
 
+import io.kotest.matchers.maps.shouldBeEmpty
 import io.kotest.matchers.maps.shouldContainExactly
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
@@ -37,7 +39,7 @@ class FacetRangeFilterTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQuer
 
         val price = ctx.processResult(
             searchResultWithAggs(mapOf(
-                "qf:price.count" to SingleValueMetricAggResult(97L)
+                "qf:price.count" to ValueCountAggResult(97L)
             ))
         )
         price.name shouldBe "price"
@@ -77,7 +79,7 @@ class FacetRangeFilterTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQuer
 
         val price = ctx.processResult(
             searchResultWithAggs(mapOf(
-                "qf:price.count" to SingleValueMetricAggResult(97L)
+                "qf:price.count" to ValueCountAggResult(97L)
             ))
         )
         price.name shouldBe "price"
@@ -243,9 +245,9 @@ class FacetRangeFilterTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQuer
 
         val priceFacet = ctx.processResult(
             searchResultWithAggs(mapOf(
-                "qf:price.count" to SingleValueMetricAggResult(97L),
-                "qf:price.min" to SingleValueMetricAggResult(0.01),
-                "qf:price.max" to SingleValueMetricAggResult(100_000.0),
+                "qf:price.count" to ValueCountAggResult(97L),
+                "qf:price.min" to MinAggResult(0.01),
+                "qf:price.max" to MaxAggResult(100_000.0),
                 "qf:price.histogram" to HistogramAggResult(listOf(
                     HistogramBucket(0.0, 1),
                     HistogramBucket(10.0, 101),
@@ -258,8 +260,8 @@ class FacetRangeFilterTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQuer
         priceFacet.from.shouldBeNull()
         priceFacet.to.shouldBeNull()
         priceFacet.aggs.size shouldBe 3
-        priceFacet.agg<SingleValueMetricAggResult<Double>>("min").value shouldBe 0.01
-        priceFacet.agg<SingleValueMetricAggResult<Double>>("max").value shouldBe 100_000.0
+        priceFacet.agg<MinAggResult>("min").value shouldBe 0.01
+        priceFacet.agg<MaxAggResult>("max").value shouldBe 100_000.0
         val priceHistogram = priceFacet.agg<HistogramAggResult>("histogram")
         priceHistogram.buckets.size shouldBe 3
     }
