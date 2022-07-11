@@ -23,7 +23,7 @@ private fun <T> FieldType<*, T>.deserializeTermOrNull(term: Any): T? {
 
 fun <T> QueryFilterParams.decodeValues(
     key: Pair<String, String>, fieldType: FieldType<*, T>
-): List<T> {
+): List<T & Any> {
     return get(key)?.mapNotNull(fieldType::deserializeTermOrNull) ?: emptyList()
 }
 

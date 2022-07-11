@@ -39,7 +39,7 @@ sealed class AggValue<T> : ObjExpression {
 
     fun serializeTerm(v: T): Any = getValueType().serializeTerm(v)
 
-    fun deserializeTerm(v: Any): T = getValueType().deserializeTerm(v)
+    fun deserializeTerm(v: Any): T & Any = getValueType().deserializeTerm(v)
 
     override fun accept(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
         when (this) {

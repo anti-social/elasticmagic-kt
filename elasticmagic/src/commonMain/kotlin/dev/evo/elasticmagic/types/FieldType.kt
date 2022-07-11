@@ -67,7 +67,7 @@ interface FieldType<V, T> {
     fun deserialize(
         v: Any,
         valueFactory: (() -> V)? = null
-    ): V
+    ): V & Any
 
     /**
      * Serializes term value to Elasticsearch.
@@ -79,7 +79,7 @@ interface FieldType<V, T> {
     /**
      * Deserializes term value from Elasticsearch.
      */
-    fun deserializeTerm(v: Any): T
+    fun deserializeTerm(v: Any): T & Any
 }
 
 /**
@@ -88,7 +88,7 @@ interface FieldType<V, T> {
 abstract class SimpleFieldType<V> : FieldType<V, V> {
     override fun serializeTerm(v: V): Any = serialize(v)
 
-    override fun deserializeTerm(v: Any): V = deserialize(v)
+    override fun deserializeTerm(v: Any): V & Any = deserialize(v)
 }
 
 /**
@@ -415,7 +415,7 @@ abstract class RangeType<V>(private val type: FieldType<V, V>) : FieldType<Range
 
     override fun serializeTerm(v: V): Any = type.serializeTerm(v)
 
-    override fun deserializeTerm(v: Any): V = type.deserializeTerm(v)
+    override fun deserializeTerm(v: Any): V & Any = type.deserializeTerm(v)
 }
 
 /**
@@ -651,7 +651,7 @@ internal class OptionalListType<V, T>(val type: FieldType<V, T>) : FieldType<Mut
 
     override fun serializeTerm(v: T): Any = serErr(v)
 
-    override fun deserializeTerm(v: Any): T {
+    override fun deserializeTerm(v: Any): T & Any {
         throw IllegalStateException("Unreachable")
     }
 }
@@ -686,7 +686,7 @@ internal class RequiredListType<V, T>(val type: FieldType<V, T>) : FieldType<Mut
         }
     }
 
-    override fun deserializeTerm(v: Any): T {
+    override fun deserializeTerm(v: Any): T & Any {
         throw IllegalStateException("Unreachable")
     }
 }

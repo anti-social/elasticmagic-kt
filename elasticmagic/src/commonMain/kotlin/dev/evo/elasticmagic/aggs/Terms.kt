@@ -176,7 +176,7 @@ data class TermsAggResult<T>(
 ) : BucketAggResult<TermBucket<T>>()
 
 data class TermBucket<T>(
-    override val key: T,
+    override val key: T & Any,
     override val docCount: Long,
     val docCountErrorUpperBound: Long? = null,
     override val aggs: Map<String, AggregationResult> = emptyMap(),
