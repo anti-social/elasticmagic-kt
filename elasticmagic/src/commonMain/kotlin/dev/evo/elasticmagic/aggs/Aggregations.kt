@@ -37,7 +37,7 @@ sealed class AggValue<T> : ObjExpression {
 
     abstract fun getValueType(): FieldType<*, T>
 
-    fun serializeTerm(v: T): Any = getValueType().serializeTerm(v)
+    fun serializeTerm(v: T & Any): Any = getValueType().serializeTerm(v)
 
     fun deserializeTerm(v: Any): T & Any = getValueType().deserializeTerm(v)
 
