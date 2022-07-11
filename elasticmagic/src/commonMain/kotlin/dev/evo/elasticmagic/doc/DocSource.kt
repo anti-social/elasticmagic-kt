@@ -162,7 +162,7 @@ open class DocSource : BaseDocSource() {
             }
     }
 
-    operator fun <V> BoundField<V, *>.provideDelegate(
+    operator fun <V> BoundField<V & Any, *>.provideDelegate(
         thisRef: DocSource, property: KProperty<*>
     ): ReadWriteProperty<DocSource, V?> {
         return OptionalValueProperty(
@@ -173,7 +173,7 @@ open class DocSource : BaseDocSource() {
             }
     }
 
-    fun <V> BoundField<V, *>.required(): RequiredListableValueDelegate<V> {
+    fun <V> BoundField<V & Any, *>.required(): RequiredListableValueDelegate<V> {
         return RequiredListableValueDelegate(
             getFieldName(), getFieldType()
         )
@@ -185,13 +185,13 @@ open class DocSource : BaseDocSource() {
         )
     }
 
-    fun <V> BoundField<V, *>.default(defaultValue: () -> V): OptionalValueDelegateWithDefault<V> {
+    fun <V> BoundField<V & Any, *>.default(defaultValue: () -> V & Any): OptionalValueDelegateWithDefault<V> {
         return OptionalValueDelegateWithDefault(
             getFieldName(), getFieldType(), defaultValue
         )
     }
 
-    operator fun <V> SubFields<V>.provideDelegate(
+    operator fun <V> SubFields<V & Any>.provideDelegate(
         thisRef: DocSource, property: KProperty<*>
     ): ReadWriteProperty<DocSource, V?> {
         return OptionalValueProperty(
@@ -211,7 +211,7 @@ open class DocSource : BaseDocSource() {
 
     open class OptionalValueDelegate<V>(
         protected val fieldName: String,
-        protected val fieldType: FieldType<V, *>,
+        protected val fieldType: FieldType<V & Any, *>,
     ) {
         operator fun provideDelegate(
             thisRef: DocSource, property: KProperty<*>
@@ -224,19 +224,19 @@ open class DocSource : BaseDocSource() {
             return RequiredValueDelegate(fieldName, fieldType)
         }
 
-        fun default(defaultValue: () -> V): OptionalValueDelegateWithDefault<V> {
+        fun default(defaultValue: () -> V & Any): OptionalValueDelegateWithDefault<V> {
             return OptionalValueDelegateWithDefault(fieldName, fieldType, defaultValue)
         }
     }
 
     class OptionalValueDelegateWithDefault<V>(
         private val fieldName: String,
-        private val fieldType: FieldType<V, *>,
-        private val defaultValue: () -> V,
+        private val fieldType: FieldType<V & Any, *>,
+        private val defaultValue: () -> V & Any,
     ) {
         operator fun provideDelegate(
             thisRef: DocSource, property: KProperty<*>
-        ): ReadWriteProperty<DocSource, V> {
+        ): ReadWriteProperty<DocSource, V & Any> {
             return DefaultValueProperty(fieldName, fieldType, defaultValue)
                 .also { thisRef.bindProperty(it) }
         }
@@ -245,7 +245,7 @@ open class DocSource : BaseDocSource() {
 
     class OptionalListableValueDelegate<V>(
         fieldName: String,
-        fieldType: FieldType<V, *>,
+        fieldType: FieldType<V & Any, *>,
     ) : OptionalValueDelegate<V>(fieldName, fieldType) {
         override fun required(): RequiredListableValueDelegate<V> {
             return RequiredListableValueDelegate(fieldName, fieldType)
@@ -260,11 +260,11 @@ open class DocSource : BaseDocSource() {
 
     open class RequiredValueDelegate<V>(
         protected val fieldName: String,
-        protected val fieldType: FieldType<V, *>,
+        protected val fieldType: FieldType<V & Any, *>,
     ) {
         operator fun provideDelegate(
             thisRef: DocSource, property: KProperty<*>
-        ): ReadWriteProperty<DocSource, V> {
+        ): ReadWriteProperty<DocSource, V & Any> {
             return RequiredValueProperty(
                 fieldName, fieldType
             )
@@ -275,9 +275,9 @@ open class DocSource : BaseDocSource() {
 
     class RequiredListableValueDelegate<V>(
         fieldName: String,
-        fieldType: FieldType<V, *>,
+        fieldType: FieldType<V & Any, *>,
     ) : RequiredValueDelegate<V>(fieldName, fieldType) {
-        fun list(): OptionalValueDelegate<MutableList<V>> {
+        fun list(): OptionalValueDelegate<MutableList<V & Any>> {
             return OptionalValueDelegate(
                 fieldName, RequiredListType(fieldType)
             )
@@ -307,7 +307,7 @@ open class DocSource : BaseDocSource() {
 
     private sealed class FieldValueProperty<V>(
         val name: String,
-        val type: FieldType<V, *>,
+        val type: FieldType<V & Any, *>,
         protected val fieldValue: FieldValue<V>,
     ) {
         abstract val isInitialized: Boolean
@@ -323,7 +323,7 @@ open class DocSource : BaseDocSource() {
 
     private class OptionalValueProperty<V>(
         fieldName: String,
-        fieldType: FieldType<V, *>,
+        fieldType: FieldType<V & Any, *>,
     ) :
         FieldValueProperty<V>(fieldName, fieldType, FieldValue()),
         ReadWriteProperty<DocSource, V?>
@@ -355,15 +355,15 @@ open class DocSource : BaseDocSource() {
 
     private class DefaultValueProperty<V>(
         fieldName: String,
-        fieldType: FieldType<V, *>,
-        val defaultValue: () -> V,
+        fieldType: FieldType<V & Any, *>,
+        val defaultValue: () -> V & Any,
     ) :
         FieldValueProperty<V>(fieldName, fieldType, FieldValue()),
         ReadWriteProperty<DocSource, V>
     {
         override val isInitialized = true
 
-        override val value get(): V {
+        override val value get(): V & Any {
             return when (val v = fieldValue.value) {
                 null -> {
                     defaultValue().also(fieldValue::value::set)
@@ -393,7 +393,7 @@ open class DocSource : BaseDocSource() {
 
     private class RequiredValueProperty<V>(
         fieldName: String,
-        fieldType: FieldType<V, *>,
+        fieldType: FieldType<V & Any, *>,
     ) :
         FieldValueProperty<V>(fieldName, fieldType, FieldValue()),
         ReadWriteProperty<DocSource, V>
@@ -406,7 +406,7 @@ open class DocSource : BaseDocSource() {
             }
         }
 
-        override val value get(): V {
+        override val value get(): V & Any {
             return fieldValue.value ?: error("Field [$name] is required")
         }
 

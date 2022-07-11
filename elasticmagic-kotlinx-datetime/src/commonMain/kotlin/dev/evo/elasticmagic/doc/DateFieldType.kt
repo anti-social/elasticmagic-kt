@@ -45,7 +45,7 @@ abstract class BaseKotlinxDateTimeType<V> : BaseDateTimeType<V>() {
         throw err
     }
 
-    override fun serializeTerm(v: V) = serialize(v)
+    override fun serializeTerm(v: V & Any) = serialize(v)
 }
 
 object InstantType : BaseKotlinxDateTimeType<Instant>() {

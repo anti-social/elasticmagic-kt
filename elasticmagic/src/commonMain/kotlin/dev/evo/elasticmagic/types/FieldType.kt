@@ -53,8 +53,8 @@ interface FieldType<V, T> {
      *
      * @param v is a value from document source.
      */
-    fun serialize(v: V): Any {
-        return v as Any
+    fun serialize(v: V & Any): Any {
+        return v
     }
 
     /**
@@ -72,8 +72,8 @@ interface FieldType<V, T> {
     /**
      * Serializes term value to Elasticsearch.
      */
-    fun serializeTerm(v: T): Any {
-        return v as Any
+    fun serializeTerm(v: T & Any): Any {
+        return v
     }
 
     /**
@@ -86,7 +86,7 @@ interface FieldType<V, T> {
  * Base field type for types with the same field and term value types.
  */
 abstract class SimpleFieldType<V> : FieldType<V, V> {
-    override fun serializeTerm(v: V): Any = serialize(v)
+    override fun serializeTerm(v: V & Any): Any = serialize(v)
 
     override fun deserializeTerm(v: Any): V & Any = deserialize(v)
 }
@@ -413,7 +413,7 @@ abstract class RangeType<V>(private val type: FieldType<V, V>) : FieldType<Range
         else -> deErr(v, "Map")
     }
 
-    override fun serializeTerm(v: V): Any = type.serializeTerm(v)
+    override fun serializeTerm(v: V & Any): Any = type.serializeTerm(v)
 
     override fun deserializeTerm(v: Any): V & Any = type.deserializeTerm(v)
 }
@@ -649,7 +649,7 @@ internal class OptionalListType<V, T>(val type: FieldType<V, T>) : FieldType<Mut
         }
     }
 
-    override fun serializeTerm(v: T): Any = serErr(v)
+    override fun serializeTerm(v: T & Any): Any = serErr(v)
 
     override fun deserializeTerm(v: Any): T & Any {
         throw IllegalStateException("Unreachable")
@@ -660,17 +660,17 @@ internal class OptionalListType<V, T>(val type: FieldType<V, T>) : FieldType<Mut
  * Serializes/deserializes [type] into list of required values.
  * Used by [dev.evo.elasticmagic.doc.DocSource].
  */
-internal class RequiredListType<V, T>(val type: FieldType<V, T>) : FieldType<MutableList<V>, T> {
+internal class RequiredListType<V, T>(val type: FieldType<V, T>) : FieldType<MutableList<V & Any>, T> {
     override val name get() = type.name
     override val termType = type.termType
 
-    override fun serializeTerm(v: T): Any = serErr(v)
+    override fun serializeTerm(v: T & Any): Any = serErr(v)
 
-    override fun serialize(v: MutableList<V>): Any {
+    override fun serialize(v: MutableList<V & Any>): Any {
         return v.map(type::serialize)
     }
 
-    override fun deserialize(v: Any, valueFactory: (() -> MutableList<V>)?): MutableList<V> {
+    override fun deserialize(v: Any, valueFactory: (() -> MutableList<V & Any>)?): MutableList<V & Any> {
         return when (v) {
             is List<*> -> {
                 v.map {

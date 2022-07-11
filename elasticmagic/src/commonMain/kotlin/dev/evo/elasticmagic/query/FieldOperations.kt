@@ -63,7 +63,7 @@ interface BoostedField : ToValue<String> {
 interface FieldOperations<T> : Named, FieldFormat, BoostedField, Sort {
     fun getFieldType(): FieldType<*, T>
 
-    fun serializeTerm(v: T): Any {
+    fun serializeTerm(v: T & Any): Any {
         return getFieldType().serializeTerm(v)
     }
 
@@ -89,7 +89,7 @@ interface FieldOperations<T> : Named, FieldFormat, BoostedField, Sort {
 
     infix fun ne(term: T?): QueryExpression = ne(term, boost = null)
 
-    infix fun oneOf(terms: List<T>): QueryExpression {
+    infix fun oneOf(terms: List<T & Any>): QueryExpression {
         return Terms(this, terms)
     }
 

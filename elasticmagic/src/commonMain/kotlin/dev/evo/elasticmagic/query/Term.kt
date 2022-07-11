@@ -10,7 +10,7 @@ import dev.evo.elasticmagic.serde.Serializer
  */
 data class Term<T>(
     val field: FieldOperations<T>,
-    val term: T,
+    val term: T & Any,
     val boost: Double? = null,
 ) : QueryExpression {
     override val name = "term"
@@ -39,7 +39,7 @@ data class Term<T>(
  */
 data class Terms<T>(
     val field: FieldOperations<T>,
-    val terms: List<T>,
+    val terms: List<T & Any>,
     val boost: Double? = null,
 ) : QueryExpression {
     override val name = "terms"
