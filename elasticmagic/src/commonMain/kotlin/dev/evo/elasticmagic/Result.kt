@@ -85,7 +85,7 @@ data class SearchHit<S: BaseDocSource>(
          * @throws dev.evo.elasticmagic.types.ValueDeserializationException if the field value
          * cannot be deserialized.
          */
-        operator fun <V> get(field: BoundField<V, *>): List<V>? {
+        operator fun <V: Any> get(field: BoundField<V, *>): List<V> {
             return this[field.getQualifiedFieldName()]
                 .map(field.getFieldType()::deserialize)
         }

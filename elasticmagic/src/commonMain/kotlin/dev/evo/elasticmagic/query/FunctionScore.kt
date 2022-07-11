@@ -122,7 +122,7 @@ data class FunctionScore(
         }
     }
 
-    data class FieldValueFactor<T> private constructor(
+    data class FieldValueFactor<T: Any> private constructor(
         val field: FieldOperations<T>,
         val factor: Double? = null,
         val missing: T? = null,

@@ -273,7 +273,7 @@ class DocumentTests {
 
     @Test
     fun testSubFields() {
-        class NameFields<T>(field: BoundField<T, T>) : SubFields<T>(field) {
+        class NameFields(field: BoundField<String, String>) : SubFields<String>(field) {
             val sort by keyword()
             val autocomplete by text()
         }
@@ -360,7 +360,7 @@ class DocumentTests {
 
     @Test
     fun testMergeDocuments() {
-        class OpinionNameFields<T>(field: BoundField<T, T>) : SubFields<T>(field) {
+        class OpinionNameFields(field: BoundField<String, String>) : SubFields<String>(field) {
             val sort by keyword()
         }
 
@@ -376,7 +376,7 @@ class DocumentTests {
         }
         val opinionDoc = OpinionDoc()
 
-        class AnswerNameFields<T>(field: BoundField<T, T>) : SubFields<T>(field) {
+        class AnswerNameFields(field: BoundField<String, String>) : SubFields<String>(field) {
             val autocomplete by text()
         }
 

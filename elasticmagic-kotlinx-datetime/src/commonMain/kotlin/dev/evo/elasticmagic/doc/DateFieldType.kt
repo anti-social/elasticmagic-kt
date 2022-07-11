@@ -10,7 +10,7 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
 
-abstract class BaseKotlinxDateTimeType<V> : BaseDateTimeType<V>() {
+abstract class BaseKotlinxDateTimeType<V: Any> : BaseDateTimeType<V>() {
     protected fun parse(v: Any): Instant {
         val err = try {
             val dt = parseDateWithOptionalTime(v.toString())

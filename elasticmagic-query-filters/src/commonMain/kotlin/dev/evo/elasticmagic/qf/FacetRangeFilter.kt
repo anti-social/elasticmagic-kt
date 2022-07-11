@@ -23,7 +23,7 @@ import dev.evo.elasticmagic.query.QueryExpression
  *   [FacetRangeFilter.field]. For example, minimum and maximum values or a histogram can be
  *   calculated.
  */
-class FacetRangeFilter<T>(
+class FacetRangeFilter<T: Any>(
     val field: FieldOperations<T>,
     name: String? = null,
     val aggs: Map<String, Aggregation<*>> = emptyMap(),
@@ -52,7 +52,7 @@ class FacetRangeFilter<T>(
 /**
  * Filter that is ready for applying to a search query.
  */
-class PreparedFacetRangeFilter<T>(
+class PreparedFacetRangeFilter<T: Any>(
     val filter: FacetRangeFilter<T>,
     name: String,
     facetFilterExpr: QueryExpression?,

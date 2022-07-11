@@ -18,7 +18,7 @@ data class HistogramBounds<T>(
     }
 }
 
-abstract class BaseHistogramAgg<T, R: AggregationResult, B> : BucketAggregation<R>() {
+abstract class BaseHistogramAgg<T: Any, R: AggregationResult, B> : BucketAggregation<R>() {
     abstract val value: AggValue<T>
     abstract val minDocCount: Long?
     abstract val missing: T?
@@ -204,7 +204,7 @@ sealed class FixedInterval : ToValue<String> {
     }
 }
 
-data class DateHistogramAgg<T>(
+data class DateHistogramAgg<T: Any>(
     override val value: AggValue<T>,
     val interval: Interval,
     val offset: FixedInterval? = null,

@@ -13,7 +13,7 @@ import kotlin.reflect.KProperty
 typealias QueryFilterParams = Map<Pair<String, String>, List<String>>
 typealias MutableQueryFilterParams = MutableMap<Pair<String, String>, MutableList<String>>
 
-private fun <T> FieldType<*, T>.deserializeTermOrNull(term: Any): T? {
+private fun <T: Any> FieldType<*, T>.deserializeTermOrNull(term: Any): T? {
     return try {
         deserializeTerm(term)
     } catch (e: ValueDeserializationException) {
@@ -21,13 +21,13 @@ private fun <T> FieldType<*, T>.deserializeTermOrNull(term: Any): T? {
     }
 }
 
-fun <T> QueryFilterParams.decodeValues(
+fun <T: Any> QueryFilterParams.decodeValues(
     key: Pair<String, String>, fieldType: FieldType<*, T>
 ): List<T> {
     return get(key)?.mapNotNull(fieldType::deserializeTermOrNull) ?: emptyList()
 }
 
-fun <T> QueryFilterParams.decodeLastValue(
+fun <T: Any> QueryFilterParams.decodeLastValue(
     key: Pair<String, String>, fieldType: FieldType<*, T>
 ): T? {
     return decodeValues(key, fieldType).lastOrNull()

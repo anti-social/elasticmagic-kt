@@ -32,7 +32,7 @@ import kotlin.reflect.KProperty
  * Represents field of any type in an Elasticsearch document.
  * See [FieldSet.getAllFields] and [FieldSet.get] methods.
  */
-interface MappingField<T> : FieldOperations<T> {
+interface MappingField<T: Any> : FieldOperations<T> {
     fun getMappingParams(): Params
 }
 
@@ -44,7 +44,7 @@ interface MappingField<T> : FieldOperations<T> {
  * @param params - mapping parameters
  * @param parent - the [FieldSet] object to which the field is bound
  */
-open class BoundField<V, T>(
+open class BoundField<V: Any, T: Any>(
     private val name: String,
     private val type: FieldType<V, T>,
     private val params: Params,
@@ -131,7 +131,7 @@ class BoundJoinField(
  *
  * See more at https://www.elastic.co/guide/en/elasticsearch/reference/current/runtime.html
  */
-class BoundRuntimeField<V>(
+class BoundRuntimeField<V: Any>(
     name: String,
     type: FieldType<V, V>,
     script: Script,
@@ -140,7 +140,7 @@ class BoundRuntimeField<V>(
 
 @Suppress("UnnecessaryAbstractClass")
 abstract class FieldSetShortcuts {
-    fun <V, T> field(
+    fun <V: Any, T: Any> field(
         name: String?,
         type: FieldType<V, T>,
         docValues: Boolean? = null,
@@ -158,7 +158,7 @@ abstract class FieldSetShortcuts {
         return FieldSet.Field(name, type, params)
     }
 
-    fun <V, T> field(
+    fun <V: Any, T: Any> field(
         type: FieldType<V, T>,
         docValues: Boolean? = null,
         index: Boolean? = null,
@@ -370,7 +370,7 @@ abstract class FieldSet : FieldSetShortcuts(), Named {
         return fields[name]
     }
 
-    inline fun <reified T> getFieldByName(name: String): MappingField<T> {
+    inline fun <reified T: Any> getFieldByName(name: String): MappingField<T> {
         val field = this[name] ?: throw IllegalArgumentException("Missing field: [$name]")
         val termType = T::class
         if (field.getFieldType().termType != termType) {
@@ -381,7 +381,7 @@ abstract class FieldSet : FieldSetShortcuts(), Named {
     }
 
 
-    open class Field<V, T>(
+    open class Field<V: Any, T: Any>(
         val name: String?,
         val type: FieldType<V, T>,
         val params: Params,
@@ -469,7 +469,7 @@ inline fun <reified V: Enum<V>> FieldSet.Field<String, String>.enum(
  * Represents Elasticsearch multi-fields:
  * https://www.elastic.co/guide/en/elasticsearch/reference/7.10/multi-fields.html
  */
-open class SubFields<V>(private val field: BoundField<V, V>) : FieldSet(), FieldOperations<V> {
+open class SubFields<V: Any>(private val field: BoundField<V, V>) : FieldSet(), FieldOperations<V> {
     fun getBoundField(): BoundField<V, V> = field
 
     override fun getFieldType(): FieldType<V, V> = field.getFieldType()
@@ -478,7 +478,7 @@ open class SubFields<V>(private val field: BoundField<V, V>) : FieldSet(), Field
 
     override fun getQualifiedFieldName(): String = field.getQualifiedFieldName()
 
-    class UnboundSubFields<V, F: SubFields<V>>(
+    class UnboundSubFields<V: Any, F: SubFields<V>>(
         internal val unboundField: Field<V, V>,
         internal val subFieldsFactory: (BoundField<V, V>) -> F,
     ) {
@@ -503,20 +503,20 @@ open class SubFields<V>(private val field: BoundField<V, V>) : FieldSet(), Field
     }
 }
 
-internal open class WrapperField<T>(val field: MappingField<T>) : MappingField<T> {
+internal open class WrapperField<T: Any>(val field: MappingField<T>) : MappingField<T> {
     override fun getFieldName(): String = field.getFieldName()
     override fun getQualifiedFieldName(): String = field.getQualifiedFieldName()
     override fun getFieldType(): FieldType<*, T> = field.getFieldType()
     override fun getMappingParams(): Params = field.getMappingParams()
 }
 
-internal class SubFieldsField<T>(
+internal class SubFieldsField<T: Any>(
     field: MappingField<T>,
     val subFields: SubFields<*>
 ) : WrapperField<T>(field)
 
 abstract class BaseDocument : FieldSet() {
-    fun <V, F: SubFields<V>> Field<V, V>.subFields(
+    fun <V: Any, F: SubFields<V>> Field<V, V>.subFields(
         factory: (BoundField<V, V>) -> F): SubFields.UnboundSubFields<V, F> {
         return SubFields.UnboundSubFields(this, factory)
     }
@@ -640,7 +640,7 @@ abstract class SubDocument(
     }
 }
 
-internal class SubDocumentField<T>(
+internal class SubDocumentField<T: Any>(
     field: MappingField<T>,
     val subDocument: SubDocument
 ) : WrapperField<T>(field)
@@ -663,7 +663,7 @@ open class MetaFields : RootFieldSet() {
     open val size by SizeField()
 
     @Suppress("UnnecessaryAbstractClass")
-    abstract class BaseMetaField<V, B: MappingField<V>>(
+    abstract class BaseMetaField<V: Any, B: MappingField<V>>(
         name: String, type: FieldType<V, V>, params: Params = Params(),
         private val boundFieldFactory: (String, Params, MetaFields) -> B
     ) : Field<V, V>(name, type, params) {
@@ -680,7 +680,7 @@ open class MetaFields : RootFieldSet() {
         }
     }
 
-    open class MetaField<V>(
+    open class MetaField<V: Any>(
         name: String, type: FieldType<V, V>, params: Params = Params()
     ) : BaseMetaField<V, BoundField<V, V>>(
         name, type, params,
@@ -794,7 +794,7 @@ abstract class DynamicTemplates : RootFieldSet() {
     private val templates: OrderedMap<String, BoundMappingTemplate<*, *, *>> = OrderedMap()
 
     companion object {
-        internal fun <V, T> instantiateField(
+        internal fun <V: Any, T: Any> instantiateField(
             fieldPath: String, fieldType: FieldType<V, T>, params: Params? = null
         ): BoundField<V, T> {
             val fieldName = fieldPath.substringAfterLast('.')
@@ -866,7 +866,7 @@ abstract class DynamicTemplates : RootFieldSet() {
     /**
      * Template with field type detected by JSON parser.
      */
-    fun <V, T> template(
+    fun <V: Any, T: Any> template(
         name: String? = null,
         mapping: Mapping,
         matchMappingType: MatchMappingType<V, T>,
@@ -905,7 +905,7 @@ abstract class DynamicTemplates : RootFieldSet() {
     /**
      * Template with field type from mapping.
      */
-    fun <V, T> template(
+    fun <V: Any, T: Any> template(
         name: String? = null,
         mapping: Field<V, T>,
         matchMappingType: MatchMappingType<*, *>? = null,
@@ -934,7 +934,7 @@ abstract class DynamicTemplates : RootFieldSet() {
     /**
      * Template for a field with sub-fields.
      */
-    fun <V, F: SubFields<V>> template(
+    fun <V: Any, F: SubFields<V>> template(
         name: String? = null,
         mapping: SubFields.UnboundSubFields<V, F>,
         matchMappingType: MatchMappingType<*, *>? = null,
@@ -992,7 +992,7 @@ abstract class DynamicTemplates : RootFieldSet() {
     /**
      * Template for a runtime field with a specified type.
      */
-    fun <V, T> template(
+    fun <V: Any, T: Any> template(
         name: String? = null,
         runtime: Runtime.Typed<V, T>,
         matchMappingType: MatchMappingType<*, *>? = null,
@@ -1055,7 +1055,7 @@ abstract class DynamicTemplates : RootFieldSet() {
     /**
      * Template for a runtime field which type is detected by a JSON parser.
      */
-    fun <V, T> template(
+    fun <V: Any, T: Any> template(
         name: String? = null,
         runtime: Runtime.Simple,
         matchMappingType: MatchMappingType<V, T>,
@@ -1095,7 +1095,7 @@ abstract class DynamicTemplates : RootFieldSet() {
     sealed class Runtime {
         class Simple(val params: Params) : Runtime()
 
-        class Typed<V, T>(
+        class Typed<V: Any, T: Any>(
             val field: Field<V, T>,
         ) : Runtime()
 
@@ -1104,7 +1104,7 @@ abstract class DynamicTemplates : RootFieldSet() {
                 return Simple(params)
             }
 
-            operator fun <V, T> invoke(field: Field<V, T>): Typed<V, T> {
+            operator fun <V: Any, T: Any> invoke(field: Field<V, T>): Typed<V, T> {
                 return Typed(field)
             }
         }
@@ -1179,7 +1179,7 @@ abstract class DynamicTemplates : RootFieldSet() {
     sealed class DynamicField<V, T, F> {
         abstract fun field(fieldPath: String): F
 
-        class Simple<V, T>(
+        class Simple<V: Any, T: Any>(
             val mappingKind: MappingKind,
             val fieldType: FieldType<V, T>,
             val params: Params,
@@ -1189,7 +1189,7 @@ abstract class DynamicTemplates : RootFieldSet() {
             }
         }
 
-        class FromField<V, T>(
+        class FromField<V: Any, T: Any>(
             val mappingKind: MappingKind,
             val field: Field<V, T>,
         ) : DynamicField<V, T, BoundField<V, T>>() {
@@ -1198,7 +1198,7 @@ abstract class DynamicTemplates : RootFieldSet() {
             }
         }
 
-        class FromSubFields<V, F: SubFields<V>>(
+        class FromSubFields<V: Any, F: SubFields<V>>(
             val subFields: SubFields.UnboundSubFields<V, F>
         ) : DynamicField<V, V, F>() {
             override fun field(fieldPath: String): F {
@@ -1219,7 +1219,7 @@ abstract class DynamicTemplates : RootFieldSet() {
         }
     }
 
-    sealed class MatchMappingType<V, T> : ToValue<String> {
+    sealed class MatchMappingType<V: Any, T: Any> : ToValue<String> {
         internal abstract val fieldType: FieldType<V, T>
 
         override fun toValue() = fieldType.name
@@ -1248,7 +1248,7 @@ abstract class DynamicTemplates : RootFieldSet() {
             override fun toValue() = "string"
         }
 
-        data class Date<V>(override val fieldType: FieldType<V, V>) : MatchMappingType<V, V>()
+        data class Date<V: Any>(override val fieldType: FieldType<V, V>) : MatchMappingType<V, V>()
 
         data class Object<V: BaseDocSource>(override val fieldType: FieldType<V, V>) : MatchMappingType<V, V>()
     }
@@ -1284,15 +1284,15 @@ abstract class Document(
         )
     )
 
-    fun <V> runtime(name: String, type: FieldType<V, V>, script: Script): RuntimeField<V> {
+    fun <V: Any> runtime(name: String, type: FieldType<V, V>, script: Script): RuntimeField<V> {
         return RuntimeField(name, type, script)
     }
 
-    fun <V> runtime(type: FieldType<V, V>, script: Script): RuntimeField<V> {
+    fun <V: Any> runtime(type: FieldType<V, V>, script: Script): RuntimeField<V> {
         return RuntimeField(null, type, script)
     }
 
-    class RuntimeField<V>(
+    class RuntimeField<V: Any>(
         val name: String?,
         val type: FieldType<V, V>,
         val script: Script
@@ -1432,7 +1432,7 @@ private fun mergeSubFields(first: SubFieldsField<*>?, second: SubFieldsField<*>?
 
     // It is your responsibility to pass correct values when (de)-serializing
     @Suppress("UNCHECKED_CAST")
-    val mergedSubFields = object : SubFields<Any?>(templateField as BoundField<Any?, Any?>) {
+    val mergedSubFields = object : SubFields<Any>(templateField as BoundField<Any, Any>) {
         init {
             mergeFieldSets(listOfNotNull(secondSubFields, firstSubFields))
                 .forEach(::addField)

@@ -14,19 +14,19 @@ import dev.evo.elasticmagic.serde.Serializer
  * - [Script] gets values as a script result.
  * - [ValueScript] combines a field with a script. There is special variable `_value` that contains field value.
  */
-sealed class AggValue<T> : ObjExpression {
-    data class Field<T>(val field: FieldOperations<T>) : AggValue<T>() {
+sealed class AggValue<T: Any> : ObjExpression {
+    data class Field<T: Any>(val field: FieldOperations<T>) : AggValue<T>() {
         override fun clone() = copy()
         override fun getValueType(): FieldType<*, T> = field.getFieldType()
     }
-    data class Script<T>(
+    data class Script<T: Any>(
         val script: dev.evo.elasticmagic.query.Script,
         val type: FieldType<*, T>,
     ) : AggValue<T>() {
         override fun clone() = copy()
         override fun getValueType(): FieldType<*, T> = type
     }
-    data class ValueScript<T>(
+    data class ValueScript<T: Any>(
         val field: FieldOperations<*>,
         val script: dev.evo.elasticmagic.query.Script,
         val type: FieldType<*, T>,

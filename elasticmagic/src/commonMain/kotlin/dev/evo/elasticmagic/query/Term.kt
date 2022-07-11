@@ -8,7 +8,7 @@ import dev.evo.elasticmagic.serde.Serializer
  *
  * @see <https://www.elastic.co/guide/en/elasticsearch/reference/7.15/query-dsl-term-query.html>
  */
-data class Term<T>(
+data class Term<T: Any>(
     val field: FieldOperations<T>,
     val term: T,
     val boost: Double? = null,
@@ -37,7 +37,7 @@ data class Term<T>(
  *
  * @see <https://www.elastic.co/guide/en/elasticsearch/reference/7.15/query-dsl-terms-query.html>
  */
-data class Terms<T>(
+data class Terms<T: Any>(
     val field: FieldOperations<T>,
     val terms: List<T>,
     val boost: Double? = null,
@@ -110,7 +110,7 @@ data class Exists(
  * @see <https://www.elastic.co/guide/en/elasticsearch/reference/7.15/query-dsl-range-query.html>
  */
 
-data class Range<T>(
+data class Range<T: Any>(
     val field: FieldOperations<T>,
     val gt: T? = null,
     val gte: T? = null,

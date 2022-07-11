@@ -60,7 +60,7 @@ interface BoostedField : ToValue<String> {
 /**
  * Holds field operations shortcuts.
  */
-interface FieldOperations<T> : Named, FieldFormat, BoostedField, Sort {
+interface FieldOperations<T: Any> : Named, FieldFormat, BoostedField, Sort {
     fun getFieldType(): FieldType<*, T>
 
     fun serializeTerm(v: T): Any {

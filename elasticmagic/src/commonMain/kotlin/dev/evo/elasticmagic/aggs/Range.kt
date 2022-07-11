@@ -17,7 +17,7 @@ data class AggRange<T>(
     }
 }
 
-abstract class BaseRangeAgg<T, R: AggregationResult, B> : BucketAggregation<R>() {
+abstract class BaseRangeAgg<T: Any, R: AggregationResult, B> : BucketAggregation<R>() {
     abstract val value: AggValue<T>
     abstract val ranges: List<AggRange<T>>
     abstract val format: String?
@@ -179,7 +179,7 @@ data class DateRangeBucket<T>(
     override val aggs: Map<String, AggregationResult> = emptyMap(),
 ) : KeyedBucket<String>()
 
-data class DateRangeAgg<T>(
+data class DateRangeAgg<T: Any>(
     override val value: AggValue<T>,
     override val ranges: List<AggRange<T>>,
     override val format: String? = null,
@@ -206,7 +206,7 @@ data class DateRangeAgg<T>(
     )
 
     companion object {
-        fun <T> simpleRanges(
+        fun <T: Any> simpleRanges(
             field: FieldOperations<T>,
             ranges: List<Pair<T?, T?>>,
             format: String? = null,

@@ -37,7 +37,7 @@ fun deErr(v: Any, type: String, cause: Throwable? = null): Nothing =
  * @param V the type of field value.
  * @param T the type of term value.
  */
-interface FieldType<V, T> {
+interface FieldType<V: Any, T: Any> {
     /**
      * Name of Elasticsearch mapping type.
      */
@@ -54,7 +54,7 @@ interface FieldType<V, T> {
      * @param v is a value from document source.
      */
     fun serialize(v: V): Any {
-        return v as Any
+        return v
     }
 
     /**
@@ -73,7 +73,7 @@ interface FieldType<V, T> {
      * Serializes term value to Elasticsearch.
      */
     fun serializeTerm(v: T): Any {
-        return v as Any
+        return v
     }
 
     /**
@@ -85,7 +85,7 @@ interface FieldType<V, T> {
 /**
  * Base field type for types with the same field and term value types.
  */
-abstract class SimpleFieldType<V> : FieldType<V, V> {
+abstract class SimpleFieldType<V: Any> : FieldType<V, V> {
     override fun serializeTerm(v: V): Any = serialize(v)
 
     override fun deserializeTerm(v: Any): V = deserialize(v)
@@ -307,7 +307,7 @@ object TextType : StringType() {
  * Base class for date types. Core module doesn't provide any specific implementations.
  * One of implementation you can find inside `kotlinx-datetime` module.
  */
-abstract class BaseDateTimeType<V> : SimpleFieldType<V>() {
+abstract class BaseDateTimeType<V: Any> : SimpleFieldType<V>() {
     override val name = "date"
 
     companion object {
@@ -382,7 +382,7 @@ data class Range<V>(
  * @param type is a field type corresponding to [V] type.
  */
 @Suppress("UnnecessaryAbstractClass")
-abstract class RangeType<V>(private val type: FieldType<V, V>) : FieldType<Range<V>, V> {
+abstract class RangeType<V: Any>(private val type: FieldType<V, V>) : FieldType<Range<V>, V> {
     override val name = "${type.name}_range"
     override val termType = type.termType
 
@@ -619,7 +619,7 @@ internal class SourceType<V: BaseDocSource>(
  * Serializes/deserializes [type] into list of optional values.
  * Used by [dev.evo.elasticmagic.doc.DocSource].
  */
-internal class OptionalListType<V, T>(val type: FieldType<V, T>) : FieldType<MutableList<V?>, T> {
+internal class OptionalListType<V: Any, T: Any>(val type: FieldType<V, T>) : FieldType<MutableList<V?>, T> {
     override val name get() = type.name
     override val termType = type.termType
 
@@ -660,7 +660,7 @@ internal class OptionalListType<V, T>(val type: FieldType<V, T>) : FieldType<Mut
  * Serializes/deserializes [type] into list of required values.
  * Used by [dev.evo.elasticmagic.doc.DocSource].
  */
-internal class RequiredListType<V, T>(val type: FieldType<V, T>) : FieldType<MutableList<V>, T> {
+internal class RequiredListType<V: Any, T: Any>(val type: FieldType<V, T>) : FieldType<MutableList<V>, T> {
     override val name get() = type.name
     override val termType = type.termType
 

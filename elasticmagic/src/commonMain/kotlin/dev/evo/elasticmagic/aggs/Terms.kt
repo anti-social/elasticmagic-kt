@@ -8,7 +8,7 @@ import dev.evo.elasticmagic.compile.SearchQueryCompiler
 import dev.evo.elasticmagic.serde.Deserializer
 import dev.evo.elasticmagic.serde.Serializer
 
-abstract class BaseTermsAgg<T, R: AggregationResult> : BucketAggregation<R>() {
+abstract class BaseTermsAgg<T: Any, R: AggregationResult> : BucketAggregation<R>() {
     abstract val value: AggValue<T>
     abstract val size: Int?
     abstract val shardSize: Int?
@@ -89,7 +89,7 @@ abstract class BaseTermsAgg<T, R: AggregationResult> : BucketAggregation<R>() {
     }
 }
 
-data class TermsAgg<T>(
+data class TermsAgg<T: Any>(
     override val value: AggValue<T>,
     override val size: Int? = null,
     override val shardSize: Int? = null,
@@ -182,7 +182,7 @@ data class TermBucket<T>(
     override val aggs: Map<String, AggregationResult> = emptyMap(),
 ) : KeyedBucket<T>()
 
-data class SignificantTermsAgg<T>(
+data class SignificantTermsAgg<T: Any>(
     override val value: AggValue<T>,
     override val size: Int? = null,
     override val shardSize: Int? = null,

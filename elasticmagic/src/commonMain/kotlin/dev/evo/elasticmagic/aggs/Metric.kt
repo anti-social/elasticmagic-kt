@@ -15,7 +15,7 @@ data class SingleValueMetricAggResult<T>(
     val valueAsString: String? = null,
 ) : AggregationResult
 
-abstract class NumericValueAgg<T, R: AggregationResult> : MetricAggregation<R>() {
+abstract class NumericValueAgg<T: Any, R: AggregationResult> : MetricAggregation<R>() {
     abstract val value: AggValue<T>
     abstract val missing: T?
 
@@ -25,7 +25,7 @@ abstract class NumericValueAgg<T, R: AggregationResult> : MetricAggregation<R>()
     }
 }
 
-abstract class SingleDoubleValueAgg<T> : NumericValueAgg<T, SingleValueMetricAggResult<Double>>() {
+abstract class SingleDoubleValueAgg<T: Any> : NumericValueAgg<T, SingleValueMetricAggResult<Double>>() {
     override fun processResult(obj: Deserializer.ObjectCtx): SingleValueMetricAggResult<Double> {
         return SingleValueMetricAggResult(
             obj.doubleOrNull("value"),
@@ -34,7 +34,7 @@ abstract class SingleDoubleValueAgg<T> : NumericValueAgg<T, SingleValueMetricAgg
     }
 }
 
-abstract class SingleLongValueAgg<T> : NumericValueAgg<T, SingleValueMetricAggResult<Long>>() {
+abstract class SingleLongValueAgg<T: Any> : NumericValueAgg<T, SingleValueMetricAggResult<Long>>() {
     override fun processResult(obj: Deserializer.ObjectCtx): SingleValueMetricAggResult<Long> {
         return SingleValueMetricAggResult(
             obj.long("value"),
@@ -43,7 +43,7 @@ abstract class SingleLongValueAgg<T> : NumericValueAgg<T, SingleValueMetricAggRe
     }
 }
 
-data class MinAgg<T>(
+data class MinAgg<T: Any>(
     override val value: AggValue<T>,
     override val missing: T? = null,
     val format: String? = null,
@@ -63,7 +63,7 @@ data class MinAgg<T>(
     override fun clone() = copy()
 }
 
-data class MaxAgg<T>(
+data class MaxAgg<T: Any>(
     override val value: AggValue<T>,
     override val missing: T? = null,
     val format: String? = null,
@@ -83,7 +83,7 @@ data class MaxAgg<T>(
     override fun clone() = copy()
 }
 
-data class AvgAgg<T>(
+data class AvgAgg<T: Any>(
     override val value: AggValue<T>,
     override val missing: T? = null,
     val format: String? = null,
@@ -103,14 +103,14 @@ data class AvgAgg<T>(
     override fun clone() = copy()
 }
 
-data class WeightedAvgAgg<T>(
+data class WeightedAvgAgg<T: Any>(
     val value: ValueSource<T>,
     val weight: ValueSource<T>,
     val format: String? = null,
 ) : MetricAggregation<SingleValueMetricAggResult<Double>>() {
     override val name = "weighted_avg"
 
-    data class ValueSource<T>(
+    data class ValueSource<T: Any>(
         val value: AggValue<T>,
         val script: Script? = null,
         val missing: T? = null,
@@ -171,7 +171,7 @@ data class SumAgg<T: Number>(
     override fun clone() = copy()
 }
 
-data class MedianAbsoluteDeviationAgg<T>(
+data class MedianAbsoluteDeviationAgg<T: Any>(
     override val value: AggValue<T>,
     override val missing: T? = null,
 ) : SingleDoubleValueAgg<T>() {
@@ -188,7 +188,7 @@ data class MedianAbsoluteDeviationAgg<T>(
     override fun clone() = copy()
 }
 
-data class ValueCountAgg<T>(
+data class ValueCountAgg<T: Any>(
     override val value: AggValue<T>,
     override val missing: T? = null,
 ) : SingleLongValueAgg<T>() {
@@ -205,7 +205,7 @@ data class ValueCountAgg<T>(
     override fun clone() = copy()
 }
 
-data class CardinalityAgg<T>(
+data class CardinalityAgg<T: Any>(
     override val value: AggValue<T>,
     override val missing: T? = null,
 ) : SingleLongValueAgg<T>() {
@@ -222,7 +222,7 @@ data class CardinalityAgg<T>(
     override fun clone() = copy()
 }
 
-data class StatsAgg<T>(
+data class StatsAgg<T: Any>(
     override val value: AggValue<T>,
     override val missing: T? = null,
     val format: String? = null,
@@ -268,7 +268,7 @@ data class StatsAggResult(
     val sumAsString: String?,
 ) : AggregationResult
 
-data class ExtendedStatsAgg<T>(
+data class ExtendedStatsAgg<T: Any>(
     override val value: AggValue<T>,
     override val missing: T? = null,
     val format: String? = null,

@@ -41,7 +41,7 @@ enum class FacetFilterMode {
  * @param termsAgg - terms aggregation for the [FacetFilter].
  *   Can be used to change aggregation arguments: [TermsAgg.size], [TermsAgg.minDocCount] and others
  */
-class FacetFilter<T, V>(
+class FacetFilter<T: Any, V: Any>(
     val field: FieldOperations<V>,
     name: String? = null,
     val mode: FacetFilterMode = FacetFilterMode.UNION,
@@ -52,7 +52,7 @@ class FacetFilter<T, V>(
         /**
          * A shortcut to create a [FacetFilter] without a custom terms aggregation.
          */
-        operator fun <T> invoke(
+        operator fun <T: Any> invoke(
             field: FieldOperations<T>,
             name: String? = null,
             mode: FacetFilterMode = FacetFilterMode.UNION,
@@ -66,7 +66,7 @@ class FacetFilter<T, V>(
          *
          * @param termsAggFactory - factory that creates terms aggregation for a [FacetFilter.field]
          */
-        operator fun <T> invoke(
+        operator fun <T: Any> invoke(
             field: FieldOperations<T>,
             name: String? = null,
             mode: FacetFilterMode = FacetFilterMode.UNION,
@@ -107,11 +107,11 @@ class FacetFilter<T, V>(
 /**
  * Filter that is ready for applying to a search query.
  */
-class PreparedFacetFilter<T>(
+class PreparedFacetFilter<T: Any>(
     val filter: FacetFilter<T, *>,
     name: String,
     facetFilterExpr: QueryExpression?,
-    val selectedValues: List<Any?>,
+    val selectedValues: List<T>,
 ) : PreparedFilter<FacetFilterResult<T>>(name, facetFilterExpr) {
     private val termsAggName = "qf:$name"
 
@@ -162,9 +162,6 @@ class PreparedFacetFilter<T>(
         }
 
         for (selectedValue in selectedValues.keys) {
-            if (selectedValue == null) {
-                continue
-            }
             val bucketValue = filter.termsAgg.value.deserializeTerm(selectedValue)
             values.add(
                 FacetFilterValue(
