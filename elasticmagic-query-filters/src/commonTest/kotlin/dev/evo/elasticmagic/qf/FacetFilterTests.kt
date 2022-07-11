@@ -4,8 +4,8 @@ import dev.evo.elasticmagic.SearchQuery
 import dev.evo.elasticmagic.SearchQueryResult
 import dev.evo.elasticmagic.aggs.AggregationResult
 import dev.evo.elasticmagic.aggs.MinAgg
+import dev.evo.elasticmagic.aggs.MinAggResult
 import dev.evo.elasticmagic.aggs.SingleBucketAggResult
-import dev.evo.elasticmagic.aggs.SingleValueMetricAggResult
 import dev.evo.elasticmagic.aggs.TermBucket
 import dev.evo.elasticmagic.aggs.TermsAgg
 import dev.evo.elasticmagic.aggs.TermsAggResult
@@ -315,10 +315,10 @@ class FacetFilterTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQueryComp
                         "qf:manufacturer" to TermsAggResult(
                             listOf(
                                 TermBucket("Giant", 23, aggs = mapOf(
-                                    "min_price" to SingleValueMetricAggResult(999.9)
+                                    "min_price" to MinAggResult(999.9)
                                 )),
                                 TermBucket("Cube", 19, aggs = mapOf(
-                                    "min_price" to SingleValueMetricAggResult(1299)
+                                    "min_price" to MinAggResult(1299.0)
                                 ))
                             ),
                             docCountErrorUpperBound = 0,
@@ -335,11 +335,11 @@ class FacetFilterTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQueryComp
         values[0].value shouldBe "Giant"
         values[0].count shouldBe 23
         values[0].selected.shouldBeTrue()
-        values[0].agg<SingleValueMetricAggResult<Double>>("min_price").value shouldBe 999.9
+        values[0].agg<MinAggResult>("min_price").value shouldBe 999.9
         values[1].value shouldBe "Cube"
         values[1].count shouldBe 19
         values[1].selected.shouldBeFalse()
-        values[1].agg<SingleValueMetricAggResult<Double>>("min_price").value shouldBe 1299.0
+        values[1].agg<MinAggResult>("min_price").value shouldBe 1299.0
     }
 
     @Test

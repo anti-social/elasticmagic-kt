@@ -10,12 +10,56 @@ import dev.evo.elasticmagic.serde.Serializer
 @Suppress("UnnecessaryAbstractClass")
 abstract class MetricAggregation<R: AggregationResult> : Aggregation<R>
 
-data class SingleValueMetricAggResult<T>(
-    val value: T?,
-    val valueAsString: String? = null,
-) : AggregationResult
+abstract class SingleValueMetricAggResult<T> : AggregationResult {
+    abstract val value: T
+    abstract val valueAsString: String?
+}
 
-abstract class NumericValueAgg<T, R: AggregationResult> : MetricAggregation<R>() {
+data class DoubleValueAggResult(
+    override val value: Double,
+    override val valueAsString: String? = null
+) : SingleValueMetricAggResult<Double>() {
+    companion object {
+        operator fun invoke(obj: Deserializer.ObjectCtx): DoubleValueAggResult {
+            return DoubleValueAggResult(
+                obj.double("value"),
+                obj.stringOrNull("value_as_string")
+            )
+        }
+    }
+}
+
+data class OptionalDoubleValueAggResult(
+    override val value: Double?,
+    override val valueAsString: String? = null
+) : SingleValueMetricAggResult<Double?>() {
+    companion object {
+        operator fun invoke(obj: Deserializer.ObjectCtx): OptionalDoubleValueAggResult {
+            return OptionalDoubleValueAggResult(
+                obj.doubleOrNull("value"),
+                obj.stringOrNull("value_as_string")
+            )
+        }
+    }
+}
+
+data class LongValueAggResult(
+    override val value: Long,
+    override val valueAsString: String? = null
+) : SingleValueMetricAggResult<Long>() {
+    companion object {
+        operator fun invoke(obj: Deserializer.ObjectCtx): LongValueAggResult {
+            return LongValueAggResult(
+                obj.long("value"),
+                obj.stringOrNull("value_as_string")
+            )
+        }
+    }
+}
+
+abstract class NumericValueAgg<T, R: AggregationResult>(
+    private val resultProcessor: (Deserializer.ObjectCtx) -> R
+) : MetricAggregation<R>() {
     abstract val value: AggValue<T>
     abstract val missing: T?
 
@@ -23,23 +67,9 @@ abstract class NumericValueAgg<T, R: AggregationResult> : MetricAggregation<R>()
         compiler.visit(ctx, value)
         ctx.fieldIfNotNull("missing", missing)
     }
-}
 
-abstract class SingleDoubleValueAgg<T> : NumericValueAgg<T, SingleValueMetricAggResult<Double>>() {
-    override fun processResult(obj: Deserializer.ObjectCtx): SingleValueMetricAggResult<Double> {
-        return SingleValueMetricAggResult(
-            obj.doubleOrNull("value"),
-            obj.stringOrNull("value_as_string"),
-        )
-    }
-}
-
-abstract class SingleLongValueAgg<T> : NumericValueAgg<T, SingleValueMetricAggResult<Long>>() {
-    override fun processResult(obj: Deserializer.ObjectCtx): SingleValueMetricAggResult<Long> {
-        return SingleValueMetricAggResult(
-            obj.long("value"),
-            obj.stringOrNull("value_as_string"),
-        )
+    override fun processResult(obj: Deserializer.ObjectCtx): R {
+        return resultProcessor(obj)
     }
 }
 
@@ -47,7 +77,7 @@ data class MinAgg<T>(
     override val value: AggValue<T>,
     override val missing: T? = null,
     val format: String? = null,
-) : SingleDoubleValueAgg<T>() {
+) : NumericValueAgg<T, MinAggResult>(MinAggResult::invoke) {
     override val name = "min"
 
     constructor(
@@ -63,11 +93,13 @@ data class MinAgg<T>(
     override fun clone() = copy()
 }
 
+typealias MinAggResult = OptionalDoubleValueAggResult
+
 data class MaxAgg<T>(
     override val value: AggValue<T>,
     override val missing: T? = null,
     val format: String? = null,
-) : SingleDoubleValueAgg<T>() {
+) : NumericValueAgg<T, MaxAggResult>(MaxAggResult::invoke) {
     override val name = "max"
 
     constructor(
@@ -83,11 +115,13 @@ data class MaxAgg<T>(
     override fun clone() = copy()
 }
 
+typealias MaxAggResult = OptionalDoubleValueAggResult
+
 data class AvgAgg<T>(
     override val value: AggValue<T>,
     override val missing: T? = null,
     val format: String? = null,
-) : SingleDoubleValueAgg<T>() {
+) : NumericValueAgg<T, AvgAggResult>(AvgAggResult::invoke) {
     override val name = "avg"
 
     constructor(
@@ -103,11 +137,13 @@ data class AvgAgg<T>(
     override fun clone() = copy()
 }
 
+typealias AvgAggResult = OptionalDoubleValueAggResult
+
 data class WeightedAvgAgg<T>(
     val value: ValueSource<T>,
     val weight: ValueSource<T>,
     val format: String? = null,
-) : MetricAggregation<SingleValueMetricAggResult<Double>>() {
+) : MetricAggregation<WeightedAvgAggResult>() {
     override val name = "weighted_avg"
 
     data class ValueSource<T>(
@@ -143,19 +179,18 @@ data class WeightedAvgAgg<T>(
         ctx.fieldIfNotNull("format", format)
     }
 
-    override fun processResult(obj: Deserializer.ObjectCtx): SingleValueMetricAggResult<Double> {
-        return SingleValueMetricAggResult(
-            obj.doubleOrNull("value"),
-            obj.stringOrNull("value_as_string"),
-        )
+    override fun processResult(obj: Deserializer.ObjectCtx): WeightedAvgAggResult {
+        return WeightedAvgAggResult(obj)
     }
 }
+
+typealias WeightedAvgAggResult = OptionalDoubleValueAggResult
 
 data class SumAgg<T: Number>(
     override val value: AggValue<T>,
     override val missing: T? = null,
     val format: String? = null,
-) : SingleDoubleValueAgg<T>() {
+) : NumericValueAgg<T, SumAggResult>(SumAggResult::invoke) {
     override val name = "sum"
 
     constructor(
@@ -171,10 +206,12 @@ data class SumAgg<T: Number>(
     override fun clone() = copy()
 }
 
+typealias SumAggResult = DoubleValueAggResult
+
 data class MedianAbsoluteDeviationAgg<T>(
     override val value: AggValue<T>,
     override val missing: T? = null,
-) : SingleDoubleValueAgg<T>() {
+) : NumericValueAgg<T, MedianAbsoluteDeviationAggResult>(MedianAbsoluteDeviationAggResult::invoke) {
     override val name = "median_absolute_deviation"
 
     constructor(
@@ -188,10 +225,12 @@ data class MedianAbsoluteDeviationAgg<T>(
     override fun clone() = copy()
 }
 
+typealias MedianAbsoluteDeviationAggResult = OptionalDoubleValueAggResult
+
 data class ValueCountAgg<T>(
     override val value: AggValue<T>,
     override val missing: T? = null,
-) : SingleLongValueAgg<T>() {
+) : NumericValueAgg<T, ValueCountAggResult>(ValueCountAggResult::invoke) {
     override val name = "value_count"
 
     constructor(
@@ -205,10 +244,12 @@ data class ValueCountAgg<T>(
     override fun clone() = copy()
 }
 
+typealias ValueCountAggResult = LongValueAggResult
+
 data class CardinalityAgg<T>(
     override val value: AggValue<T>,
     override val missing: T? = null,
-) : SingleLongValueAgg<T>() {
+) : NumericValueAgg<T, CardinalityAggResult>(CardinalityAggResult::invoke) {
     override val name = "cardinality"
 
     constructor(
@@ -222,11 +263,13 @@ data class CardinalityAgg<T>(
     override fun clone() = copy()
 }
 
+typealias CardinalityAggResult = LongValueAggResult
+
 data class StatsAgg<T>(
     override val value: AggValue<T>,
     override val missing: T? = null,
     val format: String? = null,
-) : NumericValueAgg<T, StatsAggResult>() {
+) : NumericValueAgg<T, StatsAggResult>(StatsAggResult::invoke) {
     override val name = "stats"
 
     constructor(
@@ -240,20 +283,6 @@ data class StatsAgg<T>(
     )
 
     override fun clone() = copy()
-
-    override fun processResult(obj: Deserializer.ObjectCtx): StatsAggResult {
-        return StatsAggResult(
-            count = obj.long("count"),
-            min = obj.doubleOrNull("min"),
-            max = obj.doubleOrNull("max"),
-            avg = obj.doubleOrNull("avg"),
-            sum = obj.double("sum"),
-            minAsString = obj.stringOrNull("min_as_string"),
-            maxAsString = obj.stringOrNull("max_as_string"),
-            avgAsString = obj.stringOrNull("avg_as_string"),
-            sumAsString = obj.stringOrNull("sum_as_string"),
-        )
-    }
 }
 
 data class StatsAggResult(
@@ -266,13 +295,29 @@ data class StatsAggResult(
     val maxAsString: String?,
     val avgAsString: String?,
     val sumAsString: String?,
-) : AggregationResult
+) : AggregationResult {
+    companion object {
+        operator fun invoke(obj: Deserializer.ObjectCtx): StatsAggResult {
+            return StatsAggResult(
+                count = obj.long("count"),
+                min = obj.doubleOrNull("min"),
+                max = obj.doubleOrNull("max"),
+                avg = obj.doubleOrNull("avg"),
+                sum = obj.double("sum"),
+                minAsString = obj.stringOrNull("min_as_string"),
+                maxAsString = obj.stringOrNull("max_as_string"),
+                avgAsString = obj.stringOrNull("avg_as_string"),
+                sumAsString = obj.stringOrNull("sum_as_string"),
+            )
+        }
+    }
+}
 
 data class ExtendedStatsAgg<T>(
     override val value: AggValue<T>,
     override val missing: T? = null,
     val format: String? = null,
-) : NumericValueAgg<T, ExtendedStatsAggResult>() {
+) : NumericValueAgg<T, ExtendedStatsAggResult>(ExtendedStatsAggResult::invoke) {
     override val name = "extended_stats"
 
     constructor(
@@ -286,24 +331,6 @@ data class ExtendedStatsAgg<T>(
     )
 
     override fun clone() = copy()
-
-    override fun processResult(obj: Deserializer.ObjectCtx): ExtendedStatsAggResult {
-        val stdDevBoundsRaw = obj.obj("std_deviation_bounds")
-        return ExtendedStatsAggResult(
-            count = obj.long("count"),
-            min = obj.doubleOrNull("min"),
-            max = obj.doubleOrNull("max"),
-            avg = obj.doubleOrNull("avg"),
-            sum = obj.double("sum"),
-            sumOfSquares = obj.doubleOrNull("sum_of_squares"),
-            variance = obj.doubleOrNull("variance"),
-            stdDeviation = obj.doubleOrNull("std_deviation"),
-            stdDeviationBounds = ExtendedStatsAggResult.StdDeviationBounds(
-                upper = stdDevBoundsRaw.doubleOrNull("upper"),
-                lower = stdDevBoundsRaw.doubleOrNull("lower"),
-            )
-        )
-    }
 }
 
 data class ExtendedStatsAggResult(
@@ -321,4 +348,24 @@ data class ExtendedStatsAggResult(
         val upper: Double?,
         val lower: Double?,
     )
+
+    companion object {
+        operator fun invoke(obj: Deserializer.ObjectCtx): ExtendedStatsAggResult {
+            val stdDevBoundsRaw = obj.obj("std_deviation_bounds")
+            return ExtendedStatsAggResult(
+                count = obj.long("count"),
+                min = obj.doubleOrNull("min"),
+                max = obj.doubleOrNull("max"),
+                avg = obj.doubleOrNull("avg"),
+                sum = obj.double("sum"),
+                sumOfSquares = obj.doubleOrNull("sum_of_squares"),
+                variance = obj.doubleOrNull("variance"),
+                stdDeviation = obj.doubleOrNull("std_deviation"),
+                stdDeviationBounds = ExtendedStatsAggResult.StdDeviationBounds(
+                    upper = stdDevBoundsRaw.doubleOrNull("upper"),
+                    lower = stdDevBoundsRaw.doubleOrNull("lower"),
+                )
+            )
+        }
+    }
 }

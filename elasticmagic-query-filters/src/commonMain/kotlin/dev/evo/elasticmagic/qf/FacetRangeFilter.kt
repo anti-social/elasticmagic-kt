@@ -7,8 +7,8 @@ import dev.evo.elasticmagic.aggs.Aggregation
 import dev.evo.elasticmagic.aggs.AggregationResult
 import dev.evo.elasticmagic.aggs.FilterAgg
 import dev.evo.elasticmagic.aggs.SingleBucketAggResult
-import dev.evo.elasticmagic.aggs.SingleValueMetricAggResult
 import dev.evo.elasticmagic.aggs.ValueCountAgg
+import dev.evo.elasticmagic.aggs.ValueCountAggResult
 import dev.evo.elasticmagic.query.Bool
 import dev.evo.elasticmagic.query.FieldOperations
 import dev.evo.elasticmagic.query.QueryExpression
@@ -95,7 +95,7 @@ class PreparedFacetRangeFilter<T>(
         searchQueryResult: SearchQueryResult<*>
     ): FacetRangeFilterResult<T> {
         val aggResult = searchQueryResult.aggIfExists<SingleBucketAggResult>(filterAggName) ?: searchQueryResult
-        val count = aggResult.agg<SingleValueMetricAggResult<Long>>(countAggName).value
+        val count = aggResult.agg<ValueCountAggResult>(countAggName).value
             ?: throw IllegalStateException("value_count aggregation without a value")
         val aggs = filter.aggs.mapValues { (aggKey, _) ->
             val aggName = aggName(aggKey)

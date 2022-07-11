@@ -48,7 +48,7 @@ class BucketTests : TestAggregation() {
                 )
             ).let { res ->
                 res.docCount shouldBe 5
-                res.agg<SingleValueMetricAggResult<Double>>("avg_rating").value shouldBe 43.83
+                res.agg<AvgAggResult>("avg_rating").value shouldBe 43.83
             }
         }
     }
@@ -97,7 +97,7 @@ class BucketTests : TestAggregation() {
                 )
             ).let { res ->
                 res.docCount shouldBe 3
-                res.agg<SingleValueMetricAggResult<Double>>("avg_rating").value shouldBe 28.39
+                res.agg<AvgAggResult>("avg_rating").value shouldBe 28.39
             }
         }
     }
