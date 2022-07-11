@@ -111,7 +111,7 @@ class PreparedFacetFilter<T>(
     val filter: FacetFilter<T, *>,
     name: String,
     facetFilterExpr: QueryExpression?,
-    val selectedValues: List<Any?>,
+    val selectedValues: List<Any>,
 ) : PreparedFilter<FacetFilterResult<T>>(name, facetFilterExpr) {
     private val termsAggName = "qf:$name"
 
@@ -162,9 +162,6 @@ class PreparedFacetFilter<T>(
         }
 
         for (selectedValue in selectedValues.keys) {
-            if (selectedValue == null) {
-                continue
-            }
             val bucketValue = filter.termsAgg.value.deserializeTerm(selectedValue)
             values.add(
                 FacetFilterValue(
