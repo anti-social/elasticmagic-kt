@@ -100,6 +100,8 @@ data class FilterAgg(
     // }
 }
 
+typealias FilterAggResult = SingleBucketAggResult
+
 // TODO: Anonymous filters. Possibly we need another class: AnonymousFiltersAgg
 data class FiltersAgg(
     val filters: Map<String, QueryExpression>,

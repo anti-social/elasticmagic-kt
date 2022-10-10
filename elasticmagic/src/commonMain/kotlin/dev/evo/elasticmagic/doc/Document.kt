@@ -85,6 +85,10 @@ open class BoundField<V, T>(
         h = 37 * h + params.hashCode()
         return h
     }
+
+    override fun toString(): String {
+        return "BoundField($name, $type, $params, $parent)"
+    }
 }
 
 /**
@@ -134,7 +138,7 @@ class BoundJoinField(
 class BoundRuntimeField<V>(
     name: String,
     type: FieldType<V, V>,
-    script: Script,
+    val script: Script,
     parent: FieldSet,
 ) : BoundField<V, V>(name, type, Params("script" to script), parent)
 
