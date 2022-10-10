@@ -15,6 +15,7 @@ kotlin {
                 implementation(project(":elasticmagic-kotlinx-datetime"))
                 implementation(Libs.kotlinxDatetime())
 
+                implementation(project(":elasticmagic-query-filters"))
             }
         }
 

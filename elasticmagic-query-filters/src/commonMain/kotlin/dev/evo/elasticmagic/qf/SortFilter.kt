@@ -44,10 +44,10 @@ class SortFilter(
      * @param name - name of the [SortFilter]
      * @param params - parameters that should be applied to a search query.
      *   Examples:
-     *   - `mapOf(("sort" to "") to listOf("price"))`
+     *   - `mapOf(listOf("sort") to listOf("price"))`
      */
     override fun prepare(name: String, params: QueryFilterParams): PreparedSortFilter {
-        val selectedValue = params.decodeLastValue(name to "", KeywordType)
+        val selectedValue = params.decodeLastValue(name, KeywordType)
             ?.let { valuesByName[it] }
             ?: values[0]
         return PreparedSortFilter(this, name, selectedValue)
@@ -97,7 +97,7 @@ class PreparedSortFilter(
 data class SortFilterResult(
     override val name: String,
     val values: List<SortFilterValueResult>,
-) : FilterResult
+) : FilterResult, Iterable<SortFilterValueResult> by values
 
 /**
  * Represents result of the [SortFilterValue].

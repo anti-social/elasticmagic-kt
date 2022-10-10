@@ -3,35 +3,10 @@ package dev.evo.elasticmagic.qf
 import dev.evo.elasticmagic.SearchQuery
 import dev.evo.elasticmagic.SearchQueryResult
 import dev.evo.elasticmagic.query.QueryExpression
-import dev.evo.elasticmagic.types.FieldType
-import dev.evo.elasticmagic.types.ValueDeserializationException
 import dev.evo.elasticmagic.util.OrderedMap
 
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
-
-typealias QueryFilterParams = Map<Pair<String, String>, List<String>>
-typealias MutableQueryFilterParams = MutableMap<Pair<String, String>, MutableList<String>>
-
-private fun <T> FieldType<*, T>.deserializeTermOrNull(term: Any): T? {
-    return try {
-        deserializeTerm(term)
-    } catch (e: ValueDeserializationException) {
-        null
-    }
-}
-
-fun <T> QueryFilterParams.decodeValues(
-    key: Pair<String, String>, fieldType: FieldType<*, T>
-): List<T & Any> {
-    return get(key)?.mapNotNull(fieldType::deserializeTermOrNull) ?: emptyList()
-}
-
-fun <T> QueryFilterParams.decodeLastValue(
-    key: Pair<String, String>, fieldType: FieldType<*, T>
-): T? {
-    return decodeValues(key, fieldType).lastOrNull()
-}
 
 open class QueryFilters : Iterable<BoundFilter<*, *>> {
     private val filters = OrderedMap<String, BoundFilter<*, *>>()

@@ -2,7 +2,9 @@ package dev.evo.elasticmagic
 
 import dev.evo.elasticmagic.aggs.Aggregation
 import dev.evo.elasticmagic.doc.BaseDocSource
+import dev.evo.elasticmagic.doc.BoundRuntimeField
 import dev.evo.elasticmagic.doc.DynDocSource
+import dev.evo.elasticmagic.doc.RuntimeFields
 import dev.evo.elasticmagic.query.FieldFormat
 import dev.evo.elasticmagic.query.FieldOperations
 import dev.evo.elasticmagic.query.NodeHandle
@@ -46,6 +48,7 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
     protected val docvalueFields: MutableList<FieldFormat> = mutableListOf()
     protected val storedFields: MutableList<FieldOperations<*>> = mutableListOf()
     protected val scriptFields: MutableMap<String, Script> = mutableMapOf()
+    protected val runtimeMappings: MutableMap<String, BoundRuntimeField<*>> = mutableMapOf()
 
     protected val rescores: MutableList<Rescore> = mutableListOf()
     protected val sorts: MutableList<Sort> = mutableListOf()
@@ -133,6 +136,7 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
             docvalueFields = docvalueFields,
             storedFields = storedFields,
             scriptFields = scriptFields,
+            runtimeMappings = runtimeMappings,
             size = size,
             from = from,
             terminateAfter = terminateAfter,
@@ -443,6 +447,20 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
         scriptFields.clear()
     }
 
+    fun runtimeMappings(vararg fields: Pair<String, BoundRuntimeField<*>>): T = self {
+        runtimeMappings.putAll(fields)
+    }
+
+    fun runtimeMappings(fields: RuntimeFields): T = self {
+        fields.getAllFields().filterIsInstance<BoundRuntimeField<*>>()
+            .associateByTo(runtimeMappings, BoundRuntimeField<*>::getFieldName)
+    }
+
+    @Suppress("UNUSED_PARAMETER")
+    fun runtimeMappings(clear: SearchQuery.CLEAR): T = self {
+        runtimeMappings.clear()
+    }
+
     fun size(size: Int?): T = self {
         this.size = size
     }
@@ -580,6 +598,7 @@ data class PreparedSearchQuery<S: BaseDocSource>(
     val docvalueFields: List<FieldFormat>,
     val storedFields: List<FieldOperations<*>>,
     val scriptFields: Map<String, Script>,
+    val runtimeMappings: Map<String, BoundRuntimeField<*>>,
     val size: Int?,
     val from: Int?,
     val terminateAfter: Int?,

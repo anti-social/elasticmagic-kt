@@ -42,11 +42,11 @@ class PageFilter(
      *   - `""` specifies current page
      *   - `"size"` sets number of documents on a page
      *   Examples:
-     *   - `mapOf(("page" to "") to listOf("2"), ("page", "size") to listOf("100"))`
+     *   - `mapOf(listOf("page") to listOf("2"), listOf("page", "size") to listOf("100"))`
      */
     override fun prepare(name: String, params: QueryFilterParams): PageFilterContext {
-        val page = params.decodeLastValue(name to "", IntType)?.coerceAtLeast(1) ?: 1
-        val pageSize = params.decodeLastValue(name to "size", IntType)?.coerceAtLeast(1)
+        val page = params.decodeLastValue(name, IntType)?.coerceAtLeast(1) ?: 1
+        val pageSize = params.decodeLastValue(listOf(name, "size"), IntType)?.coerceAtLeast(1)
             ?: defaultPageSize
         val perPage = if (availablePageSizes.contains(pageSize)) {
             pageSize
