@@ -59,11 +59,11 @@ class CreateIndexCompiler(
                     }
                 }
             },
-            processResult = ::processResult
+            processResponse = ::processResponse
         )
     }
 
-    fun processResult(ctx: Deserializer.ObjectCtx): CreateIndexResult {
+    fun processResponse(ctx: Deserializer.ObjectCtx): CreateIndexResult {
         return CreateIndexResult(
             acknowledged = ctx.boolean("acknowledged"),
             shardsAcknowledged = ctx.boolean("shards_acknowledged"),
