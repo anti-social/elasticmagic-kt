@@ -58,7 +58,7 @@ class ElasticsearchKtorTransportTests {
             JsonRequest(
                 Method.HEAD,
                 "products",
-                processResult = Deserializer.ObjectCtx::toMap
+                processResponse = Deserializer.ObjectCtx::toMap
             )
         )
         result shouldContainExactly emptyMap()
@@ -121,7 +121,7 @@ class ElasticsearchKtorTransportTests {
              }
          )
          val result = client.request(
-             JsonRequest(Method.DELETE, "products_v2", processResult = Deserializer.ObjectCtx::toMap)
+             JsonRequest(Method.DELETE, "products_v2", processResponse = Deserializer.ObjectCtx::toMap)
          )
          result shouldContainExactly mapOf(
              "acknowledge" to true
@@ -174,7 +174,7 @@ class ElasticsearchKtorTransportTests {
              BulkRequest(
                  Method.POST, "_bulk",
                  body = listOf(body),
-                 processResult = Deserializer.ObjectCtx::toMap
+                 processResponse = Deserializer.ObjectCtx::toMap
              )
          )
          result shouldContainExactly mapOf(

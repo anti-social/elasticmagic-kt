@@ -45,11 +45,11 @@ class UpdateMappingCompiler(
             body = serializer.obj {
                 mappingCompiler.visit(this, input.mapping)
             },
-            processResult = ::processResult,
+            processResponse = ::processResponse,
         )
     }
 
-    fun processResult(ctx: Deserializer.ObjectCtx): UpdateMappingResult {
+    fun processResponse(ctx: Deserializer.ObjectCtx): UpdateMappingResult {
         return UpdateMappingResult(
             acknowledged = ctx.boolean("acknowledged"),
         )
