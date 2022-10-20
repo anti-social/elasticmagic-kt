@@ -82,31 +82,31 @@ sealed class Auth {
     class Basic(val username: String, val password: String) : Auth()
 }
 
-abstract class Request<out B, T, out R>(
+abstract class Request<out BodyT, ResponseT, out ResultT>(
     val method: Method,
     val path: String,
     val parameters: Parameters = emptyMap(),
-    val body: B? = null,
-    val processResult: (T) -> R,
+    val body: BodyT? = null,
+    val processResponse: (ResponseT) -> ResultT,
 ) {
     open val contentType: String? = null
 
     abstract fun serializeRequest(encoder: RequestEncoder)
-    abstract fun deserializeResponse(response: String, serde: Serde): T
+    abstract fun deserializeResponse(response: String, serde: Serde): ResponseT
 }
 
-class JsonRequest<R>(
+class JsonRequest<ResultT>(
     method: Method,
     path: String,
     parameters: Parameters = emptyMap(),
     body: Serializer.ObjectCtx? = null,
-    processResult: (Deserializer.ObjectCtx) -> R
-) : Request<Serializer.ObjectCtx, Deserializer.ObjectCtx, R>(
+    processResponse: (Deserializer.ObjectCtx) -> ResultT
+) : Request<Serializer.ObjectCtx, Deserializer.ObjectCtx, ResultT>(
     method,
     path,
     parameters = parameters,
     body = body,
-    processResult = processResult
+    processResponse = processResponse
 ) {
     companion object {
         operator fun invoke(
@@ -134,18 +134,18 @@ class JsonRequest<R>(
     }
 }
 
-class BulkRequest<R>(
+class BulkRequest<ResultT>(
     method: Method,
     path: String,
     parameters: Parameters = emptyMap(),
     body: List<Serializer.ObjectCtx>,
-    processResult: (Deserializer.ObjectCtx) -> R
-) : Request<List<Serializer.ObjectCtx>, Deserializer.ObjectCtx, R>(
+    processResponse: (Deserializer.ObjectCtx) -> ResultT
+) : Request<List<Serializer.ObjectCtx>, Deserializer.ObjectCtx, ResultT>(
     method,
     path,
     parameters = parameters,
     body = body,
-    processResult = processResult
+    processResponse = processResponse
 ) {
     companion object {
         operator fun invoke(
@@ -177,16 +177,16 @@ class BulkRequest<R>(
     }
 }
 
-class CatRequest<R>(
+class CatRequest<ResultT>(
     path: String,
     parameters: Parameters = emptyMap(),
-    processResult: (List<List<String>>) -> R
-) : Request<Nothing, List<List<String>>, R>(
+    processResponse: (List<List<String>>) -> ResultT
+) : Request<Nothing, List<List<String>>, ResultT>(
     Method.GET,
     "_cat/$path",
     parameters = parameters,
     body = null,
-    processResult = processResult
+    processResponse = processResponse
 ) {
     companion object {
         operator fun invoke(
@@ -234,7 +234,7 @@ abstract class ElasticsearchTransport(
             contentType = request.contentType,
             bodyBuilder = request::serializeRequest
         )
-        return request.processResult(request.deserializeResponse(response, serde))
+        return request.processResponse(request.deserializeResponse(response, serde))
     }
 
     protected abstract suspend fun doRequest(

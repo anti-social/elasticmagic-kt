@@ -49,7 +49,7 @@ class MultiSearchQueryCompiler(
             path = "_msearch",
             parameters = Parameters(),
             body = body,
-            processResult = { ctx ->
+            processResponse = { ctx ->
                 val took = ctx.longOrNull("took")
                 val responsesCtx = ctx.array("responses")
                 val preparedQueriesIter = preparedQueries.iterator()
@@ -87,7 +87,7 @@ open class SearchQueryCompiler(
             path = "$indexName/_search",
             parameters = input.params.toRequestParameters(),
             body = body,
-            processResult = { ctx ->
+            processResponse = { ctx ->
                 processResult(ctx, input)
             }
         )

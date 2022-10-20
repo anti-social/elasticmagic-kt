@@ -111,7 +111,7 @@ class ElasticsearchCluster(
                 "timeout" to timeout,
             ),
             body = null,
-            processResult = { ctx ->
+            processResponse = { ctx ->
                 DeleteIndexResult(
                     acknowledged = ctx.boolean("acknowledged"),
                 )
@@ -133,7 +133,7 @@ class ElasticsearchCluster(
                 "ignore_unavailable" to ignoreUnavailable?.toString(),
             ),
             body = null,
-            processResult = { true }
+            processResponse = { true }
         )
         return try {
             transport.request(request)
@@ -215,7 +215,7 @@ class ElasticsearchIndex(
                 compiled.path,
                 parameters = compiled.parameters,
                 body = compiled.body.flatMap(ActionCompiler.Compiled::toList),
-                processResult = compiled.processResult,
+                processResponse = compiled.processResult,
             )
         )
     }
