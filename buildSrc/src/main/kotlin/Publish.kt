@@ -11,7 +11,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 
 import java.net.URI
 
-fun Project.configureMultiplatformPublishing(projectName: String, projectDescription: String) {
+fun Project.configureMultiplatformPublishing(projectDescription: String) {
     val javadocJar by tasks.registering(Jar::class) {
         archiveClassifier.set("javadoc")
     }
@@ -22,7 +22,7 @@ fun Project.configureMultiplatformPublishing(projectName: String, projectDescrip
 
             configurePom(
                 rootProject.extra["projectUrl"] as URI,
-                projectName,
+                project.name,
                 projectDescription
             )
         }
@@ -33,7 +33,7 @@ fun Project.configureMultiplatformPublishing(projectName: String, projectDescrip
     }
 }
 
-fun Project.configureJvmPublishing(projectName: String, projectDescription: String) {
+fun Project.configureJvmPublishing(projectDescription: String) {
     val javadocJar by tasks.registering(Jar::class) {
         archiveClassifier.set("javadoc")
     }
@@ -54,7 +54,7 @@ fun Project.configureJvmPublishing(projectName: String, projectDescription: Stri
 
                 configurePom(
                     rootProject.extra["projectUrl"] as URI,
-                    projectName,
+                    project.name,
                     projectDescription
                 )
             }

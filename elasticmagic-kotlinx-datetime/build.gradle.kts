@@ -12,6 +12,5 @@ kotlin {
 }
 
 configureMultiplatformPublishing(
-    "elasticmagic-kotlinx-datetime",
     "Elasticsearch Kotlin query DSL - datetime field types using kotlinx.datetime"
 )

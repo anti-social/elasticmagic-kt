@@ -21,6 +21,5 @@ kotlin {
 }
 
 configureMultiplatformPublishing(
-    "elasticmagic-transport-ktor",
     "Elasticsearch Kotlin query DSL - ktor transport implementation"
 )
