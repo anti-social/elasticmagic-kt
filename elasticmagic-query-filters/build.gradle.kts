@@ -16,6 +16,5 @@ kotlin {
 }
 
 configureMultiplatformPublishing(
-    "elasticmagic-query-filters",
     "Elasticsearch Kotlin query DSL - query filters"
 )
