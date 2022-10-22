@@ -34,7 +34,7 @@ abstract class BaseCompilerTest<T: BaseCompiler>(
     )
 
     protected fun SearchQueryCompiler.compile(query: SearchQuery<*>): CompiledSearchQuery {
-        val compiled = this@compile.compile(serializer, query.usingIndex("test"))
+        val compiled = this@compile.compile(serde, query.usingIndex("test"))
         return CompiledSearchQuery(
             params = compiled.parameters,
             body = compiled.body.shouldBeInstanceOf<TestSerializer.ObjectCtx>().toMap(),

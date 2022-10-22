@@ -18,4 +18,4 @@ kotlin {
     }
 }
 
-configureMultiplatformPublishing("elasticmagic", "Elasticsearch Kotlin query DSL")
+configureMultiplatformPublishing("Elasticsearch Kotlin query DSL")

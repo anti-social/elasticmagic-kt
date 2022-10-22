@@ -22,6 +22,7 @@ kotlin {
         val jvmTest by getting {
             dependencies {
                 implementation(project(":elasticmagic-serde-jackson-json"))
+                implementation(project(":elasticmagic-serde-jackson-yaml"))
                 implementation(Libs.jackson("databind"))
 
                 implementation(Libs.ktorClient("cio"))

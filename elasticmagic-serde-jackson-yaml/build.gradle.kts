@@ -6,11 +6,12 @@ kotlin {
             dependencies {
                 api(project(":elasticmagic-serde"))
                 implementation(Libs.jackson("databind"))
+                implementation(Libs.jacksonDataformat("yaml"))
             }
         }
     }
 }
 
 configureMultiplatformPublishing(
-    "Elasticsearch Kotlin query DSL - json jackson serialization implementation"
+    "Elasticsearch Kotlin query DSL - yaml jackson serialization implementation"
 )

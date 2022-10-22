@@ -24,8 +24,10 @@ object Versions {
     const val kotlinxDatetime = "0.3.3"
     const val ktor = "2.0.3"
 
-    // Other dependencies
+    // Serialization dependencies
     const val jackson = "2.12.2"
+    const val kaml = "0.49.0"
+    const val yamlkt = "0.12.0"
 
     // Testing
     const val kotest = "4.4.1"
@@ -70,5 +72,17 @@ object Libs {
 
     fun jackson(flavor: String): String {
         return "com.fasterxml.jackson.core:jackson-$flavor:${Versions.jackson}"
+    }
+
+    fun jacksonDataformat(flavor: String): String {
+        return "com.fasterxml.jackson.dataformat:jackson-dataformat-$flavor:${Versions.jackson}"
+    }
+
+    fun kaml(): String {
+        return "com.charleskorn.kaml:kaml:${Versions.kaml}"
+    }
+
+    fun yamlkt(): String {
+        return "net.mamoe.yamlkt:yamlkt:${Versions.yamlkt}"
     }
 }

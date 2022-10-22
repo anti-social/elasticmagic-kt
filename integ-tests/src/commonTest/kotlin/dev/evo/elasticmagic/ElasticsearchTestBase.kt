@@ -7,6 +7,7 @@ import dev.evo.elasticmagic.doc.Document
 import dev.evo.elasticmagic.bulk.IndexAction
 import dev.evo.elasticmagic.bulk.Refresh
 import dev.evo.elasticmagic.doc.mergeDocuments
+import dev.evo.elasticmagic.serde.Serde
 import dev.evo.elasticmagic.transport.ElasticsearchException
 import dev.evo.elasticmagic.transport.ElasticsearchKtorTransport
 
@@ -15,17 +16,21 @@ abstract class ElasticsearchTestBase : TestBase() {
     abstract val indexName: String
 
     protected fun runTestWithTransports(block: suspend TestScope.() -> Unit) {
-        for (serde in serdes) {
+        for (apiSerde in apiSerdes) {
             val transport = ElasticsearchKtorTransport(
                 elasticUrl,
-                serde = serde,
                 engine = httpEngine,
             ) {
                 if (elasticAuth != null) {
                     auth = elasticAuth
                 }
             }
-            val cluster = ElasticsearchCluster(transport)
+            val bulkSerde = if (apiSerde is Serde.Json) {
+                apiSerde
+            } else {
+                defaultBulkSerde
+            }
+            val cluster = ElasticsearchCluster(transport, apiSerde = apiSerde, bulkSerde = bulkSerde)
             val index = cluster["elasticmagic-tests_$indexName"]
             val testScope = TestScope(cluster, index)
 

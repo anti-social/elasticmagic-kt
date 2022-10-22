@@ -1,6 +1,7 @@
 package dev.evo.elasticmagic
 
 import dev.evo.elasticmagic.serde.Deserializer
+import dev.evo.elasticmagic.serde.Serde
 import dev.evo.elasticmagic.serde.StdDeserializer
 import dev.evo.elasticmagic.serde.StdSerializer
 
@@ -27,7 +28,6 @@ abstract class BaseTest {
             }
         }
     }
-    protected val serializer = TestSerializer
 
     object TestDeserializer : StdDeserializer() {
         override fun objFromStringOrNull(data: String): Deserializer.ObjectCtx? {
@@ -38,5 +38,16 @@ abstract class BaseTest {
             return ObjectCtx(obj)
         }
     }
-    protected val deserializer = TestDeserializer
+
+    class TestSerde : Serde {
+        override val contentType: String = "test"
+
+        override val serializer: TestSerializer = TestSerializer
+        override val deserializer: TestDeserializer = TestDeserializer
+
+    }
+
+    protected val serde = TestSerde()
+    protected val serializer = serde.serializer
+    protected val deserializer = serde.deserializer
 }

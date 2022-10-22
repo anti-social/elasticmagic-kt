@@ -55,7 +55,7 @@ class ElasticsearchKtorTransportTests {
             }
         )
         val result = client.request(
-            JsonRequest(
+            ApiRequest(
                 Method.HEAD,
                 "products",
                 processResult = Deserializer.ObjectCtx::toMap
@@ -89,7 +89,7 @@ class ElasticsearchKtorTransportTests {
             }
         }
         val result = client.request(
-            JsonRequest(
+            ApiRequest(
                 Method.PUT,
                 "products/_settings",
                 parameters = emptyMap(),
@@ -121,7 +121,7 @@ class ElasticsearchKtorTransportTests {
              }
          )
          val result = client.request(
-             JsonRequest(Method.DELETE, "products_v2", processResult = Deserializer.ObjectCtx::toMap)
+             ApiRequest(Method.DELETE, "products_v2", processResult = Deserializer.ObjectCtx::toMap)
          )
          result shouldContainExactly mapOf(
              "acknowledge" to true
@@ -236,7 +236,7 @@ class ElasticsearchKtorTransportTests {
         )
         val ex = shouldThrow<ElasticsearchException.GatewayTimeout> {
             client.request(
-                JsonRequest(
+                ApiRequest(
                     Method.POST,
                     "products_v2/_forcemerge",
                     parameters = mapOf("max_num_segments" to listOf("1"))

@@ -5,8 +5,6 @@ import dev.evo.elasticmagic.serde.Serde
 sealed class JsonSerde(
     override val serializer: JsonSerializer,
     override val deserializer: JsonDeserializer,
-) : Serde {
-    override val contentType = "application/json"
-
+) : Serde.Json() {
     companion object : JsonSerde(JsonSerializer, JsonDeserializer)
 }

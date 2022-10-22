@@ -13,7 +13,7 @@ import dev.evo.elasticmagic.serde.Serde
 import dev.evo.elasticmagic.transport.BulkRequest
 import dev.evo.elasticmagic.transport.ElasticsearchException
 import dev.evo.elasticmagic.transport.ElasticsearchTransport
-import dev.evo.elasticmagic.transport.JsonRequest
+import dev.evo.elasticmagic.transport.ApiRequest
 import dev.evo.elasticmagic.transport.Method
 import dev.evo.elasticmagic.transport.Parameters
 
@@ -25,10 +25,10 @@ internal fun Params.toRequestParameters(): Parameters {
 
 class ElasticsearchCluster(
     val transport: ElasticsearchTransport,
+    val apiSerde: Serde,
+    val bulkSerde: Serde.Json,
     private val compilers: CompilerSet? = null,
 ) {
-    val serde = transport.serde
-
     private val esVersion = CompletableDeferred<Version<*>>()
     private val sniffedCompilers = CompletableDeferred<CompilerSet>()
 
@@ -38,7 +38,7 @@ class ElasticsearchCluster(
 
     private suspend fun fetchVersion(): Version<*> {
         val result = transport.request(
-            JsonRequest(Method.GET,"")
+            ApiRequest(Method.GET,"", serde = apiSerde)
         )
         val versionObj = result.obj("version")
         val distribution = versionObj.stringOrNull("distribution") ?: "elasticsearch"
@@ -92,7 +92,7 @@ class ElasticsearchCluster(
             timeout = timeout,
         )
         return transport.request(
-            getCompilers().createIndex.compile(serde.serializer, createIndex)
+            getCompilers().createIndex.compile(apiSerde, createIndex)
         )
     }
 
@@ -102,7 +102,7 @@ class ElasticsearchCluster(
         masterTimeout: String? = null,
         timeout: String? = null,
     ): DeleteIndexResult {
-        val request = JsonRequest(
+        val request = ApiRequest(
             method = Method.DELETE,
             path = indexName,
             parameters = Parameters(
@@ -111,6 +111,7 @@ class ElasticsearchCluster(
                 "timeout" to timeout,
             ),
             body = null,
+            serde = apiSerde,
             processResponse = { ctx ->
                 DeleteIndexResult(
                     acknowledged = ctx.boolean("acknowledged"),
@@ -125,7 +126,7 @@ class ElasticsearchCluster(
         allowNoIndices: Boolean? = null,
         ignoreUnavailable: Boolean? = null,
     ): Boolean {
-        val request = JsonRequest(
+        val request = ApiRequest(
             method = Method.HEAD,
             path = indexName,
             parameters = Parameters(
@@ -133,6 +134,7 @@ class ElasticsearchCluster(
                 "ignore_unavailable" to ignoreUnavailable?.toString(),
             ),
             body = null,
+            serde = apiSerde,
             processResponse = { true }
         )
         return try {
@@ -161,13 +163,13 @@ class ElasticsearchCluster(
             timeout = timeout,
         )
         return transport.request(
-            getCompilers().updateMapping.compile(serde.serializer, updateMapping)
+            getCompilers().updateMapping.compile(apiSerde, updateMapping)
         )
     }
 
     suspend fun multiSearch(searchQueries: List<SearchQueryWithIndex<*>>): MultiSearchQueryResult {
         val compiled = getCompilers().multiSearchQuery.compile(
-            serde.serializer, searchQueries
+            bulkSerde, searchQueries
         )
         return transport.request(compiled)
     }
@@ -177,14 +179,13 @@ class ElasticsearchIndex(
     val name: String,
     val cluster: ElasticsearchCluster,
 ) {
-    val serde: Serde = cluster.serde
     val transport: ElasticsearchTransport = cluster.transport
 
     suspend fun <S : BaseDocSource> search(
         searchQuery: BaseSearchQuery<S, *>
     ): SearchQueryResult<S> {
         val compiled = cluster.getCompilers().searchQuery.compile(
-            serde.serializer, searchQuery.usingIndex(name)
+            cluster.apiSerde, searchQuery.usingIndex(name)
         )
         return transport.request(compiled)
     }
@@ -208,13 +209,16 @@ class ElasticsearchIndex(
             timeout = timeout,
             params = params,
         )
-        val compiled = cluster.getCompilers().bulk.compile(serde.serializer, bulk)
+        val compiled = cluster.getCompilers()
+            .bulk
+            .compile(cluster.bulkSerde.serializer, bulk)
         return transport.request(
             BulkRequest(
                 Method.POST,
                 compiled.path,
                 parameters = compiled.parameters,
                 body = compiled.body.flatMap(ActionCompiler.Compiled::toList),
+                serde = cluster.bulkSerde,
                 processResponse = compiled.processResult,
             )
         )
