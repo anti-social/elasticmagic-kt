@@ -1,3 +1,19 @@
+public final class dev/evo/elasticmagic/transport/ApiRequest : dev/evo/elasticmagic/transport/Request {
+	public static final field Companion Ldev/evo/elasticmagic/transport/ApiRequest$Companion;
+	public fun <init> (Ldev/evo/elasticmagic/transport/Method;Ljava/lang/String;Ljava/util/Map;Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/serde/Serde;Lkotlin/jvm/functions/Function1;)V
+	public synthetic fun <init> (Ldev/evo/elasticmagic/transport/Method;Ljava/lang/String;Ljava/util/Map;Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/serde/Serde;Lkotlin/jvm/functions/Function1;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun deserializeResponse (Ljava/lang/String;)Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;
+	public synthetic fun deserializeResponse (Ljava/lang/String;)Ljava/lang/Object;
+	public fun getContentType ()Ljava/lang/String;
+	public fun getErrorSerde ()Ldev/evo/elasticmagic/serde/Serde;
+	public fun serializeRequest (Ldev/evo/elasticmagic/transport/RequestEncoder;)V
+}
+
+public final class dev/evo/elasticmagic/transport/ApiRequest$Companion {
+	public final fun invoke (Ldev/evo/elasticmagic/transport/Method;Ljava/lang/String;Ljava/util/Map;Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/serde/Serde;)Ldev/evo/elasticmagic/transport/ApiRequest;
+	public static synthetic fun invoke$default (Ldev/evo/elasticmagic/transport/ApiRequest$Companion;Ldev/evo/elasticmagic/transport/Method;Ljava/lang/String;Ljava/util/Map;Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/serde/Serde;ILjava/lang/Object;)Ldev/evo/elasticmagic/transport/ApiRequest;
+}
+
 public abstract class dev/evo/elasticmagic/transport/Auth {
 }
 
@@ -9,31 +25,36 @@ public final class dev/evo/elasticmagic/transport/Auth$Basic : dev/evo/elasticma
 
 public final class dev/evo/elasticmagic/transport/BulkRequest : dev/evo/elasticmagic/transport/Request {
 	public static final field Companion Ldev/evo/elasticmagic/transport/BulkRequest$Companion;
-	public fun <init> (Ldev/evo/elasticmagic/transport/Method;Ljava/lang/String;Ljava/util/Map;Ljava/util/List;Lkotlin/jvm/functions/Function1;)V
-	public synthetic fun <init> (Ldev/evo/elasticmagic/transport/Method;Ljava/lang/String;Ljava/util/Map;Ljava/util/List;Lkotlin/jvm/functions/Function1;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public fun deserializeResponse (Ljava/lang/String;Ldev/evo/elasticmagic/serde/Serde;)Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;
-	public synthetic fun deserializeResponse (Ljava/lang/String;Ldev/evo/elasticmagic/serde/Serde;)Ljava/lang/Object;
+	public fun <init> (Ldev/evo/elasticmagic/transport/Method;Ljava/lang/String;Ljava/util/Map;Ljava/util/List;Ldev/evo/elasticmagic/serde/Serde$Json;Lkotlin/jvm/functions/Function1;)V
+	public synthetic fun <init> (Ldev/evo/elasticmagic/transport/Method;Ljava/lang/String;Ljava/util/Map;Ljava/util/List;Ldev/evo/elasticmagic/serde/Serde$Json;Lkotlin/jvm/functions/Function1;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun deserializeResponse (Ljava/lang/String;)Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;
+	public synthetic fun deserializeResponse (Ljava/lang/String;)Ljava/lang/Object;
+	public fun getAcceptContentType ()Ljava/lang/String;
 	public fun getContentType ()Ljava/lang/String;
+	public fun getErrorSerde ()Ldev/evo/elasticmagic/serde/Serde$Json;
+	public synthetic fun getErrorSerde ()Ldev/evo/elasticmagic/serde/Serde;
 	public fun serializeRequest (Ldev/evo/elasticmagic/transport/RequestEncoder;)V
 }
 
 public final class dev/evo/elasticmagic/transport/BulkRequest$Companion {
-	public final fun invoke (Ldev/evo/elasticmagic/transport/Method;Ljava/lang/String;Ljava/util/Map;Ljava/util/List;)Ldev/evo/elasticmagic/transport/BulkRequest;
-	public static synthetic fun invoke$default (Ldev/evo/elasticmagic/transport/BulkRequest$Companion;Ldev/evo/elasticmagic/transport/Method;Ljava/lang/String;Ljava/util/Map;Ljava/util/List;ILjava/lang/Object;)Ldev/evo/elasticmagic/transport/BulkRequest;
+	public final fun invoke (Ldev/evo/elasticmagic/transport/Method;Ljava/lang/String;Ljava/util/Map;Ljava/util/List;Ldev/evo/elasticmagic/serde/Serde$Json;)Ldev/evo/elasticmagic/transport/BulkRequest;
+	public static synthetic fun invoke$default (Ldev/evo/elasticmagic/transport/BulkRequest$Companion;Ldev/evo/elasticmagic/transport/Method;Ljava/lang/String;Ljava/util/Map;Ljava/util/List;Ldev/evo/elasticmagic/serde/Serde$Json;ILjava/lang/Object;)Ldev/evo/elasticmagic/transport/BulkRequest;
 }
 
 public final class dev/evo/elasticmagic/transport/CatRequest : dev/evo/elasticmagic/transport/Request {
 	public static final field Companion Ldev/evo/elasticmagic/transport/CatRequest$Companion;
-	public fun <init> (Ljava/lang/String;Ljava/util/Map;Lkotlin/jvm/functions/Function1;)V
-	public synthetic fun <init> (Ljava/lang/String;Ljava/util/Map;Lkotlin/jvm/functions/Function1;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public synthetic fun deserializeResponse (Ljava/lang/String;Ldev/evo/elasticmagic/serde/Serde;)Ljava/lang/Object;
-	public fun deserializeResponse (Ljava/lang/String;Ldev/evo/elasticmagic/serde/Serde;)Ljava/util/List;
+	public fun <init> (Ljava/lang/String;Ljava/util/Map;Ldev/evo/elasticmagic/serde/Serde;Lkotlin/jvm/functions/Function1;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/util/Map;Ldev/evo/elasticmagic/serde/Serde;Lkotlin/jvm/functions/Function1;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun deserializeResponse (Ljava/lang/String;)Ljava/lang/Object;
+	public fun deserializeResponse (Ljava/lang/String;)Ljava/util/List;
+	public fun getContentType ()Ljava/lang/String;
+	public fun getErrorSerde ()Ldev/evo/elasticmagic/serde/Serde;
 	public fun serializeRequest (Ldev/evo/elasticmagic/transport/RequestEncoder;)V
 }
 
 public final class dev/evo/elasticmagic/transport/CatRequest$Companion {
-	public final fun invoke (Ljava/lang/String;Ljava/util/Map;)Ldev/evo/elasticmagic/transport/CatRequest;
-	public static synthetic fun invoke$default (Ldev/evo/elasticmagic/transport/CatRequest$Companion;Ljava/lang/String;Ljava/util/Map;ILjava/lang/Object;)Ldev/evo/elasticmagic/transport/CatRequest;
+	public final fun invoke (Ljava/lang/String;Ljava/util/Map;Ldev/evo/elasticmagic/serde/Serde;)Ldev/evo/elasticmagic/transport/CatRequest;
+	public static synthetic fun invoke$default (Ldev/evo/elasticmagic/transport/CatRequest$Companion;Ljava/lang/String;Ljava/util/Map;Ldev/evo/elasticmagic/serde/Serde;ILjava/lang/Object;)Ldev/evo/elasticmagic/transport/CatRequest;
 }
 
 public class dev/evo/elasticmagic/transport/ElasticsearchException : java/lang/Exception {
@@ -86,13 +107,11 @@ public final class dev/evo/elasticmagic/transport/ElasticsearchException$Transpo
 }
 
 public abstract class dev/evo/elasticmagic/transport/ElasticsearchTransport {
-	public fun <init> (Ljava/lang/String;Ldev/evo/elasticmagic/serde/Serde;Ldev/evo/elasticmagic/transport/ElasticsearchTransport$Config;)V
-	protected abstract fun doRequest (Ldev/evo/elasticmagic/transport/Method;Ljava/lang/String;Ljava/util/Map;Ljava/lang/String;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static synthetic fun doRequest$default (Ldev/evo/elasticmagic/transport/ElasticsearchTransport;Ldev/evo/elasticmagic/transport/Method;Ljava/lang/String;Ljava/util/Map;Ljava/lang/String;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public fun <init> (Ljava/lang/String;Ldev/evo/elasticmagic/transport/ElasticsearchTransport$Config;)V
+	protected abstract fun doRequest (Ldev/evo/elasticmagic/transport/Request;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public final fun getBaseUrl ()Ljava/lang/String;
 	protected final fun getConfig ()Ldev/evo/elasticmagic/transport/ElasticsearchTransport$Config;
 	protected final fun getRequestEncoderFactory ()Ldev/evo/elasticmagic/transport/RequestEncoderFactory;
-	public final fun getSerde ()Ldev/evo/elasticmagic/serde/Serde;
 	public final fun request (Ldev/evo/elasticmagic/transport/Request;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
@@ -198,21 +217,6 @@ public final class dev/evo/elasticmagic/transport/GzipEncoderKt {
 	public static final fun isGzipSupported ()Z
 }
 
-public final class dev/evo/elasticmagic/transport/JsonRequest : dev/evo/elasticmagic/transport/Request {
-	public static final field Companion Ldev/evo/elasticmagic/transport/JsonRequest$Companion;
-	public fun <init> (Ldev/evo/elasticmagic/transport/Method;Ljava/lang/String;Ljava/util/Map;Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Lkotlin/jvm/functions/Function1;)V
-	public synthetic fun <init> (Ldev/evo/elasticmagic/transport/Method;Ljava/lang/String;Ljava/util/Map;Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Lkotlin/jvm/functions/Function1;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public fun deserializeResponse (Ljava/lang/String;Ldev/evo/elasticmagic/serde/Serde;)Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;
-	public synthetic fun deserializeResponse (Ljava/lang/String;Ldev/evo/elasticmagic/serde/Serde;)Ljava/lang/Object;
-	public fun getContentType ()Ljava/lang/String;
-	public fun serializeRequest (Ldev/evo/elasticmagic/transport/RequestEncoder;)V
-}
-
-public final class dev/evo/elasticmagic/transport/JsonRequest$Companion {
-	public final fun invoke (Ldev/evo/elasticmagic/transport/Method;Ljava/lang/String;Ljava/util/Map;Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;)Ldev/evo/elasticmagic/transport/JsonRequest;
-	public static synthetic fun invoke$default (Ldev/evo/elasticmagic/transport/JsonRequest$Companion;Ldev/evo/elasticmagic/transport/Method;Ljava/lang/String;Ljava/util/Map;Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;ILjava/lang/Object;)Ldev/evo/elasticmagic/transport/JsonRequest;
-}
-
 public final class dev/evo/elasticmagic/transport/Method : java/lang/Enum {
 	public static final field DELETE Ldev/evo/elasticmagic/transport/Method;
 	public static final field GET Ldev/evo/elasticmagic/transport/Method;
@@ -226,13 +230,15 @@ public final class dev/evo/elasticmagic/transport/Method : java/lang/Enum {
 public abstract class dev/evo/elasticmagic/transport/Request {
 	public fun <init> (Ldev/evo/elasticmagic/transport/Method;Ljava/lang/String;Ljava/util/Map;Ljava/lang/Object;Lkotlin/jvm/functions/Function1;)V
 	public synthetic fun <init> (Ldev/evo/elasticmagic/transport/Method;Ljava/lang/String;Ljava/util/Map;Ljava/lang/Object;Lkotlin/jvm/functions/Function1;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public abstract fun deserializeResponse (Ljava/lang/String;Ldev/evo/elasticmagic/serde/Serde;)Ljava/lang/Object;
+	public abstract fun deserializeResponse (Ljava/lang/String;)Ljava/lang/Object;
+	public fun getAcceptContentType ()Ljava/lang/String;
 	public final fun getBody ()Ljava/lang/Object;
-	public fun getContentType ()Ljava/lang/String;
+	public abstract fun getContentType ()Ljava/lang/String;
+	public abstract fun getErrorSerde ()Ldev/evo/elasticmagic/serde/Serde;
 	public final fun getMethod ()Ldev/evo/elasticmagic/transport/Method;
 	public final fun getParameters ()Ljava/util/Map;
 	public final fun getPath ()Ljava/lang/String;
-	public final fun getProcessResult ()Lkotlin/jvm/functions/Function1;
+	public final fun getProcessResponse ()Lkotlin/jvm/functions/Function1;
 	public abstract fun serializeRequest (Ldev/evo/elasticmagic/transport/RequestEncoder;)V
 }
 

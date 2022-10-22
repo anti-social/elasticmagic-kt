@@ -39,7 +39,6 @@ class ElasticsearchKtorTransportTests {
     fun headRequest() = runTest {
         val client = ElasticsearchKtorTransport(
             "http://example.com:9200",
-            JsonSerde,
             MockEngine { request ->
                 request.method shouldBe HttpMethod.Head
                 request.url.encodedPath shouldBe "/products"
@@ -55,9 +54,10 @@ class ElasticsearchKtorTransportTests {
             }
         )
         val result = client.request(
-            JsonRequest(
+            ApiRequest(
                 Method.HEAD,
                 "products",
+                serde = JsonSerde,
                 processResponse = Deserializer.ObjectCtx::toMap
             )
         )
@@ -68,7 +68,6 @@ class ElasticsearchKtorTransportTests {
     fun putRequest() = runTest {
         val client = ElasticsearchKtorTransport(
             "http://example.com:9200",
-            JsonSerde,
             MockEngine { request ->
                 request.method shouldBe HttpMethod.Put
                 request.url.encodedPath shouldBe "/products/_settings"
@@ -89,11 +88,12 @@ class ElasticsearchKtorTransportTests {
             }
         }
         val result = client.request(
-            JsonRequest(
+            ApiRequest(
                 Method.PUT,
                 "products/_settings",
                 parameters = emptyMap(),
                 body = body,
+                serde = JsonSerde,
                 Deserializer.ObjectCtx::toMap
             )
         )
@@ -106,7 +106,6 @@ class ElasticsearchKtorTransportTests {
      fun deleteRequest() = runTest {
          val client = ElasticsearchKtorTransport(
              "http://example.com:9200",
-             JsonSerde,
              MockEngine { request ->
                  request.method shouldBe HttpMethod.Delete
                  request.url.encodedPath shouldBe "/products_v2"
@@ -121,7 +120,12 @@ class ElasticsearchKtorTransportTests {
              }
          )
          val result = client.request(
-             JsonRequest(Method.DELETE, "products_v2", processResponse = Deserializer.ObjectCtx::toMap)
+             ApiRequest(
+                 Method.DELETE,
+                 "products_v2",
+                 serde = JsonSerde,
+                 processResponse = Deserializer.ObjectCtx::toMap
+             )
          )
          result shouldContainExactly mapOf(
              "acknowledge" to true
@@ -132,7 +136,6 @@ class ElasticsearchKtorTransportTests {
      fun bulkRequest() = runTest {
          val client = ElasticsearchKtorTransport(
              "http://example.com:9200",
-             JsonSerde,
              MockEngine { request ->
                  request.method shouldBe HttpMethod.Post
                  request.url.encodedPath shouldBe "/_bulk"
@@ -174,6 +177,7 @@ class ElasticsearchKtorTransportTests {
              BulkRequest(
                  Method.POST, "_bulk",
                  body = listOf(body),
+                 serde = JsonSerde,
                  processResponse = Deserializer.ObjectCtx::toMap
              )
          )
@@ -196,7 +200,6 @@ class ElasticsearchKtorTransportTests {
     fun catRequest() = runTest {
         val client = ElasticsearchKtorTransport(
             "http://example.com:9200",
-            JsonSerde,
             MockEngine { request ->
                 request.method shouldBe HttpMethod.Get
                 request.url.encodedPath shouldBe "/_cat/nodes"
@@ -211,7 +214,7 @@ class ElasticsearchKtorTransportTests {
             }
         )
         val result = client.request(
-            CatRequest("nodes")
+            CatRequest("nodes", errorSerde = JsonSerde)
         )
         result shouldBe listOf(
             listOf("192.168.163.48", "58", "99", "51", "6.59", "5.83", "5.62", "cdfhimrstw", "-", "es-01"),
@@ -224,7 +227,6 @@ class ElasticsearchKtorTransportTests {
     fun requestWithTimeout() = runTest {
         val client = ElasticsearchKtorTransport(
             "http://example.com:9200",
-            JsonSerde,
             MockEngine { request ->
                 request.method shouldBe HttpMethod.Post
                 request.url.encodedPath shouldBe "/products_v2/_forcemerge"
@@ -236,10 +238,11 @@ class ElasticsearchKtorTransportTests {
         )
         val ex = shouldThrow<ElasticsearchException.GatewayTimeout> {
             client.request(
-                JsonRequest(
+                ApiRequest(
                     Method.POST,
                     "products_v2/_forcemerge",
-                    parameters = mapOf("max_num_segments" to listOf("1"))
+                    parameters = mapOf("max_num_segments" to listOf("1")),
+                    serde = JsonSerde,
                 )
             )
         }

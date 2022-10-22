@@ -134,6 +134,11 @@ public abstract interface class dev/evo/elasticmagic/serde/Serde {
 	public abstract fun getSerializer ()Ldev/evo/elasticmagic/serde/Serializer;
 }
 
+public abstract class dev/evo/elasticmagic/serde/Serde$Json : dev/evo/elasticmagic/serde/Serde {
+	public fun <init> ()V
+	public fun getContentType ()Ljava/lang/String;
+}
+
 public abstract interface class dev/evo/elasticmagic/serde/Serializer {
 	public abstract fun array (Lkotlin/jvm/functions/Function1;)Ldev/evo/elasticmagic/serde/Serializer$ArrayCtx;
 	public abstract fun obj (Lkotlin/jvm/functions/Function1;)Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;

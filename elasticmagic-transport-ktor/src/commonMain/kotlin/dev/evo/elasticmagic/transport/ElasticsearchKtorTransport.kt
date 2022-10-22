@@ -23,12 +23,10 @@ import io.ktor.http.takeFrom
 
 class ElasticsearchKtorTransport(
     baseUrl: String,
-    serde: Serde,
     engine: HttpClientEngine,
     configure: Config.() -> Unit = {},
 ) : ElasticsearchTransport(
     baseUrl,
-    serde,
     Config().apply(configure),
 ) {
     private val client = HttpClient(engine) {
@@ -57,23 +55,17 @@ class ElasticsearchKtorTransport(
     }
 
     @Suppress("NAME_SHADOWING")
-    override suspend fun doRequest(
-        method: Method,
-        path: String,
-        parameters: Map<String, List<String>>?,
-        contentType: String?,
-        bodyBuilder: RequestBodyBuilder?
-    ): String {
-        val ktorHttpMethod = when (method) {
+    override suspend fun doRequest(request: Request<*, *, *>): String {
+        val ktorHttpMethod = when (request.method) {
             Method.GET -> HttpMethod.Get
             Method.PUT -> HttpMethod.Put
             Method.POST -> HttpMethod.Post
             Method.DELETE -> HttpMethod.Delete
             Method.HEAD -> HttpMethod.Head
         }
-        val ktorParameters = if (parameters != null) {
+        val ktorParameters = if (request.parameters.isNotEmpty()) {
             Parameters.build {
-                parameters.forEach { (name, values) ->
+                request.parameters.forEach { (name, values) ->
                     appendAll(name, values)
                 }
             }
@@ -85,40 +77,35 @@ class ElasticsearchKtorTransport(
             this.method = ktorHttpMethod
             url {
                 takeFrom(baseUrl)
-                this.path(path)
-                if (parameters != null) {
-                    this.parameters.appendAll(ktorParameters)
-                }
+                this.path(request.path)
+                this.parameters.appendAll(ktorParameters)
             }
-            if (bodyBuilder != null) {
-                val requestEncoder = requestEncoderFactory.create().apply(bodyBuilder)
-                requestEncoderFactory.encoding?.let { encoding ->
-                    this.headers[HttpHeaders.ContentEncoding] = encoding
-                }
 
-                val contentType = if (contentType != null) {
-                    val (contentType, contentSubType) = contentType.split('/', limit = 2)
-                    ContentType(contentType, contentSubType)
-                } else {
-                    ContentType.Application.Json
-                }
-                val content = requestEncoder.toByteArray()
-                if (content.isNotEmpty()) {
-                    this.setBody(ByteArrayContent(content, contentType))
-                }
+            val requestEncoder = requestEncoderFactory.create().apply(request::serializeRequest)
+            requestEncoderFactory.encoding?.let { encoding ->
+                this.headers[HttpHeaders.ContentEncoding] = encoding
+            }
+
+            request.acceptContentType?.let { acceptContentType ->
+                this.headers[HttpHeaders.Accept] = acceptContentType
+            }
+
+            val content = requestEncoder.toByteArray()
+            if (content.isNotEmpty()) {
+                this.setBody(ByteArrayContent(content, ContentType.parse(request.contentType)))
             }
         }
-        return processResponse(response)
+        return processResponse(response, request.errorSerde)
     }
 
-    private suspend fun processResponse(response: HttpResponse): String {
+    private suspend fun processResponse(response: HttpResponse, errorSerde: Serde): String {
         val statusCode = response.status.value
         val content = response.bodyAsText()
         return when (statusCode) {
             in HTTP_OK_CODES -> content
             else -> {
                 val jsonError = try {
-                    serde.deserializer.objFromStringOrNull(content)
+                    errorSerde.deserializer.objFromStringOrNull(content)
                 } catch (e: DeserializationException) {
                     null
                 }

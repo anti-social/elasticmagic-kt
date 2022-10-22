@@ -3,10 +3,9 @@ public final class dev/evo/elasticmagic/serde/jackson/JsonDeserializer : dev/evo
 	public fun objFromStringOrNull (Ljava/lang/String;)Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;
 }
 
-public abstract class dev/evo/elasticmagic/serde/jackson/JsonSerde : dev/evo/elasticmagic/serde/Serde {
+public abstract class dev/evo/elasticmagic/serde/jackson/JsonSerde : dev/evo/elasticmagic/serde/Serde$Json {
 	public static final field Companion Ldev/evo/elasticmagic/serde/jackson/JsonSerde$Companion;
 	public synthetic fun <init> (Ldev/evo/elasticmagic/serde/jackson/JsonSerializer;Ldev/evo/elasticmagic/serde/jackson/JsonDeserializer;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public fun getContentType ()Ljava/lang/String;
 	public synthetic fun getDeserializer ()Ldev/evo/elasticmagic/serde/Deserializer;
 	public fun getDeserializer ()Ldev/evo/elasticmagic/serde/jackson/JsonDeserializer;
 	public synthetic fun getSerializer ()Ldev/evo/elasticmagic/serde/Serializer;

@@ -1,6 +1,5 @@
 package samples.started
 
-import dev.evo.elasticmagic.serde.serialization.JsonSerde
 import dev.evo.elasticmagic.transport.Auth
 import dev.evo.elasticmagic.transport.ElasticsearchKtorTransport
 
@@ -11,7 +10,6 @@ import javax.net.ssl.X509TrustManager
 
 actual val esTransport = ElasticsearchKtorTransport(
     System.getenv("ELASTIC_URL") ?: DEFAULT_ELASTIC_URL,
-    serde = JsonSerde,
     engine = CIO.create {
         https {
             trustManager = object: X509TrustManager {

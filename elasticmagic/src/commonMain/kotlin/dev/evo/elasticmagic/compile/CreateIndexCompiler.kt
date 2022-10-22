@@ -4,8 +4,8 @@ import dev.evo.elasticmagic.CreateIndexResult
 import dev.evo.elasticmagic.doc.Document
 import dev.evo.elasticmagic.Params
 import dev.evo.elasticmagic.serde.Deserializer
-import dev.evo.elasticmagic.serde.Serializer
-import dev.evo.elasticmagic.transport.JsonRequest
+import dev.evo.elasticmagic.serde.Serde
+import dev.evo.elasticmagic.transport.ApiRequest
 import dev.evo.elasticmagic.transport.Method
 import dev.evo.elasticmagic.transport.Parameters
 
@@ -25,10 +25,10 @@ class CreateIndexCompiler(
 ) : BaseCompiler(features) {
 
     fun compile(
-        serializer: Serializer,
-        input: PreparedCreateIndex
-    ): JsonRequest<CreateIndexResult> {
-        return JsonRequest(
+        serde: Serde,
+        input: PreparedCreateIndex,
+    ): ApiRequest<CreateIndexResult> {
+        return ApiRequest(
             method = Method.PUT,
             path = input.indexName,
             parameters = Parameters(
@@ -36,7 +36,7 @@ class CreateIndexCompiler(
                 "master_timeout" to input.masterTimeout,
                 "timeout" to input.timeout,
             ),
-            body = serializer.obj {
+            body = serde.serializer.obj {
                 if (input.settings.isNotEmpty()) {
                     obj("settings") {
                         visit(this, input.settings)
@@ -59,6 +59,7 @@ class CreateIndexCompiler(
                     }
                 }
             },
+            serde = serde,
             processResponse = ::processResponse
         )
     }

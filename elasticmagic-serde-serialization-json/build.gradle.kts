@@ -8,11 +8,6 @@ kotlin {
                 api(Libs.kotlinxSerialization("json"))
             }
         }
-        val commonTest by getting {
-            dependencies {
-                implementation(project(":elasticmagic"))
-            }
-        }
     }
 }
 
