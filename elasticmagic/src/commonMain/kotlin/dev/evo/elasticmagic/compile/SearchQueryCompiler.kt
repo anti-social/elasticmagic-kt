@@ -13,6 +13,7 @@ import dev.evo.elasticmagic.query.Expression
 import dev.evo.elasticmagic.query.ObjExpression
 import dev.evo.elasticmagic.query.ToValue
 import dev.evo.elasticmagic.serde.Deserializer
+import dev.evo.elasticmagic.serde.Serde
 import dev.evo.elasticmagic.serde.Serializer
 import dev.evo.elasticmagic.serde.Serializer.ArrayCtx
 import dev.evo.elasticmagic.serde.Serializer.ObjectCtx
@@ -20,7 +21,7 @@ import dev.evo.elasticmagic.serde.toList
 import dev.evo.elasticmagic.serde.toMap
 import dev.evo.elasticmagic.toRequestParameters
 import dev.evo.elasticmagic.transport.BulkRequest
-import dev.evo.elasticmagic.transport.JsonRequest
+import dev.evo.elasticmagic.transport.ApiRequest
 import dev.evo.elasticmagic.transport.Method
 import dev.evo.elasticmagic.transport.Parameters
 
@@ -29,26 +30,29 @@ class MultiSearchQueryCompiler(
     private val searchQueryCompiler: SearchQueryCompiler
 ) : BaseCompiler(features) {
     fun compile(
-        serializer: Serializer, input: List<SearchQueryWithIndex<*>>
+        serde: Serde.Json, input: List<SearchQueryWithIndex<*>>
     ): BulkRequest<MultiSearchQueryResult> {
         val preparedQueries = mutableListOf<PreparedSearchQuery<*>>()
         val body = mutableListOf<ObjectCtx>()
         for (query in input) {
             val preparedQuery = query.searchQuery.prepare()
                 .also(preparedQueries::add)
-            val compiledQuery = searchQueryCompiler.compile(serializer, preparedQuery, query.indexName)
-            val header = serializer.obj {
+            val compiledQuery = searchQueryCompiler.compile(
+                serde, preparedQuery, query.indexName
+            )
+            val header = serde.serializer.obj {
                 searchQueryCompiler.visit(this, compiledQuery.parameters)
                 field("index", query.indexName)
             }
             body.add(header)
-            body.add(compiledQuery.body ?: serializer.obj {})
+            body.add(compiledQuery.body ?: serde.serializer.obj {})
         }
         return BulkRequest(
             method = Method.POST,
             path = "_msearch",
             parameters = Parameters(),
             body = body,
+            serde = serde,
             processResponse = { ctx ->
                 val took = ctx.longOrNull("took")
                 val responsesCtx = ctx.array("responses")
@@ -77,16 +81,17 @@ open class SearchQueryCompiler(
     }
 
     fun <S: BaseDocSource> compile(
-        serializer: Serializer, input: PreparedSearchQuery<S>, indexName: String
-    ): JsonRequest<SearchQueryResult<S>> {
-        val body = serializer.obj {
+        serde: Serde, input: PreparedSearchQuery<S>, indexName: String
+    ): ApiRequest<SearchQueryResult<S>> {
+        val body = serde.serializer.obj {
             visit(this, input)
         }
-        return JsonRequest(
+        return ApiRequest(
             method = Method.POST,
             path = "$indexName/_search",
             parameters = input.params.toRequestParameters(),
             body = body,
+            serde = serde,
             processResponse = { ctx ->
                 processResult(ctx, input)
             }
@@ -94,9 +99,9 @@ open class SearchQueryCompiler(
     }
 
     fun <S: BaseDocSource> compile(
-        serializer: Serializer, input: SearchQueryWithIndex<S>
-    ): JsonRequest<SearchQueryResult<S>> {
-        return compile(serializer, input.searchQuery.prepare(), input.indexName)
+        serde: Serde, input: SearchQueryWithIndex<S>
+    ): ApiRequest<SearchQueryResult<S>> {
+        return compile(serde, input.searchQuery.prepare(), input.indexName)
     }
 
     @Suppress("ComplexMethod")

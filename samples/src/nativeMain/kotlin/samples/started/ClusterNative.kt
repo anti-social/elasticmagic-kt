@@ -12,7 +12,6 @@ import platform.posix.getenv
 
 actual val esTransport = ElasticsearchKtorTransport(
     getenv("ELASTIC_URL")?.toKString() ?: DEFAULT_ELASTIC_URL,
-    serde = JsonSerde,
     engine = Curl.create {
         sslVerify = false
     }

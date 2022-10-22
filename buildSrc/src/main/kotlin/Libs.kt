@@ -24,7 +24,7 @@ object Versions {
     const val kotlinxDatetime = "0.3.3"
     const val ktor = "2.0.3"
 
-    // Other dependencies
+    // Serialization dependencies
     const val jackson = "2.12.2"
 
     // Testing
@@ -70,5 +70,9 @@ object Libs {
 
     fun jackson(flavor: String): String {
         return "com.fasterxml.jackson.core:jackson-$flavor:${Versions.jackson}"
+    }
+
+    fun jacksonDataformat(flavor: String): String {
+        return "com.fasterxml.jackson.dataformat:jackson-dataformat-$flavor:${Versions.jackson}"
     }
 }

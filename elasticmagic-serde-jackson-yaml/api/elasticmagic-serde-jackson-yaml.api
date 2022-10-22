@@ -1,0 +1,32 @@
+public final class dev/evo/elasticmagic/serde/jackson/YamlDeserializer : dev/evo/elasticmagic/serde/StdDeserializer {
+	public static final field INSTANCE Ldev/evo/elasticmagic/serde/jackson/YamlDeserializer;
+	public fun objFromStringOrNull (Ljava/lang/String;)Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;
+}
+
+public abstract class dev/evo/elasticmagic/serde/jackson/YamlSerde : dev/evo/elasticmagic/serde/Serde {
+	public static final field Companion Ldev/evo/elasticmagic/serde/jackson/YamlSerde$Companion;
+	public synthetic fun <init> (Ldev/evo/elasticmagic/serde/jackson/YamlSerializer;Ldev/evo/elasticmagic/serde/jackson/YamlDeserializer;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun getContentType ()Ljava/lang/String;
+	public synthetic fun getDeserializer ()Ldev/evo/elasticmagic/serde/Deserializer;
+	public fun getDeserializer ()Ldev/evo/elasticmagic/serde/jackson/YamlDeserializer;
+	public synthetic fun getSerializer ()Ldev/evo/elasticmagic/serde/Serializer;
+	public fun getSerializer ()Ldev/evo/elasticmagic/serde/jackson/YamlSerializer;
+}
+
+public final class dev/evo/elasticmagic/serde/jackson/YamlSerde$Companion : dev/evo/elasticmagic/serde/jackson/YamlSerde {
+}
+
+public final class dev/evo/elasticmagic/serde/jackson/YamlSerializer : dev/evo/elasticmagic/serde/StdSerializer {
+	public static final field INSTANCE Ldev/evo/elasticmagic/serde/jackson/YamlSerializer;
+}
+
+public final class dev/evo/elasticmagic/serde/jackson/YamlSerializer$ArrayCtx : dev/evo/elasticmagic/serde/StdSerializer$ArrayCtx {
+	public fun <init> ()V
+	public fun serialize ()Ljava/lang/String;
+}
+
+public final class dev/evo/elasticmagic/serde/jackson/YamlSerializer$ObjectCtx : dev/evo/elasticmagic/serde/StdSerializer$ObjectCtx {
+	public fun <init> ()V
+	public fun serialize ()Ljava/lang/String;
+}
+

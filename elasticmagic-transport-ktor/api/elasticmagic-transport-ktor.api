@@ -1,7 +1,7 @@
 public final class dev/evo/elasticmagic/transport/ElasticsearchKtorTransport : dev/evo/elasticmagic/transport/ElasticsearchTransport {
 	public static final field Companion Ldev/evo/elasticmagic/transport/ElasticsearchKtorTransport$Companion;
-	public fun <init> (Ljava/lang/String;Ldev/evo/elasticmagic/serde/Serde;Lio/ktor/client/engine/HttpClientEngine;Lkotlin/jvm/functions/Function1;)V
-	public synthetic fun <init> (Ljava/lang/String;Ldev/evo/elasticmagic/serde/Serde;Lio/ktor/client/engine/HttpClientEngine;Lkotlin/jvm/functions/Function1;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Ljava/lang/String;Lio/ktor/client/engine/HttpClientEngine;Lkotlin/jvm/functions/Function1;)V
+	public synthetic fun <init> (Ljava/lang/String;Lio/ktor/client/engine/HttpClientEngine;Lkotlin/jvm/functions/Function1;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 }
 
 public final class dev/evo/elasticmagic/transport/ElasticsearchKtorTransport$Companion {

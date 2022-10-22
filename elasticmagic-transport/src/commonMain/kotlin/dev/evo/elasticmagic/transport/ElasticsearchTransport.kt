@@ -89,17 +89,20 @@ abstract class Request<out BodyT, ResponseT, out ResultT>(
     val body: BodyT? = null,
     val processResponse: (ResponseT) -> ResultT,
 ) {
-    open val contentType: String? = null
+    abstract val contentType: String
+    open val acceptContentType: String? = null
+    abstract val errorSerde: Serde
 
     abstract fun serializeRequest(encoder: RequestEncoder)
-    abstract fun deserializeResponse(response: String, serde: Serde): ResponseT
+    abstract fun deserializeResponse(response: String): ResponseT
 }
 
-class JsonRequest<ResultT>(
+class ApiRequest<ResultT>(
     method: Method,
     path: String,
     parameters: Parameters = emptyMap(),
     body: Serializer.ObjectCtx? = null,
+    private val serde: Serde,
     processResponse: (Deserializer.ObjectCtx) -> ResultT
 ) : Request<Serializer.ObjectCtx, Deserializer.ObjectCtx, ResultT>(
     method,
@@ -114,11 +117,14 @@ class JsonRequest<ResultT>(
             path: String,
             parameters: Parameters = emptyMap(),
             body: Serializer.ObjectCtx? = null,
-        ): JsonRequest<Deserializer.ObjectCtx> {
-            return JsonRequest(method, path, parameters = parameters, body = body) { res -> res}
+            serde: Serde,
+        ): ApiRequest<Deserializer.ObjectCtx> {
+            return ApiRequest(method, path, parameters = parameters, body = body, serde = serde) { res -> res}
         }
     }
-    override val contentType = "application/json"
+
+    override val contentType: String = serde.contentType
+    override val errorSerde: Serde = serde
 
     override fun serializeRequest(encoder: RequestEncoder) {
         if (body != null) {
@@ -126,7 +132,7 @@ class JsonRequest<ResultT>(
         }
     }
 
-    override fun deserializeResponse(response: String, serde: Serde): Deserializer.ObjectCtx {
+    override fun deserializeResponse(response: String): Deserializer.ObjectCtx {
         // HEAD requests return empty response body
         return serde.deserializer.objFromString(
             response.ifBlank { "{}" }
@@ -139,6 +145,7 @@ class BulkRequest<ResultT>(
     path: String,
     parameters: Parameters = emptyMap(),
     body: List<Serializer.ObjectCtx>,
+    private val serde: Serde.Json,
     processResponse: (Deserializer.ObjectCtx) -> ResultT
 ) : Request<List<Serializer.ObjectCtx>, Deserializer.ObjectCtx, ResultT>(
     method,
@@ -153,12 +160,15 @@ class BulkRequest<ResultT>(
             path: String,
             parameters: Parameters = emptyMap(),
             body: List<Serializer.ObjectCtx>,
+            serde: Serde.Json,
         ): BulkRequest<Deserializer.ObjectCtx> {
-            return BulkRequest(method, path, parameters = parameters, body = body) { res -> res}
+            return BulkRequest(method, path, parameters = parameters, body = body, serde = serde) { res -> res}
         }
     }
 
     override val contentType = "application/x-ndjson"
+    override val acceptContentType: String = serde.contentType
+    override val errorSerde = serde
 
     override fun serializeRequest(encoder: RequestEncoder) {
         if (body != null) {
@@ -169,7 +179,7 @@ class BulkRequest<ResultT>(
         }
     }
 
-    override fun deserializeResponse(response: String, serde: Serde): Deserializer.ObjectCtx {
+    override fun deserializeResponse(response: String): Deserializer.ObjectCtx {
         // HEAD requests return empty response body
         return serde.deserializer.objFromString(
             response.ifBlank { "{}" }
@@ -180,6 +190,7 @@ class BulkRequest<ResultT>(
 class CatRequest<ResultT>(
     path: String,
     parameters: Parameters = emptyMap(),
+    override val errorSerde: Serde,
     processResponse: (List<List<String>>) -> ResultT
 ) : Request<Nothing, List<List<String>>, ResultT>(
     Method.GET,
@@ -192,14 +203,17 @@ class CatRequest<ResultT>(
         operator fun invoke(
             path: String,
             parameters: Parameters = emptyMap(),
+            errorSerde: Serde,
         ): CatRequest<List<List<String>>> {
-            return CatRequest(path, parameters = parameters) { res -> res}
+            return CatRequest(path, parameters = parameters, errorSerde = errorSerde) { res -> res}
         }
     }
 
+    override val contentType = "text/plain"
+
     override fun serializeRequest(encoder: RequestEncoder) {}
 
-    override fun deserializeResponse(response: String, serde: Serde): List<List<String>> {
+    override fun deserializeResponse(response: String): List<List<String>> {
         return response.split("\n").mapNotNull { row ->
             if (row.isBlank()) null else row.split("\\s+".toRegex())
         }
@@ -209,7 +223,6 @@ class CatRequest<ResultT>(
 
 abstract class ElasticsearchTransport(
     val baseUrl: String,
-    val serde: Serde,
     protected val config: Config,
 ) {
     class Config {
@@ -227,21 +240,9 @@ abstract class ElasticsearchTransport(
     suspend fun <B, T, R> request(
         request: Request<B, T, R>
     ): R {
-        val response = doRequest(
-            request.method,
-            request.path,
-            request.parameters,
-            contentType = request.contentType,
-            bodyBuilder = request::serializeRequest
-        )
-        return request.processResponse(request.deserializeResponse(response, serde))
+        val response = doRequest(request)
+        return request.processResponse(request.deserializeResponse(response))
     }
 
-    protected abstract suspend fun doRequest(
-        method: Method,
-        path: String,
-        parameters: Map<String, List<String>>? = null,
-        contentType: String? = null,
-        bodyBuilder: RequestBodyBuilder? = null
-    ): String
+    protected abstract suspend fun doRequest(request: Request<*, *, *>): String
 }

@@ -3,8 +3,8 @@ package dev.evo.elasticmagic.compile
 import dev.evo.elasticmagic.doc.Document
 import dev.evo.elasticmagic.UpdateMappingResult
 import dev.evo.elasticmagic.serde.Deserializer
-import dev.evo.elasticmagic.serde.Serializer
-import dev.evo.elasticmagic.transport.JsonRequest
+import dev.evo.elasticmagic.serde.Serde
+import dev.evo.elasticmagic.transport.ApiRequest
 import dev.evo.elasticmagic.transport.Method
 import dev.evo.elasticmagic.transport.Parameters
 
@@ -23,16 +23,16 @@ class UpdateMappingCompiler(
     private val mappingCompiler: MappingCompiler,
 ) : BaseCompiler(features) {
     fun compile(
-        serializer: Serializer,
+        serde: Serde,
         input: PreparedUpdateMapping
-    ): JsonRequest<UpdateMappingResult> {
+    ): ApiRequest<UpdateMappingResult> {
         val path = if (features.requiresMappingTypeName) {
             "${input.indexName}/_mapping/_doc"
         } else {
             "${input.indexName}/_mapping"
 
         }
-        return JsonRequest(
+        return ApiRequest(
             method = Method.PUT,
             path = path,
             parameters = Parameters(
@@ -42,9 +42,10 @@ class UpdateMappingCompiler(
                 "master_timeout" to input.masterTimeout,
                 "timeout" to input.timeout,
             ),
-            body = serializer.obj {
+            body = serde.serializer.obj {
                 mappingCompiler.visit(this, input.mapping)
             },
+            serde = serde,
             processResponse = ::processResponse,
         )
     }
