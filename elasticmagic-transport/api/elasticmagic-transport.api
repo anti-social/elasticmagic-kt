@@ -25,20 +25,20 @@ public final class dev/evo/elasticmagic/transport/Auth$Basic : dev/evo/elasticma
 
 public final class dev/evo/elasticmagic/transport/BulkRequest : dev/evo/elasticmagic/transport/Request {
 	public static final field Companion Ldev/evo/elasticmagic/transport/BulkRequest$Companion;
-	public fun <init> (Ldev/evo/elasticmagic/transport/Method;Ljava/lang/String;Ljava/util/Map;Ljava/util/List;Ldev/evo/elasticmagic/serde/Serde$Json;Lkotlin/jvm/functions/Function1;)V
-	public synthetic fun <init> (Ldev/evo/elasticmagic/transport/Method;Ljava/lang/String;Ljava/util/Map;Ljava/util/List;Ldev/evo/elasticmagic/serde/Serde$Json;Lkotlin/jvm/functions/Function1;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Ldev/evo/elasticmagic/transport/Method;Ljava/lang/String;Ljava/util/Map;Ljava/util/List;Ldev/evo/elasticmagic/serde/Serde$OneLineJson;Lkotlin/jvm/functions/Function1;)V
+	public synthetic fun <init> (Ldev/evo/elasticmagic/transport/Method;Ljava/lang/String;Ljava/util/Map;Ljava/util/List;Ldev/evo/elasticmagic/serde/Serde$OneLineJson;Lkotlin/jvm/functions/Function1;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun deserializeResponse (Ljava/lang/String;)Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;
 	public synthetic fun deserializeResponse (Ljava/lang/String;)Ljava/lang/Object;
 	public fun getAcceptContentType ()Ljava/lang/String;
 	public fun getContentType ()Ljava/lang/String;
-	public fun getErrorSerde ()Ldev/evo/elasticmagic/serde/Serde$Json;
+	public fun getErrorSerde ()Ldev/evo/elasticmagic/serde/Serde$OneLineJson;
 	public synthetic fun getErrorSerde ()Ldev/evo/elasticmagic/serde/Serde;
 	public fun serializeRequest (Ldev/evo/elasticmagic/transport/RequestEncoder;)V
 }
 
 public final class dev/evo/elasticmagic/transport/BulkRequest$Companion {
-	public final fun invoke (Ldev/evo/elasticmagic/transport/Method;Ljava/lang/String;Ljava/util/Map;Ljava/util/List;Ldev/evo/elasticmagic/serde/Serde$Json;)Ldev/evo/elasticmagic/transport/BulkRequest;
-	public static synthetic fun invoke$default (Ldev/evo/elasticmagic/transport/BulkRequest$Companion;Ldev/evo/elasticmagic/transport/Method;Ljava/lang/String;Ljava/util/Map;Ljava/util/List;Ldev/evo/elasticmagic/serde/Serde$Json;ILjava/lang/Object;)Ldev/evo/elasticmagic/transport/BulkRequest;
+	public final fun invoke (Ldev/evo/elasticmagic/transport/Method;Ljava/lang/String;Ljava/util/Map;Ljava/util/List;Ldev/evo/elasticmagic/serde/Serde$OneLineJson;)Ldev/evo/elasticmagic/transport/BulkRequest;
+	public static synthetic fun invoke$default (Ldev/evo/elasticmagic/transport/BulkRequest$Companion;Ldev/evo/elasticmagic/transport/Method;Ljava/lang/String;Ljava/util/Map;Ljava/util/List;Ldev/evo/elasticmagic/serde/Serde$OneLineJson;ILjava/lang/Object;)Ldev/evo/elasticmagic/transport/BulkRequest;
 }
 
 public final class dev/evo/elasticmagic/transport/CatRequest : dev/evo/elasticmagic/transport/Request {

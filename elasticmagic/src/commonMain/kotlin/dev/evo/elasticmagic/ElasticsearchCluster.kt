@@ -26,26 +26,22 @@ internal fun Params.toRequestParameters(): Parameters {
 class ElasticsearchCluster(
     val transport: ElasticsearchTransport,
     val apiSerde: Serde,
-    val bulkSerde: Serde.Json,
+    val bulkSerde: Serde.OneLineJson,
     private val compilers: CompilerSet? = null,
 ) {
     private val esVersion = CompletableDeferred<Version<*>>()
     private val sniffedCompilers = CompletableDeferred<CompilerSet>()
 
-    companion object {
-        operator fun invoke(
-            transport: ElasticsearchTransport,
-            serde: Serde.Json,
-            compilers: CompilerSet? = null,
-        ): ElasticsearchCluster {
-            return ElasticsearchCluster(
-                transport,
-                apiSerde = serde,
-                bulkSerde = serde,
-                compilers = compilers,
-            )
-        }
-    }
+    constructor(
+        transport: ElasticsearchTransport,
+        serde: Serde.OneLineJson,
+        compilers: CompilerSet? = null,
+    ): this(
+        transport,
+        apiSerde = serde,
+        bulkSerde = serde,
+        compilers = compilers,
+    )
 
     operator fun get(indexName: String): ElasticsearchIndex {
         return ElasticsearchIndex(indexName, this)

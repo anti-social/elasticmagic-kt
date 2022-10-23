@@ -2,9 +2,12 @@ package dev.evo.elasticmagic.serde.jackson
 
 import dev.evo.elasticmagic.serde.Serde
 
-sealed class JsonSerde(
-    override val serializer: JsonSerializer,
-    override val deserializer: JsonDeserializer,
-) : Serde.Json() {
-    companion object : JsonSerde(JsonSerializer, JsonDeserializer)
+object JsonSerde : Serde.OneLineJson() {
+    override val serializer = JsonSerializer
+    override val deserializer = JsonDeserializer
+}
+
+object PrettyJsonSerde : Serde.OneLineJson() {
+    override val serializer = PrettyJsonSerializer
+    override val deserializer = JsonDeserializer
 }

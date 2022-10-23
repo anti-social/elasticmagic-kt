@@ -219,16 +219,17 @@ public final class dev/evo/elasticmagic/DeleteIndexResult {
 }
 
 public final class dev/evo/elasticmagic/ElasticsearchCluster {
-	public static final field Companion Ldev/evo/elasticmagic/ElasticsearchCluster$Companion;
-	public fun <init> (Ldev/evo/elasticmagic/transport/ElasticsearchTransport;Ldev/evo/elasticmagic/serde/Serde;Ldev/evo/elasticmagic/serde/Serde$Json;Ldev/evo/elasticmagic/compile/CompilerSet;)V
-	public synthetic fun <init> (Ldev/evo/elasticmagic/transport/ElasticsearchTransport;Ldev/evo/elasticmagic/serde/Serde;Ldev/evo/elasticmagic/serde/Serde$Json;Ldev/evo/elasticmagic/compile/CompilerSet;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Ldev/evo/elasticmagic/transport/ElasticsearchTransport;Ldev/evo/elasticmagic/serde/Serde$OneLineJson;Ldev/evo/elasticmagic/compile/CompilerSet;)V
+	public synthetic fun <init> (Ldev/evo/elasticmagic/transport/ElasticsearchTransport;Ldev/evo/elasticmagic/serde/Serde$OneLineJson;Ldev/evo/elasticmagic/compile/CompilerSet;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Ldev/evo/elasticmagic/transport/ElasticsearchTransport;Ldev/evo/elasticmagic/serde/Serde;Ldev/evo/elasticmagic/serde/Serde$OneLineJson;Ldev/evo/elasticmagic/compile/CompilerSet;)V
+	public synthetic fun <init> (Ldev/evo/elasticmagic/transport/ElasticsearchTransport;Ldev/evo/elasticmagic/serde/Serde;Ldev/evo/elasticmagic/serde/Serde$OneLineJson;Ldev/evo/elasticmagic/compile/CompilerSet;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun createIndex (Ljava/lang/String;Ldev/evo/elasticmagic/doc/Document;Ljava/util/Map;Ljava/util/Map;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun createIndex$default (Ldev/evo/elasticmagic/ElasticsearchCluster;Ljava/lang/String;Ldev/evo/elasticmagic/doc/Document;Ljava/util/Map;Ljava/util/Map;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public final fun deleteIndex (Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun deleteIndex$default (Ldev/evo/elasticmagic/ElasticsearchCluster;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public final fun get (Ljava/lang/String;)Ldev/evo/elasticmagic/ElasticsearchIndex;
 	public final fun getApiSerde ()Ldev/evo/elasticmagic/serde/Serde;
-	public final fun getBulkSerde ()Ldev/evo/elasticmagic/serde/Serde$Json;
+	public final fun getBulkSerde ()Ldev/evo/elasticmagic/serde/Serde$OneLineJson;
 	public final fun getCompilers (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public final fun getTransport ()Ldev/evo/elasticmagic/transport/ElasticsearchTransport;
 	public final fun getVersion (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
@@ -237,11 +238,6 @@ public final class dev/evo/elasticmagic/ElasticsearchCluster {
 	public final fun multiSearch (Ljava/util/List;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public final fun updateMapping (Ljava/lang/String;Ldev/evo/elasticmagic/doc/Document;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun updateMapping$default (Ldev/evo/elasticmagic/ElasticsearchCluster;Ljava/lang/String;Ldev/evo/elasticmagic/doc/Document;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
-}
-
-public final class dev/evo/elasticmagic/ElasticsearchCluster$Companion {
-	public final fun invoke (Ldev/evo/elasticmagic/transport/ElasticsearchTransport;Ldev/evo/elasticmagic/serde/Serde$Json;Ldev/evo/elasticmagic/compile/CompilerSet;)Ldev/evo/elasticmagic/ElasticsearchCluster;
-	public static synthetic fun invoke$default (Ldev/evo/elasticmagic/ElasticsearchCluster$Companion;Ldev/evo/elasticmagic/transport/ElasticsearchTransport;Ldev/evo/elasticmagic/serde/Serde$Json;Ldev/evo/elasticmagic/compile/CompilerSet;ILjava/lang/Object;)Ldev/evo/elasticmagic/ElasticsearchCluster;
 }
 
 public final class dev/evo/elasticmagic/ElasticsearchIndex {
@@ -2074,7 +2070,7 @@ public final class dev/evo/elasticmagic/compile/MappingCompiler$Compiled {
 
 public final class dev/evo/elasticmagic/compile/MultiSearchQueryCompiler : dev/evo/elasticmagic/compile/BaseCompiler {
 	public fun <init> (Ldev/evo/elasticmagic/compile/ElasticsearchFeatures;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
-	public final fun compile (Ldev/evo/elasticmagic/serde/Serde$Json;Ljava/util/List;)Ldev/evo/elasticmagic/transport/BulkRequest;
+	public final fun compile (Ldev/evo/elasticmagic/serde/Serde$OneLineJson;Ljava/util/List;)Ldev/evo/elasticmagic/transport/BulkRequest;
 }
 
 public final class dev/evo/elasticmagic/compile/PreparedBulk {

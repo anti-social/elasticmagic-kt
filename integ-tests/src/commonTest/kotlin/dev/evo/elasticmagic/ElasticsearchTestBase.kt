@@ -25,7 +25,7 @@ abstract class ElasticsearchTestBase : TestBase() {
                     auth = elasticAuth
                 }
             }
-            val bulkSerde = if (apiSerde is Serde.Json) {
+            val bulkSerde = if (apiSerde is Serde.OneLineJson) {
                 apiSerde
             } else {
                 defaultBulkSerde
