@@ -10,4 +10,6 @@ interface Serde {
     abstract class Json : Serde {
         override val contentType = "application/json"
     }
+
+    abstract class OneLineJson : Json()
 }

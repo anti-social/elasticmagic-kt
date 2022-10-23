@@ -30,7 +30,7 @@ class MultiSearchQueryCompiler(
     private val searchQueryCompiler: SearchQueryCompiler
 ) : BaseCompiler(features) {
     fun compile(
-        serde: Serde.Json, input: List<SearchQueryWithIndex<*>>
+        serde: Serde.OneLineJson, input: List<SearchQueryWithIndex<*>>
     ): BulkRequest<MultiSearchQueryResult> {
         val preparedQueries = mutableListOf<PreparedSearchQuery<*>>()
         val body = mutableListOf<ObjectCtx>()

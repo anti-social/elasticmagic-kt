@@ -1,18 +1,24 @@
 package dev.evo.elasticmagic.serde.serialization
 
 import dev.evo.elasticmagic.serde.Serializer
-
 import kotlinx.serialization.json.Json
+
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 
+object PrettyJsonSerializer : JsonSerializer() {
+    override val json: Json = Json { prettyPrint = true }
+}
+
 sealed class JsonSerializer : Serializer {
+
+    protected open val json: Json = Json
 
     companion object : JsonSerializer()
 
-    class ObjectCtx : Serializer.ObjectCtx {
+    inner class ObjectCtx : Serializer.ObjectCtx {
         private val content: MutableMap<String, JsonElement> = HashMap()
 
         fun build(): JsonObject {
@@ -52,11 +58,11 @@ sealed class JsonSerializer : Serializer {
         }
 
         override fun serialize(): String {
-            return Json.encodeToString(JsonObject.serializer(), build())
+            return json.encodeToString(JsonObject.serializer(), build())
         }
     }
 
-    class ArrayCtx : Serializer.ArrayCtx {
+    inner class ArrayCtx : Serializer.ArrayCtx {
         private val content: MutableList<JsonElement> = ArrayList()
 
         fun build(): JsonArray {
@@ -96,7 +102,7 @@ sealed class JsonSerializer : Serializer {
         }
 
         override fun serialize(): String {
-            return Json.encodeToString(JsonArray.serializer(), build())
+            return json.encodeToString(JsonArray.serializer(), build())
         }
     }
 

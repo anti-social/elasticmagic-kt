@@ -145,7 +145,7 @@ class BulkRequest<ResultT>(
     path: String,
     parameters: Parameters = emptyMap(),
     body: List<Serializer.ObjectCtx>,
-    private val serde: Serde.Json,
+    private val serde: Serde.OneLineJson,
     processResponse: (Deserializer.ObjectCtx) -> ResultT
 ) : Request<List<Serializer.ObjectCtx>, Deserializer.ObjectCtx, ResultT>(
     method,
@@ -160,7 +160,7 @@ class BulkRequest<ResultT>(
             path: String,
             parameters: Parameters = emptyMap(),
             body: List<Serializer.ObjectCtx>,
-            serde: Serde.Json,
+            serde: Serde.OneLineJson,
         ): BulkRequest<Deserializer.ObjectCtx> {
             return BulkRequest(method, path, parameters = parameters, body = body, serde = serde) { res -> res}
         }
@@ -172,8 +172,8 @@ class BulkRequest<ResultT>(
 
     override fun serializeRequest(encoder: RequestEncoder) {
         if (body != null) {
-            for (row in body) {
-                encoder.append(row.serialize())
+            for (obj in body) {
+                encoder.append(obj.serialize())
                 encoder.append("\n")
             }
         }
