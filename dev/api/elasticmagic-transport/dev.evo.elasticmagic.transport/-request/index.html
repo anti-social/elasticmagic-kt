@@ -24,16 +24,16 @@
           </div>
           <div class="cover ">
             <h1 class="cover"><span>Request</span></h1>
-            <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":elasticmagic-transport:dokkaHtmlPartial/commonMain"><div class="symbol monospace">abstract class <a href="index.html">Request</a>&lt;out <a href="index.html">B</a>, <a href="index.html">T</a>, out <a href="index.html">R</a>&gt;(method: <a href="../-method/index.html">Method</a>, path: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a>, parameters: <a href="../index.html#456731412%2FClasslikes%2F870854399">Parameters</a>, body: <a href="index.html">B</a>?, processResult: (<a href="index.html">T</a>) -&gt; <a href="index.html">R</a>)<span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+            <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":elasticmagic-transport:dokkaHtmlPartial/commonMain"><div class="symbol monospace">abstract class <a href="index.html">Request</a>&lt;out <a href="index.html">BodyT</a>, <a href="index.html">ResponseT</a>, out <a href="index.html">ResultT</a>&gt;(method: <a href="../-method/index.html">Method</a>, path: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a>, parameters: <a href="../index.html#456731412%2FClasslikes%2F870854399">Parameters</a>, body: <a href="index.html">BodyT</a>?, processResponse: (<a href="index.html">ResponseT</a>) -&gt; <a href="index.html">ResultT</a>)<span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
           </div>
           <div class="tabbedcontent">
             <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="Functions">Functions</button><button class="section-tab" data-togglable="Properties">Properties</button><button class="section-tab" data-togglable="Inheritors">Inheritors</button></div>
             <div class="tabs-section-body">
               <h2 class="">Functions</h2>
-              <div class="table" data-togglable="Functions"><a data-name="-1528069610%2FFunctions%2F870854399" anchor-label="deserializeResponse" id="-1528069610%2FFunctions%2F870854399" data-filterable-set=":elasticmagic-transport:dokkaHtmlPartial/commonMain"></a>
+              <div class="table" data-togglable="Functions"><a data-name="-1545700204%2FFunctions%2F870854399" anchor-label="deserializeResponse" id="-1545700204%2FFunctions%2F870854399" data-filterable-set=":elasticmagic-transport:dokkaHtmlPartial/commonMain"></a>
                 <div class="table-row" data-filterable-current=":elasticmagic-transport:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic-transport:dokkaHtmlPartial/commonMain">
                   <div class="main-subrow keyValue ">
-                    <div class=""><span class="inline-flex"><a href="deserialize-response.html">deserializeResponse</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1528069610%2FFunctions%2F870854399"></span>
+                    <div class=""><span class="inline-flex"><a href="deserialize-response.html">deserializeResponse</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1545700204%2FFunctions%2F870854399"></span>
                           <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                         </span></span></div>
                     <div>
@@ -43,7 +43,7 @@
                       <div class="title"><div class="divergent-group" data-filterable-current=":elasticmagic-transport:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic-transport:dokkaHtmlPartial/commonMain"><div class="with-platform-tags"><span class="pull-right"></span></div>
 
   <div>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":elasticmagic-transport:dokkaHtmlPartial/commonMain"><div class="symbol monospace">abstract fun <a href="deserialize-response.html">deserializeResponse</a>(response: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a>, serde: <span data-unresolved-link="/<ERROR CLASS>///PointingToDeclaration/">&lt;ERROR CLASS&gt;</span>): <a href="index.html">T</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":elasticmagic-transport:dokkaHtmlPartial/commonMain"><div class="symbol monospace">abstract fun <a href="deserialize-response.html">deserializeResponse</a>(response: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a>): <a href="index.html">ResponseT</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
   </div>
 </div>
 </div>
@@ -72,7 +72,23 @@
                 </div>
               </div>
               <h2 class="">Properties</h2>
-              <div class="table" data-togglable="Properties"><a data-name="-716324568%2FProperties%2F870854399" anchor-label="body" id="-716324568%2FProperties%2F870854399" data-filterable-set=":elasticmagic-transport:dokkaHtmlPartial/commonMain"></a>
+              <div class="table" data-togglable="Properties"><a data-name="-1707622075%2FProperties%2F870854399" anchor-label="acceptContentType" id="-1707622075%2FProperties%2F870854399" data-filterable-set=":elasticmagic-transport:dokkaHtmlPartial/commonMain"></a>
+                <div class="table-row" data-filterable-current=":elasticmagic-transport:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic-transport:dokkaHtmlPartial/commonMain">
+                  <div class="main-subrow keyValue ">
+                    <div class=""><span class="inline-flex"><a href="accept-content-type.html">acceptContentType</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1707622075%2FProperties%2F870854399"></span>
+                          <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                        </span></span></div>
+                    <div>
+                      <div class="platform-tags ">
+                        <div class="platform-tag common-like">common</div>
+                      </div>
+                      <div class="title">
+                        <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":elasticmagic-transport:dokkaHtmlPartial/commonMain"><a data-name="-1707622075%2FProperties%2F870854399" anchor-label="acceptContentType" id="-1707622075%2FProperties%2F870854399" data-filterable-set=":elasticmagic-transport:dokkaHtmlPartial/commonMain"></a><div class="symbol monospace">open val <a href="accept-content-type.html">acceptContentType</a>: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a>? = null<span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+<a data-name="-716324568%2FProperties%2F870854399" anchor-label="body" id="-716324568%2FProperties%2F870854399" data-filterable-set=":elasticmagic-transport:dokkaHtmlPartial/commonMain"></a>
                 <div class="table-row" data-filterable-current=":elasticmagic-transport:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic-transport:dokkaHtmlPartial/commonMain">
                   <div class="main-subrow keyValue ">
                     <div class=""><span class="inline-flex"><a href="body.html">body</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-716324568%2FProperties%2F870854399"></span>
@@ -83,7 +99,7 @@
                         <div class="platform-tag common-like">common</div>
                       </div>
                       <div class="title">
-                        <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":elasticmagic-transport:dokkaHtmlPartial/commonMain"><a data-name="-716324568%2FProperties%2F870854399" anchor-label="body" id="-716324568%2FProperties%2F870854399" data-filterable-set=":elasticmagic-transport:dokkaHtmlPartial/commonMain"></a><div class="symbol monospace">val <a href="body.html">body</a>: <a href="index.html">B</a>? = null<span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                        <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":elasticmagic-transport:dokkaHtmlPartial/commonMain"><a data-name="-716324568%2FProperties%2F870854399" anchor-label="body" id="-716324568%2FProperties%2F870854399" data-filterable-set=":elasticmagic-transport:dokkaHtmlPartial/commonMain"></a><div class="symbol monospace">val <a href="body.html">body</a>: <a href="index.html">BodyT</a>? = null<span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
                       </div>
                     </div>
                   </div>
@@ -99,7 +115,23 @@
                         <div class="platform-tag common-like">common</div>
                       </div>
                       <div class="title">
-                        <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":elasticmagic-transport:dokkaHtmlPartial/commonMain"><a data-name="-1046448547%2FProperties%2F870854399" anchor-label="contentType" id="-1046448547%2FProperties%2F870854399" data-filterable-set=":elasticmagic-transport:dokkaHtmlPartial/commonMain"></a><div class="symbol monospace">open val <a href="content-type.html">contentType</a>: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a>? = null<span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                        <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":elasticmagic-transport:dokkaHtmlPartial/commonMain"><a data-name="-1046448547%2FProperties%2F870854399" anchor-label="contentType" id="-1046448547%2FProperties%2F870854399" data-filterable-set=":elasticmagic-transport:dokkaHtmlPartial/commonMain"></a><div class="symbol monospace">abstract val <a href="content-type.html">contentType</a>: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+<a data-name="-1053183695%2FProperties%2F870854399" anchor-label="errorSerde" id="-1053183695%2FProperties%2F870854399" data-filterable-set=":elasticmagic-transport:dokkaHtmlPartial/commonMain"></a>
+                <div class="table-row" data-filterable-current=":elasticmagic-transport:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic-transport:dokkaHtmlPartial/commonMain">
+                  <div class="main-subrow keyValue ">
+                    <div class=""><span class="inline-flex"><a href="error-serde.html">errorSerde</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1053183695%2FProperties%2F870854399"></span>
+                          <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                        </span></span></div>
+                    <div>
+                      <div class="platform-tags ">
+                        <div class="platform-tag common-like">common</div>
+                      </div>
+                      <div class="title">
+                        <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":elasticmagic-transport:dokkaHtmlPartial/commonMain"><a data-name="-1053183695%2FProperties%2F870854399" anchor-label="errorSerde" id="-1053183695%2FProperties%2F870854399" data-filterable-set=":elasticmagic-transport:dokkaHtmlPartial/commonMain"></a><div class="symbol monospace">abstract val <a href="error-serde.html">errorSerde</a>: <span data-unresolved-link="/<ERROR CLASS>///PointingToDeclaration/">&lt;ERROR CLASS&gt;</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
                       </div>
                     </div>
                   </div>
@@ -152,10 +184,10 @@
                     </div>
                   </div>
                 </div>
-<a data-name="35556260%2FProperties%2F870854399" anchor-label="processResult" id="35556260%2FProperties%2F870854399" data-filterable-set=":elasticmagic-transport:dokkaHtmlPartial/commonMain"></a>
+<a data-name="1507239680%2FProperties%2F870854399" anchor-label="processResponse" id="1507239680%2FProperties%2F870854399" data-filterable-set=":elasticmagic-transport:dokkaHtmlPartial/commonMain"></a>
                 <div class="table-row" data-filterable-current=":elasticmagic-transport:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic-transport:dokkaHtmlPartial/commonMain">
                   <div class="main-subrow keyValue ">
-                    <div class=""><span class="inline-flex"><a href="process-result.html">processResult</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="35556260%2FProperties%2F870854399"></span>
+                    <div class=""><span class="inline-flex"><a href="process-response.html">processResponse</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1507239680%2FProperties%2F870854399"></span>
                           <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                         </span></span></div>
                     <div>
@@ -163,17 +195,17 @@
                         <div class="platform-tag common-like">common</div>
                       </div>
                       <div class="title">
-                        <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":elasticmagic-transport:dokkaHtmlPartial/commonMain"><a data-name="35556260%2FProperties%2F870854399" anchor-label="processResult" id="35556260%2FProperties%2F870854399" data-filterable-set=":elasticmagic-transport:dokkaHtmlPartial/commonMain"></a><div class="symbol monospace">val <a href="process-result.html">processResult</a>: (<a href="index.html">T</a>) -&gt; <a href="index.html">R</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                        <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":elasticmagic-transport:dokkaHtmlPartial/commonMain"><a data-name="1507239680%2FProperties%2F870854399" anchor-label="processResponse" id="1507239680%2FProperties%2F870854399" data-filterable-set=":elasticmagic-transport:dokkaHtmlPartial/commonMain"></a><div class="symbol monospace">val <a href="process-response.html">processResponse</a>: (<a href="index.html">ResponseT</a>) -&gt; <a href="index.html">ResultT</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
               <h2 class="">Inheritors</h2>
-              <div class="table" data-togglable="Inheritors"><a data-name="1921735069%2FInheritors%2F870854399" anchor-label="JsonRequest" id="1921735069%2FInheritors%2F870854399" data-filterable-set=":elasticmagic-transport:dokkaHtmlPartial/commonMain"></a>
+              <div class="table" data-togglable="Inheritors"><a data-name="121971785%2FInheritors%2F870854399" anchor-label="ApiRequest" id="121971785%2FInheritors%2F870854399" data-filterable-set=":elasticmagic-transport:dokkaHtmlPartial/commonMain"></a>
                 <div class="table-row" data-filterable-current=":elasticmagic-transport:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic-transport:dokkaHtmlPartial/commonMain">
                   <div class="main-subrow keyValue ">
-                    <div class=""><span class="inline-flex"><a href="../-json-request/index.html">JsonRequest</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1921735069%2FInheritors%2F870854399"></span>
+                    <div class=""><span class="inline-flex"><a href="../-api-request/index.html">ApiRequest</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="121971785%2FInheritors%2F870854399"></span>
                           <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                         </span></span></div>
                     <div></div>
