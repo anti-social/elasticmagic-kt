@@ -76,8 +76,6 @@ class GzipEncoderFactory : RequestEncoderFactory {
 internal expect val isGzipSupported: Boolean
 expect class GzipEncoder() : RequestEncoder
 
-typealias RequestBodyBuilder = RequestEncoder.() -> Unit
-
 sealed class Auth {
     class Basic(val username: String, val password: String) : Auth()
 }
