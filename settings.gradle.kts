@@ -2,6 +2,7 @@
 rootProject.name = "elasticmagic-kt"
 
 include(
+    "benchmarks",
     "elasticmagic",
     "elasticmagic-kotlinx-datetime",
     "elasticmagic-query-filters",
