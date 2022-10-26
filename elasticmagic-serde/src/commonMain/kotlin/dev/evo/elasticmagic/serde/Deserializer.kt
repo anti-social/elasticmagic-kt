@@ -106,6 +106,14 @@ interface Deserializer {
     }
 }
 
+inline fun Deserializer.ObjectCtx.forEach(block: (String, Any?) -> Unit) {
+    val iter = iterator()
+    while (iter.hasNext()) {
+        val (key, value) = iter.anyOrNull()
+        block(key, value)
+    }
+}
+
 fun Deserializer.ObjectCtx.toMap(): Map<String, Any?> {
     val objIterator = iterator()
     val map = mutableMapOf<String, Any?>()
