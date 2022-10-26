@@ -5,7 +5,22 @@ public abstract class dev/evo/elasticmagic/serde/serialization/JsonDeserializer 
 }
 
 public final class dev/evo/elasticmagic/serde/serialization/JsonDeserializer$ArrayCtx : dev/evo/elasticmagic/serde/Deserializer$ArrayCtx {
-	public fun <init> (Lkotlinx/serialization/json/JsonArray;)V
+	public static final synthetic fun box-impl (Lkotlinx/serialization/json/JsonArray;)Ldev/evo/elasticmagic/serde/serialization/JsonDeserializer$ArrayCtx;
+	public static fun constructor-impl (Lkotlinx/serialization/json/JsonArray;)Lkotlinx/serialization/json/JsonArray;
+	public fun equals (Ljava/lang/Object;)Z
+	public static fun equals-impl (Lkotlinx/serialization/json/JsonArray;Ljava/lang/Object;)Z
+	public static final fun equals-impl0 (Lkotlinx/serialization/json/JsonArray;Lkotlinx/serialization/json/JsonArray;)Z
+	public fun hashCode ()I
+	public static fun hashCode-impl (Lkotlinx/serialization/json/JsonArray;)I
+	public fun iterator ()Ldev/evo/elasticmagic/serde/Deserializer$ArrayIterator;
+	public static fun iterator-impl (Lkotlinx/serialization/json/JsonArray;)Ldev/evo/elasticmagic/serde/Deserializer$ArrayIterator;
+	public fun toString ()Ljava/lang/String;
+	public static fun toString-impl (Lkotlinx/serialization/json/JsonArray;)Ljava/lang/String;
+	public final synthetic fun unbox-impl ()Lkotlinx/serialization/json/JsonArray;
+}
+
+public final class dev/evo/elasticmagic/serde/serialization/JsonDeserializer$ArrayIterator : dev/evo/elasticmagic/serde/Deserializer$ArrayIterator {
+	public fun <init> (Ljava/util/Iterator;)V
 	public fun any ()Ljava/lang/Object;
 	public fun anyOrNull ()Ljava/lang/Object;
 	public fun array ()Ldev/evo/elasticmagic/serde/Deserializer$ArrayCtx;
@@ -31,49 +46,80 @@ public final class dev/evo/elasticmagic/serde/serialization/JsonDeserializer$Com
 }
 
 public final class dev/evo/elasticmagic/serde/serialization/JsonDeserializer$ObjectCtx : dev/evo/elasticmagic/serde/Deserializer$ObjectCtx {
-	public fun <init> (Lkotlinx/serialization/json/JsonObject;)V
 	public fun any (Ljava/lang/String;)Ljava/lang/Object;
+	public static fun any-impl (Lkotlinx/serialization/json/JsonObject;Ljava/lang/String;)Ljava/lang/Object;
 	public fun anyOrNull (Ljava/lang/String;)Ljava/lang/Object;
+	public static fun anyOrNull-impl (Lkotlinx/serialization/json/JsonObject;Ljava/lang/String;)Ljava/lang/Object;
 	public fun array (Ljava/lang/String;)Ldev/evo/elasticmagic/serde/Deserializer$ArrayCtx;
+	public static fun array-impl (Lkotlinx/serialization/json/JsonObject;Ljava/lang/String;)Ldev/evo/elasticmagic/serde/Deserializer$ArrayCtx;
 	public fun arrayOrNull (Ljava/lang/String;)Ldev/evo/elasticmagic/serde/Deserializer$ArrayCtx;
+	public static fun arrayOrNull-impl (Lkotlinx/serialization/json/JsonObject;Ljava/lang/String;)Ldev/evo/elasticmagic/serde/Deserializer$ArrayCtx;
 	public fun boolean (Ljava/lang/String;)Z
+	public static fun boolean-impl (Lkotlinx/serialization/json/JsonObject;Ljava/lang/String;)Z
 	public fun booleanOrNull (Ljava/lang/String;)Ljava/lang/Boolean;
+	public static fun booleanOrNull-impl (Lkotlinx/serialization/json/JsonObject;Ljava/lang/String;)Ljava/lang/Boolean;
+	public static final synthetic fun box-impl (Lkotlinx/serialization/json/JsonObject;)Ldev/evo/elasticmagic/serde/serialization/JsonDeserializer$ObjectCtx;
+	public static fun constructor-impl (Lkotlinx/serialization/json/JsonObject;)Lkotlinx/serialization/json/JsonObject;
 	public fun double (Ljava/lang/String;)D
+	public static fun double-impl (Lkotlinx/serialization/json/JsonObject;Ljava/lang/String;)D
 	public fun doubleOrNull (Ljava/lang/String;)Ljava/lang/Double;
+	public static fun doubleOrNull-impl (Lkotlinx/serialization/json/JsonObject;Ljava/lang/String;)Ljava/lang/Double;
+	public fun equals (Ljava/lang/Object;)Z
+	public static fun equals-impl (Lkotlinx/serialization/json/JsonObject;Ljava/lang/Object;)Z
+	public static final fun equals-impl0 (Lkotlinx/serialization/json/JsonObject;Lkotlinx/serialization/json/JsonObject;)Z
 	public fun float (Ljava/lang/String;)F
+	public static fun float-impl (Lkotlinx/serialization/json/JsonObject;Ljava/lang/String;)F
 	public fun floatOrNull (Ljava/lang/String;)Ljava/lang/Float;
+	public static fun floatOrNull-impl (Lkotlinx/serialization/json/JsonObject;Ljava/lang/String;)Ljava/lang/Float;
+	public static final fun forEachAny-impl (Lkotlinx/serialization/json/JsonObject;Lkotlin/jvm/functions/Function2;)V
+	public fun hashCode ()I
+	public static fun hashCode-impl (Lkotlinx/serialization/json/JsonObject;)I
 	public fun int (Ljava/lang/String;)I
+	public static fun int-impl (Lkotlinx/serialization/json/JsonObject;Ljava/lang/String;)I
 	public fun intOrNull (Ljava/lang/String;)Ljava/lang/Integer;
+	public static fun intOrNull-impl (Lkotlinx/serialization/json/JsonObject;Ljava/lang/String;)Ljava/lang/Integer;
 	public synthetic fun iterator ()Ldev/evo/elasticmagic/serde/Deserializer$ObjectIterator;
 	public fun iterator ()Ldev/evo/elasticmagic/serde/serialization/JsonDeserializer$ObjectIterator;
+	public static fun iterator-impl (Lkotlinx/serialization/json/JsonObject;)Ldev/evo/elasticmagic/serde/serialization/JsonDeserializer$ObjectIterator;
 	public fun long (Ljava/lang/String;)J
+	public static fun long-impl (Lkotlinx/serialization/json/JsonObject;Ljava/lang/String;)J
 	public fun longOrNull (Ljava/lang/String;)Ljava/lang/Long;
+	public static fun longOrNull-impl (Lkotlinx/serialization/json/JsonObject;Ljava/lang/String;)Ljava/lang/Long;
 	public fun obj (Ljava/lang/String;)Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;
+	public static fun obj-impl (Lkotlinx/serialization/json/JsonObject;Ljava/lang/String;)Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;
 	public fun objOrNull (Ljava/lang/String;)Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;
+	public static fun objOrNull-impl (Lkotlinx/serialization/json/JsonObject;Ljava/lang/String;)Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;
 	public fun string (Ljava/lang/String;)Ljava/lang/String;
+	public static fun string-impl (Lkotlinx/serialization/json/JsonObject;Ljava/lang/String;)Ljava/lang/String;
 	public fun stringOrNull (Ljava/lang/String;)Ljava/lang/String;
+	public static fun stringOrNull-impl (Lkotlinx/serialization/json/JsonObject;Ljava/lang/String;)Ljava/lang/String;
+	public fun toString ()Ljava/lang/String;
+	public static fun toString-impl (Lkotlinx/serialization/json/JsonObject;)Ljava/lang/String;
+	public final synthetic fun unbox-impl ()Lkotlinx/serialization/json/JsonObject;
 }
 
 public final class dev/evo/elasticmagic/serde/serialization/JsonDeserializer$ObjectIterator : dev/evo/elasticmagic/serde/Deserializer$ObjectIterator {
 	public fun <init> (Ljava/util/Iterator;)V
-	public fun anyOrNull ()Lkotlin/Pair;
-	public fun array ()Lkotlin/Pair;
-	public fun arrayOrNull ()Lkotlin/Pair;
-	public fun boolean ()Lkotlin/Pair;
-	public fun booleanOrNull ()Lkotlin/Pair;
-	public fun double ()Lkotlin/Pair;
-	public fun doubleOrNull ()Lkotlin/Pair;
-	public fun float ()Lkotlin/Pair;
-	public fun floatOrNull ()Lkotlin/Pair;
+	public fun any ()Ljava/lang/Object;
+	public fun anyOrNull ()Ljava/lang/Object;
+	public fun array ()Ldev/evo/elasticmagic/serde/Deserializer$ArrayCtx;
+	public fun arrayOrNull ()Ldev/evo/elasticmagic/serde/Deserializer$ArrayCtx;
+	public fun boolean ()Z
+	public fun booleanOrNull ()Ljava/lang/Boolean;
+	public fun double ()D
+	public fun doubleOrNull ()Ljava/lang/Double;
+	public fun float ()F
+	public fun floatOrNull ()Ljava/lang/Float;
 	public fun hasNext ()Z
-	public fun int ()Lkotlin/Pair;
-	public fun intOrNull ()Lkotlin/Pair;
-	public fun long ()Lkotlin/Pair;
-	public fun longOrNull ()Lkotlin/Pair;
-	public fun obj ()Lkotlin/Pair;
-	public fun objOrNull ()Lkotlin/Pair;
-	public fun string ()Lkotlin/Pair;
-	public fun stringOrNull ()Lkotlin/Pair;
+	public fun int ()I
+	public fun intOrNull ()Ljava/lang/Integer;
+	public fun key ()Ljava/lang/String;
+	public fun long ()J
+	public fun longOrNull ()Ljava/lang/Long;
+	public fun obj ()Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;
+	public fun objOrNull ()Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;
+	public fun string ()Ljava/lang/String;
+	public fun stringOrNull ()Ljava/lang/String;
 }
 
 public final class dev/evo/elasticmagic/serde/serialization/JsonSerde : dev/evo/elasticmagic/serde/Serde$OneLineJson {

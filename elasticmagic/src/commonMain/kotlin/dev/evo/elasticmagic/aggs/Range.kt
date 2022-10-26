@@ -5,6 +5,7 @@ import dev.evo.elasticmagic.Params
 import dev.evo.elasticmagic.compile.SearchQueryCompiler
 import dev.evo.elasticmagic.serde.Deserializer
 import dev.evo.elasticmagic.serde.Serializer
+import dev.evo.elasticmagic.serde.forEachObj
 
 data class AggRange<T>(
     val from: T? = null,
@@ -54,23 +55,19 @@ abstract class BaseRangeAgg<T, R: AggregationResult, B> : BucketAggregation<R>()
     override fun processResult(obj: Deserializer.ObjectCtx): R {
         val bucketsArray = obj.arrayOrNull("buckets")
         if (bucketsArray != null) {
-            val buckets = mutableListOf<B>()
-            while (bucketsArray.hasNext()) {
-                buckets.add(
-                    processBucketResult(bucketsArray.obj())
-                )
+            val buckets = buildList {
+                bucketsArray.forEachObj { bucketObj ->
+                    add(processBucketResult(bucketObj))
+                }
             }
             return makeRangeResult(buckets)
         }
 
         val bucketsObj = obj.obj("buckets")
-        val buckets = mutableListOf<B>()
-        val bucketsIter = bucketsObj.iterator()
-        while (bucketsIter.hasNext()) {
-            val (bucketKey, bucketObj) = bucketsIter.obj()
-            buckets.add(
-                processBucketResult(bucketObj, bucketKey)
-            )
+        val buckets = buildList {
+            bucketsObj.forEachObj { bucketKey, bucketObj ->
+                add(processBucketResult(bucketObj, bucketKey))
+            }
         }
         return makeRangeResult(buckets)
     }

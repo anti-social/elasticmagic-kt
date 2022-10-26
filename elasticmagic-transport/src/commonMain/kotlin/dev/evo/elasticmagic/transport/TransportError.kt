@@ -90,11 +90,11 @@ sealed class TransportError {
                 val cause = ErrorCause.parse(data) ?: return null
                 val phase = data.stringOrNull("phase")
                 val grouped = data.booleanOrNull("grouped")
-                val rootCausesData = data.arrayOrNull("root_cause")
+                val rootCausesIter = data.arrayOrNull("root_cause")?.iterator()
                 val rootCauses = mutableListOf<ErrorCause>()
-                if (rootCausesData != null) {
-                    while (rootCausesData.hasNext()) {
-                        val rootCauseData = rootCausesData.objOrNull()
+                if (rootCausesIter != null) {
+                    while (rootCausesIter.hasNext()) {
+                        val rootCauseData = rootCausesIter.objOrNull()
                         if (rootCauseData != null) {
                             val rootCause = ErrorCause.parse(rootCauseData)
                             if (rootCause != null) {
@@ -103,11 +103,11 @@ sealed class TransportError {
                         }
                     }
                 }
-                val failedShardsData = data.arrayOrNull("failed_shards")
+                val failedShardsIter = data.arrayOrNull("failed_shards")?.iterator()
                 val failedShards = mutableListOf<FailedShard>()
-                if (failedShardsData != null) {
-                    while (failedShardsData.hasNext()) {
-                        val failedShardData = failedShardsData.objOrNull()
+                if (failedShardsIter != null) {
+                    while (failedShardsIter.hasNext()) {
+                        val failedShardData = failedShardsIter.objOrNull()
                         if (failedShardData != null) {
                             FailedShard.parse(failedShardData)?.also {
                                 failedShards.add(it)

@@ -5,7 +5,6 @@ import dev.evo.elasticmagic.PreparedSearchQuery
 import dev.evo.elasticmagic.SearchHit
 import dev.evo.elasticmagic.SearchQueryResult
 import dev.evo.elasticmagic.SearchQueryWithIndex
-import dev.evo.elasticmagic.aggs.AggregationResult
 import dev.evo.elasticmagic.doc.BaseDocSource
 import dev.evo.elasticmagic.query.ArrayExpression
 import dev.evo.elasticmagic.query.Bool
@@ -17,6 +16,9 @@ import dev.evo.elasticmagic.serde.Serde
 import dev.evo.elasticmagic.serde.Serializer
 import dev.evo.elasticmagic.serde.Serializer.ArrayCtx
 import dev.evo.elasticmagic.serde.Serializer.ObjectCtx
+import dev.evo.elasticmagic.serde.forEach
+import dev.evo.elasticmagic.serde.forEachArray
+import dev.evo.elasticmagic.serde.forEachObj
 import dev.evo.elasticmagic.serde.toList
 import dev.evo.elasticmagic.serde.toMap
 import dev.evo.elasticmagic.toRequestParameters
@@ -57,12 +59,12 @@ class MultiSearchQueryCompiler(
                 val took = ctx.longOrNull("took")
                 val responsesCtx = ctx.array("responses")
                 val preparedQueriesIter = preparedQueries.iterator()
-                val results = mutableListOf<SearchQueryResult<*>>()
-                while (responsesCtx.hasNext()) {
-                    val responseCtx = responsesCtx.obj()
-                    results.add(
-                        searchQueryCompiler.processResult(responseCtx, preparedQueriesIter.next())
-                    )
+                val results = buildList {
+                    responsesCtx.forEachObj { respCtx ->
+                        add(
+                            searchQueryCompiler.processResult(respCtx, preparedQueriesIter.next())
+                        )
+                    }
                 }
                 MultiSearchQueryResult(
                     took = took,
@@ -248,23 +250,23 @@ open class SearchQueryCompiler(
         } else {
             rawHitsData.long("total") to null
         }
-        val hits = mutableListOf<SearchHit<S>>()
+
         val rawHits = rawHitsData.arrayOrNull("hits")
-        if (rawHits != null) {
-            while (rawHits.hasNext()) {
-                val rawHit = rawHits.obj()
-                hits.add(
-                    processSearchHit(rawHit, preparedSearchQuery)
-                )
+        val hits = buildList {
+            rawHits?.forEachObj { rawHit ->
+                add(processSearchHit(rawHit, preparedSearchQuery))
             }
         }
+
         val rawAggs = ctx.objOrNull("aggregations")
-        val aggResults = mutableMapOf<String, AggregationResult>()
-        if (rawAggs != null) {
-            for ((aggName, agg) in preparedSearchQuery.aggregations) {
-                aggResults[aggName] = agg.processResult(rawAggs.obj(aggName))
+        val aggResults = buildMap {
+            if (rawAggs != null) {
+                for ((aggName, agg) in preparedSearchQuery.aggregations) {
+                    put(aggName, agg.processResult(rawAggs.obj(aggName)))
+                }
             }
         }
+
         return SearchQueryResult(
             // TODO: Flag to add raw result
             null,
@@ -289,21 +291,17 @@ open class SearchQueryCompiler(
             }
         }
         val fields = rawHit.objOrNull("fields").let { rawFields ->
-            val fields = mutableMapOf<String, List<Any>>()
-            if (rawFields != null) {
-                val fieldsIter = rawFields.iterator()
-                while (fieldsIter.hasNext()) {
-                    val (fieldName, fieldValues) = fieldsIter.array()
-                    fields[fieldName] = fieldValues.toList().filterNotNull()
+            val fields = buildMap {
+                rawFields?.forEachArray { fieldName, fieldValues ->
+                    put(fieldName, fieldValues.toList().filterNotNull())
                 }
             }
             SearchHit.Fields(fields)
         }
         val rawSort = rawHit.arrayOrNull("sort")
-        val sort = mutableListOf<Any>()
-        if (rawSort != null) {
-            while (rawSort.hasNext()) {
-                sort.add(rawSort.any())
+        val sort = buildList {
+            rawSort?.forEach { sortValue ->
+                add(sortValue)
             }
         }
         return SearchHit(
