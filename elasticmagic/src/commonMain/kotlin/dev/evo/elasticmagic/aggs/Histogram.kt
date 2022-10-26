@@ -7,6 +7,7 @@ import dev.evo.elasticmagic.query.ObjExpression
 import dev.evo.elasticmagic.query.ToValue
 import dev.evo.elasticmagic.serde.Deserializer
 import dev.evo.elasticmagic.serde.Serializer
+import dev.evo.elasticmagic.serde.forEachObj
 
 data class HistogramBounds<T>(
     val min: T?,
@@ -74,23 +75,19 @@ abstract class BaseHistogramAgg<T, R: AggregationResult, B> : BucketAggregation<
     override fun processResult(obj: Deserializer.ObjectCtx): R {
         val bucketsArray = obj.arrayOrNull("buckets")
         if (bucketsArray != null) {
-            val buckets = mutableListOf<B>()
-            while (bucketsArray.hasNext()) {
-                buckets.add(
-                    processBucketResult(bucketsArray.obj())
-                )
+            val buckets = buildList {
+                bucketsArray.forEachObj { bucketObj ->
+                    add(processBucketResult(bucketObj))
+                }
             }
             return makeHistogramResult(buckets)
         }
 
         val bucketsObj = obj.obj("buckets")
-        val buckets = mutableListOf<B>()
-        val bucketsIter = bucketsObj.iterator()
-        while (bucketsIter.hasNext()) {
-            val (_, bucketObj) = bucketsIter.obj()
-            buckets.add(
-                processBucketResult(bucketObj)
-            )
+        val buckets = buildList {
+            bucketsObj.forEachObj { _, bucketObj ->
+                add(processBucketResult(bucketObj))
+            }
         }
         return makeHistogramResult(buckets)
     }

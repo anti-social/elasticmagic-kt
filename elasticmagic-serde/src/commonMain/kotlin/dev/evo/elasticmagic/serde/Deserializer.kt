@@ -27,58 +27,50 @@ interface Deserializer {
 
     interface ObjectIterator {
         fun hasNext(): Boolean
-        fun anyOrNull(): Pair<String, Any?>
-        fun intOrNull(): Pair<String, Int?>
-        fun int(): Pair<String, Int> {
-            return intOrNull().let { (k, v) ->
-                if (v != null) k to v else error("not an integer")
-            }
+        fun key(): String
+        fun anyOrNull(): Any?
+        fun any(): Any {
+            return anyOrNull() ?: error("null is not expected")
         }
-        fun longOrNull(): Pair<String, Long?>
-        fun long(): Pair<String, Long> {
-            return longOrNull().let { (k, v) ->
-                if (v != null) k to v else error("not an integer")
-            }
+        fun intOrNull(): Int?
+        fun int(): Int {
+            return intOrNull() ?: error("not an integer")
         }
-        fun floatOrNull(): Pair<String, Float?>
-        fun float(): Pair<String, Float> {
-            return floatOrNull().let { (k, v) ->
-                if (v != null) k to v else error("not an integer")
-            }
+        fun longOrNull(): Long?
+        fun long(): Long {
+            return longOrNull() ?: error("not a long")
         }
-        fun doubleOrNull(): Pair<String, Double?>
-        fun double(): Pair<String, Double> {
-            return doubleOrNull().let { (k, v) ->
-                if (v != null) k to v else error("not an integer")
-            }
+        fun floatOrNull(): Float?
+        fun float(): Float {
+            return floatOrNull() ?: error("not a float")
         }
-        fun booleanOrNull(): Pair<String, Boolean?>
-        fun boolean(): Pair<String, Boolean> {
-            return booleanOrNull().let { (k, v) ->
-                if (v != null) k to v else error("not an integer")
-            }
+        fun doubleOrNull(): Double?
+        fun double(): Double {
+            return doubleOrNull() ?: error("not a double")
         }
-        fun stringOrNull(): Pair<String, String?>
-        fun string(): Pair<String, String> {
-            return stringOrNull().let { (k, v) ->
-                if (v != null) k to v else error("not an integer")
-            }
+        fun booleanOrNull(): Boolean?
+        fun boolean(): Boolean {
+            return booleanOrNull() ?: error("not a boolean")
         }
-        fun objOrNull(): Pair<String, ObjectCtx?>
-        fun obj(): Pair<String, ObjectCtx> {
-            return objOrNull().let { (k, v) ->
-                if (v != null) k to v else error("not an integer")
-            }
+        fun stringOrNull(): String?
+        fun string(): String {
+            return stringOrNull() ?: error("not a string")
         }
-        fun arrayOrNull(): Pair<String, ArrayCtx?>
-        fun array(): Pair<String, ArrayCtx> {
-            return arrayOrNull().let { (k, v) ->
-                if (v != null) k to v else error("not an integer")
-            }
+        fun objOrNull(): ObjectCtx?
+        fun obj(): ObjectCtx {
+            return objOrNull() ?: error("not an object")
+        }
+        fun arrayOrNull(): ArrayCtx?
+        fun array(): ArrayCtx {
+            return arrayOrNull() ?: error("not an array")
         }
     }
 
     interface ArrayCtx {
+        fun iterator(): ArrayIterator
+    }
+
+    interface ArrayIterator {
         fun hasNext(): Boolean
         fun anyOrNull(): Any?
         fun any(): Any = anyOrNull() ?: error("missing value")
@@ -106,33 +98,60 @@ interface Deserializer {
     }
 }
 
-inline fun Deserializer.ObjectCtx.forEach(block: (String, Any?) -> Unit) {
+inline fun Deserializer.ObjectCtx.forEach(block: (String, Any) -> Unit) {
     val iter = iterator()
     while (iter.hasNext()) {
-        val (key, value) = iter.anyOrNull()
-        block(key, value)
+        block(iter.key(), iter.any())
+    }
+}
+
+inline fun Deserializer.ObjectCtx.forEachObj(block: (String, Deserializer.ObjectCtx) -> Unit) {
+    val iter = iterator()
+    while (iter.hasNext()) {
+        block(iter.key(), iter.obj())
+    }
+}
+
+inline fun Deserializer.ObjectCtx.forEachArray(block: (String, Deserializer.ArrayCtx) -> Unit) {
+    val iter = iterator()
+    while (iter.hasNext()) {
+        block(iter.key(), iter.array())
     }
 }
 
 fun Deserializer.ObjectCtx.toMap(): Map<String, Any?> {
-    val objIterator = iterator()
+    val iter = iterator()
     val map = mutableMapOf<String, Any?>()
-    while (objIterator.hasNext()) {
-        val (key, v) = objIterator.anyOrNull()
-        val value = when (v) {
+    while (iter.hasNext()) {
+        val value = when (val v = iter.anyOrNull()) {
             is Deserializer.ObjectCtx -> v.toMap()
             is Deserializer.ArrayCtx -> v.toList()
             else -> v
         }
-        map[key] = value
+        map[iter.key()] = value
     }
     return map
 }
 
+inline fun Deserializer.ArrayCtx.forEach(block: (Any) -> Unit) {
+    val iter = iterator()
+    while (iter.hasNext()) {
+        block(iter.any())
+    }
+}
+
+inline fun Deserializer.ArrayCtx.forEachObj(block: (Deserializer.ObjectCtx) -> Unit) {
+    val iter = iterator()
+    while (iter.hasNext()) {
+        block(iter.obj())
+    }
+}
+
 fun Deserializer.ArrayCtx.toList(): List<Any?> {
     val list = mutableListOf<Any?>()
-    while (hasNext()) {
-        val value = when (val v = anyOrNull()) {
+    val iter = iterator()
+    while (iter.hasNext()) {
+        val value = when (val v = iter.anyOrNull()) {
             is Deserializer.ObjectCtx -> v.toMap()
             is Deserializer.ArrayCtx -> v.toList()
             else -> v

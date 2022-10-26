@@ -96,7 +96,6 @@ class PreparedFacetRangeFilter<T>(
     ): FacetRangeFilterResult<T> {
         val aggResult = searchQueryResult.aggIfExists<SingleBucketAggResult>(filterAggName) ?: searchQueryResult
         val count = aggResult.agg<ValueCountAggResult>(countAggName).value
-            ?: throw IllegalStateException("value_count aggregation without a value")
         val aggs = filter.aggs.mapValues { (aggKey, _) ->
             val aggName = aggName(aggKey)
             aggResult.aggs[aggName] ?: throw NoSuchElementException(aggName)

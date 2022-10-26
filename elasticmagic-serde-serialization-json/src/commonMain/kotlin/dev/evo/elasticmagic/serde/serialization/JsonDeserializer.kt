@@ -18,6 +18,8 @@ import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.longOrNull
 
+import kotlin.jvm.JvmInline
+
 sealed class JsonDeserializer : Deserializer {
     companion object : JsonDeserializer() {
         private fun coerceToAny(v: JsonElement): Any? {
@@ -38,7 +40,8 @@ sealed class JsonDeserializer : Deserializer {
         }
     }
 
-    class ObjectCtx(private val obj: JsonObject) : Deserializer.ObjectCtx {
+    @JvmInline
+    value class ObjectCtx(private val obj: JsonObject) : Deserializer.ObjectCtx {
         override fun anyOrNull(name: String): Any? {
             return obj[name]?.let(::coerceToAny)
         }
@@ -78,6 +81,12 @@ sealed class JsonDeserializer : Deserializer {
         override fun iterator(): ObjectIterator {
             return ObjectIterator(obj.iterator())
         }
+
+        fun forEachAny(block: (String, Any) -> Unit) {
+            for (entry in obj) {
+                block(entry.key, coerceToAny(entry.value) ?: error("Missing a value"))
+            }
+        }
     }
 
     class ObjectIterator(
@@ -95,66 +104,55 @@ sealed class JsonDeserializer : Deserializer {
             return currentEntry ?: throw IllegalStateException("hasNext must be called first")
         }
 
-        override fun anyOrNull(): Pair<String, Any?> {
-            val (key, value) = getCurrentEntry()
-            return key to coerceToAny(value)
+        override fun key(): String = getCurrentEntry().key
+
+        private fun value(): JsonElement = getCurrentEntry().value
+
+        override fun anyOrNull(): Any? {
+            return coerceToAny(value())
         }
 
-        override fun intOrNull(): Pair<String, Int?> {
-            val (key, jsonValue) = getCurrentEntry()
-            return jsonValue.jsonPrimitiveOrNull.let { value ->
-                key to value?.intOrNull
-            }
+        override fun intOrNull(): Int? {
+            return value().jsonPrimitiveOrNull?.intOrNull
         }
 
-        override fun longOrNull(): Pair<String, Long?> {
-            val (key, jsonValue) = getCurrentEntry()
-            return jsonValue.jsonPrimitiveOrNull.let { value ->
-                key to value?.longOrNull
-            }
+        override fun longOrNull(): Long? {
+            return value().jsonPrimitiveOrNull?.longOrNull
         }
 
-        override fun floatOrNull(): Pair<String, Float?> {
-            val (key, jsonValue) = getCurrentEntry()
-            return jsonValue.jsonPrimitiveOrNull.let { value ->
-                key to value?.floatOrNull
-            }
+        override fun floatOrNull(): Float? {
+            return value().jsonPrimitiveOrNull?.floatOrNull
         }
 
-        override fun doubleOrNull(): Pair<String, Double?> {
-            val (key, jsonValue) = getCurrentEntry()
-            return jsonValue.jsonPrimitiveOrNull.let { value ->
-                key to value?.doubleOrNull
-            }
+        override fun doubleOrNull(): Double? {
+            return value().jsonPrimitiveOrNull?.doubleOrNull
         }
 
-        override fun booleanOrNull(): Pair<String, Boolean?> {
-            val (key, jsonValue) = getCurrentEntry()
-            return jsonValue.jsonPrimitiveOrNull.let { value ->
-                key to value?.booleanOrNull
-            }
+        override fun booleanOrNull(): Boolean? {
+            return value().jsonPrimitiveOrNull?.booleanOrNull
         }
 
-        override fun stringOrNull(): Pair<String, String?> {
-            val (key, jsonValue) = getCurrentEntry()
-            return jsonValue.jsonPrimitiveOrNull.let { value ->
-                key to value?.contentOrNull
-            }
+        override fun stringOrNull(): String? {
+            return value().jsonPrimitiveOrNull?.contentOrNull
         }
 
-        override fun objOrNull(): Pair<String, Deserializer.ObjectCtx?> {
-            val (key, jsonValue) = getCurrentEntry()
-            return key to jsonValue.jsonObjectOrNull?.let(JsonDeserializer::ObjectCtx)
+        override fun objOrNull(): Deserializer.ObjectCtx? {
+            return value().jsonObjectOrNull?.let(JsonDeserializer::ObjectCtx)
         }
 
-        override fun arrayOrNull(): Pair<String, Deserializer.ArrayCtx?> {
-            val (key, jsonValue) = getCurrentEntry()
-            return key to jsonValue.jsonArrayOrNull?.let(JsonDeserializer::ArrayCtx)
+        override fun arrayOrNull(): Deserializer.ArrayCtx? {
+            return value().jsonArrayOrNull?.let(JsonDeserializer::ArrayCtx)
         }
     }
 
-    class ArrayCtx(arr: JsonArray) : Deserializer.ArrayCtx {
-        private val iter = arr.iterator()
+    @JvmInline
+    value class ArrayCtx(private val array: JsonArray) : Deserializer.ArrayCtx {
+        override fun iterator(): Deserializer.ArrayIterator {
+            return ArrayIterator(array.iterator())
+        }
+    }
+
+    class ArrayIterator(private val iter: Iterator<JsonElement>) : Deserializer.ArrayIterator {
         private var currentValue: JsonElement? = null
 
         private fun getCurrentValue(): JsonElement {

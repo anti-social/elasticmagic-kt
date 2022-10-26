@@ -7,6 +7,7 @@ import dev.evo.elasticmagic.query.ToValue
 import dev.evo.elasticmagic.compile.SearchQueryCompiler
 import dev.evo.elasticmagic.serde.Deserializer
 import dev.evo.elasticmagic.serde.Serializer
+import dev.evo.elasticmagic.serde.forEachObj
 
 abstract class BaseTermsAgg<T, R: AggregationResult> : BucketAggregation<R>() {
     abstract val value: AggValue<T>
@@ -147,19 +148,18 @@ data class TermsAgg<T>(
     }
 
     override fun processResult(obj: Deserializer.ObjectCtx): TermsAggResult<T> {
-        val buckets = mutableListOf<TermBucket<T>>()
         val rawBuckets = obj.array("buckets")
-        while (rawBuckets.hasNext()) {
-            val rawBucket = rawBuckets.obj()
-            buckets.add(
-                TermBucket(
-                    key = value.deserializeTerm(rawBucket.any("key")),
-                    docCount = rawBucket.long("doc_count"),
-                    docCountErrorUpperBound = rawBucket.longOrNull("doc_count_error_upper_bound"),
-                    aggs = processSubAggs(rawBucket)
+        val buckets = buildList<TermBucket<T>> {
+            rawBuckets.forEachObj { rawBucket ->
+                add(
+                    TermBucket(
+                        key = value.deserializeTerm(rawBucket.any("key")),
+                        docCount = rawBucket.long("doc_count"),
+                        docCountErrorUpperBound = rawBucket.longOrNull("doc_count_error_upper_bound"),
+                        aggs = processSubAggs(rawBucket)
+                    )
                 )
-            )
-
+            }
         }
         return TermsAggResult(
             buckets,
@@ -244,21 +244,20 @@ data class SignificantTermsAgg<T>(
     }
 
     override fun processResult(obj: Deserializer.ObjectCtx): SignificantTermsAggResult<T> {
-        val buckets = mutableListOf<SignificantTermBucket<T>>()
         val rawBuckets = obj.array("buckets")
-        while (rawBuckets.hasNext()) {
-            val rawBucket = rawBuckets.obj()
-            buckets.add(
-                SignificantTermBucket(
-                    key = value.deserializeTerm(rawBucket.any("key")),
-                    docCount = rawBucket.long("doc_count"),
-                    bgCount = rawBucket.long("bg_count"),
-                    score = rawBucket.float("score"),
-                    docCountErrorUpperBound = rawBucket.longOrNull("doc_count_error_upper_bound"),
-                    aggs = processSubAggs(rawBucket)
+        val buckets = buildList<SignificantTermBucket<T>> {
+            rawBuckets.forEachObj { rawBucket ->
+                add(
+                    SignificantTermBucket(
+                        key = value.deserializeTerm(rawBucket.any("key")),
+                        docCount = rawBucket.long("doc_count"),
+                        bgCount = rawBucket.long("bg_count"),
+                        score = rawBucket.float("score"),
+                        docCountErrorUpperBound = rawBucket.longOrNull("doc_count_error_upper_bound"),
+                        aggs = processSubAggs(rawBucket)
+                    )
                 )
-            )
-
+            }
         }
         return SignificantTermsAggResult(
             obj.long("doc_count"),

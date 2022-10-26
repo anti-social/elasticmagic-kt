@@ -1,5 +1,6 @@
 package dev.evo.elasticmagic.serde
 
+import kotlin.jvm.JvmInline
 
 @Suppress("UnnecessaryAbstractClass")
 abstract class StdDeserializer : Deserializer {
@@ -89,7 +90,8 @@ abstract class StdDeserializer : Deserializer {
         }
     }
 
-    class ObjectCtx(
+    @JvmInline
+    value class ObjectCtx(
         private val map: Map<*, *>,
     ) : Deserializer.ObjectCtx {
         override fun iterator(): ObjectIterator {
@@ -124,68 +126,54 @@ abstract class StdDeserializer : Deserializer {
     ) : Deserializer.ObjectIterator {
         private var currentEntry: Map.Entry<*, *>? = null
 
+        private fun getCurrentEntry(): Map.Entry<*, *> {
+            return currentEntry ?: throw IllegalStateException("hasNext must be called first")
+        }
+
         override fun hasNext(): Boolean {
             return iter.hasNext().also {
                 currentEntry = if (it) iter.next() else null
             }
         }
 
-        private fun getCurrentEntry(): Map.Entry<*, *> {
-            return currentEntry ?: throw IllegalStateException("hasNext must be called first")
+        override fun key(): String = getCurrentEntry().key as String
+
+        private fun value() = getCurrentEntry().value
+
+        override fun anyOrNull(): Any? = coerceToAny(value())
+
+        override fun intOrNull(): Int? = coerceToInt(value())
+
+        override fun longOrNull(): Long? = coerceToLong(value())
+
+        override fun floatOrNull(): Float? = coerceToFloat(value())
+
+        override fun doubleOrNull(): Double? = coerceToDouble(value())
+
+        override fun booleanOrNull(): Boolean? = coerceToBoolean(value())
+
+        override fun stringOrNull(): String? = coerceToString(value())
+
+        override fun objOrNull(): Deserializer.ObjectCtx? {
+            return coerceToMap(value())?.let(StdDeserializer::ObjectCtx)
         }
 
-        override fun anyOrNull(): Pair<String, Any?> {
-            val (key, value) = getCurrentEntry()
-            return key as String to coerceToAny(value)
-        }
-
-        override fun intOrNull(): Pair<String, Int?> {
-            val (key, value) = getCurrentEntry()
-            return key as String to coerceToInt(value)
-        }
-
-        override fun longOrNull(): Pair<String, Long?> {
-            val (key, value) = getCurrentEntry()
-            return key as String to coerceToLong(value)
-        }
-
-        override fun floatOrNull(): Pair<String, Float?> {
-            val (key, value) = getCurrentEntry()
-            return key as String to coerceToFloat(value)
-        }
-
-        override fun doubleOrNull(): Pair<String, Double?> {
-            val (key, value) = getCurrentEntry()
-            return key as String to coerceToDouble(value)
-        }
-
-        override fun booleanOrNull(): Pair<String, Boolean?> {
-            val (key, value) = getCurrentEntry()
-            return key as String to coerceToBoolean(value)
-        }
-
-        override fun stringOrNull(): Pair<String, String?> {
-            val (key, value) = getCurrentEntry()
-            return key as String to coerceToString(value)
-        }
-
-        override fun objOrNull(): Pair<String, Deserializer.ObjectCtx?> {
-            val (key, value) = getCurrentEntry()
-            return key as String to coerceToMap(value)?.let(StdDeserializer::ObjectCtx)
-        }
-
-        override fun arrayOrNull(): Pair<String, Deserializer.ArrayCtx?> {
-            val (key, value) = getCurrentEntry()
-            return key as String to coerceToList(value)?.let(StdDeserializer::ArrayCtx)
+        override fun arrayOrNull(): Deserializer.ArrayCtx? {
+            return coerceToList(value())?.let(StdDeserializer::ArrayCtx)
         }
     }
 
-    class ArrayCtx(
-        private val iter: Iterator<Any?>,
-    ) : Deserializer.ArrayCtx {
-        private var currentValue: Any? = null
+    @JvmInline
+    value class ArrayCtx(private val array: List<Any?>) : Deserializer.ArrayCtx {
+        override fun iterator(): Deserializer.ArrayIterator {
+            return ArrayIterator(array.iterator())
+        }
+    }
 
-        constructor(arr: List<Any?>) : this(arr.iterator())
+    class ArrayIterator(
+        private val iter: Iterator<Any?>,
+    ) : Deserializer.ArrayIterator {
+        private var currentValue: Any? = null
 
         override fun hasNext(): Boolean {
             return iter.hasNext().also {

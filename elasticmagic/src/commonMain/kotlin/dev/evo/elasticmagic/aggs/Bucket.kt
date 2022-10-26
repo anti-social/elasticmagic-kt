@@ -8,6 +8,7 @@ import dev.evo.elasticmagic.query.QueryExpression
 import dev.evo.elasticmagic.query.Sort
 import dev.evo.elasticmagic.serde.Deserializer
 import dev.evo.elasticmagic.serde.Serializer
+import dev.evo.elasticmagic.serde.forEachObj
 
 abstract class BucketAggregation<R: AggregationResult> : Aggregation<R> {
     abstract val aggs: Map<String, Aggregation<*>>
@@ -118,15 +119,17 @@ data class FiltersAgg(
     }
 
     override fun processResult(obj: Deserializer.ObjectCtx): FiltersAggResult {
-        val bucketsIter = obj.obj("buckets").iterator()
-        val buckets = mutableMapOf<String, FiltersBucket>()
-        while (bucketsIter.hasNext()) {
-            val (bucketKey, bucketObj) = bucketsIter.obj()
-            buckets[bucketKey] = FiltersBucket(
-                key = bucketKey,
-                docCount = bucketObj.long("doc_count"),
-                aggs = processSubAggs(bucketObj),
-            )
+        val buckets = buildMap {
+            obj.obj("buckets").forEachObj { bucketKey, bucketObj ->
+                put(
+                    bucketKey,
+                    FiltersBucket(
+                        key = bucketKey,
+                        docCount = bucketObj.long("doc_count"),
+                        aggs = processSubAggs(bucketObj),
+                    )
+                )
+            }
         }
         return FiltersAggResult(buckets)
     }
