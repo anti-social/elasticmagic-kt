@@ -513,7 +513,7 @@ Use it on your own risk</p>
 <span class="w">    </span><span class="n">mavenCentral</span><span class="p">()</span><span class="w"></span>
 <span class="p">}</span><span class="w"></span>
 
-<span class="kd">val</span><span class="w"> </span><span class="nv">elasticmagicVersion</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;0.0.16-2-g1c7f7bd&quot;</span><span class="w"></span>
+<span class="kd">val</span><span class="w"> </span><span class="nv">elasticmagicVersion</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;0.0.16-4-gde7cfbd&quot;</span><span class="w"></span>
 <span class="kd">val</span><span class="w"> </span><span class="nv">ktorVersion</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;2.0.3&quot;</span><span class="w"></span>
 
 <span class="n">dependencies</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
@@ -563,6 +563,7 @@ http client.</p>
 
 <span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.transport.Auth</span><span class="w"></span>
 <span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.transport.ElasticsearchKtorTransport</span><span class="w"></span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.transport.Response</span><span class="w"></span>
 
 <span class="k">import</span><span class="w"> </span><span class="nn">io.ktor.client.engine.cio.CIO</span><span class="w"></span>
 
@@ -591,6 +592,31 @@ http client.</p>
 <span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">elasticPassword</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">System</span><span class="p">.</span><span class="na">getenv</span><span class="p">(</span><span class="s">&quot;ELASTIC_PASSWORD&quot;</span><span class="p">)</span><span class="w"></span>
 <span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">elasticPassword</span><span class="p">.</span><span class="na">isNullOrEmpty</span><span class="p">())</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">        </span><span class="n">auth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Auth</span><span class="p">.</span><span class="na">Basic</span><span class="p">(</span><span class="n">elasticUser</span><span class="p">,</span><span class="w"> </span><span class="n">elasticPassword</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">System</span><span class="p">.</span><span class="na">getenv</span><span class="p">(</span><span class="s">&quot;ELASTICMAGIC_DEBUG&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="n">hooks</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">listOf</span><span class="p">(</span><span class="w"></span>
+<span class="w">            </span><span class="p">{</span><span class="w"> </span><span class="n">request</span><span class="p">,</span><span class="w"> </span><span class="n">response</span><span class="p">,</span><span class="w"> </span><span class="n">duration</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"></span>
+<span class="w">                </span><span class="n">println</span><span class="p">(</span><span class="s">&quot;&gt;&gt;&gt;&quot;</span><span class="p">)</span><span class="w"></span>
+<span class="w">                </span><span class="n">println</span><span class="p">(</span><span class="s">&quot;</span><span class="si">${</span><span class="n">request</span><span class="p">.</span><span class="na">method</span><span class="si">}</span><span class="s"> </span><span class="si">${</span><span class="n">request</span><span class="p">.</span><span class="na">path</span><span class="p">.</span><span class="na">ifEmpty</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="s">&quot;/&quot;</span><span class="w"> </span><span class="p">}</span><span class="si">}</span><span class="s">&quot;</span><span class="p">)</span><span class="w"></span>
+<span class="w">                </span><span class="n">println</span><span class="p">(</span><span class="n">request</span><span class="p">.</span><span class="na">encodeToString</span><span class="p">())</span><span class="w"></span>
+<span class="w">                </span><span class="k">when</span><span class="w"> </span><span class="p">(</span><span class="n">response</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">                    </span><span class="k">is</span><span class="w"> </span><span class="n">Response</span><span class="p">.</span><span class="na">Ok</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">                        </span><span class="n">println</span><span class="p">(</span><span class="s">&quot;&lt;&lt;&lt; </span><span class="si">${</span><span class="n">response</span><span class="p">.</span><span class="na">statusCode</span><span class="si">}</span><span class="s">: </span><span class="si">${</span><span class="n">duration</span><span class="si">}</span><span class="s">&quot;</span><span class="p">)</span><span class="w"></span>
+<span class="w">                        </span><span class="n">println</span><span class="p">(</span><span class="n">response</span><span class="p">.</span><span class="na">content</span><span class="p">)</span><span class="w"></span>
+<span class="w">                    </span><span class="p">}</span><span class="w"></span>
+<span class="w">                    </span><span class="k">is</span><span class="w"> </span><span class="n">Response</span><span class="p">.</span><span class="na">Error</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">                        </span><span class="n">println</span><span class="p">(</span><span class="s">&quot;&lt;&lt;&lt; </span><span class="si">${</span><span class="n">response</span><span class="p">.</span><span class="na">statusCode</span><span class="si">}</span><span class="s">: </span><span class="si">${</span><span class="n">duration</span><span class="si">}</span><span class="s">&quot;</span><span class="p">)</span><span class="w"></span>
+<span class="w">                        </span><span class="n">println</span><span class="p">(</span><span class="n">response</span><span class="p">.</span><span class="na">error</span><span class="p">)</span><span class="w"></span>
+<span class="w">                    </span><span class="p">}</span><span class="w"></span>
+<span class="w">                    </span><span class="k">is</span><span class="w"> </span><span class="n">Response</span><span class="p">.</span><span class="na">Exception</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">                        </span><span class="n">println</span><span class="p">(</span><span class="s">&quot;!!! </span><span class="si">${</span><span class="n">response</span><span class="p">.</span><span class="na">cause</span><span class="si">}</span><span class="s">&quot;</span><span class="p">)</span><span class="w"></span>
+<span class="w">                    </span><span class="p">}</span><span class="w"></span>
+<span class="w">                </span><span class="p">}</span><span class="w"></span>
+<span class="w">                </span><span class="n">println</span><span class="p">(</span><span class="s">&quot;===&quot;</span><span class="p">)</span><span class="w"></span>
+<span class="w">                </span><span class="n">println</span><span class="p">()</span><span class="w"></span>
+<span class="w">            </span><span class="p">},</span><span class="w"></span>
+<span class="w">        </span><span class="p">)</span><span class="w"></span>
 <span class="w">    </span><span class="p">}</span><span class="w"></span>
 <span class="p">}</span><span class="w"></span>
 </code></pre></div>
