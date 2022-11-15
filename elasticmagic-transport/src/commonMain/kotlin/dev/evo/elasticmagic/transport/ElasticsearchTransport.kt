@@ -1,8 +1,13 @@
 package dev.evo.elasticmagic.transport
 
+import dev.evo.elasticmagic.serde.DeserializationException
 import dev.evo.elasticmagic.serde.Deserializer
 import dev.evo.elasticmagic.serde.Serde
 import dev.evo.elasticmagic.serde.Serializer
+
+import kotlin.time.Duration
+import kotlin.time.ExperimentalTime
+import kotlin.time.measureTimedValue
 
 enum class Method {
     GET, PUT, POST, DELETE, HEAD
@@ -52,7 +57,7 @@ interface RequestEncoder : Appendable {
     fun toByteArray(): ByteArray
 }
 
-class StringEncoderFactory : RequestEncoderFactory {
+object StringEncoderFactory : RequestEncoderFactory {
     override val encoding: String? = null
     override fun create() = StringEncoder()
 }
@@ -65,14 +70,19 @@ class StringEncoder : RequestEncoder {
     }
 
     override fun toByteArray(): ByteArray {
-        return builder.toString().encodeToByteArray(throwOnInvalidSequence = true)
+        return toString().encodeToByteArray(throwOnInvalidSequence = true)
+    }
+
+    override fun toString(): String {
+        return builder.toString()
     }
 }
 
-class GzipEncoderFactory : RequestEncoderFactory {
+object GzipEncoderFactory : RequestEncoderFactory {
     override val encoding = "gzip"
     override fun create() = GzipEncoder()
 }
+
 internal expect val isGzipSupported: Boolean
 expect class GzipEncoder() : RequestEncoder
 
@@ -80,35 +90,38 @@ sealed class Auth {
     class Basic(val username: String, val password: String) : Auth()
 }
 
-abstract class Request<out BodyT, ResponseT, out ResultT>(
-    val method: Method,
-    val path: String,
-    val parameters: Parameters = emptyMap(),
-    val body: BodyT? = null,
-    val processResponse: (ResponseT) -> ResultT,
-) {
+abstract class Request<out BodyT, ResponseT, out ResultT> {
+    abstract val method: Method
+    abstract val path: String
+    abstract val parameters: Parameters
+    abstract val body: BodyT?
     abstract val contentType: String
-    open val acceptContentType: String? = null
     abstract val errorSerde: Serde
+    abstract val processResponse: (ResponseT) -> ResultT
+
+    open val acceptContentType: String? = null
 
     abstract fun serializeRequest(encoder: RequestEncoder)
     abstract fun deserializeResponse(response: String): ResponseT
+
+    /**
+     * Encodes this request body to string. Useful with transport hooks
+     */
+    fun encodeToString(): String {
+        return StringEncoderFactory.create()
+            .apply(::serializeRequest)
+            .toString()
+    }
 }
 
 class ApiRequest<ResultT>(
-    method: Method,
-    path: String,
-    parameters: Parameters = emptyMap(),
-    body: Serializer.ObjectCtx? = null,
-    private val serde: Serde,
-    processResponse: (Deserializer.ObjectCtx) -> ResultT
-) : Request<Serializer.ObjectCtx, Deserializer.ObjectCtx, ResultT>(
-    method,
-    path,
-    parameters = parameters,
-    body = body,
-    processResponse = processResponse
-) {
+    override val method: Method,
+    override val path: String,
+    override val parameters: Parameters = emptyMap(),
+    override val body: Serializer.ObjectCtx? = null,
+    val serde: Serde,
+    override val processResponse: (Deserializer.ObjectCtx) -> ResultT
+) : Request<Serializer.ObjectCtx, Deserializer.ObjectCtx, ResultT>() {
     companion object {
         operator fun invoke(
             method: Method,
@@ -139,19 +152,13 @@ class ApiRequest<ResultT>(
 }
 
 class BulkRequest<ResultT>(
-    method: Method,
-    path: String,
-    parameters: Parameters = emptyMap(),
-    body: List<Serializer.ObjectCtx>,
-    private val serde: Serde.OneLineJson,
-    processResponse: (Deserializer.ObjectCtx) -> ResultT
-) : Request<List<Serializer.ObjectCtx>, Deserializer.ObjectCtx, ResultT>(
-    method,
-    path,
-    parameters = parameters,
-    body = body,
-    processResponse = processResponse
-) {
+    override val method: Method,
+    override val path: String,
+    override val parameters: Parameters = emptyMap(),
+    override val body: List<Serializer.ObjectCtx>,
+    val serde: Serde.OneLineJson,
+    override val processResponse: (Deserializer.ObjectCtx) -> ResultT
+) : Request<List<Serializer.ObjectCtx>, Deserializer.ObjectCtx, ResultT>() {
     companion object {
         operator fun invoke(
             method: Method,
@@ -169,11 +176,9 @@ class BulkRequest<ResultT>(
     override val errorSerde = serde
 
     override fun serializeRequest(encoder: RequestEncoder) {
-        if (body != null) {
-            for (obj in body) {
-                encoder.append(obj.serialize())
-                encoder.append("\n")
-            }
+        for (obj in body) {
+            encoder.append(obj.serialize())
+            encoder.append("\n")
         }
     }
 
@@ -186,17 +191,11 @@ class BulkRequest<ResultT>(
 }
 
 class CatRequest<ResultT>(
-    path: String,
-    parameters: Parameters = emptyMap(),
+    catPath: String,
+    override val parameters: Parameters = emptyMap(),
     override val errorSerde: Serde,
-    processResponse: (List<List<String>>) -> ResultT
-) : Request<Nothing, List<List<String>>, ResultT>(
-    Method.GET,
-    "_cat/$path",
-    parameters = parameters,
-    body = null,
-    processResponse = processResponse
-) {
+    override val processResponse: (List<List<String>>) -> ResultT
+) : Request<Nothing, List<List<String>>, ResultT>() {
     companion object {
         operator fun invoke(
             path: String,
@@ -207,6 +206,9 @@ class CatRequest<ResultT>(
         }
     }
 
+    override val method = Method.GET
+    override val path = "_cat/$catPath"
+    override val body = null
     override val contentType = "text/plain"
 
     override fun serializeRequest(encoder: RequestEncoder) {}
@@ -218,29 +220,105 @@ class CatRequest<ResultT>(
     }
 }
 
+class PlainResponse(
+    val statusCode: Int,
+    val content: String,
+)
+
+sealed class Response {
+    data class Ok(val statusCode: Int, val content: String) : Response()
+    data class Error(val statusCode: Int, val error: TransportError) : Response()
+    data class Exception(val cause: Throwable) : Response()
+}
 
 abstract class ElasticsearchTransport(
     val baseUrl: String,
     protected val config: Config,
 ) {
+    /**
+     * Configuration of transport
+     */
     class Config {
+        /**
+         * Whether to compress requests or not
+         */
         var gzipRequests: Boolean = false
+
+        /**
+         * Authentication data
+         */
         var auth: Auth? = null
+
+        /**
+         * Using hooks it is possible to log requests
+         */
+        var hooks: List<(Request<*, *, *>, Response, Duration) -> Unit> = emptyList()
     }
 
     protected val requestEncoderFactory: RequestEncoderFactory =
         if (config.gzipRequests && isGzipSupported) {
-            GzipEncoderFactory()
+            GzipEncoderFactory
         } else {
-            StringEncoderFactory()
+            StringEncoderFactory
         }
 
+    companion object {
+        private val HTTP_OK_CODES = 200..299
+    }
+
+    @OptIn(ExperimentalTime::class)
     suspend fun <B, T, R> request(
         request: Request<B, T, R>
     ): R {
-        val response = doRequest(request)
-        return request.processResponse(request.deserializeResponse(response))
+        val (response, duration) = measureTimedValue {
+            @Suppress("TooGenericExceptionCaught")
+            try {
+                val response = doRequest(request)
+                processResponse(response, request.errorSerde)
+            } catch (e: Throwable) {
+                Response.Exception(e)
+            }
+        }
+
+        config.hooks.forEach { hook ->
+            hook(request, response, duration)
+        }
+
+        return when (response) {
+            is Response.Ok -> {
+                request.processResponse(request.deserializeResponse(response.content))
+            }
+            is Response.Error -> {
+                throw ElasticsearchException.Transport.fromStatusCode(
+                    response.statusCode, response.error
+                )
+            }
+            is Response.Exception -> {
+                throw response.cause
+            }
+        }
     }
 
-    protected abstract suspend fun doRequest(request: Request<*, *, *>): String
+    private fun processResponse(response: PlainResponse, errorSerde: Serde): Response {
+        val statusCode = response.statusCode
+        val content = response.content
+        return when (statusCode) {
+            in HTTP_OK_CODES -> Response.Ok(statusCode, content)
+            else -> {
+                val jsonError = try {
+                    errorSerde.deserializer.objFromStringOrNull(content)
+                } catch (e: DeserializationException) {
+                    null
+                }
+                val transportError = if (jsonError != null) {
+                    TransportError.parse(jsonError)
+                } else {
+                    TransportError.Simple(content)
+                }
+                Response.Error(statusCode, transportError)
+            }
+        }
+    }
+
+    protected abstract suspend fun doRequest(request: Request<*, *, *>): PlainResponse
 }

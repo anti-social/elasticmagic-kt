@@ -50,11 +50,11 @@ class TransportErrorTests {
     @Test
     fun parseJsonError() {
         val rawError = buildJsonObject {
-            put("error", "something error message")
+            put("error", "Just error message")
         }
         val ex = TransportError.parse(
             JsonDeserializer.ObjectCtx(rawError)
         )
-        ex shouldBe TransportError.Simple("something error message")
+        ex shouldBe TransportError.Simple("Just error message")
     }
 }
