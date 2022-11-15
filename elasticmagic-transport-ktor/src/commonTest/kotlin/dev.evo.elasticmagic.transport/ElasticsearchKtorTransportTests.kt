@@ -12,6 +12,7 @@ import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldBeEmpty
+import io.kotest.matchers.types.shouldBeInstanceOf
 
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
@@ -248,5 +249,87 @@ class ElasticsearchKtorTransportTests {
         }
         ex.statusCode shouldBe 504
         ex.toString() shouldBe "GatewayTimeout(504, \"Gateway Timeout\")"
+    }
+
+    @Test
+    fun hooksWithOkResponse() = runTest {
+        val client = ElasticsearchKtorTransport(
+            "http://example.com:9200",
+            MockEngine { request ->
+                request.method shouldBe HttpMethod.Get
+                request.url.encodedPath shouldBe "/products/_count"
+                request.body.contentType.shouldBeNull()
+                request.body.toByteArray().decodeToString().shouldBeEmpty()
+
+                respond(
+                    """{"count": 1}""",
+                    headers = headersOf(
+                        HttpHeaders.ContentType, ContentType.Application.Json.toString()
+                    )
+                )
+            }
+        ) {
+            hooks = listOf(
+                { request, response, duration ->
+                    response.shouldBeInstanceOf<Response.Ok>()
+                    response.statusCode shouldBe 200
+                    response.content shouldBe """{"count": 1}"""
+                }
+            )
+        }
+        val result = client.request(
+            ApiRequest(
+                Method.GET,
+                "products/_count",
+                serde = JsonSerde,
+                processResponse = Deserializer.ObjectCtx::toMap
+            )
+        )
+        result shouldContainExactly mapOf("count" to 1L)
+    }
+
+    @Test
+    fun hooksWithErrorResponse() = runTest {
+        val client = ElasticsearchKtorTransport(
+            "http://example.com:9200",
+            MockEngine { request ->
+                request.method shouldBe HttpMethod.Get
+                request.url.encodedPath shouldBe "/products/_count"
+                request.body.contentType.shouldBeNull()
+                request.body.toByteArray().decodeToString().shouldBeEmpty()
+
+                respondError(
+                    HttpStatusCode.BadRequest,
+                    "Something bad happened",
+                    headers = headersOf(
+                        HttpHeaders.ContentType, ContentType.Text.Plain.toString()
+                    )
+                )
+            }
+        ) {
+            hooks = listOf(
+                { request, response, duration ->
+                    response.shouldBeInstanceOf<Response.Error>()
+                    response.statusCode shouldBe 400
+                    response.error shouldBe TransportError.Simple(
+                        "Something bad happened"
+                    )
+                }
+            )
+        }
+        val ex = shouldThrow<ElasticsearchException.BadRequest> {
+            client.request(
+                ApiRequest(
+                    Method.GET,
+                    "products/_count",
+                    serde = JsonSerde,
+                    processResponse = Deserializer.ObjectCtx::toMap
+                )
+            )
+        }
+        ex.statusCode shouldBe 400
+        ex.error shouldBe TransportError.Simple(
+            "Something bad happened"
+        )
     }
 }

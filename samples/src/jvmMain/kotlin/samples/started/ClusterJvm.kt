@@ -2,6 +2,7 @@ package samples.started
 
 import dev.evo.elasticmagic.transport.Auth
 import dev.evo.elasticmagic.transport.ElasticsearchKtorTransport
+import dev.evo.elasticmagic.transport.Response
 
 import io.ktor.client.engine.cio.CIO
 
@@ -30,5 +31,30 @@ actual val esTransport = ElasticsearchKtorTransport(
     val elasticPassword = System.getenv("ELASTIC_PASSWORD")
     if (!elasticPassword.isNullOrEmpty()) {
         auth = Auth.Basic(elasticUser, elasticPassword)
+    }
+
+    if (System.getenv("ELASTICMAGIC_DEBUG") != null) {
+        hooks = listOf(
+            { request, response, duration ->
+                println(">>>")
+                println("${request.method} ${request.path.ifEmpty { "/" }}")
+                println(request.encodeToString())
+                when (response) {
+                    is Response.Ok -> {
+                        println("<<< ${response.statusCode}: ${duration}")
+                        println(response.content)
+                    }
+                    is Response.Error -> {
+                        println("<<< ${response.statusCode}: ${duration}")
+                        println(response.error)
+                    }
+                    is Response.Exception -> {
+                        println("!!! ${response.cause}")
+                    }
+                }
+                println("===")
+                println()
+            },
+        )
     }
 }
