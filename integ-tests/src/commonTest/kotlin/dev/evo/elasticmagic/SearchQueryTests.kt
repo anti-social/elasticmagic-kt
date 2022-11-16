@@ -31,7 +31,7 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.nulls.shouldNotBeNull
-import io.kotest.matchers.doubles.shouldBeGreaterThan
+import io.kotest.matchers.floats.shouldBeGreaterThan
 import io.kotest.matchers.types.shouldBeInstanceOf
 
 import kotlinx.datetime.Instant
@@ -364,7 +364,7 @@ class SearchQueryTests : ElasticsearchTestBase() {
             )
 
             searchResult.totalHits shouldBe 2
-            searchResult.maxScore.shouldNotBeNull() shouldBeGreaterThan 0.0
+            searchResult.maxScore.shouldNotBeNull() shouldBeGreaterThan 0.0F
 
             checkOrderHits(searchResult.hits, setOf("103", "102"))
         }
@@ -380,7 +380,7 @@ class SearchQueryTests : ElasticsearchTestBase() {
                 .execute(index)
 
             searchResult.totalHits shouldBe 3
-            searchResult.maxScore.shouldNotBeNull() shouldBe 0.0
+            searchResult.maxScore.shouldNotBeNull() shouldBe 0.0F
 
             checkOrderHits(searchResult.hits, setOf("101", "102", "104"))
         }
@@ -396,7 +396,7 @@ class SearchQueryTests : ElasticsearchTestBase() {
                 .execute(index)
 
             searchResult.totalHits shouldBe 1
-            searchResult.maxScore.shouldNotBeNull() shouldBe 0.0
+            searchResult.maxScore.shouldNotBeNull() shouldBe 0.0F
 
             checkOrderHits(searchResult.hits, setOf("101"))
             val hit = searchResult.hits[0]
@@ -418,7 +418,7 @@ class SearchQueryTests : ElasticsearchTestBase() {
                 .execute(index)
 
             searchResult.totalHits shouldBe 2
-            searchResult.maxScore shouldBe 0.0
+            searchResult.maxScore shouldBe 0.0F
 
             checkOrderHits(searchResult.hits, setOf("102", "104"))
         }

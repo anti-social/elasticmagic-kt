@@ -40,10 +40,10 @@ class FunctionScoreTests : BaseExpressionTest() {
                     filter = Bool.must(MovieDoc.rating.gt(7.0F))
                 )
             ),
-            boost = 2.2,
+            boost = 2.2F,
             scoreMode = FunctionScore.ScoreMode.SUM,
             boostMode = FunctionScore.BoostMode.REPLACE,
-            minScore = 0.001,
+            minScore = 0.001F,
         ).let { fs ->
             fs.compile() shouldContainExactly mapOf(
                 "function_score" to mapOf(
@@ -64,10 +64,10 @@ class FunctionScoreTests : BaseExpressionTest() {
                             )
                         )
                     ),
-                    "boost" to 2.2,
+                    "boost" to 2.2F,
                     "score_mode" to "sum",
                     "boost_mode" to "replace",
-                    "min_score" to 0.001,
+                    "min_score" to 0.001F,
                 )
             )
             fs.reduce().shouldNotBeNull().compile() shouldContainExactly mapOf(
@@ -83,10 +83,10 @@ class FunctionScoreTests : BaseExpressionTest() {
                             )
                         )
                     ),
-                    "boost" to 2.2,
+                    "boost" to 2.2F,
                     "score_mode" to "sum",
                     "boost_mode" to "replace",
-                    "min_score" to 0.001,
+                    "min_score" to 0.001F,
                 )
             )
             checkClone(fs)
@@ -95,19 +95,19 @@ class FunctionScoreTests : BaseExpressionTest() {
 
     @Test
     fun functionScore_weight() {
-        FunctionScore.Weight(3.3).let { fn ->
+        FunctionScore.Weight(3.3F).let { fn ->
             fn.compile() shouldContainExactly mapOf(
-                "weight" to 3.3
+                "weight" to 3.3F
             )
             fn.reduce().shouldBeSameInstanceAs(fn)
         }
 
         FunctionScore.Weight(
-            3.3,
+            3.3F,
             filter = Bool.should(MovieDoc.isColored.eq(true))
         ).let { fn ->
             fn.compile() shouldContainExactly mapOf(
-                "weight" to 3.3,
+                "weight" to 3.3F,
                 "filter" to mapOf(
                     "bool" to mapOf(
                         "should" to listOf(
@@ -121,7 +121,7 @@ class FunctionScoreTests : BaseExpressionTest() {
                 )
             )
             fn.reduce().compile() shouldContainExactly mapOf(
-                "weight" to 3.3,
+                "weight" to 3.3F,
                 "filter" to mapOf(
                     "term" to mapOf(
                         "is_colored" to true
@@ -146,7 +146,7 @@ class FunctionScoreTests : BaseExpressionTest() {
 
         FunctionScore.FieldValueFactor(
             MovieDoc.rating,
-            factor = 1.1,
+            factor = 1.1F,
             missing = 0.0F,
             modifier = FunctionScore.FieldValueFactor.Modifier.SQRT,
             filter = Bool.should(MovieDoc.isColored.eq(true))
@@ -154,7 +154,7 @@ class FunctionScoreTests : BaseExpressionTest() {
             fn.compile() shouldContainExactly mapOf(
                 "field_value_factor" to mapOf(
                     "field" to "rating",
-                    "factor" to 1.1,
+                    "factor" to 1.1F,
                     "missing" to 0.0F,
                     "modifier" to "sqrt",
                 ),
@@ -173,7 +173,7 @@ class FunctionScoreTests : BaseExpressionTest() {
             fn.reduce().compile() shouldContainExactly mapOf(
                 "field_value_factor" to mapOf(
                     "field" to "rating",
-                    "factor" to 1.1,
+                    "factor" to 1.1F,
                     "missing" to 0.0F,
                     "modifier" to "sqrt",
                 ),

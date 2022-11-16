@@ -56,11 +56,11 @@ var boostedQuery = if (boostByNumberOfVotes) {
     skeletonQuery.queryNode(scoringHandle) { node ->
         node.functions += listOf(
             FunctionScore.Weight(
-                1.1,
+                1.1F,
                 filter = QuestionDoc.votes.range(gte = 10, lt = 50)
             ),
             FunctionScore.Weight(
-                1.5,
+                1.5F,
                 filter = QuestionDoc.votes.gte(50)
             ),
         )

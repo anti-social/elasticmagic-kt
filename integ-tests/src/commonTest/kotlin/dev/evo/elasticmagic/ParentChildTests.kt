@@ -86,7 +86,7 @@ class ParentChildTests : ElasticsearchTestBase() {
                         type = "_doc",
                         id = "q~1",
                         routing = "q~1",
-                        score = 1.0,
+                        score = 1.0F,
                         source = q1,
                     ),
                     SearchHit(
@@ -94,7 +94,7 @@ class ParentChildTests : ElasticsearchTestBase() {
                         type = "_doc",
                         id = "a~1",
                         routing = "q~1",
-                        score = 1.0,
+                        score = 1.0F,
                         source = a1,
                     ),
                     SearchHit(
@@ -102,7 +102,7 @@ class ParentChildTests : ElasticsearchTestBase() {
                         type = "_doc",
                         id = "a~2",
                         routing = "q~1",
-                        score = 1.0,
+                        score = 1.0F,
                         source = a2,
                     ),
                 )
@@ -118,7 +118,7 @@ class ParentChildTests : ElasticsearchTestBase() {
                             type = "_doc",
                             id = "a~1",
                             routing = "q~1",
-                            score = 0.0,
+                            score = 0.0F,
                             source = a1,
                         ),
                         SearchHit(
@@ -126,7 +126,7 @@ class ParentChildTests : ElasticsearchTestBase() {
                             type = "_doc",
                             id = "a~2",
                             routing = "q~1",
-                            score = 0.0,
+                            score = 0.0F,
                             source = a2,
                         ),
                     )

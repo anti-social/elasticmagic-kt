@@ -45,7 +45,7 @@ sealed class MinimumShouldMatch : ToValue<Any> {
 data class Match(
     val field: FieldOperations<String>,
     val query: String,
-    val boost: Double? = null,
+    val boost: Float? = null,
     val analyzer: String? = null,
     val minimumShouldMatch: MinimumShouldMatch? = null,
     val params: Params? = null,
@@ -79,7 +79,7 @@ data class MatchPhrase(
     val field: FieldOperations<String>,
     val query: String,
     val slop: Int? = null,
-    val boost: Double? = null,
+    val boost: Float? = null,
     val analyzer: String? = null,
     val params: Params? = null,
 ) : QueryExpression {
@@ -128,7 +128,7 @@ data class MultiMatch(
     val query: String,
     val fields: List<BoostedField>,
     val type: Type? = null,
-    val boost: Double? = null,
+    val boost: Float? = null,
     val params: Params? = null,
 ) : QueryExpression {
     override val name = "multi_match"

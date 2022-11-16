@@ -47,7 +47,7 @@ interface FieldFormat {
  */
 interface BoostedField : ToValue<String> {
     companion object {
-        operator fun invoke(field: FieldOperations<String>, boost: Double): BoostedField {
+        operator fun invoke(field: FieldOperations<String>, boost: Float): BoostedField {
             return object : BoostedField {
                 override fun toValue(): String {
                     return "${field.getQualifiedFieldName()}^$boost"
@@ -71,7 +71,7 @@ interface FieldOperations<T> : Named, FieldFormat, BoostedField, Sort {
         return getFieldType().deserializeTerm(v)
     }
 
-    fun eq(term: T?, boost: Double? = null): QueryExpression {
+    fun eq(term: T?, boost: Float? = null): QueryExpression {
         if (term == null) {
             return Bool.mustNot(Exists(this, boost = boost))
         }
@@ -80,7 +80,7 @@ interface FieldOperations<T> : Named, FieldFormat, BoostedField, Sort {
 
     infix fun eq(term: T?): QueryExpression = eq(term, boost = null)
 
-    fun ne(term: T?, boost: Double? = null): QueryExpression {
+    fun ne(term: T?, boost: Float? = null): QueryExpression {
         if (term == null) {
             return Exists(this)
         }
@@ -94,7 +94,7 @@ interface FieldOperations<T> : Named, FieldFormat, BoostedField, Sort {
     }
 
     fun range(
-        gt: T? = null, gte: T? = null, lt: T? = null, lte: T? = null, boost: Double? = null
+        gt: T? = null, gte: T? = null, lt: T? = null, lte: T? = null, boost: Float? = null
     ): Range<T> = Range(this, gt = gt, gte = gte, lt = lt, lte = lte, boost = boost)
     infix fun gt(other: T?): Range<T> = range(gt = other)
     infix fun gte(other: T?): Range<T> = range(gte = other)
@@ -144,4 +144,4 @@ fun FieldOperations<String>.match(text: String): QueryExpression = Match(this, t
 /**
  * A shortcut to get boosted field.
  */
-fun FieldOperations<String>.boost(boost: Double): BoostedField = BoostedField(this, boost)
+fun FieldOperations<String>.boost(boost: Float): BoostedField = BoostedField(this, boost)

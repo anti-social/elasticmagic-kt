@@ -14,8 +14,8 @@ abstract class Rescore : NamedExpression {
 
 data class QueryRescore(
     val query: QueryExpression,
-    val queryWeight: Double? = null,
-    val rescoreQueryWeight: Double? = null,
+    val queryWeight: Float? = null,
+    val rescoreQueryWeight: Float? = null,
     val scoreMode: ScoreMode? = null,
     override val windowSize: Int? = null,
 ) : Rescore() {

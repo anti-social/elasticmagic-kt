@@ -294,8 +294,8 @@ class SearchQueryCompilerTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQ
                 ),
                 functions = listOf(
                     FunctionScore.RandomScore(10, productDoc.runtime.seqNo),
-                    FunctionScore.Weight(2.0, productDoc.company.opinion.count.eq(5)),
-                    FunctionScore.FieldValueFactor(productDoc.rank, 5.0),
+                    FunctionScore.Weight(2.0F, productDoc.company.opinion.count.eq(5)),
+                    FunctionScore.FieldValueFactor(productDoc.rank, 5.0F),
                 )
             )
         )
@@ -319,12 +319,12 @@ class SearchQueryCompilerTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQ
                                                 "company.opinion.count" to 5
                                             )
                                         ),
-                                        "weight" to 2.0,
+                                        "weight" to 2.0F,
                                     ),
                                     mapOf(
                                         "field_value_factor" to mapOf(
                                             "field" to "rank",
-                                            "factor" to 5.0,
+                                            "factor" to 5.0F,
                                         )
                                     ),
                                 ),
@@ -368,12 +368,12 @@ class SearchQueryCompilerTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQ
                                     "company.opinion.count" to 5
                                 )
                             ),
-                            "weight" to 2.0,
+                            "weight" to 2.0F,
                         ),
                         mapOf(
                             "field_value_factor" to mapOf(
                                 "field" to "rank",
-                                "factor" to 5.0,
+                                "factor" to 5.0F,
                             )
                         ),
                     ),
@@ -867,7 +867,7 @@ class SearchQueryCompilerTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQ
                     StringField("name.es").match("Buenos días"),
                     StringField("name.de").match("Guten Morgen"),
                 ),
-                tieBreaker = 0.5
+                tieBreaker = 0.5F
             )
         )
         compile(query).body shouldContainExactly mapOf(
@@ -890,7 +890,7 @@ class SearchQueryCompilerTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQ
                             )
                         ),
                     ),
-                    "tie_breaker" to 0.5
+                    "tie_breaker" to 0.5F
                 )
             )
         )
@@ -919,7 +919,7 @@ class SearchQueryCompilerTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQ
         )
 
         query.queryNode(LANG_HANDLE) { node ->
-            node.tieBreaker = 0.7
+            node.tieBreaker = 0.7F
             node.queries.add(
                 StringField("name.de").match("Guten Morgen"),
             )
@@ -939,7 +939,7 @@ class SearchQueryCompilerTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQ
                             )
                         ),
                     ),
-                    "tie_breaker" to 0.7
+                    "tie_breaker" to 0.7F
                 )
             )
         )
@@ -1081,7 +1081,7 @@ class SearchQueryCompilerTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQ
         query.queryNode(AD_BOOST_HANDLE) { node ->
             node.functions.add(
                 FunctionScore.Weight(
-                    1.5,
+                    1.5F,
                     filter = StringField("name").match("test")
                 )
             )
@@ -1095,7 +1095,7 @@ class SearchQueryCompilerTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQ
                             "function_score" to mapOf(
                                 "functions" to listOf(
                                     mapOf(
-                                        "weight" to 1.5,
+                                        "weight" to 1.5F,
                                         "filter" to mapOf(
                                             "match" to mapOf(
                                                 "name" to "test"

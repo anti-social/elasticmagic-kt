@@ -13,7 +13,7 @@ interface DisMaxExpression : QueryExpression {
 
 data class DisMax(
     override val queries: List<QueryExpression>,
-    val tieBreaker: Double? = null,
+    val tieBreaker: Float? = null,
 ) : DisMaxExpression {
     override val name = "dis_max"
 
@@ -38,7 +38,7 @@ data class DisMax(
 data class DisMaxNode(
     override val handle: NodeHandle<DisMaxNode>,
     override var queries: MutableList<QueryExpression>,
-    var tieBreaker: Double? = null,
+    var tieBreaker: Float? = null,
 ) : QueryExpressionNode<DisMaxNode>(), DisMaxExpression {
     override val name = "dis_max"
 
@@ -46,7 +46,7 @@ data class DisMaxNode(
         operator fun invoke(
             handle: NodeHandle<DisMaxNode>,
             queries: List<QueryExpression> = emptyList(),
-            tieBreaker: Double? = null,
+            tieBreaker: Float? = null,
         ): DisMaxNode {
             return DisMaxNode(
                 handle,

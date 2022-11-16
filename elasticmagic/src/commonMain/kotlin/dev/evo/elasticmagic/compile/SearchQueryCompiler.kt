@@ -274,7 +274,7 @@ open class SearchQueryCompiler(
             timedOut = ctx.boolean("timed_out"),
             totalHits = totalHits,
             totalHitsRelation = totalHitsRelation,
-            maxScore = rawHitsData.doubleOrNull("max_score"),
+            maxScore = rawHitsData.floatOrNull("max_score"),
             hits = hits,
             aggs = aggResults,
         )
@@ -312,7 +312,7 @@ open class SearchQueryCompiler(
             version = rawHit.longOrNull("_version"),
             seqNo = rawHit.longOrNull("_seq_no"),
             primaryTerm = rawHit.longOrNull("_primary_term"),
-            score = rawHit.doubleOrNull("_score"),
+            score = rawHit.floatOrNull("_score"),
             sort = sort.ifEmpty { null },
             source = source,
             fields = fields,

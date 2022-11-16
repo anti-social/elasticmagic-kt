@@ -33,7 +33,7 @@ class MatchTests : BaseExpressionTest() {
         Match(
             MovieDoc.name,
             "Matrix",
-            boost = 1.5,
+            boost = 1.5F,
             analyzer = "text_en",
             minimumShouldMatch = MinimumShouldMatch.Percent(50),
             params = Params(
@@ -43,7 +43,7 @@ class MatchTests : BaseExpressionTest() {
             "match" to mapOf(
                 "name" to mapOf(
                     "query" to "Matrix",
-                    "boost" to 1.5,
+                    "boost" to 1.5F,
                     "analyzer" to "text_en",
                     "minimum_should_match" to "50%",
                     "unknown" to true,
@@ -66,7 +66,7 @@ class MatchTests : BaseExpressionTest() {
             MovieDoc.description,
             "quick brown fox",
             slop = 3,
-            boost = 1.5,
+            boost = 1.5F,
             analyzer = "text",
             params = Params("boost" to 2),
         ).compile() shouldContainExactly mapOf(
@@ -74,7 +74,7 @@ class MatchTests : BaseExpressionTest() {
                 "description" to mapOf(
                     "query" to "quick brown fox",
                     "slop" to 3,
-                    "boost" to 1.5,
+                    "boost" to 1.5F,
                     "analyzer" to "text",
                 )
             )
@@ -90,7 +90,7 @@ class MatchTests : BaseExpressionTest() {
     fun multiMatch() {
         MultiMatch(
             "Matrix",
-            listOf(MovieDoc.name.boost(2.5), MovieDoc.description)
+            listOf(MovieDoc.name.boost(2.5F), MovieDoc.description)
         ).compile() shouldContainExactly mapOf(
             "multi_match" to mapOf(
                 "query" to "Matrix",
@@ -102,7 +102,7 @@ class MatchTests : BaseExpressionTest() {
             "Matrix",
             listOf(MovieDoc.name, MovieDoc.description),
             type = MultiMatch.Type.BEST_FIELDS,
-            boost = 0.9,
+            boost = 0.9F,
             params = Params(
                 "cutoff_frequency" to 0.001
             )
@@ -111,7 +111,7 @@ class MatchTests : BaseExpressionTest() {
                 "query" to "Matrix",
                 "fields" to listOf("name", "description"),
                 "type" to "best_fields",
-                "boost" to 0.9,
+                "boost" to 0.9F,
                 "cutoff_frequency" to 0.001,
             )
         )

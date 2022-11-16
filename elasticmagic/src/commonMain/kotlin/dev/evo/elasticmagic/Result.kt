@@ -25,7 +25,7 @@ data class SearchQueryResult<S: BaseDocSource>(
     val timedOut: Boolean,
     val totalHits: Long?,
     val totalHitsRelation: String?,
-    val maxScore: Double?,
+    val maxScore: Float?,
     val hits: List<SearchHit<S>>,
     override val aggs: Map<String, AggregationResult>,
 ) : AggAwareResult()
@@ -48,7 +48,7 @@ data class SearchHit<S: BaseDocSource>(
     override val version: Long? = null,
     override val seqNo: Long? = null,
     override val primaryTerm: Long? = null,
-    val score: Double? = null,
+    val score: Float? = null,
     val sort: List<Any>? = null,
     val source: S? = null,
     val fields: Fields = Fields(emptyMap()),

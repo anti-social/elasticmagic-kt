@@ -23,7 +23,7 @@ data class Bool(
     override val must: List<QueryExpression> = emptyList(),
     override val mustNot: List<QueryExpression> = emptyList(),
     val minimumShouldMatch: MinimumShouldMatch? = null,
-    val boost: Double? = null,
+    val boost: Float? = null,
 ) : BoolExpression {
     override val name = "bool"
 

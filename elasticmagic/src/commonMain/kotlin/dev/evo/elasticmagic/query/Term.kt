@@ -11,7 +11,7 @@ import dev.evo.elasticmagic.serde.Serializer
 data class Term<T>(
     val field: FieldOperations<T>,
     val term: T & Any,
-    val boost: Double? = null,
+    val boost: Float? = null,
 ) : QueryExpression {
     override val name = "term"
 
@@ -40,7 +40,7 @@ data class Term<T>(
 data class Terms<T>(
     val field: FieldOperations<T>,
     val terms: List<T & Any>,
-    val boost: Double? = null,
+    val boost: Float? = null,
 ) : QueryExpression {
     override val name = "terms"
 
@@ -68,7 +68,7 @@ data class Terms<T>(
  */
 data class Ids(
     val values: List<String>,
-    val boost: Double? = null,
+    val boost: Float? = null,
 ) : QueryExpression {
     override val name = "ids"
 
@@ -89,7 +89,7 @@ data class Ids(
  */
 data class Exists(
     val field: FieldOperations<*>,
-    val boost: Double? = null,
+    val boost: Float? = null,
 ) : QueryExpression {
     override val name = "exists"
 
@@ -117,7 +117,7 @@ data class Range<T>(
     val lt: T? = null,
     val lte: T? = null,
     val relation: Relation? = null,
-    val boost: Double? = null,
+    val boost: Float? = null,
 ) : QueryExpression {
     override val name = "range"
 

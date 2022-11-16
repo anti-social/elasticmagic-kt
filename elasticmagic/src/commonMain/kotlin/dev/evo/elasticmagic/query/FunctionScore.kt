@@ -14,10 +14,10 @@ interface FunctionScoreExpression : QueryExpression {
 data class FunctionScore(
     val query: QueryExpression? = null,
     override val functions: List<Function>,
-    val boost: Double? = null,
+    val boost: Float? = null,
     val scoreMode: ScoreMode? = null,
     val boostMode: BoostMode? = null,
-    val minScore: Double? = null,
+    val minScore: Float? = null,
 ) : FunctionScoreExpression {
     override val name = "function_score"
 
@@ -108,7 +108,7 @@ data class FunctionScore(
     }
 
     data class Weight(
-        val weight: Double,
+        val weight: Float,
         override val filter: QueryExpression? = null,
     ) : Function() {
         override fun clone() = copy()
@@ -124,7 +124,7 @@ data class FunctionScore(
 
     data class FieldValueFactor<T> private constructor(
         val field: FieldOperations<T>,
-        val factor: Double? = null,
+        val factor: Float? = null,
         val missing: T? = null,
         val modifier: Modifier? = null,
         override val filter: QueryExpression? = null,
@@ -132,7 +132,7 @@ data class FunctionScore(
         companion object {
             operator fun <T: Number> invoke(
                 field: FieldOperations<T>,
-                factor: Double? = null,
+                factor: Float? = null,
                 missing: T? = null,
                 modifier: Modifier? = null,
                 filter: QueryExpression? = null,
@@ -211,10 +211,10 @@ data class FunctionScore(
 data class FunctionScoreNode(
     override val handle: NodeHandle<FunctionScoreNode>,
     var query: QueryExpression?,
-    var boost: Double? = null,
+    var boost: Float? = null,
     var scoreMode: FunctionScore.ScoreMode? = null,
     var boostMode: FunctionScore.BoostMode? = null,
-    var minScore: Double? = null,
+    var minScore: Float? = null,
     override var functions: MutableList<FunctionScore.Function>,
 ) : QueryExpressionNode<FunctionScoreNode>(), FunctionScoreExpression {
     override val name: String = "function_score"
@@ -223,10 +223,10 @@ data class FunctionScoreNode(
         operator fun invoke(
             handle: NodeHandle<FunctionScoreNode>,
             query: QueryExpression?,
-            boost: Double? = null,
+            boost: Float? = null,
             scoreMode: FunctionScore.ScoreMode? = null,
             boostMode: FunctionScore.BoostMode? = null,
-            minScore: Double? = null,
+            minScore: Float? = null,
             functions: List<FunctionScore.Function> = emptyList(),
         ): FunctionScoreNode {
             return FunctionScoreNode(

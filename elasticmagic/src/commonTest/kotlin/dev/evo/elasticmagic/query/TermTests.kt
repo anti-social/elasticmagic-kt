@@ -13,11 +13,11 @@ class TermTests : BaseExpressionTest() {
             )
         )
 
-        Term(MovieDoc.status, 1, boost = 2.0).compile() shouldContainExactly mapOf(
+        Term(MovieDoc.status, 1, boost = 2.0F).compile() shouldContainExactly mapOf(
             "term" to mapOf(
                 "status" to mapOf(
                     "value" to 1,
-                    "boost" to 2.0
+                    "boost" to 2.0F
                 )
             )
         )
@@ -31,10 +31,10 @@ class TermTests : BaseExpressionTest() {
             )
         )
 
-        Terms(MovieDoc.status, listOf(1, 2, 3), boost = 0.5).compile() shouldContainExactly mapOf(
+        Terms(MovieDoc.status, listOf(1, 2, 3), boost = 0.5F).compile() shouldContainExactly mapOf(
             "terms" to mapOf(
                 "status" to listOf(1, 2, 3),
-                "boost" to 0.5
+                "boost" to 0.5F
             )
         )
     }
@@ -47,10 +47,10 @@ class TermTests : BaseExpressionTest() {
             )
         )
 
-        Exists(MovieDoc.description, boost = 1.5).compile() shouldContainExactly mapOf(
+        Exists(MovieDoc.description, boost = 1.5F).compile() shouldContainExactly mapOf(
             "exists" to mapOf(
                 "field" to "description",
-                "boost" to 1.5
+                "boost" to 1.5F
             )
         )
     }
@@ -63,44 +63,44 @@ class TermTests : BaseExpressionTest() {
             )
         )
 
-        Ids(listOf("11", "12"), boost = 10.0).compile() shouldContainExactly mapOf(
+        Ids(listOf("11", "12"), boost = 10.0F).compile() shouldContainExactly mapOf(
             "ids" to mapOf(
                 "values" to listOf("11", "12"),
-                "boost" to 10.0
+                "boost" to 10.0F
             )
         )
     }
 
     @Test
     fun range() {
-        Range(MovieDoc.rating, gt = 8f).compile() shouldContainExactly mapOf(
+        Range(MovieDoc.rating, gt = 8F).compile() shouldContainExactly mapOf(
             "range" to mapOf(
                 "rating" to mapOf(
-                    "gt" to 8f
+                    "gt" to 8F
                 )
             )
         )
 
-        Range(MovieDoc.rating, gte = 6.5f, lte = 8f, boost = 1.1).compile() shouldContainExactly mapOf(
+        Range(MovieDoc.rating, gte = 6.5F, lte = 8F, boost = 1.1F).compile() shouldContainExactly mapOf(
             "range" to mapOf(
                 "rating" to mapOf(
-                    "gte" to 6.5f,
-                    "lte" to 8f,
-                    "boost" to 1.1
+                    "gte" to 6.5F,
+                    "lte" to 8F,
+                    "boost" to 1.1F
                 )
             )
         )
 
         Range(
             MovieDoc.stars.rank,
-            gt = 6f,
-            lt = 9f,
+            gt = 6F,
+            lt = 9F,
             relation = Range.Relation.CONTAINS
         ).compile() shouldContainExactly mapOf(
             "range" to mapOf(
                 "stars.rank" to mapOf(
-                    "gt" to 6f,
-                    "lt" to 9f,
+                    "gt" to 6F,
+                    "lt" to 9F,
                     "relation" to "CONTAINS",
                 )
             )
