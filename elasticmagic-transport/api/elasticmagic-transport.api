@@ -254,8 +254,10 @@ public final class dev/evo/elasticmagic/transport/Method : java/lang/Enum {
 }
 
 public final class dev/evo/elasticmagic/transport/PlainResponse {
-	public fun <init> (ILjava/lang/String;)V
+	public fun <init> (ILjava/util/Map;Ljava/lang/String;Ljava/lang/String;)V
 	public final fun getContent ()Ljava/lang/String;
+	public final fun getContentType ()Ljava/lang/String;
+	public final fun getHeaders ()Ljava/util/Map;
 	public final fun getStatusCode ()I
 }
 
@@ -294,13 +296,17 @@ public abstract class dev/evo/elasticmagic/transport/Response {
 }
 
 public final class dev/evo/elasticmagic/transport/Response$Error : dev/evo/elasticmagic/transport/Response {
-	public fun <init> (ILdev/evo/elasticmagic/transport/TransportError;)V
+	public fun <init> (ILjava/util/Map;Ljava/lang/String;Ldev/evo/elasticmagic/transport/TransportError;)V
 	public final fun component1 ()I
-	public final fun component2 ()Ldev/evo/elasticmagic/transport/TransportError;
-	public final fun copy (ILdev/evo/elasticmagic/transport/TransportError;)Ldev/evo/elasticmagic/transport/Response$Error;
-	public static synthetic fun copy$default (Ldev/evo/elasticmagic/transport/Response$Error;ILdev/evo/elasticmagic/transport/TransportError;ILjava/lang/Object;)Ldev/evo/elasticmagic/transport/Response$Error;
+	public final fun component2 ()Ljava/util/Map;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()Ldev/evo/elasticmagic/transport/TransportError;
+	public final fun copy (ILjava/util/Map;Ljava/lang/String;Ldev/evo/elasticmagic/transport/TransportError;)Ldev/evo/elasticmagic/transport/Response$Error;
+	public static synthetic fun copy$default (Ldev/evo/elasticmagic/transport/Response$Error;ILjava/util/Map;Ljava/lang/String;Ldev/evo/elasticmagic/transport/TransportError;ILjava/lang/Object;)Ldev/evo/elasticmagic/transport/Response$Error;
 	public fun equals (Ljava/lang/Object;)Z
+	public final fun getContentType ()Ljava/lang/String;
 	public final fun getError ()Ldev/evo/elasticmagic/transport/TransportError;
+	public final fun getHeaders ()Ljava/util/Map;
 	public final fun getStatusCode ()I
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
@@ -318,13 +324,19 @@ public final class dev/evo/elasticmagic/transport/Response$Exception : dev/evo/e
 }
 
 public final class dev/evo/elasticmagic/transport/Response$Ok : dev/evo/elasticmagic/transport/Response {
-	public fun <init> (ILjava/lang/String;)V
+	public fun <init> (ILjava/util/Map;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Object;)V
 	public final fun component1 ()I
-	public final fun component2 ()Ljava/lang/String;
-	public final fun copy (ILjava/lang/String;)Ldev/evo/elasticmagic/transport/Response$Ok;
-	public static synthetic fun copy$default (Ldev/evo/elasticmagic/transport/Response$Ok;ILjava/lang/String;ILjava/lang/Object;)Ldev/evo/elasticmagic/transport/Response$Ok;
+	public final fun component2 ()Ljava/util/Map;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun component5 ()Ljava/lang/Object;
+	public final fun copy (ILjava/util/Map;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Object;)Ldev/evo/elasticmagic/transport/Response$Ok;
+	public static synthetic fun copy$default (Ldev/evo/elasticmagic/transport/Response$Ok;ILjava/util/Map;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Object;ILjava/lang/Object;)Ldev/evo/elasticmagic/transport/Response$Ok;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getContent ()Ljava/lang/String;
+	public final fun getContentType ()Ljava/lang/String;
+	public final fun getHeaders ()Ljava/util/Map;
+	public final fun getResult ()Ljava/lang/Object;
 	public final fun getStatusCode ()I
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;

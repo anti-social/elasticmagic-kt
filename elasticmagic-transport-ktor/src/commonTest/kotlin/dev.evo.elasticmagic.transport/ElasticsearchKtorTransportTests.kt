@@ -7,6 +7,7 @@ import dev.evo.elasticmagic.serde.serialization.JsonSerializer
 import dev.evo.elasticmagic.serde.toMap
 
 import io.kotest.assertions.throwables.shouldThrow
+import io.kotest.matchers.comparables.shouldBeGreaterThan
 import io.kotest.matchers.maps.shouldContainExactly
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.nulls.shouldNotBeNull
@@ -33,6 +34,7 @@ import kotlinx.serialization.json.putJsonArray
 import kotlinx.serialization.json.putJsonObject
 
 import kotlin.test.Test
+import kotlin.time.Duration
 
 @ExperimentalStdlibApi
 class ElasticsearchKtorTransportTests {
@@ -264,16 +266,21 @@ class ElasticsearchKtorTransportTests {
                 respond(
                     """{"count": 1}""",
                     headers = headersOf(
-                        HttpHeaders.ContentType, ContentType.Application.Json.toString()
+                        HttpHeaders.ContentType,
+                        ContentType.Application.Json.withParameter("charset", "UTF-8").toString()
                     )
                 )
             }
         ) {
             hooks = listOf(
                 { request, response, duration ->
-                    response.shouldBeInstanceOf<Response.Ok>()
+                    request.method shouldBe Method.GET
+                    request.path shouldBe "products/_count"
+                    response.shouldBeInstanceOf<Response.Ok<*>>()
                     response.statusCode shouldBe 200
+                    response.contentType shouldBe "application/json"
                     response.content shouldBe """{"count": 1}"""
+                    duration shouldBeGreaterThan Duration.ZERO
                 }
             )
         }
@@ -309,11 +316,15 @@ class ElasticsearchKtorTransportTests {
         ) {
             hooks = listOf(
                 { request, response, duration ->
+                    request.method shouldBe Method.GET
+                    request.path shouldBe "products/_count"
                     response.shouldBeInstanceOf<Response.Error>()
                     response.statusCode shouldBe 400
+                    response.contentType shouldBe "text/plain"
                     response.error shouldBe TransportError.Simple(
                         "Something bad happened"
                     )
+                    duration shouldBeGreaterThan Duration.ZERO
                 }
             )
         }

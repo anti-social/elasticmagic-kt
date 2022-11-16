@@ -11,9 +11,10 @@ import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsText
 import io.ktor.content.ByteArrayContent
 import io.ktor.http.ContentType
-import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
+import io.ktor.http.HttpHeaders
 import io.ktor.http.Parameters
+import io.ktor.http.contentType
 import io.ktor.http.path
 import io.ktor.http.takeFrom
 
@@ -86,6 +87,12 @@ class ElasticsearchKtorTransport(
                 this.setBody(ByteArrayContent(content, ContentType.parse(request.contentType)))
             }
         }
-        return PlainResponse(response.status.value, response.bodyAsText())
+        val contentType = response.contentType()?.let { "${it.contentType}/${it.contentSubtype}"}
+        return PlainResponse(
+            response.status.value,
+            response.headers.entries().associate { entry -> entry.key.lowercase() to entry.value },
+            contentType,
+            response.bodyAsText(),
+         )
     }
 }

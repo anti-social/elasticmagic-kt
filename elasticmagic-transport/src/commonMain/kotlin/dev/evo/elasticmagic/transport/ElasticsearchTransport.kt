@@ -222,13 +222,26 @@ class CatRequest<ResultT>(
 
 class PlainResponse(
     val statusCode: Int,
+    val headers: Map<String, List<String>>,
+    val contentType: String?,
     val content: String,
 )
 
-sealed class Response {
-    data class Ok(val statusCode: Int, val content: String) : Response()
-    data class Error(val statusCode: Int, val error: TransportError) : Response()
-    data class Exception(val cause: Throwable) : Response()
+sealed class Response<T> {
+    data class Ok<T>(
+        val statusCode: Int,
+        val headers: Map<String, List<String>>,
+        val contentType: String?,
+        val content: String,
+        val result: T,
+    ) : Response<T>()
+    data class Error(
+        val statusCode: Int,
+        val headers: Map<String, List<String>>,
+        val contentType: String?,
+        val error: TransportError,
+    ) : Response<Nothing>()
+    data class Exception(val cause: Throwable) : Response<Nothing>()
 }
 
 abstract class ElasticsearchTransport(
@@ -252,7 +265,7 @@ abstract class ElasticsearchTransport(
         /**
          * Using hooks it is possible to log requests
          */
-        var hooks: List<(Request<*, *, *>, Response, Duration) -> Unit> = emptyList()
+        var hooks: List<(Request<*, *, *>, Response<*>, Duration) -> Unit> = emptyList()
     }
 
     protected val requestEncoderFactory: RequestEncoderFactory =
@@ -267,27 +280,30 @@ abstract class ElasticsearchTransport(
     }
 
     @OptIn(ExperimentalTime::class)
-    suspend fun <B, T, R> request(
-        request: Request<B, T, R>
-    ): R {
-        val (response, duration) = measureTimedValue {
-            @Suppress("TooGenericExceptionCaught")
-            try {
-                val response = doRequest(request)
-                processResponse(response, request.errorSerde)
-            } catch (e: Throwable) {
-                Response.Exception(e)
+    suspend fun <BodyT, ResponseT, ResultT> request(
+        request: Request<BodyT, ResponseT, ResultT>
+    ): ResultT {
+        val (requestResult, duration) = measureTimedValue {
+            runCatching {
+                doRequest(request)
             }
         }
+
+        val response = requestResult.fold(
+            { response ->
+                processResponse(request, response)
+            },
+            { exception ->
+                Response.Exception(exception)
+            }
+        )
 
         config.hooks.forEach { hook ->
             hook(request, response, duration)
         }
 
         return when (response) {
-            is Response.Ok -> {
-                request.processResponse(request.deserializeResponse(response.content))
-            }
+            is Response.Ok<out ResultT> -> response.result
             is Response.Error -> {
                 throw ElasticsearchException.Transport.fromStatusCode(
                     response.statusCode, response.error
@@ -299,14 +315,24 @@ abstract class ElasticsearchTransport(
         }
     }
 
-    private fun processResponse(response: PlainResponse, errorSerde: Serde): Response {
-        val statusCode = response.statusCode
+    private fun <BodyT, ResponseT, ResultT> processResponse(
+        request: Request<BodyT, ResponseT, ResultT>, response: PlainResponse
+    ): Response<out ResultT> {
         val content = response.content
-        return when (statusCode) {
-            in HTTP_OK_CODES -> Response.Ok(statusCode, content)
+        return when (val statusCode = response.statusCode) {
+            in HTTP_OK_CODES -> {
+                val result = request.processResponse(request.deserializeResponse(content))
+                Response.Ok(
+                    statusCode,
+                    response.headers,
+                    response.contentType,
+                    content,
+                    result,
+                )
+            }
             else -> {
                 val jsonError = try {
-                    errorSerde.deserializer.objFromStringOrNull(content)
+                    request.errorSerde.deserializer.objFromStringOrNull(content)
                 } catch (e: DeserializationException) {
                     null
                 }
@@ -315,7 +341,9 @@ abstract class ElasticsearchTransport(
                 } else {
                     TransportError.Simple(content)
                 }
-                Response.Error(statusCode, transportError)
+                Response.Error(
+                    statusCode, response.headers, response.contentType, transportError
+                )
             }
         }
     }

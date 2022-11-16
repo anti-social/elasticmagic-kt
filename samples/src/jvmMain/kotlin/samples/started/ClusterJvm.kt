@@ -34,27 +34,32 @@ actual val esTransport = ElasticsearchKtorTransport(
     }
 
     if (System.getenv("ELASTICMAGIC_DEBUG") != null) {
-        hooks = listOf(
-            { request, response, duration ->
-                println(">>>")
-                println("${request.method} ${request.path.ifEmpty { "/" }}")
-                println(request.encodeToString())
-                when (response) {
-                    is Response.Ok -> {
-                        println("<<< ${response.statusCode}: ${duration}")
-                        println(response.content)
+        hooks = listOf { request, response, duration ->
+            println(">>>")
+            println("${request.method} ${request.path.ifEmpty { "/" }}")
+            println(request.encodeToString())
+            when (response) {
+                is Response.Ok -> {
+                    println("<<< ${response.statusCode}: ${duration}")
+                    response.headers.forEach { header ->
+                        println("< ${header.key}: ${header.value}")
                     }
-                    is Response.Error -> {
-                        println("<<< ${response.statusCode}: ${duration}")
-                        println(response.error)
-                    }
-                    is Response.Exception -> {
-                        println("!!! ${response.cause}")
-                    }
+                    println(response.contentType)
+                    println(response.content)
                 }
-                println("===")
-                println()
-            },
-        )
+                is Response.Error -> {
+                    println("<<< ${response.statusCode}: ${duration}")
+                    response.headers.forEach { header ->
+                        println("< ${header.key}: ${header.value}")
+                    }
+                    println(response.error)
+                }
+                is Response.Exception -> {
+                    println("!!! ${response.cause}")
+                }
+            }
+            println("===")
+            println()
+        }
     }
 }
