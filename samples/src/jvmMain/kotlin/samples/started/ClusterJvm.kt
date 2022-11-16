@@ -34,7 +34,7 @@ actual val esTransport = ElasticsearchKtorTransport(
     }
 
     if (System.getenv("ELASTICMAGIC_DEBUG") != null) {
-        hooks = listOf { request, response, duration ->
+        trackers = listOf { request, response, duration ->
             println(">>>")
             println("${request.method} ${request.path.ifEmpty { "/" }}")
             println(request.encodeToString())

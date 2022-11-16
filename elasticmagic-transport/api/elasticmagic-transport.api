@@ -143,10 +143,10 @@ public final class dev/evo/elasticmagic/transport/ElasticsearchTransport$Config 
 	public fun <init> ()V
 	public final fun getAuth ()Ldev/evo/elasticmagic/transport/Auth;
 	public final fun getGzipRequests ()Z
-	public final fun getHooks ()Ljava/util/List;
+	public final fun getTrackers ()Ljava/util/List;
 	public final fun setAuth (Ldev/evo/elasticmagic/transport/Auth;)V
 	public final fun setGzipRequests (Z)V
-	public final fun setHooks (Ljava/util/List;)V
+	public final fun setTrackers (Ljava/util/List;)V
 }
 
 public final class dev/evo/elasticmagic/transport/ElasticsearchTransportKt {

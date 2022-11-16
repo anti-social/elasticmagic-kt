@@ -272,7 +272,7 @@ class ElasticsearchKtorTransportTests {
                 )
             }
         ) {
-            hooks = listOf(
+            trackers = listOf(
                 { request, response, duration ->
                     request.method shouldBe Method.GET
                     request.path shouldBe "products/_count"
@@ -314,7 +314,7 @@ class ElasticsearchKtorTransportTests {
                 )
             }
         ) {
-            hooks = listOf(
+            trackers = listOf(
                 { request, response, duration ->
                     request.method shouldBe Method.GET
                     request.path shouldBe "products/_count"

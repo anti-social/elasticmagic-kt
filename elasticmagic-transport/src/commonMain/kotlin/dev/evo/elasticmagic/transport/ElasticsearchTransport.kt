@@ -263,9 +263,9 @@ abstract class ElasticsearchTransport(
         var auth: Auth? = null
 
         /**
-         * Using hooks it is possible to log requests
+         * Allow to track all requests
          */
-        var hooks: List<(Request<*, *, *>, Response<*>, Duration) -> Unit> = emptyList()
+        var trackers: List<(Request<*, *, *>, Response<*>, Duration) -> Unit> = emptyList()
     }
 
     protected val requestEncoderFactory: RequestEncoderFactory =
@@ -298,8 +298,8 @@ abstract class ElasticsearchTransport(
             }
         )
 
-        config.hooks.forEach { hook ->
-            hook(request, response, duration)
+        config.trackers.forEach { track ->
+            track(request, response, duration)
         }
 
         return when (response) {
