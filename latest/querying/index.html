@@ -10,7 +10,7 @@
         <meta name="author" content="Alexandr Koval">
       
       
-        <link rel="canonical" href="https://anti-social.github.io/elasticmagic-kt/0.0.15/querying/">
+        <link rel="canonical" href="https://anti-social.github.io/elasticmagic-kt/0.0.18/querying/">
       
       <link rel="icon" href="../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.3.6">
@@ -734,11 +734,11 @@ method:</p>
 <span class="w">    </span><span class="n">skeletonQuery</span><span class="p">.</span><span class="na">queryNode</span><span class="p">(</span><span class="n">scoringHandle</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"></span>
 <span class="w">        </span><span class="n">node</span><span class="p">.</span><span class="na">functions</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">listOf</span><span class="p">(</span><span class="w"></span>
 <span class="w">            </span><span class="n">FunctionScore</span><span class="p">.</span><span class="na">Weight</span><span class="p">(</span><span class="w"></span>
-<span class="w">                </span><span class="m">1.1</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="m">1.1F</span><span class="p">,</span><span class="w"></span>
 <span class="w">                </span><span class="n">filter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">QuestionDoc</span><span class="p">.</span><span class="na">votes</span><span class="p">.</span><span class="na">range</span><span class="p">(</span><span class="n">gte</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">10</span><span class="p">,</span><span class="w"> </span><span class="n">lt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">50</span><span class="p">)</span><span class="w"></span>
 <span class="w">            </span><span class="p">),</span><span class="w"></span>
 <span class="w">            </span><span class="n">FunctionScore</span><span class="p">.</span><span class="na">Weight</span><span class="p">(</span><span class="w"></span>
-<span class="w">                </span><span class="m">1.5</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="m">1.5F</span><span class="p">,</span><span class="w"></span>
 <span class="w">                </span><span class="n">filter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">QuestionDoc</span><span class="p">.</span><span class="na">votes</span><span class="p">.</span><span class="na">gte</span><span class="p">(</span><span class="m">50</span><span class="p">)</span><span class="w"></span>
 <span class="w">            </span><span class="p">),</span><span class="w"></span>
 <span class="w">        </span><span class="p">)</span><span class="w"></span>

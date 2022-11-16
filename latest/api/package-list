@@ -19,6 +19,8 @@ module:elasticmagic-serde
 dev.evo.elasticmagic.serde
 module:elasticmagic-serde-jackson-json
 dev.evo.elasticmagic.serde.jackson
+module:elasticmagic-serde-jackson-yaml
+dev.evo.elasticmagic.serde.jackson
 module:elasticmagic-serde-serialization-json
 dev.evo.elasticmagic.serde.serialization
 module:elasticmagic-transport

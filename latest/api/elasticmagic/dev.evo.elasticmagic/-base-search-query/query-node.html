@@ -55,7 +55,7 @@ searchQuery.query(
             FunctionScore.FieldValueFactor(
                 UserDoc.rank,
                 missing = 1.0F,
-                factor = 2.0,
+                factor = 2.0F,
                 modifier = FunctionScore.FieldValueFactor.Modifier.LN1P
             )
         ),
@@ -69,7 +69,7 @@ if (boostActive) {
     searchQuery.queryNode(BOOST_HANDLE) {
         it.functions.add(
             FunctionScore.Weight(
-                1000.0,
+                1000.0F,
                 filter = UserDoc.isActive.eq(true)
             )
         )
