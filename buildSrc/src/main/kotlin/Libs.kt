@@ -1,6 +1,4 @@
 import org.gradle.api.JavaVersion
-import org.gradle.kotlin.dsl.PluginDependenciesSpecScope
-import org.gradle.plugin.use.PluginDependencySpec
 
 import java.util.Properties
 
@@ -22,7 +20,7 @@ object Versions {
     const val kotlinxSerialization = "1.3.3"
     const val kotlinxCoroutines = "1.6.3-native-mt"
     const val kotlinxDatetime = "0.3.3"
-    const val ktor = "2.0.3"
+    const val ktor = "2.1.3"
 
     // Serialization dependencies
     const val jackson = "2.12.2"
