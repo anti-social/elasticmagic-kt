@@ -1,6 +1,6 @@
 package dev.evo.elasticmagic.aggs
 
-import dev.evo.elasticmagic.compile.SearchQueryCompiler
+import dev.evo.elasticmagic.compile.BaseSearchQueryCompiler
 import dev.evo.elasticmagic.query.FieldOperations
 import dev.evo.elasticmagic.query.NamedExpression
 import dev.evo.elasticmagic.query.ObjExpression
@@ -41,7 +41,7 @@ sealed class AggValue<T> : ObjExpression {
 
     fun deserializeTerm(v: Any): T & Any = getValueType().deserializeTerm(v)
 
-    override fun accept(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
+    override fun accept(ctx: Serializer.ObjectCtx, compiler: BaseSearchQueryCompiler) {
         when (this) {
             is Field<*> -> ctx.field("field", field.getQualifiedFieldName())
             is Script -> ctx.obj("script") {

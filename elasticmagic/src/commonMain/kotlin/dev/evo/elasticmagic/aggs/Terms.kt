@@ -4,7 +4,7 @@ import dev.evo.elasticmagic.query.FieldOperations
 import dev.evo.elasticmagic.Params
 import dev.evo.elasticmagic.query.QueryExpression
 import dev.evo.elasticmagic.query.ToValue
-import dev.evo.elasticmagic.compile.SearchQueryCompiler
+import dev.evo.elasticmagic.compile.BaseSearchQueryCompiler
 import dev.evo.elasticmagic.serde.Deserializer
 import dev.evo.elasticmagic.serde.Serializer
 import dev.evo.elasticmagic.serde.forEachObj
@@ -46,7 +46,7 @@ abstract class BaseTermsAgg<T, R: AggregationResult> : BucketAggregation<R>() {
         override fun toValue() = name.lowercase()
     }
 
-    override fun visit(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
+    override fun visit(ctx: Serializer.ObjectCtx, compiler: BaseSearchQueryCompiler) {
         compiler.visit(ctx, value)
         ctx.fieldIfNotNull("size", size)
         ctx.fieldIfNotNull("shard_size", shardSize)
@@ -142,7 +142,7 @@ data class TermsAgg<T>(
 
     override fun clone() = copy()
 
-    override fun visit(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
+    override fun visit(ctx: Serializer.ObjectCtx, compiler: BaseSearchQueryCompiler) {
         ctx.fieldIfNotNull("show_term_doc_count_error", showTermDocCountError)
         super.visit(ctx, compiler)
     }
@@ -171,8 +171,8 @@ data class TermsAgg<T>(
 
 data class TermsAggResult<T>(
     override val buckets: List<TermBucket<T>>,
-    val docCountErrorUpperBound: Long,
-    val sumOtherDocCount: Long,
+    val docCountErrorUpperBound: Long = 0L,
+    val sumOtherDocCount: Long = 0L,
 ) : BucketAggResult<TermBucket<T>>()
 
 data class TermBucket<T>(
@@ -234,7 +234,7 @@ data class SignificantTermsAgg<T>(
 
     override fun clone() = copy()
 
-    override fun visit(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
+    override fun visit(ctx: Serializer.ObjectCtx, compiler: BaseSearchQueryCompiler) {
         if (backgroundFilter != null) {
             ctx.obj("background_filter") {
                 compiler.visit(this, backgroundFilter)

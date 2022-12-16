@@ -1,6 +1,6 @@
 package dev.evo.elasticmagic.query
 
-import dev.evo.elasticmagic.compile.SearchQueryCompiler
+import dev.evo.elasticmagic.compile.BaseSearchQueryCompiler
 import dev.evo.elasticmagic.serde.Serializer
 
 sealed class Source : ObjExpression {
@@ -12,7 +12,7 @@ sealed class Source : ObjExpression {
     ) : Source() {
         override fun clone() = copy()
 
-        override fun accept(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
+        override fun accept(ctx: Serializer.ObjectCtx, compiler: BaseSearchQueryCompiler) {
             if (excludes.isEmpty()) {
                 ctx.array(name) {
                     compiler.visit(this, includes)
@@ -33,7 +33,7 @@ sealed class Source : ObjExpression {
     object Enable : Source() {
         override fun clone() = this
 
-        override fun accept(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
+        override fun accept(ctx: Serializer.ObjectCtx, compiler: BaseSearchQueryCompiler) {
             ctx.field(name, true)
         }
 
@@ -41,7 +41,7 @@ sealed class Source : ObjExpression {
     object Disable : Source() {
         override fun clone() = this
 
-        override fun accept(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
+        override fun accept(ctx: Serializer.ObjectCtx, compiler: BaseSearchQueryCompiler) {
             ctx.field(name, false)
         }
     }

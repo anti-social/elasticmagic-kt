@@ -1,6 +1,6 @@
 package dev.evo.elasticmagic.query
 
-import dev.evo.elasticmagic.compile.SearchQueryCompiler
+import dev.evo.elasticmagic.compile.BaseSearchQueryCompiler
 import dev.evo.elasticmagic.serde.Serializer
 
 interface BoolExpression : QueryExpression {
@@ -69,7 +69,7 @@ data class Bool(
 
     override fun visit(
         ctx: Serializer.ObjectCtx,
-        compiler: SearchQueryCompiler
+        compiler: BaseSearchQueryCompiler
     ) {
         if (minimumShouldMatch != null) {
             ctx.field("minimum_should_match", minimumShouldMatch.toValue())

@@ -1,7 +1,7 @@
 package dev.evo.elasticmagic.query
 
 import dev.evo.elasticmagic.Params
-import dev.evo.elasticmagic.compile.SearchQueryCompiler
+import dev.evo.elasticmagic.compile.BaseSearchQueryCompiler
 import dev.evo.elasticmagic.serde.Serializer
 
 /**
@@ -56,7 +56,7 @@ data class Match(
 
     override fun visit(
         ctx: Serializer.ObjectCtx,
-        compiler: SearchQueryCompiler
+        compiler: BaseSearchQueryCompiler
     ) {
         val params = Params(
             params,
@@ -89,7 +89,7 @@ data class MatchPhrase(
 
     override fun visit(
         ctx: Serializer.ObjectCtx,
-        compiler: SearchQueryCompiler
+        compiler: BaseSearchQueryCompiler
     ) {
         val params = Params(
             params,
@@ -115,7 +115,7 @@ object MatchAll : QueryExpression {
 
     override fun visit(
         ctx: Serializer.ObjectCtx,
-        compiler: SearchQueryCompiler
+        compiler: BaseSearchQueryCompiler
     ) {}
 }
 
@@ -143,7 +143,7 @@ data class MultiMatch(
 
     override fun visit(
         ctx: Serializer.ObjectCtx,
-        compiler: SearchQueryCompiler
+        compiler: BaseSearchQueryCompiler
     ) {
         ctx.field("query", query)
         ctx.array("fields") {

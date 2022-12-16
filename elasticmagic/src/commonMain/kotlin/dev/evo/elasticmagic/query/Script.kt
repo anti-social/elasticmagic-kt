@@ -1,7 +1,7 @@
 package dev.evo.elasticmagic.query
 
 import dev.evo.elasticmagic.Params
-import dev.evo.elasticmagic.compile.SearchQueryCompiler
+import dev.evo.elasticmagic.compile.BaseSearchQueryCompiler
 import dev.evo.elasticmagic.serde.Serializer
 
 sealed class Script : ObjExpression {
@@ -33,7 +33,7 @@ sealed class Script : ObjExpression {
         override fun clone() = copy()
     }
 
-    override fun accept(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
+    override fun accept(ctx: Serializer.ObjectCtx, compiler: BaseSearchQueryCompiler) {
         ctx.field(by, value)
         if (lang != null) {
             ctx.field("lang", lang)

@@ -1,6 +1,6 @@
 package dev.evo.elasticmagic.query
 
-import dev.evo.elasticmagic.compile.SearchQueryCompiler
+import dev.evo.elasticmagic.compile.BaseSearchQueryCompiler
 import dev.evo.elasticmagic.serde.Serializer
 
 data class Nested(
@@ -19,7 +19,7 @@ data class Nested(
 
     override fun clone() = copy()
 
-    override fun visit(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
+    override fun visit(ctx: Serializer.ObjectCtx, compiler: BaseSearchQueryCompiler) {
         ctx.field("path", path.getQualifiedFieldName())
         ctx.obj("query") {
             compiler.visit(this, query)

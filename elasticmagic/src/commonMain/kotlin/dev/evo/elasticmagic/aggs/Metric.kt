@@ -1,6 +1,6 @@
 package dev.evo.elasticmagic.aggs
 
-import dev.evo.elasticmagic.compile.SearchQueryCompiler
+import dev.evo.elasticmagic.compile.BaseSearchQueryCompiler
 import dev.evo.elasticmagic.query.FieldOperations
 import dev.evo.elasticmagic.query.ObjExpression
 import dev.evo.elasticmagic.query.Script
@@ -63,7 +63,7 @@ abstract class NumericValueAgg<T, R: AggregationResult>(
     abstract val value: AggValue<T>
     abstract val missing: T?
 
-    override fun visit(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
+    override fun visit(ctx: Serializer.ObjectCtx, compiler: BaseSearchQueryCompiler) {
         compiler.visit(ctx, value)
         ctx.fieldIfNotNull("missing", missing)
     }
@@ -161,7 +161,7 @@ data class WeightedAvgAgg<T>(
             missing = missing,
         )
 
-        override fun accept(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
+        override fun accept(ctx: Serializer.ObjectCtx, compiler: BaseSearchQueryCompiler) {
             compiler.visit(ctx, value)
             ctx.fieldIfNotNull("missing", missing)
         }
@@ -169,7 +169,7 @@ data class WeightedAvgAgg<T>(
 
     override fun clone() = copy()
 
-    override fun visit(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
+    override fun visit(ctx: Serializer.ObjectCtx, compiler: BaseSearchQueryCompiler) {
         ctx.obj("value") {
             compiler.visit(this, value)
         }

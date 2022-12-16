@@ -1,7 +1,7 @@
 package dev.evo.elasticmagic.query
 
 import dev.evo.elasticmagic.Params
-import dev.evo.elasticmagic.compile.SearchQueryCompiler
+import dev.evo.elasticmagic.compile.BaseSearchQueryCompiler
 import dev.evo.elasticmagic.serde.Serializer
 import dev.evo.elasticmagic.types.FieldType
 
@@ -52,7 +52,7 @@ sealed interface Sort {
     ) : ArrayExpression, Sort {
         override fun clone() = copy()
 
-        override fun accept(ctx: Serializer.ArrayCtx, compiler: SearchQueryCompiler) {
+        override fun accept(ctx: Serializer.ArrayCtx, compiler: BaseSearchQueryCompiler) {
             val params = Params(
                 "order" to order,
                 "mode" to mode,
@@ -82,7 +82,7 @@ sealed interface Sort {
     ) : ArrayExpression, Sort {
         override fun clone() = copy()
 
-        override fun accept(ctx: Serializer.ArrayCtx, compiler: SearchQueryCompiler) {
+        override fun accept(ctx: Serializer.ArrayCtx, compiler: BaseSearchQueryCompiler) {
             val params = Params(
                 "type" to type,
                 "order" to order,
@@ -140,7 +140,7 @@ sealed interface Sort {
     ) : ObjExpression {
         override fun clone() = copy()
 
-        override fun accept(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
+        override fun accept(ctx: Serializer.ObjectCtx, compiler: BaseSearchQueryCompiler) {
             ctx.field("path", path.getQualifiedFieldName())
             if (filter != null) {
                 ctx.obj("filter") {
