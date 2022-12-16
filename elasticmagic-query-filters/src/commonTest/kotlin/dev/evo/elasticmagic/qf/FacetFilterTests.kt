@@ -32,7 +32,7 @@ object BikeDocument : Document() {
     val price by float()
 }
 
-fun searchResultWithAggs(aggs: Map<String, AggregationResult>): SearchQueryResult<Nothing> {
+fun searchResultWithAggs(vararg aggs: Pair<String, AggregationResult>): SearchQueryResult<Nothing> {
     return SearchQueryResult(
         rawResult = null,
         took = 10,
@@ -41,7 +41,7 @@ fun searchResultWithAggs(aggs: Map<String, AggregationResult>): SearchQueryResul
         totalHitsRelation = null,
         maxScore = null,
         hits = emptyList(),
-        aggs = aggs,
+        aggs = mapOf(*aggs),
     )
 }
 
@@ -66,17 +66,15 @@ class FacetFilterTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQueryComp
 
         val manufacturers = ctx.processResult(
             searchResultWithAggs(
-                mapOf(
-                    "qf:manufacturer" to TermsAggResult(
-                        listOf(
-                            TermBucket("Giant", 23),
-                            TermBucket("Cube", 12)
-                        ),
-                        docCountErrorUpperBound = 0,
-                        sumOtherDocCount = 0,
-                    )
-                ),
-            )
+                "qf:manufacturer" to TermsAggResult(
+                    listOf(
+                        TermBucket("Giant", 23),
+                        TermBucket("Cube", 12)
+                    ),
+                    docCountErrorUpperBound = 0,
+                    sumOtherDocCount = 0,
+                )
+            ),
         )
         manufacturers.name shouldBe "manufacturer"
         manufacturers.selected.shouldBeFalse()
@@ -94,7 +92,7 @@ class FacetFilterTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQueryComp
         val filter = FacetFilter(BikeDocument.manufacturer)
 
         val ctx = filter.prepare("manufacturer", mapOf(
-            ("manufacturer" to "") to listOf("Giant")
+            listOf("manufacturer") to listOf("Giant")
         ))
         val sq = SearchQuery()
         ctx.apply(sq, emptyList())
@@ -116,16 +114,14 @@ class FacetFilterTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQueryComp
 
         val manufacturers = ctx.processResult(
             searchResultWithAggs(
-                mapOf(
-                    "qf:manufacturer" to TermsAggResult(
-                        listOf(
-                            TermBucket("Giant", 23),
-                            TermBucket("Cube", 12)
-                        ),
-                        docCountErrorUpperBound = 0,
-                        sumOtherDocCount = 0,
-                    )
-                ),
+                "qf:manufacturer" to TermsAggResult(
+                    listOf(
+                        TermBucket("Giant", 23),
+                        TermBucket("Cube", 12)
+                    ),
+                    docCountErrorUpperBound = 0,
+                    sumOtherDocCount = 0,
+                )
             ),
         )
         manufacturers.name shouldBe "manufacturer"
@@ -145,7 +141,7 @@ class FacetFilterTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQueryComp
 
         val ctx = filter.prepare(
             "manufacturer", mapOf(
-                ("manufacturer" to "") to listOf("Giant")
+                listOf("manufacturer") to listOf("Giant")
             )
         )
         val sq = SearchQuery()
@@ -184,7 +180,7 @@ class FacetFilterTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQueryComp
 
         val ctx = filter.prepare(
             "manufacturer", mapOf(
-                ("manufacturer" to "") to listOf("Giant", "Cube"),
+                listOf("manufacturer") to listOf("Giant", "Cube"),
             )
         )
         val sq = SearchQuery()
@@ -266,7 +262,7 @@ class FacetFilterTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQueryComp
 
         val ctx = filter.prepare(
             "manufacturer", mapOf(
-                ("manufacturer" to "") to listOf("Giant")
+                listOf("manufacturer") to listOf("Giant")
             )
         )
         val sq = SearchQuery()
@@ -308,22 +304,20 @@ class FacetFilterTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQueryComp
         )
 
         val manufacturers = ctx.processResult(searchResultWithAggs(
-            mapOf(
-                "qf:manufacturer.filter" to SingleBucketAggResult(
-                    49,
-                    aggs = mapOf(
-                        "qf:manufacturer" to TermsAggResult(
-                            listOf(
-                                TermBucket("Giant", 23, aggs = mapOf(
-                                    "min_price" to MinAggResult(999.9)
-                                )),
-                                TermBucket("Cube", 19, aggs = mapOf(
-                                    "min_price" to MinAggResult(1299.0)
-                                ))
-                            ),
-                            docCountErrorUpperBound = 0,
-                            sumOtherDocCount = 0
-                        )
+            "qf:manufacturer.filter" to SingleBucketAggResult(
+                49,
+                aggs = mapOf(
+                    "qf:manufacturer" to TermsAggResult(
+                        listOf(
+                            TermBucket("Giant", 23, aggs = mapOf(
+                                "min_price" to MinAggResult(999.9)
+                            )),
+                            TermBucket("Cube", 19, aggs = mapOf(
+                                "min_price" to MinAggResult(1299.0)
+                            ))
+                        ),
+                        docCountErrorUpperBound = 0,
+                        sumOtherDocCount = 0
                     )
                 )
             )
@@ -351,7 +345,7 @@ class FacetFilterTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQueryComp
 
         val ctx = filter.prepare(
             "manufacturer", mapOf(
-                ("manufacturer" to "") to listOf("1", "3")
+                listOf("manufacturer") to listOf("1", "3")
             )
         )
         val sq = SearchQuery()
@@ -384,18 +378,16 @@ class FacetFilterTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQueryComp
         )
 
         val manufacturers = ctx.processResult(searchResultWithAggs(
-            mapOf(
-                "qf:manufacturer.filter" to SingleBucketAggResult(
-                    49,
-                    aggs = mapOf(
-                        "qf:manufacturer" to TermsAggResult(
-                            listOf(
-                                TermBucket(1, 23),
-                                TermBucket(2, 19),
-                            ),
-                            docCountErrorUpperBound = 0,
-                            sumOtherDocCount = 0
-                        )
+            "qf:manufacturer.filter" to SingleBucketAggResult(
+                49,
+                aggs = mapOf(
+                    "qf:manufacturer" to TermsAggResult(
+                        listOf(
+                            TermBucket(1, 23),
+                            TermBucket(2, 19),
+                        ),
+                        docCountErrorUpperBound = 0,
+                        sumOtherDocCount = 0
                     )
                 )
             )

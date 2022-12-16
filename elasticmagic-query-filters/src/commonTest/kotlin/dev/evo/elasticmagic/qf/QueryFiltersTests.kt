@@ -115,11 +115,11 @@ class QueryFiltersTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQueryCom
         val appliedFilters = BikeQueryFilters.apply(
             sq,
             mapOf(
-                ("manufacturer" to "") to listOf("BMC", "Cube"),
-                ("price" to "lte") to listOf("2500"),
-                ("page" to "") to listOf("3"),
-                ("page" to "size") to listOf("50"),
-                ("sort" to "") to listOf("price")
+                listOf("manufacturer") to listOf("BMC", "Cube"),
+                listOf("price", "lte") to listOf("2500"),
+                listOf("page") to listOf("3"),
+                listOf("page", "size") to listOf("50"),
+                listOf("sort") to listOf("price")
             )
         )
         val filters = appliedFilters.processResult(

@@ -65,7 +65,7 @@ class PageFilterTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQueryCompi
     @Test
     fun fromExceedsMaxHits() = testWithCompiler {
         val filter = PageFilter()
-        val ctx = filter.prepare("page", mapOf(("page" to "") to listOf("1002")))
+        val ctx = filter.prepare("page", mapOf(listOf("page") to listOf("1002")))
 
         val sq = SearchQuery()
         ctx.apply(sq, emptyList())
@@ -97,7 +97,7 @@ class PageFilterTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQueryCompi
     @Test
     fun fromPlusSizeExceedsMaxHits() = testWithCompiler {
         val filter = PageFilter(availablePageSizes = listOf(99))
-        val ctx = filter.prepare("page", mapOf(("page" to "") to listOf("102")))
+        val ctx = filter.prepare("page", mapOf(listOf("page") to listOf("102")))
 
         val sq = SearchQuery()
         ctx.apply(sq, emptyList())
@@ -131,7 +131,7 @@ class PageFilterTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQueryCompi
     @Test
     fun pageSize() = testWithCompiler {
         val filter = PageFilter()
-        val ctx = filter.prepare("page", mapOf(("page" to "size") to listOf("50")))
+        val ctx = filter.prepare("page", mapOf(listOf("page", "size") to listOf("50")))
 
         val sq = SearchQuery()
         ctx.apply(sq, emptyList())
@@ -149,7 +149,7 @@ class PageFilterTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQueryCompi
     @Test
     fun pageSizeNotAvailable() = testWithCompiler {
         val filter = PageFilter()
-        val ctx = filter.prepare("page", mapOf(("page" to "size") to listOf("99")))
+        val ctx = filter.prepare("page", mapOf(listOf("page", "size") to listOf("99")))
 
         val sq = SearchQuery()
         ctx.apply(sq, emptyList())

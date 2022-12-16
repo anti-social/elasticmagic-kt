@@ -20,6 +20,7 @@ abstract class ElasticsearchTestBase : TestBase() {
             val transport = ElasticsearchKtorTransport(
                 elasticUrl,
                 engine = httpEngine,
+                trackers = emptyList(),
             ) {
                 if (elasticAuth != null) {
                     auth = elasticAuth

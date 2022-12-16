@@ -38,9 +38,9 @@ class FacetRangeFilterTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQuer
         )
 
         val price = ctx.processResult(
-            searchResultWithAggs(mapOf(
+            searchResultWithAggs(
                 "qf:price.count" to ValueCountAggResult(97L)
-            ))
+            )
         )
         price.name shouldBe "price"
         price.count shouldBe 97L
@@ -55,8 +55,8 @@ class FacetRangeFilterTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQuer
         val ctx = filter.prepare(
             "price",
             mapOf(
-                ("price" to "gte") to listOf("9.99"),
-                ("price" to "lte") to listOf("20"),
+                listOf("price", "gte") to listOf("9.99"),
+                listOf("price", "lte") to listOf("20"),
             )
         )
         val sq = SearchQuery()
@@ -78,9 +78,9 @@ class FacetRangeFilterTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQuer
         )
 
         val price = ctx.processResult(
-            searchResultWithAggs(mapOf(
+            searchResultWithAggs(
                 "qf:price.count" to ValueCountAggResult(97L)
-            ))
+            )
         )
         price.name shouldBe "price"
         price.count shouldBe 97L
@@ -95,8 +95,8 @@ class FacetRangeFilterTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQuer
         val ctx = filter.prepare(
             "price",
             mapOf(
-                ("price" to "gte") to listOf("not-a-number"),
-                ("price" to "lte") to listOf("20"),
+                listOf("price", "gte") to listOf("not-a-number"),
+                listOf("price", "lte") to listOf("20"),
             )
         )
         val sq = SearchQuery()
@@ -124,8 +124,8 @@ class FacetRangeFilterTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQuer
         val ctx = filter.prepare(
             "price",
             mapOf(
-                ("price" to "gte") to listOf("9.99"),
-                ("price" to "lte") to listOf("20"),
+                listOf("price", "gte") to listOf("9.99"),
+                listOf("price", "lte") to listOf("20"),
             )
         )
 
@@ -244,7 +244,7 @@ class FacetRangeFilterTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQuer
         )
 
         val priceFacet = ctx.processResult(
-            searchResultWithAggs(mapOf(
+            searchResultWithAggs(
                 "qf:price.count" to ValueCountAggResult(97L),
                 "qf:price.min" to MinAggResult(0.01),
                 "qf:price.max" to MaxAggResult(100_000.0),
@@ -253,7 +253,7 @@ class FacetRangeFilterTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQuer
                     HistogramBucket(10.0, 101),
                     HistogramBucket(99_990.0, 3),
                 ))
-            ))
+            )
         )
         priceFacet.name shouldBe "price"
         priceFacet.count shouldBe 97L
