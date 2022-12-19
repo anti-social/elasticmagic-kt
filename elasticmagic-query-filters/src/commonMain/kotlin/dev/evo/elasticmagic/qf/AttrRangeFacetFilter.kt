@@ -2,15 +2,22 @@ package dev.evo.elasticmagic.qf
 
 import dev.evo.elasticmagic.SearchQuery
 import dev.evo.elasticmagic.SearchQueryResult
+import dev.evo.elasticmagic.aggs.Aggregation
+import dev.evo.elasticmagic.aggs.FilterAgg
+import dev.evo.elasticmagic.aggs.TermsAgg
+import dev.evo.elasticmagic.doc.BoundRuntimeField
+import dev.evo.elasticmagic.doc.RootFieldSet
 import dev.evo.elasticmagic.query.Bool
 import dev.evo.elasticmagic.query.FieldOperations
 import dev.evo.elasticmagic.query.QueryExpression
 import dev.evo.elasticmagic.query.Range
+import dev.evo.elasticmagic.query.Script
 import dev.evo.elasticmagic.types.FloatType
 import dev.evo.elasticmagic.types.IntType
+import dev.evo.elasticmagic.types.LongType
 
 fun encodeRangeAttrWithValue(attrId: Int, value: Float): Long {
-    return (attrId.toLong() shl 32) or java.lang.Float.floatToIntBits(value).toLong()
+    return (attrId.toLong() shl 32) or (value.toBits().toLong() and 0x00000000_ffffffffL)
 }
 
 class AttrRangeFacetFilter(
@@ -33,10 +40,11 @@ class AttrRangeFacetFilter(
      *                 **           **
      *                    **     **
      *                       ***
-     *                       | |
-     *    0x{attr_id}_80000000 0x{attr_id}_7f800000
-     *             -0.0                 +Inf
-     *
+     *                       |||
+     *    0x{attr_id}_80000000|0x{attr_id}_7f800000
+     *           -0.0         |            +Inf
+     *                0x{attr_id}_7fc00000
+     *                       NaN
      */
     sealed class SelectedValue {
         abstract val attrId: Int
@@ -49,16 +57,23 @@ class AttrRangeFacetFilter(
             }
 
             override fun filterExpression(field: FieldOperations<Long>): QueryExpression {
-                if (gte >= 0.0F) {
-                    return field.range(
+                return when {
+                    gte == 0.0F -> Bool.should(
+                        field.eq(encodeRangeAttrWithValue(attrId, -0.0F)),
+                        field.range(
+                            gte = encodeRangeAttrWithValue(attrId, 0.0F),
+                            lte = encodeRangeAttrWithValue(attrId, Float.POSITIVE_INFINITY)
+                        )
+                    )
+                    gte > 0.0F -> field.range(
                         gte = encodeRangeAttrWithValue(attrId, gte),
                         lte = encodeRangeAttrWithValue(attrId, Float.POSITIVE_INFINITY)
                     )
+                    else -> field.range(
+                        gte = encodeRangeAttrWithValue(attrId, 0.0F),
+                        lte = encodeRangeAttrWithValue(attrId, gte)
+                    )
                 }
-                return field.range(
-                    gte = encodeRangeAttrWithValue(attrId, 0.0F),
-                    lte = encodeRangeAttrWithValue(attrId, gte)
-                )
             }
         }
 
@@ -68,67 +83,79 @@ class AttrRangeFacetFilter(
             }
 
             override fun filterExpression(field: FieldOperations<Long>): QueryExpression {
-                if (lte <= -0.0F) {
-                    return field.range(
+                return when {
+                    lte == 0.0F -> Bool.should(
+                        field.eq(encodeRangeAttrWithValue(attrId, 0.0F)),
+                        field.range(
+                            gte = encodeRangeAttrWithValue(attrId, -0.0F),
+                            lte = encodeRangeAttrWithValue(attrId, Float.NEGATIVE_INFINITY),
+                        )
+                    )
+                    lte < 0.0F -> field.range(
                         gte = encodeRangeAttrWithValue(attrId, lte),
                         lte = encodeRangeAttrWithValue(attrId, Float.NEGATIVE_INFINITY)
                     )
-                }
-                return Bool.should(
-                    field.range(
-                        gte = encodeRangeAttrWithValue(attrId, 0.0F),
-                        lte = encodeRangeAttrWithValue(attrId, lte),
-                    ),
-                    field.range(
-                        gte = encodeRangeAttrWithValue(attrId, -0.0F),
-                        lte = encodeRangeAttrWithValue(attrId, Float.NEGATIVE_INFINITY)
+                    else -> Bool.should(
+                        field.range(
+                            gte = encodeRangeAttrWithValue(attrId, 0.0F),
+                            lte = encodeRangeAttrWithValue(attrId, lte),
+                        ),
+                        field.range(
+                            gte = encodeRangeAttrWithValue(attrId, -0.0F),
+                            lte = encodeRangeAttrWithValue(attrId, Float.NEGATIVE_INFINITY)
+                        )
                     )
-                )
+                }
             }
         }
 
         data class Between(override val attrId: Int, val gte: Float, val lte: Float) : SelectedValue() {
             override fun filterExpression(field: FieldOperations<Long>): QueryExpression {
-                if (gte >= 0.0F) {
-                    return field.range(
-                        gte=encodeRangeAttrWithValue(attrId, gte),
-                        lte=encodeRangeAttrWithValue(attrId, lte)
+                return when {
+                    gte == 0.0F && lte == 0.0F -> field.oneOf(
+                        encodeRangeAttrWithValue(attrId, 0.0F),
+                        encodeRangeAttrWithValue(attrId, -0.0F),
+                    )
+                    gte > lte -> field.eq(
+                        encodeRangeAttrWithValue(attrId, Float.NaN),
+                    )
+                    gte == 0.0F -> Bool.should(
+                        field.eq(encodeRangeAttrWithValue(attrId, -0.0F)),
+                        field.range(
+                            gte = encodeRangeAttrWithValue(attrId, 0.0F),
+                            lte = encodeRangeAttrWithValue(attrId, lte)
+                        )
+                    )
+                    lte == 0.0F -> Bool.should(
+                        field.eq(encodeRangeAttrWithValue(attrId, 0.0F)),
+                        field.range(
+                            gte = encodeRangeAttrWithValue(attrId, -0.0F),
+                            lte = encodeRangeAttrWithValue(attrId, gte)
+                        )
+                    )
+                    gte > 0.0F && lte > 0.0F -> field.range(
+                        gte = encodeRangeAttrWithValue(attrId, gte),
+                        lte = encodeRangeAttrWithValue(attrId, lte)
+                    )
+                    gte < 0.0F && lte < 0.0F -> field.range(
+                        gte = encodeRangeAttrWithValue(attrId, lte),
+                        lte = encodeRangeAttrWithValue(attrId, gte)
+                    )
+                    else -> Bool.should(
+                        field.range(
+                            gte = encodeRangeAttrWithValue(attrId, 0.0F),
+                            lte = encodeRangeAttrWithValue(attrId, lte)
+                        ),
+                        field.range(
+                            gte = encodeRangeAttrWithValue(attrId, -0.0F),
+                            lte = encodeRangeAttrWithValue(attrId, gte)
+                        )
                     )
                 }
-                if (lte <= -0.0F) {
-                    return field.range(
-                        gte=encodeRangeAttrWithValue(attrId, lte),
-                        lte=encodeRangeAttrWithValue(attrId, gte)
-                    )
-                }
-                return Bool.should(
-                    field.range(
-                        gte=encodeRangeAttrWithValue(attrId, 0.0F),
-                        lte=encodeRangeAttrWithValue(attrId, lte)
-                    ),
-                    field.range(
-                        gte=encodeRangeAttrWithValue(attrId, -0.0F),
-                        lte=encodeRangeAttrWithValue(attrId, gte)
-                    )
-                )
             }
         }
     }
 
-/*     data class SelectedValue(val attrId: Int, val gte: Float?, val lte: Float?) {
-        fun filterExpression(field: FieldOperations<Long>): QueryExpression {
-            val range = Range
-
-            return if (valueIds.size == 1) {
-                field eq encodeAttrWithValue(attrId, valueIds[0])
-            } else if (mode == FacetFilterMode.UNION){
-                field oneOf valueIds.map { v -> encodeAttrWithValue(attrId, v) }
-            } else {
-                Bool.filter(valueIds.map { v -> field eq encodeAttrWithValue(attrId, v) })
-            }
-        }
-    }
- */
     override fun prepare(name: String, params: QueryFilterParams): PreparedAttrRangeFacetFilter {
         val selectedValues = buildMap<_, SelectedValue> {
             for ((keys, values) in params) {
@@ -184,10 +211,62 @@ class PreparedAttrRangeFacetFilter(
     facetFilterExpr: QueryExpression?,
     val selectedValues: Map<Int, AttrRangeFacetFilter.SelectedValue>
 ) : PreparedFilter<AttrRangeFacetFilterResult>(name, facetFilterExpr) {
+
+    companion object {
+        const val DEFAULT_ATTR_IDS_AGG_SIZE = 100
+        internal val ATTR_IDS_SCRIPT = """
+            int attrsLen = doc[params.attrsField].size();
+            if (attrsLen > 0) {
+                for (def attrValue : doc[params.attrsField]) {
+                    long attrId = attrValue >> 32;
+                    emit(attrId);
+                }
+            }
+        """.trimIndent()
+    }
+    
     override fun apply(
         searchQuery: SearchQuery<*>,
         otherFacetFilterExpressions: List<QueryExpression>
     ) {
+/*         for ((attrId, selectedAttrValues) in selectedValues) {
+
+        }
+ */
+        val attrIdsFieldName = "_qf_${name}_attr_range_ids"
+        val attrIdsField = BoundRuntimeField(
+            attrIdsFieldName, LongType,
+            Script.Source(
+                ATTR_IDS_SCRIPT,
+                params = mapOf(
+                    "attrsField" to filter.field,
+                )
+            ),
+            RootFieldSet
+        )
+        searchQuery.runtimeMappings(
+            attrIdsFieldName to attrIdsField
+        )
+
+        val aggs = buildMap<_, Aggregation<*>> {
+            val fullAttrIdsAgg = TermsAgg(
+                attrIdsField, size = DEFAULT_ATTR_IDS_AGG_SIZE
+            )
+            if (facetFilterExpr != null) {
+                put(
+                    "qf:$name.attr_ids.filter",
+                    FilterAgg(facetFilterExpr, aggs = mapOf("qf:$name.attr_ids" to fullAttrIdsAgg))
+                )
+            } else {
+                // FIXME: name of aggregation when multiple filters share the same name
+                put(
+                    "qf:$name.attr_ids",
+                    fullAttrIdsAgg
+                )
+            }
+        }
+        searchQuery.aggs(aggs)
+
         if (facetFilterExpr != null) {
             searchQuery.postFilter(facetFilterExpr)
         }

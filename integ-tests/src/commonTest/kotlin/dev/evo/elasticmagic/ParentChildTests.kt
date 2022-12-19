@@ -52,7 +52,7 @@ class ParentChildTests : ElasticsearchTestBase() {
     override val indexName = "parent-child"
 
     @Test
-    fun testParentChildQueries() = runTestWithTransports {
+    fun testParentChildQueries() = runTestWithSerdes {
         val q1 = QuestionDocSource().apply {
             id = 1
             join = Join("question")

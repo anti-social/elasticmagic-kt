@@ -8,6 +8,7 @@ import dev.evo.elasticmagic.bulk.IndexAction
 import dev.evo.elasticmagic.bulk.Refresh
 import dev.evo.elasticmagic.doc.mergeDocuments
 import dev.evo.elasticmagic.serde.Serde
+import dev.evo.elasticmagic.serde.serialization.JsonSerializer
 import dev.evo.elasticmagic.transport.ElasticsearchException
 import dev.evo.elasticmagic.transport.ElasticsearchKtorTransport
 
@@ -15,17 +16,53 @@ import dev.evo.elasticmagic.transport.ElasticsearchKtorTransport
 abstract class ElasticsearchTestBase : TestBase() {
     abstract val indexName: String
 
-    protected fun runTestWithTransports(block: suspend TestScope.() -> Unit) {
-        for (apiSerde in apiSerdes) {
-            val transport = ElasticsearchKtorTransport(
-                elasticUrl,
-                engine = httpEngine,
-                trackers = emptyList(),
-            ) {
-                if (elasticAuth != null) {
-                    auth = elasticAuth
+    val transport = ElasticsearchKtorTransport(
+        elasticUrl,
+        engine = httpEngine,
+    ) {
+        if (elasticAuth != null) {
+            auth = elasticAuth
+        }
+
+        trackers = listOf { request, response, _ ->
+            if (getenv("ELASTICMAGIC_DEBUG") != "true") {
+                return@listOf
+            }
+            println(">>> ${request.method} ${request.path}")
+            val body = request.body
+            val serializedBody = when (body) {
+                is JsonSerializer.ObjectCtx -> {
+                    body.serialize()
+                }
+                is List<*> -> {
+                    buildString {
+                        for (action in body) {
+                            if (action is JsonSerializer.ObjectCtx) {
+                                append(action.serialize())
+                                append('\n')
+                            }
+                        }
+                    }
+                }
+                else -> {
+                    null
                 }
             }
+            if (serializedBody != null) {
+                println("${serializedBody}")
+            }
+            
+            println("<<< ${response}")
+            println()
+        }
+    }
+
+    protected fun runTestWithSerdes(block: suspend TestScope.() -> Unit) {
+        runTestWithSerdes(apiSerdes, block)
+    }
+
+    protected fun runTestWithSerdes(apiSerdes: List<Serde>, block: suspend TestScope.() -> Unit) {
+        for (apiSerde in apiSerdes) {
             val bulkSerde = if (apiSerde is Serde.OneLineJson) {
                 apiSerde
             } else {

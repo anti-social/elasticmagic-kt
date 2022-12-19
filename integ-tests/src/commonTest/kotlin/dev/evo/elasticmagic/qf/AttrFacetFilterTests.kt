@@ -92,7 +92,7 @@ class AttrFacetFilterTests : ElasticsearchTestBase() {
     }
 
     @Test
-    fun facet() = runTestWithTransports {
+    fun facet() = runTestWithSerdes {
         withFixtures(
             ItemDoc,
             listOf(
