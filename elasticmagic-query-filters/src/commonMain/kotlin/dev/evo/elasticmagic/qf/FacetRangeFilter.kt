@@ -25,9 +25,9 @@ import dev.evo.elasticmagic.query.QueryExpression
  */
 class FacetRangeFilter<T>(
     val field: FieldOperations<T>,
-    name: String? = null,
+    paramName: String? = null,
     val aggs: Map<String, Aggregation<*>> = emptyMap(),
-) : Filter<PreparedFacetRangeFilter<T>, FacetRangeFilterResult<T>>(name) {
+) : Filter<PreparedFacetRangeFilter<T>, FacetRangeFilterResult<T>>(paramName) {
 
     /**
      * Parses [params] and prepares the [FacetRangeFilter] for applying.
@@ -37,9 +37,9 @@ class FacetRangeFilter<T>(
      *   Supports 2 operations: `gte` and `lte`. Examples:
      *   - `mapOf(listOf("price", "gte") to listOf("10"), listOf("price", "lte") to listOf("150")))`
      */
-    override fun prepare(name: String, params: QueryFilterParams): PreparedFacetRangeFilter<T> {
-        val from = params.decodeLastValue(listOf(name, "gte"), field.getFieldType())
-        val to = params.decodeLastValue(listOf(name, "lte"), field.getFieldType())
+    override fun prepare(name: String, paramName: String, params: QueryFilterParams): PreparedFacetRangeFilter<T> {
+        val from = params.decodeLastValue(listOf(paramName, "gte"), field.getFieldType())
+        val to = params.decodeLastValue(listOf(paramName, "lte"), field.getFieldType())
         val filterExpression = if (from != null || to != null) {
             field.range(gte = from, lte = to)
         } else {

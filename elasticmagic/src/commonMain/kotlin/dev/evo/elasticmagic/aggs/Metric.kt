@@ -1,5 +1,6 @@
 package dev.evo.elasticmagic.aggs
 
+import dev.evo.elasticmagic.Params
 import dev.evo.elasticmagic.compile.BaseSearchQueryCompiler
 import dev.evo.elasticmagic.query.FieldOperations
 import dev.evo.elasticmagic.query.ObjExpression
@@ -369,3 +370,37 @@ data class ExtendedStatsAggResult(
         }
     }
 }
+
+data class ScriptedMetricAgg<T>(
+    val mapScript: Script,
+    val reduceScript: Script,
+    val combineScript: Script,
+    val params: Params,
+) : MetricAggregation<ScriptedMetricAggResult<T>>() {
+    override val name = "scripted_metric"
+
+    override fun clone() = copy()
+
+    override fun visit(ctx: Serializer.ObjectCtx, compiler: BaseSearchQueryCompiler) {
+        ctx.obj("map_script") {
+            compiler.visit(this, mapScript)
+        }
+        ctx.obj("reduce_script") {
+            compiler.visit(this, mapScript)
+        }
+        ctx.obj("combine_script") {
+            compiler.visit(this, mapScript)
+        }
+        ctx.obj("params") {
+            compiler.visit(this, params)
+        }
+    }
+
+    override fun processResult(obj: Deserializer.ObjectCtx): ScriptedMetricAggResult<T> {
+        TODO()
+    }
+}
+
+data class ScriptedMetricAggResult<T>(
+    val value: T
+) : AggregationResult

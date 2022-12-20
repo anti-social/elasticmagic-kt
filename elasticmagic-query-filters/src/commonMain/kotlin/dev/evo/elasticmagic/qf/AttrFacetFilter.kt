@@ -32,13 +32,13 @@ fun decodeAttrAndValue(attrValue: Long): Pair<Int, Int> {
  */
 class AttrFacetFilter(
     val field: FieldOperations<Long>,
-    name: String? = null
-) : Filter<PreparedAttrFacetFilter, AttrFacetFilterResult>(name) {
+    paramName: String? = null,
+) : Filter<PreparedAttrFacetFilter, AttrFacetFilterResult>(paramName) {
     
-    data class SelectedValues(val attrId: Int, val valueIds: List<Int>, val mode: FacetFilterMode) {
+    data class SelectedValues(val attrId: Int, val valueIds: Set<Int>, val mode: FacetFilterMode) {
         fun filterExpression(field: FieldOperations<Long>): QueryExpression {
             return if (valueIds.size == 1) {
-                field eq encodeAttrWithValue(attrId, valueIds[0])
+                field eq encodeAttrWithValue(attrId, valueIds.first())
             } else if (mode == FacetFilterMode.UNION){
                 field oneOf valueIds.map { v -> encodeAttrWithValue(attrId, v) }
             } else {
@@ -56,13 +56,13 @@ class AttrFacetFilter(
      *   - `mapOf(listOf("attrs", "1") to listOf("12", "13"))`
      *   - `mapOf(listOf("attrs", "2", "all") to listOf("101", "102"))
      */
-    override fun prepare(name: String, params: QueryFilterParams): PreparedAttrFacetFilter {
+    override fun prepare(name: String, paramName: String, params: QueryFilterParams): PreparedAttrFacetFilter {
         val selectedValues = params.asSequence()
             .mapNotNull { (keys, values) ->
                 when {
                     keys.isEmpty() -> null
                     values.isEmpty() -> null
-                    keys[0] != name -> null
+                    keys[0] != paramName -> null
                     keys.size == 2 || keys.size == 3 -> {
                         val mode = when {
                             keys.size == 2 -> FacetFilterMode.UNION
@@ -74,7 +74,7 @@ class AttrFacetFilter(
                         if (mode == null || attrId == null) {
                             null
                         } else {
-                            attrId to SelectedValues(attrId, values.mapNotNull(IntType::deserializeTermOrNull), mode)
+                            attrId to SelectedValues(attrId, values.mapNotNull(IntType::deserializeTermOrNull).toSet(), mode)
                         }
                     }
                     else -> null
@@ -210,11 +210,12 @@ class PreparedAttrFacetFilter(
             .agg<TermsAggResult<Long>>(fullAggName)
         for (bucket in fullAgg.buckets) {
             val (attrId, valueId) = decodeAttrAndValue(bucket.key)
-            if (attrId in selectedValues) {
+            val selectedAttrValues = selectedValues[attrId]
+            if (selectedAttrValues != null && selectedAttrValues.mode != FacetFilterMode.INTERSECT) {
                 continue
             }
             facetValues.getOrPut(attrId, ::mutableListOf)
-                .add(AttrFacetValue(valueId, bucket.docCount))
+                .add(AttrFacetValue(valueId, bucket.docCount, valueId in selectedAttrValues?.valueIds ?: emptySet()))
         }
 
         for ((aggName, agg) in aggResult.aggs) {
@@ -226,10 +227,17 @@ class PreparedAttrFacetFilter(
             } else {
                 val attrIdMatch = attrAggNameRe.matchEntire(aggName) ?: continue
                 val attrId = attrIdMatch.groups[1]?.value?.toInt() ?: continue
-                attrId to (agg as TermsAggResult<*>)
+                @Suppress("UNCHECKED_CAST")
+                attrId to (agg as TermsAggResult<Long>)
             }
+            val selectedAttrValues = selectedValues[attrId]
             facetValues[attrId] = attrAgg.buckets
-                .map { bucket -> AttrFacetValue((bucket.key as Long).toInt(), bucket.docCount) }
+                .map { bucket ->
+                    val valueId = bucket.key.toInt()
+                    AttrFacetValue(
+                        valueId, bucket.docCount, valueId in selectedAttrValues?.valueIds ?: emptySet()
+                    )
+                }
                 .toMutableList()
         }
 
@@ -255,4 +263,5 @@ data class AttrFacet(
 data class AttrFacetValue(
     val value: Int,
     val count: Long,
+    val selected: Boolean,
 )

@@ -49,10 +49,10 @@ enum class FacetFilterMode {
  */
 class FacetFilter<T, V>(
     val field: FieldOperations<V>,
-    name: String? = null,
+    paramName: String? = null,
     val mode: FacetFilterMode = FacetFilterMode.UNION,
     val termsAgg: TermsAgg<T>
-) : Filter<PreparedFacetFilter<T>, FacetFilterResult<T>>(name) {
+) : Filter<PreparedFacetFilter<T>, FacetFilterResult<T>>(paramName) {
 
     companion object {
         /**
@@ -60,10 +60,10 @@ class FacetFilter<T, V>(
          */
         operator fun <T> invoke(
             field: FieldOperations<T>,
-            name: String? = null,
+            paramName: String? = null,
             mode: FacetFilterMode = FacetFilterMode.UNION,
         ): FacetFilter<T, T> {
-            return FacetFilter(field, name = name, mode = mode, termsAgg = TermsAgg(field))
+            return FacetFilter(field, paramName = paramName, mode = mode, termsAgg = TermsAgg(field))
         }
 
         /**
@@ -74,11 +74,11 @@ class FacetFilter<T, V>(
          */
         operator fun <T> invoke(
             field: FieldOperations<T>,
-            name: String? = null,
+            paramName: String? = null,
             mode: FacetFilterMode = FacetFilterMode.UNION,
             termsAggFactory: (FieldOperations<T>) -> TermsAgg<T>
         ): FacetFilter<T, T> {
-            return FacetFilter(field, name = name, mode = mode, termsAgg = termsAggFactory(field))
+            return FacetFilter(field, paramName = paramName, mode = mode, termsAgg = termsAggFactory(field))
         }
     }
 
@@ -90,8 +90,8 @@ class FacetFilter<T, V>(
      *   Examples:
      *   - `mapOf(listOf("manufacturer") to listOf("Giant", "Cube"))`
      */
-    override fun prepare(name: String, params: QueryFilterParams): PreparedFacetFilter<T> {
-        val filterValues = params.decodeValues(name, field.getFieldType())
+    override fun prepare(name: String, paramName: String, params: QueryFilterParams): PreparedFacetFilter<T> {
+        val filterValues = params.decodeValues(paramName, field.getFieldType())
         val filterExpr = when (filterValues.size) {
             0 -> null
             1 -> field.eq(filterValues[0])
@@ -105,7 +105,7 @@ class FacetFilter<T, V>(
         }
         return PreparedFacetFilter(
             this, name, filterExpr,
-            selectedValues = params.decodeValues(name, termsAgg.value.getValueType()),
+            selectedValues = params.decodeValues(paramName, termsAgg.value.getValueType()),
         )
     }
 }

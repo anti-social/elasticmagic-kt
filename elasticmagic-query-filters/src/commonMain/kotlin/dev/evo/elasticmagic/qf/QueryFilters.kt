@@ -79,13 +79,13 @@ class QueryFiltersResult(
     }
 }
 
-abstract class Filter<C: PreparedFilter<R>, R: FilterResult>(private val name: String?) {
-    abstract fun prepare(name: String, params: QueryFilterParams): C
+abstract class Filter<C: PreparedFilter<R>, R: FilterResult>(private val paramName: String? = null) {
+    abstract fun prepare(name: String, paramName: String, params: QueryFilterParams): C
 
     operator fun provideDelegate(
         thisRef: QueryFilters, property: KProperty<*>
     ): ReadOnlyProperty<QueryFilters, BoundFilter<C, R>> {
-        val boundFilter = BoundFilter(name ?: property.name, this)
+        val boundFilter = BoundFilter(property.name, paramName, this)
         thisRef.addFilter(boundFilter)
         return ReadOnlyProperty { _, _ ->
             boundFilter
@@ -111,8 +111,10 @@ interface FilterResult {
     val name: String
 }
 
-class BoundFilter<C: PreparedFilter<R>, R: FilterResult>(val name: String, val filter: Filter<C, R>) {
+class BoundFilter<C: PreparedFilter<R>, R: FilterResult>(
+    val name: String, val paramName: String?, val filter: Filter<C, R>
+) {
     fun prepare(params: QueryFilterParams): C {
-        return filter.prepare(name, params)
+        return filter.prepare(name, paramName ?: name, params)
     }
 }

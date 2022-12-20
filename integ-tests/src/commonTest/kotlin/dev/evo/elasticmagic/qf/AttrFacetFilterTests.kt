@@ -16,7 +16,7 @@ import io.kotest.matchers.nulls.shouldNotBeNull
 
 import kotlin.test.Test
 
-fun <T> Iterator<T>.get(): T {
+fun <T> Iterator<T>.nextValue(): T {
     if (!hasNext()) {
         throw IllegalStateException("No more elements in the iterator")
     }
@@ -31,6 +31,13 @@ class AttrFacetFilterTests : ElasticsearchTestBase() {
         val valueId: Int
         val indexValue: Long
             get() = encodeAttrWithValue(attrId, valueId)
+    }
+
+    interface AttributeRangeValue {
+        val attrId: Int
+        val value: Float
+        val indexValue: Long
+            get() = encodeRangeAttrWithValue(attrId, value)
     }
 
     enum class Manufacturer(override val valueId: Int) : AttributeValue {
@@ -60,14 +67,6 @@ class AttrFacetFilterTests : ElasticsearchTestBase() {
         override val attrId = Processor.ATTR_ID
     }
 
-    class Ram(override val valueId: Int) : AttributeValue {
-        companion object {
-            const val ATTR_ID = 3
-        }
-
-        override val attrId = ATTR_ID
-    }
-
     enum class Connectivity(override val valueId: Int) : AttributeValue {
         WIFI_802_11_AC(0),
         WIFI_802_11_AX(1),
@@ -75,10 +74,26 @@ class AttrFacetFilterTests : ElasticsearchTestBase() {
         INFRARED(3);
 
         companion object {
-            const val ATTR_ID = 4;
+            const val ATTR_ID = 3;
         }
 
         override val attrId = Connectivity.ATTR_ID
+    }
+
+    class Ram(override val value: Float) : AttributeRangeValue {
+        companion object {
+            const val ATTR_ID = 4
+        }
+
+        override val attrId = ATTR_ID
+    }
+
+    class DisplaySize(override val value: Float) : AttributeRangeValue {
+        companion object {
+            const val ATTR_ID = 5
+        }
+
+        override val attrId = ATTR_ID
     }
 
     object ItemDoc : Document() {
@@ -89,6 +104,7 @@ class AttrFacetFilterTests : ElasticsearchTestBase() {
 
     object ItemQueryFilters : QueryFilters() {
         val selectAttrs by AttrFacetFilter(ItemDoc.selectAttrs, "attr")
+        val rangeAttrs by AttrRangeFacetFilter(ItemDoc.rangeAttrs, "attr")
     }
 
     @Test
@@ -101,9 +117,12 @@ class AttrFacetFilterTests : ElasticsearchTestBase() {
                     it[ItemDoc.selectAttrs.list()] = mutableListOf(
                         Manufacturer.Samsung.indexValue,
                         Processor.Exinos.indexValue,
-                        Ram(8).indexValue,
                         Connectivity.WIFI_802_11_AC.indexValue,
                         Connectivity.NFC.indexValue,
+                    )
+                    it[ItemDoc.rangeAttrs.list()] = mutableListOf(
+                        Ram(8.0F).indexValue,
+                        DisplaySize(6.3F).indexValue,
                     )
                 },
                 DynDocSource {
@@ -111,10 +130,13 @@ class AttrFacetFilterTests : ElasticsearchTestBase() {
                     it[ItemDoc.selectAttrs.list()] = mutableListOf(
                         Manufacturer.Samsung.indexValue,
                         Processor.Exinos.indexValue,
-                        Ram(8).indexValue,
                         Connectivity.WIFI_802_11_AC.indexValue,
                         Connectivity.WIFI_802_11_AX.indexValue,
                         Connectivity.NFC.indexValue,
+                    )
+                    it[ItemDoc.rangeAttrs.list()] = mutableListOf(
+                        Ram(8.0F).indexValue,
+                        DisplaySize(6.7F).indexValue,
                     )
                 },
                 DynDocSource {
@@ -122,10 +144,13 @@ class AttrFacetFilterTests : ElasticsearchTestBase() {
                     it[ItemDoc.selectAttrs.list()] = mutableListOf(
                         Manufacturer.Samsung.indexValue,
                         Processor.Snapdragon.indexValue,
-                        Ram(12).indexValue,
                         Connectivity.WIFI_802_11_AC.indexValue,
                         Connectivity.WIFI_802_11_AX.indexValue,
                         Connectivity.NFC.indexValue,
+                    )
+                    it[ItemDoc.rangeAttrs.list()] = mutableListOf(
+                        Ram(12.0F).indexValue,
+                        DisplaySize(6.1F).indexValue,
                     )
                 },
                 DynDocSource {
@@ -133,10 +158,13 @@ class AttrFacetFilterTests : ElasticsearchTestBase() {
                     it[ItemDoc.selectAttrs.list()] = mutableListOf(
                         Manufacturer.Motorola.indexValue,
                         Processor.Snapdragon.indexValue,
-                        Ram(12).indexValue,
                         Connectivity.WIFI_802_11_AC.indexValue,
                         Connectivity.WIFI_802_11_AX.indexValue,
                         Connectivity.NFC.indexValue,
+                    )
+                    it[ItemDoc.rangeAttrs.list()] = mutableListOf(
+                        Ram(12.0F).indexValue,
+                        DisplaySize(6.7F).indexValue,
                     )
                 },
                 DynDocSource {
@@ -144,10 +172,13 @@ class AttrFacetFilterTests : ElasticsearchTestBase() {
                     it[ItemDoc.selectAttrs.list()] = mutableListOf(
                         Manufacturer.Google.indexValue,
                         Processor.Tensor.indexValue,
-                        Ram(12).indexValue,
                         Connectivity.WIFI_802_11_AC.indexValue,
                         Connectivity.WIFI_802_11_AX.indexValue,
                         Connectivity.NFC.indexValue,
+                    )
+                    it[ItemDoc.rangeAttrs.list()] = mutableListOf(
+                        Ram(12.0F).indexValue,
+                        DisplaySize(6.7F).indexValue,
                     )
                 },
                 DynDocSource {
@@ -155,10 +186,13 @@ class AttrFacetFilterTests : ElasticsearchTestBase() {
                     it[ItemDoc.selectAttrs.list()] = mutableListOf(
                         Manufacturer.Xiaomi.indexValue,
                         Processor.Snapdragon.indexValue,
-                        Ram(6).indexValue,
                         Connectivity.WIFI_802_11_AC.indexValue,
                         Connectivity.NFC.indexValue,
                         Connectivity.INFRARED.indexValue,
+                    )
+                    it[ItemDoc.rangeAttrs.list()] = mutableListOf(
+                        Ram(6.0F).indexValue,
+                        DisplaySize(6.43F).indexValue,
                     )
                 },
                 DynDocSource {
@@ -166,11 +200,14 @@ class AttrFacetFilterTests : ElasticsearchTestBase() {
                     it[ItemDoc.selectAttrs.list()] = mutableListOf(
                         Manufacturer.Xiaomi.indexValue,
                         Processor.Snapdragon.indexValue,
-                        Ram(8).indexValue,
                         Connectivity.WIFI_802_11_AC.indexValue,
                         Connectivity.WIFI_802_11_AX.indexValue,
                         Connectivity.NFC.indexValue,
                         Connectivity.INFRARED.indexValue,
+                    )
+                    it[ItemDoc.rangeAttrs.list()] = mutableListOf(
+                        Ram(8.0F).indexValue,
+                        DisplaySize(6.28F).indexValue,
                     )
                 },
             ).mapIndexed { ix, doc ->
@@ -191,217 +228,244 @@ class AttrFacetFilterTests : ElasticsearchTestBase() {
 
                 val qfResult = appliedFilters.processResult(searchResult)
                 val selectAttrsFilter = qfResult[ItemQueryFilters.selectAttrs]
-                selectAttrsFilter.name shouldBe "attr"
-                selectAttrsFilter.facets.size shouldBe 4
+                selectAttrsFilter.name shouldBe "selectAttrs"
+                selectAttrsFilter.facets.size shouldBe 3
 
                 val manufacturerFacet = selectAttrsFilter
                     .facets[Manufacturer.ATTR_ID]
                     .shouldNotBeNull()
+                manufacturerFacet.attrId shouldBe Manufacturer.ATTR_ID
                 manufacturerFacet.values.size shouldBe 4
                 manufacturerFacet.values[0].value shouldBe Manufacturer.Samsung.valueId
                 manufacturerFacet.values[0].count shouldBe 3
+                manufacturerFacet.values[0].selected shouldBe false
                 manufacturerFacet.values[1].value shouldBe Manufacturer.Xiaomi.valueId
                 manufacturerFacet.values[1].count shouldBe 2
+                manufacturerFacet.values[1].selected shouldBe false
                 manufacturerFacet.values[2].value shouldBe Manufacturer.Motorola.valueId
                 manufacturerFacet.values[2].count shouldBe 1
+                manufacturerFacet.values[2].selected shouldBe false
                 manufacturerFacet.values[3].value shouldBe Manufacturer.Google.valueId
                 manufacturerFacet.values[3].count shouldBe 1
+                manufacturerFacet.values[3].selected shouldBe false
 
                 val processorFacet = selectAttrsFilter
                     .facets[Processor.ATTR_ID]
                     .shouldNotBeNull()
+                processorFacet.attrId shouldBe Processor.ATTR_ID
                 processorFacet.values.size shouldBe 3
                 processorFacet.values[0].value shouldBe Processor.Snapdragon.valueId
                 processorFacet.values[0].count shouldBe 4
+                processorFacet.values[0].selected shouldBe false
                 processorFacet.values[1].value shouldBe Processor.Exinos.valueId
                 processorFacet.values[1].count shouldBe 2
+                processorFacet.values[1].selected shouldBe false
                 processorFacet.values[2].value shouldBe Processor.Tensor.valueId
                 processorFacet.values[2].count shouldBe 1
-
-                val ramFacet = selectAttrsFilter
-                    .facets[Ram.ATTR_ID]
-                    .shouldNotBeNull()
-                ramFacet.values.size shouldBe 3
-                ramFacet.values[0].value shouldBe 8
-                ramFacet.values[0].count shouldBe 3
-                ramFacet.values[1].value shouldBe 12
-                ramFacet.values[1].count shouldBe 3
-                ramFacet.values[2].value shouldBe 6
-                ramFacet.values[2].count shouldBe 1
+                processorFacet.values[2].selected shouldBe false
 
                 val connectivityFacet = selectAttrsFilter
                     .facets[Connectivity.ATTR_ID]
                     .shouldNotBeNull()
+                connectivityFacet.attrId shouldBe Connectivity.ATTR_ID
                 connectivityFacet.values.size shouldBe 4
                 connectivityFacet.values[0].value shouldBe Connectivity.WIFI_802_11_AC.valueId
                 connectivityFacet.values[0].count shouldBe 7
+                connectivityFacet.values[0].selected shouldBe false
                 connectivityFacet.values[1].value shouldBe Connectivity.NFC.valueId
                 connectivityFacet.values[1].count shouldBe 7
+                connectivityFacet.values[1].selected shouldBe false
                 connectivityFacet.values[2].value shouldBe Connectivity.WIFI_802_11_AX.valueId
                 connectivityFacet.values[2].count shouldBe 5
+                connectivityFacet.values[2].selected shouldBe false
                 connectivityFacet.values[3].value shouldBe Connectivity.INFRARED.valueId
                 connectivityFacet.values[3].count shouldBe 2
-            }
+                connectivityFacet.values[3].selected shouldBe false
 
-            println("===============================")
-            searchQuery = SearchQuery()
-            ItemQueryFilters.apply(
-                searchQuery, mapOf(listOf("attr", "1") to listOf("0"))
-            ).let { appliedFilters ->
-                val searchResult = searchQuery.execute(index)
-                searchResult.totalHits shouldBe 3
+                val rangeAttrsFilter = qfResult[ItemQueryFilters.rangeAttrs]
+                rangeAttrsFilter.name shouldBe "rangeAttrs"
+                rangeAttrsFilter.facets.size shouldBe 2
 
-                val qfResult = appliedFilters.processResult(searchResult)
-                val selectAttrsFilter = qfResult[ItemQueryFilters.selectAttrs]
-                selectAttrsFilter.name shouldBe "attr"
-                selectAttrsFilter.facets.size shouldBe 4
-
-                val manufacturerFacet = selectAttrsFilter
-                    .facets[Manufacturer.ATTR_ID]
-                    .shouldNotBeNull()
-                manufacturerFacet.values.size shouldBe 4
-                manufacturerFacet.iterator().let { values ->
-                    values.get() shouldBe AttrFacetValue(Manufacturer.Samsung.valueId, 3)
-                    values.get() shouldBe AttrFacetValue(Manufacturer.Xiaomi.valueId, 2)
-                    values.get() shouldBe AttrFacetValue(Manufacturer.Motorola.valueId, 1)
-                    values.get() shouldBe AttrFacetValue(Manufacturer.Google.valueId, 1)
-                }
-
-                val processorFacet = selectAttrsFilter
-                    .facets[Processor.ATTR_ID]
-                    .shouldNotBeNull()
-                processorFacet.values.size shouldBe 2
-                processorFacet.iterator().let { values ->
-                    values.get() shouldBe AttrFacetValue(Processor.Exinos.valueId, 2)
-                    values.get() shouldBe AttrFacetValue(Processor.Snapdragon.valueId, 1)
-                }
-
-                val ramFacet = selectAttrsFilter
+                val ramFacet = rangeAttrsFilter
                     .facets[Ram.ATTR_ID]
                     .shouldNotBeNull()
-                ramFacet.values.size shouldBe 2
-                ramFacet.iterator().let { values ->
-                    values.get() shouldBe AttrFacetValue(8, 2)
-                    values.get() shouldBe AttrFacetValue(12, 1)
-                }
+                ramFacet.attrId shouldBe Ram.ATTR_ID
+                ramFacet.minValue shouldBe 6.0F
+                ramFacet.maxValue shouldBe 12.0F
 
-                val connectivityFacet = selectAttrsFilter
-                    .facets[Connectivity.ATTR_ID]
+                val displaySizeFacet = rangeAttrsFilter
+                    .facets[DisplaySize.ATTR_ID]
                     .shouldNotBeNull()
-                connectivityFacet.values.size shouldBe 3
-                connectivityFacet.iterator().let { values ->
-                    values.get() shouldBe AttrFacetValue(Connectivity.WIFI_802_11_AC.valueId, 3)
-                    values.get() shouldBe AttrFacetValue(Connectivity.NFC.valueId, 3)
-                    values.get() shouldBe AttrFacetValue(Connectivity.WIFI_802_11_AX.valueId, 2)
-                }
+                displaySizeFacet.attrId shouldBe DisplaySize.ATTR_ID
+                displaySizeFacet.minValue shouldBe 6.1F
+                displaySizeFacet.minValue shouldBe 6.7F
             }
 
-            println("===============================")
-            searchQuery = SearchQuery()
-            ItemQueryFilters.apply(
-                searchQuery,
-                mapOf(
-                    listOf("attr", "1") to listOf("0", "1"),
-                    listOf("attr", "3") to listOf("12"),
-                )
-            ).let { appliedFilters ->
-                val searchResult = searchQuery.execute(index)
-                searchResult.totalHits shouldBe 2
+            // println("===============================")
+            // searchQuery = SearchQuery()
+            // ItemQueryFilters.apply(
+            //     searchQuery, mapOf(listOf("attr", "1") to listOf("0"))
+            // ).let { appliedFilters ->
+            //     val searchResult = searchQuery.execute(index)
+            //     searchResult.totalHits shouldBe 3
 
-                val qfResult = appliedFilters.processResult(searchResult)
-                val selectAttrsFilter = qfResult[ItemQueryFilters.selectAttrs]
-                selectAttrsFilter.name shouldBe "attr"
-                selectAttrsFilter.facets.size shouldBe 4
+            //     val qfResult = appliedFilters.processResult(searchResult)
+            //     val selectAttrsFilter = qfResult[ItemQueryFilters.selectAttrs]
+            //     selectAttrsFilter.name shouldBe "attr"
+            //     selectAttrsFilter.facets.size shouldBe 4
 
-                val manufacturerFacet = selectAttrsFilter
-                    .facets[Manufacturer.ATTR_ID]
-                    .shouldNotBeNull()
-                manufacturerFacet.values.size shouldBe 3
-                manufacturerFacet.iterator().let { values ->
-                    values.get() shouldBe AttrFacetValue(Manufacturer.Samsung.valueId, 1)
-                    values.get() shouldBe AttrFacetValue(Manufacturer.Motorola.valueId, 1)
-                    values.get() shouldBe AttrFacetValue(Manufacturer.Google.valueId, 1)
-                }
+            //     val manufacturerFacet = selectAttrsFilter
+            //         .facets[Manufacturer.ATTR_ID]
+            //         .shouldNotBeNull()
+            //     manufacturerFacet.values.size shouldBe 4
+            //     manufacturerFacet.iterator().let { values ->
+            //         values.nextValue() shouldBe AttrFacetValue(Manufacturer.Samsung.valueId, 3)
+            //         values.nextValue() shouldBe AttrFacetValue(Manufacturer.Xiaomi.valueId, 2)
+            //         values.nextValue() shouldBe AttrFacetValue(Manufacturer.Motorola.valueId, 1)
+            //         values.nextValue() shouldBe AttrFacetValue(Manufacturer.Google.valueId, 1)
+            //     }
 
-                val processorFacet = selectAttrsFilter
-                    .facets[Processor.ATTR_ID]
-                    .shouldNotBeNull()
-                processorFacet.values.size shouldBe 1
-                processorFacet.iterator().let { values ->
-                    values.get() shouldBe AttrFacetValue(Processor.Snapdragon.valueId, 2)
-                }
+            //     val processorFacet = selectAttrsFilter
+            //         .facets[Processor.ATTR_ID]
+            //         .shouldNotBeNull()
+            //     processorFacet.values.size shouldBe 2
+            //     processorFacet.iterator().let { values ->
+            //         values.nextValue() shouldBe AttrFacetValue(Processor.Exinos.valueId, 2)
+            //         values.nextValue() shouldBe AttrFacetValue(Processor.Snapdragon.valueId, 1)
+            //     }
 
-                val ramFacet = selectAttrsFilter
-                    .facets[Ram.ATTR_ID]
-                    .shouldNotBeNull()
-                ramFacet.values.size shouldBe 2
-                ramFacet.iterator().let { values ->
-                    values.get() shouldBe AttrFacetValue(8, 2)
-                    values.get() shouldBe AttrFacetValue(12, 2)
-                }
+            //     val ramFacet = selectAttrsFilter
+            //         .facets[Ram.ATTR_ID]
+            //         .shouldNotBeNull()
+            //     ramFacet.values.size shouldBe 2
+            //     ramFacet.iterator().let { values ->
+            //         values.nextValue() shouldBe AttrFacetValue(8, 2)
+            //         values.nextValue() shouldBe AttrFacetValue(12, 1)
+            //     }
 
-                val connectivityFacet = selectAttrsFilter
-                    .facets[Connectivity.ATTR_ID]
-                    .shouldNotBeNull()
-                connectivityFacet.values.size shouldBe 3
-                connectivityFacet.iterator().let { values ->
-                    values.get() shouldBe AttrFacetValue(Connectivity.WIFI_802_11_AC.valueId, 2)
-                    values.get() shouldBe AttrFacetValue(Connectivity.WIFI_802_11_AX.valueId, 2)
-                    values.get() shouldBe AttrFacetValue(Connectivity.NFC.valueId, 2)
-                }
-            }
+            //     val connectivityFacet = selectAttrsFilter
+            //         .facets[Connectivity.ATTR_ID]
+            //         .shouldNotBeNull()
+            //     connectivityFacet.values.size shouldBe 3
+            //     connectivityFacet.iterator().let { values ->
+            //         values.nextValue() shouldBe AttrFacetValue(Connectivity.WIFI_802_11_AC.valueId, 3)
+            //         values.nextValue() shouldBe AttrFacetValue(Connectivity.NFC.valueId, 3)
+            //         values.nextValue() shouldBe AttrFacetValue(Connectivity.WIFI_802_11_AX.valueId, 2)
+            //     }
+            // }
 
-            println("===============================")
-            searchQuery = SearchQuery()
-            ItemQueryFilters.apply(
-                searchQuery,
-                mapOf(
-                    listOf("attr", "4", "all") to listOf("1", "3"),
-                )
-            ).let { appliedFilters ->
-                val searchResult = searchQuery.execute(index)
-                searchResult.totalHits shouldBe 1
+            // println("===============================")
+            // searchQuery = SearchQuery()
+            // ItemQueryFilters.apply(
+            //     searchQuery,
+            //     mapOf(
+            //         listOf("attr", "1") to listOf("0", "1"),
+            //         listOf("attr", "3") to listOf("12"),
+            //     )
+            // ).let { appliedFilters ->
+            //     val searchResult = searchQuery.execute(index)
+            //     searchResult.totalHits shouldBe 2
 
-                val qfResult = appliedFilters.processResult(searchResult)
-                val selectAttrsFilter = qfResult[ItemQueryFilters.selectAttrs]
-                selectAttrsFilter.name shouldBe "attr"
-                selectAttrsFilter.facets.size shouldBe 4
+            //     val qfResult = appliedFilters.processResult(searchResult)
+            //     val selectAttrsFilter = qfResult[ItemQueryFilters.selectAttrs]
+            //     selectAttrsFilter.name shouldBe "attr"
+            //     selectAttrsFilter.facets.size shouldBe 4
 
-                val manufacturerFacet = selectAttrsFilter
-                    .facets[Manufacturer.ATTR_ID]
-                    .shouldNotBeNull()
-                manufacturerFacet.values.size shouldBe 1
-                manufacturerFacet.iterator().let { values ->
-                    values.get() shouldBe AttrFacetValue(Manufacturer.Xiaomi.valueId, 1)
-                }
+            //     val manufacturerFacet = selectAttrsFilter
+            //         .facets[Manufacturer.ATTR_ID]
+            //         .shouldNotBeNull()
+            //     manufacturerFacet.values.size shouldBe 3
+            //     manufacturerFacet.iterator().let { values ->
+            //         values.nextValue() shouldBe AttrFacetValue(Manufacturer.Samsung.valueId, 1)
+            //         values.nextValue() shouldBe AttrFacetValue(Manufacturer.Motorola.valueId, 1)
+            //         values.nextValue() shouldBe AttrFacetValue(Manufacturer.Google.valueId, 1)
+            //     }
 
-                val processorFacet = selectAttrsFilter
-                    .facets[Processor.ATTR_ID]
-                    .shouldNotBeNull()
-                processorFacet.values.size shouldBe 1
-                processorFacet.iterator().let { values ->
-                    values.get() shouldBe AttrFacetValue(Processor.Snapdragon.valueId, 1)
-                }
+            //     val processorFacet = selectAttrsFilter
+            //         .facets[Processor.ATTR_ID]
+            //         .shouldNotBeNull()
+            //     processorFacet.values.size shouldBe 1
+            //     processorFacet.iterator().let { values ->
+            //         values.nextValue() shouldBe AttrFacetValue(Processor.Snapdragon.valueId, 2)
+            //     }
 
-                val ramFacet = selectAttrsFilter
-                    .facets[Ram.ATTR_ID]
-                    .shouldNotBeNull()
-                ramFacet.values.size shouldBe 1
-                ramFacet.iterator().let { values ->
-                    values.get() shouldBe AttrFacetValue(8, 1)
-                }
+            //     val ramFacet = selectAttrsFilter
+            //         .facets[Ram.ATTR_ID]
+            //         .shouldNotBeNull()
+            //     ramFacet.values.size shouldBe 2
+            //     ramFacet.iterator().let { values ->
+            //         values.nextValue() shouldBe AttrFacetValue(8, 2)
+            //         values.nextValue() shouldBe AttrFacetValue(12, 2)
+            //     }
 
-                val connectivityFacet = selectAttrsFilter
-                    .facets[Connectivity.ATTR_ID]
-                    .shouldNotBeNull()
-                connectivityFacet.values.size shouldBe 4
-                connectivityFacet.iterator().let { values ->
-                    values.get() shouldBe AttrFacetValue(Connectivity.WIFI_802_11_AC.valueId, 1)
-                    values.get() shouldBe AttrFacetValue(Connectivity.WIFI_802_11_AX.valueId, 1)
-                    values.get() shouldBe AttrFacetValue(Connectivity.NFC.valueId, 1)
-                    values.get() shouldBe AttrFacetValue(Connectivity.INFRARED.valueId, 1)
-                }
-            }
+            //     val connectivityFacet = selectAttrsFilter
+            //         .facets[Connectivity.ATTR_ID]
+            //         .shouldNotBeNull()
+            //     connectivityFacet.values.size shouldBe 3
+            //     connectivityFacet.iterator().let { values ->
+            //         values.nextValue() shouldBe AttrFacetValue(Connectivity.WIFI_802_11_AC.valueId, 2)
+            //         values.nextValue() shouldBe AttrFacetValue(Connectivity.WIFI_802_11_AX.valueId, 2)
+            //         values.nextValue() shouldBe AttrFacetValue(Connectivity.NFC.valueId, 2)
+            //     }
+            // }
+
+            // println("===============================")
+            // searchQuery = SearchQuery()
+            // ItemQueryFilters.apply(
+            //     searchQuery,
+            //     mapOf(
+            //         listOf(
+            //             "attr", Connectivity.ATTR_ID.toString(), "all"
+            //         ) to listOf(
+            //             Connectivity.WIFI_802_11_AX.valueId.toString(),
+            //             Connectivity.INFRARED.valueId.toString(),
+            //         ),
+            //     )
+            // ).let { appliedFilters ->
+            //     val searchResult = searchQuery.execute(index)
+            //     searchResult.totalHits shouldBe 1
+
+            //     val qfResult = appliedFilters.processResult(searchResult)
+            //     val selectAttrsFilter = qfResult[ItemQueryFilters.selectAttrs]
+            //     selectAttrsFilter.name shouldBe "attr"
+            //     println(selectAttrsFilter.facets)
+            //     selectAttrsFilter.facets.size shouldBe 4
+
+            //     val manufacturerFacet = selectAttrsFilter
+            //         .facets[Manufacturer.ATTR_ID]
+            //         .shouldNotBeNull()
+            //     manufacturerFacet.values.size shouldBe 1
+            //     manufacturerFacet.iterator().let { values ->
+            //         values.nextValue() shouldBe AttrFacetValue(Manufacturer.Xiaomi.valueId, 1)
+            //     }
+
+            //     val processorFacet = selectAttrsFilter
+            //         .facets[Processor.ATTR_ID]
+            //         .shouldNotBeNull()
+            //     processorFacet.values.size shouldBe 1
+            //     processorFacet.iterator().let { values ->
+            //         values.nextValue() shouldBe AttrFacetValue(Processor.Snapdragon.valueId, 1)
+            //     }
+
+            //     val ramFacet = selectAttrsFilter
+            //         .facets[Ram.ATTR_ID]
+            //         .shouldNotBeNull()
+            //     ramFacet.values.size shouldBe 1
+            //     ramFacet.iterator().let { values ->
+            //         values.nextValue() shouldBe AttrFacetValue(8, 1)
+            //     }
+
+            //     val connectivityFacet = selectAttrsFilter
+            //         .facets[Connectivity.ATTR_ID]
+            //         .shouldNotBeNull()
+            //     connectivityFacet.values.size shouldBe 4
+            //     connectivityFacet.iterator().let { values ->
+            //         values.nextValue() shouldBe AttrFacetValue(Connectivity.WIFI_802_11_AC.valueId, 1)
+            //         values.nextValue() shouldBe AttrFacetValue(Connectivity.WIFI_802_11_AX.valueId, 1)
+            //         values.nextValue() shouldBe AttrFacetValue(Connectivity.NFC.valueId, 1)
+            //         values.nextValue() shouldBe AttrFacetValue(Connectivity.INFRARED.valueId, 1)
+            //     }
+            // }
         }
     }
 }

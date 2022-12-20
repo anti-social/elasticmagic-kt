@@ -14,8 +14,8 @@ import dev.evo.elasticmagic.types.KeywordType
  */
 class SortFilter(
     vararg sortValues: SortFilterValue,
-    name: String? = null,
-) : Filter<PreparedSortFilter, SortFilterResult>(name) {
+    paramName: String? = null,
+) : Filter<PreparedSortFilter, SortFilterResult>(paramName) {
     init {
         if (sortValues.isEmpty()) {
             throw IllegalArgumentException("Expected at least one sort value")
@@ -26,10 +26,10 @@ class SortFilter(
         /**
          * Shortcut that creates a [SortFilter] from pairs of name and list of sorts.
          */
-        operator fun invoke(vararg sortValues: Pair<String, List<Sort>>, name: String? = null): SortFilter {
+        operator fun invoke(vararg sortValues: Pair<String, List<Sort>>, paramName: String? = null): SortFilter {
             return SortFilter(
                 *sortValues.map { (name, sorts) -> SortFilterValue(name, sorts) }.toTypedArray(),
-                name = name
+                paramName = paramName
             )
         }
     }
@@ -46,8 +46,8 @@ class SortFilter(
      *   Examples:
      *   - `mapOf(listOf("sort") to listOf("price"))`
      */
-    override fun prepare(name: String, params: QueryFilterParams): PreparedSortFilter {
-        val selectedValue = params.decodeLastValue(name, KeywordType)
+    override fun prepare(name: String, paramName: String, params: QueryFilterParams): PreparedSortFilter {
+        val selectedValue = params.decodeLastValue(paramName, KeywordType)
             ?.let { valuesByName[it] }
             ?: values[0]
         return PreparedSortFilter(this, name, selectedValue)

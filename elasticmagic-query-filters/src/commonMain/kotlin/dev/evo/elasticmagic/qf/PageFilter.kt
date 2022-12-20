@@ -15,11 +15,11 @@ import dev.evo.elasticmagic.types.IntType
  * @param maxHits - maximum number of hits to available for a pagination
  */
 class PageFilter(
-    name: String? = null,
+    paramName: String? = null,
     val availablePageSizes: List<Int> = DEFAULT_AVAILABLE_PAGE_SIZES,
     defaultPageSize: Int? = null,
     val maxHits: Int = DEFAULT_MAX_HITS,
-) : Filter<PageFilterContext, PageFilterResult>(name) {
+) : Filter<PageFilterContext, PageFilterResult>(paramName) {
     init {
         if (availablePageSizes.isEmpty()) {
             throw IllegalArgumentException("availablePageSizes argument should not be empty")
@@ -44,9 +44,9 @@ class PageFilter(
      *   Examples:
      *   - `mapOf(listOf("page") to listOf("2"), listOf("page", "size") to listOf("100"))`
      */
-    override fun prepare(name: String, params: QueryFilterParams): PageFilterContext {
-        val page = params.decodeLastValue(name, IntType)?.coerceAtLeast(1) ?: 1
-        val pageSize = params.decodeLastValue(listOf(name, "size"), IntType)?.coerceAtLeast(1)
+    override fun prepare(name: String, paramName: String, params: QueryFilterParams): PageFilterContext {
+        val page = params.decodeLastValue(paramName, IntType)?.coerceAtLeast(1) ?: 1
+        val pageSize = params.decodeLastValue(listOf(paramName, "size"), IntType)?.coerceAtLeast(1)
             ?: defaultPageSize
         val perPage = if (availablePageSizes.contains(pageSize)) {
             pageSize

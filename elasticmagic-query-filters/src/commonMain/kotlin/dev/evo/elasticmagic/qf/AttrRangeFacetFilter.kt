@@ -1,10 +1,13 @@
 package dev.evo.elasticmagic.qf
 
+import dev.evo.elasticmagic.AggAwareResult
 import dev.evo.elasticmagic.SearchQuery
 import dev.evo.elasticmagic.SearchQueryResult
 import dev.evo.elasticmagic.aggs.Aggregation
 import dev.evo.elasticmagic.aggs.FilterAgg
 import dev.evo.elasticmagic.aggs.TermsAgg
+import dev.evo.elasticmagic.aggs.TermsAggResult
+import dev.evo.elasticmagic.aggs.FilterAggResult
 import dev.evo.elasticmagic.doc.BoundRuntimeField
 import dev.evo.elasticmagic.doc.RootFieldSet
 import dev.evo.elasticmagic.query.Bool
@@ -22,8 +25,8 @@ fun encodeRangeAttrWithValue(attrId: Int, value: Float): Long {
 
 class AttrRangeFacetFilter(
     val field: FieldOperations<Long>,
-    name: String? = null
-) : Filter<PreparedAttrRangeFacetFilter, AttrRangeFacetFilterResult>(name) {
+    paramName: String? = null
+) : Filter<PreparedAttrRangeFacetFilter, AttrRangeFacetFilterResult>(paramName) {
 
     /**
      * 
@@ -35,8 +38,8 @@ class AttrRangeFacetFilter(
      *                 **           **
      *                *               *
      *    negative   *                 *   positive
-     *    floats ⤹  *                  *  ⤸ floats
-     *               *                * 
+     *    floats ⤹   *                 *  ⤸ floats
+     *                *               *
      *                 **           **
      *                    **     **
      *                       ***
@@ -156,13 +159,13 @@ class AttrRangeFacetFilter(
         }
     }
 
-    override fun prepare(name: String, params: QueryFilterParams): PreparedAttrRangeFacetFilter {
+    override fun prepare(name: String, paramName: String, params: QueryFilterParams): PreparedAttrRangeFacetFilter {
         val selectedValues = buildMap<_, SelectedValue> {
             for ((keys, values) in params) {
                 when {
                     keys.isEmpty() -> {}
                     values.isEmpty() -> {}
-                    keys[0] != name -> {}
+                    keys[0] != paramName -> {}
                     keys.size == 3 -> {
                         val attrId = IntType.deserializeTermOrNull(keys[1]) ?: continue
                         val value = FloatType.deserializeTermOrNull(values.last()) ?: continue
@@ -224,7 +227,10 @@ class PreparedAttrRangeFacetFilter(
             }
         """.trimIndent()
     }
-    
+
+    private val attrIdsAggName = "qf:$name.attr_ids"
+    private val attrIdsFilterAggName = "qf:$name.attr_ids.filter"
+
     override fun apply(
         searchQuery: SearchQuery<*>,
         otherFacetFilterExpressions: List<QueryExpression>
@@ -254,13 +260,13 @@ class PreparedAttrRangeFacetFilter(
             )
             if (facetFilterExpr != null) {
                 put(
-                    "qf:$name.attr_ids.filter",
-                    FilterAgg(facetFilterExpr, aggs = mapOf("qf:$name.attr_ids" to fullAttrIdsAgg))
+                    attrIdsFilterAggName,
+                    FilterAgg(facetFilterExpr, aggs = mapOf(attrIdsAggName to fullAttrIdsAgg))
                 )
             } else {
                 // FIXME: name of aggregation when multiple filters share the same name
                 put(
-                    "qf:$name.attr_ids",
+                    attrIdsAggName,
                     fullAttrIdsAgg
                 )
             }
@@ -273,10 +279,28 @@ class PreparedAttrRangeFacetFilter(
     }
 
     override fun processResult(searchQueryResult: SearchQueryResult<*>): AttrRangeFacetFilterResult {
-        TODO("not implemented")
+        var aggResult = searchQueryResult as AggAwareResult
+
+        val attrsAgg = (aggResult.aggIfExists<FilterAggResult>(attrIdsFilterAggName) ?: aggResult)
+            .agg<TermsAggResult<Long>>(attrIdsAggName)
+        val facets = buildMap {
+            for (bucket in attrsAgg.buckets) {
+                val attrId = bucket.key.toInt()
+                put(attrId, AttrRangeFacet(attrId, 0.0F, 0.0F))
+            }
+        }
+
+        return AttrRangeFacetFilterResult(name, facets)
     }
 }
 
 data class AttrRangeFacetFilterResult(
     override val name: String,
+    val facets: Map<Int, AttrRangeFacet>,
 ) : FilterResult
+
+data class AttrRangeFacet(
+    val attrId: Int,
+    val minValue: Float,
+    val maxValue: Float,
+)
