@@ -10,16 +10,16 @@ import dev.evo.elasticmagic.query.FieldOperations
 abstract class AggAwareResult {
     abstract val aggs: Map<String, AggregationResult>
 
-    inline fun <reified A: AggregationResult> aggIfExists(name: String): A? {
+    inline fun <reified A : AggregationResult> aggIfExists(name: String): A? {
         return (aggs[name] ?: return null) as A
     }
 
-    inline fun <reified A: AggregationResult> agg(name: String): A {
+    inline fun <reified A : AggregationResult> agg(name: String): A {
         return aggIfExists(name) ?: throw NoSuchElementException(name)
     }
 }
 
-data class SearchQueryResult<S: BaseDocSource>(
+data class SearchQueryResult<S : BaseDocSource>(
     val rawResult: Map<String, Any?>?,
     val took: Long,
     val timedOut: Boolean,
@@ -34,13 +34,13 @@ data class MultiSearchQueryResult(
     val took: Long?,
     val responses: List<SearchQueryResult<*>>
 ) {
-    inline fun <reified S: BaseDocSource> get(ix: Int): SearchQueryResult<S> {
+    inline fun <reified S : BaseDocSource> get(ix: Int): SearchQueryResult<S> {
         @Suppress("UNCHECKED_CAST")
         return responses[ix] as SearchQueryResult<S>
     }
 }
 
-data class SearchHit<S: BaseDocSource>(
+data class SearchHit<S : BaseDocSource>(
     val index: String,
     val type: String,
     override val id: String,
@@ -167,3 +167,5 @@ data class BulkError(
     val indexUuid: String,
     val shard: Int?,
 )
+
+data class PingResult(val statusCode: Int, val responseTimeMs: Long)
