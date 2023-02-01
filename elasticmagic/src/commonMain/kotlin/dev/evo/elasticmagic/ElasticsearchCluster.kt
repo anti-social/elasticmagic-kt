@@ -16,6 +16,8 @@ import dev.evo.elasticmagic.transport.ElasticsearchTransport
 import dev.evo.elasticmagic.transport.ApiRequest
 import dev.evo.elasticmagic.transport.Method
 import dev.evo.elasticmagic.transport.Parameters
+import kotlin.time.ExperimentalTime
+import kotlin.time.measureTime
 
 import kotlinx.coroutines.CompletableDeferred
 
@@ -82,6 +84,27 @@ class ElasticsearchCluster(
             sniffedCompilers.complete(CompilerSet(getVersion()))
         }
         return sniffedCompilers.await()
+    }
+
+    @OptIn(ExperimentalTime::class)
+    suspend fun ping(): PingResult {
+        val request = ApiRequest(
+            method = Method.HEAD,
+            path = "",
+            body = null,
+            serde = apiSerde,
+            processResponse = { true }
+        )
+        val statusCode: Int
+        val responseTime = measureTime {
+            statusCode = try {
+                transport.request(request)
+                200
+            } catch (ex: ElasticsearchException.Transport) {
+                ex.statusCode
+            }
+        }
+        return PingResult(statusCode, responseTime.inWholeMilliseconds)
     }
 
     suspend fun createIndex(
