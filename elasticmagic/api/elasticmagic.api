@@ -236,8 +236,13 @@ public final class dev/evo/elasticmagic/ElasticsearchCluster {
 	public final fun indexExists (Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun indexExists$default (Ldev/evo/elasticmagic/ElasticsearchCluster;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public final fun multiSearch (Ljava/util/List;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun ping (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public final fun updateMapping (Ljava/lang/String;Ldev/evo/elasticmagic/doc/Document;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun updateMapping$default (Ldev/evo/elasticmagic/ElasticsearchCluster;Ljava/lang/String;Ldev/evo/elasticmagic/doc/Document;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+}
+
+public final class dev/evo/elasticmagic/ElasticsearchClusterKt {
+	public static final field HTTP_OK_REQUEST I
 }
 
 public final class dev/evo/elasticmagic/ElasticsearchIndex {
@@ -268,6 +273,19 @@ public final class dev/evo/elasticmagic/ParamsKt {
 	public static final fun Params ()Ljava/util/Map;
 	public static final fun Params (Ljava/util/Map;[Lkotlin/Pair;)Ljava/util/Map;
 	public static final fun Params ([Lkotlin/Pair;)Ljava/util/Map;
+}
+
+public final class dev/evo/elasticmagic/PingResult {
+	public fun <init> (IJ)V
+	public final fun component1 ()I
+	public final fun component2 ()J
+	public final fun copy (IJ)Ldev/evo/elasticmagic/PingResult;
+	public static synthetic fun copy$default (Ldev/evo/elasticmagic/PingResult;IJILjava/lang/Object;)Ldev/evo/elasticmagic/PingResult;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getResponseTimeMs ()J
+	public final fun getStatusCode ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
 }
 
 public final class dev/evo/elasticmagic/PreparedSearchQuery {
