@@ -1,3 +1,6 @@
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import org.gradle.api.tasks.testing.logging.TestStackTraceFilter
+import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.dokka.gradle.DokkaMultiModuleTask
 import org.jetbrains.dokka.gradle.DokkaTaskPartial
 
@@ -47,6 +50,7 @@ group = "dev.evo.elasticmagic"
 version = gitDescribe.trimStart('v')
 extra["projectUrl"] = uri("https://github.com/anti-social/elasticmagic-kt")
 
+@OptIn(ExperimentalStdlibApi::class)
 subprojects {
     group = rootProject.group
     version = rootProject.version
@@ -102,10 +106,26 @@ subprojects {
         tasks.findByName("jsNodeTest")?.run {
             outputs.upToDateWhen { false }
         }
+
         tasks.findByName("jvmTest")?.run {
             outputs.upToDateWhen { false }
 
             finalizedBy("jacocoJVMTestReport")
+        }
+
+        tasks.withType<Test>().configureEach {
+            testLogging {
+                events = buildSet<TestLogEvent> {
+                    add(TestLogEvent.FAILED)
+                    if (project.hasProperty("showPassedTests")) {
+                        add(TestLogEvent.PASSED)
+                    }
+                }
+                exceptionFormat = TestExceptionFormat.FULL
+                stackTraceFilters = setOf(
+                    TestStackTraceFilter.ENTRY_POINT
+                )
+            }
         }
 
         tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
@@ -114,7 +134,7 @@ subprojects {
             }
         }
 
-        tasks.register("listConfigurations") {
+        tasks.register("configurations") {
             println("Available configurations:")
             configurations.names.forEach { println("- $it") }
         }

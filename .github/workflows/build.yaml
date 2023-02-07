@@ -11,8 +11,8 @@ on:
     - master
 
 env:
-  GRADLE_ARGS: "--info"
-
+  # TODO: Allow to pass logging level as a variable
+  GRADLE_ARGS: ""
 
 jobs:
   build:
@@ -89,7 +89,7 @@ jobs:
     - name: Run unit tests
       run: |
         set -eux
-        ./gradlew allTests -x integ-tests:allTests $GRADLE_ARGS
+        ./gradlew allTests -PshowPassedTests -x integ-tests:allTests $GRADLE_ARGS
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v2
@@ -184,7 +184,7 @@ jobs:
         export ELASTIC_URL='${{ env.ELASTIC_URL }}'
         export ELASTIC_USER='${{ env.ELASTIC_USER }}'
         export ELASTIC_PASSWORD='${{ env.ELASTIC_PASSWORD }}'
-        ./gradlew :integ-tests:check $GRADLE_ARGS
+        ./gradlew :integ-tests:check -PshowPassedTests $GRADLE_ARGS
 
     - name: Run samples JVM
       run: |
