@@ -1,6 +1,5 @@
 package dev.evo.elasticmagic.transport
 
-import dev.evo.elasticmagic.serde.Deserializer
 import dev.evo.elasticmagic.serde.serialization.JsonDeserializer
 import dev.evo.elasticmagic.serde.serialization.JsonSerde
 import dev.evo.elasticmagic.serde.serialization.JsonSerializer
@@ -61,7 +60,7 @@ class ElasticsearchKtorTransportTests {
                 Method.HEAD,
                 "products",
                 serde = JsonSerde,
-                processResponse = Deserializer.ObjectCtx::toMap
+                processResponse = { resp -> resp.content.toMap() }
             )
         )
         result shouldContainExactly emptyMap()
@@ -97,7 +96,7 @@ class ElasticsearchKtorTransportTests {
                 parameters = emptyMap(),
                 body = body,
                 serde = JsonSerde,
-                Deserializer.ObjectCtx::toMap
+                processResponse = { resp -> resp.content.toMap() }
             )
         )
         result shouldContainExactly mapOf(
@@ -127,7 +126,7 @@ class ElasticsearchKtorTransportTests {
                  Method.DELETE,
                  "products_v2",
                  serde = JsonSerde,
-                 processResponse = Deserializer.ObjectCtx::toMap
+                 processResponse = { resp -> resp.content.toMap() }
              )
          )
          result shouldContainExactly mapOf(
@@ -181,7 +180,7 @@ class ElasticsearchKtorTransportTests {
                  Method.POST, "_bulk",
                  body = listOf(body),
                  serde = JsonSerde,
-                 processResponse = Deserializer.ObjectCtx::toMap
+                 processResponse = { resp -> resp.content.toMap() }
              )
          )
          result shouldContainExactly mapOf(
@@ -254,7 +253,7 @@ class ElasticsearchKtorTransportTests {
     }
 
     @Test
-    fun hooksWithOkResponse() = runTest {
+    fun trackersWithOkResponse() = runTest {
         val client = ElasticsearchKtorTransport(
             "http://example.com:9200",
             MockEngine { request ->
@@ -273,14 +272,26 @@ class ElasticsearchKtorTransportTests {
             }
         ) {
             trackers = listOf(
-                { request, response, duration ->
-                    request.method shouldBe Method.GET
-                    request.path shouldBe "products/_count"
-                    response.shouldBeInstanceOf<Response.Ok<*>>()
-                    response.statusCode shouldBe 200
-                    response.contentType shouldBe "application/json"
-                    response.content shouldBe """{"count": 1}"""
-                    duration shouldBeGreaterThan Duration.ZERO
+                {
+                    object : Tracker {
+                        override fun onRequest(request: PlainRequest) {
+                            request.method shouldBe Method.GET
+                            request.path shouldBe "products/_count"
+                            request.contentType shouldBe "application/json"
+                            request.contentEncoding.shouldBeNull()
+                            request.content shouldBe ByteArray(0)
+                            request.textContent.shouldBeNull()
+                        }
+
+                        override fun onResponse(responseResult: Result<PlainResponse>, duration: Duration) {
+                            val response = responseResult.getOrThrow()
+                            response.shouldBeInstanceOf<PlainResponse>()
+                            response.statusCode shouldBe 200
+                            response.contentType shouldBe "application/json"
+                            response.content shouldBe """{"count": 1}"""
+                            duration shouldBeGreaterThan Duration.ZERO
+                        }
+                    }
                 }
             )
         }
@@ -289,14 +300,81 @@ class ElasticsearchKtorTransportTests {
                 Method.GET,
                 "products/_count",
                 serde = JsonSerde,
-                processResponse = Deserializer.ObjectCtx::toMap
+                processResponse = { resp -> resp.content.toMap() }
             )
         )
         result shouldContainExactly mapOf("count" to 1L)
     }
 
     @Test
-    fun hooksWithErrorResponse() = runTest {
+    fun trackersThatRequireTextContent() = runTest {
+        val expectedContent = """{"query":{"match_all":{}}}"""
+        val client = ElasticsearchKtorTransport(
+            "http://example.com:9200",
+            MockEngine { request ->
+                request.method shouldBe HttpMethod.Get
+                request.url.encodedPath shouldBe "/products/_search"
+                request.body.contentType shouldBe ContentType.Application.Json
+                request.body.toByteArray().decodeToString() shouldBe expectedContent
+
+                respond(
+                    """{"total_hits": 21}""",
+                    headers = headersOf(
+                        HttpHeaders.ContentType,
+                        ContentType.Application.Json.withParameter("charset", "UTF-8").toString()
+                    )
+                )
+            }
+        ) {
+            trackers = listOf(
+                {
+                    object : Tracker {
+                        override fun requiresTextContent(request: Request<*, *, *>): Boolean {
+                            if (request.path.endsWith("/_search")) {
+                                return true
+                            }
+                            return false
+                        }
+
+                        override fun onRequest(request: PlainRequest) {
+                            request.method shouldBe Method.GET
+                            request.path shouldBe "products/_search"
+                            request.contentType shouldBe "application/json"
+                            request.contentEncoding.shouldBeNull()
+                            request.content shouldBe expectedContent.encodeToByteArray()
+                            request.textContent shouldBe expectedContent
+                        }
+
+                        override fun onResponse(responseResult: Result<PlainResponse>, duration: Duration) {
+                            val response = responseResult.getOrThrow()
+                            response.shouldBeInstanceOf<PlainResponse>()
+                            response.statusCode shouldBe 200
+                            response.contentType shouldBe "application/json"
+                            response.content shouldBe """{"total_hits": 21}"""
+                            duration shouldBeGreaterThan Duration.ZERO
+                        }
+                    }
+                }
+            )
+        }
+        val result = client.request(
+            ApiRequest(
+                Method.GET,
+                "products/_search",
+                body = JsonSerializer.obj {
+                    obj("query") {
+                        obj("match_all") {}
+                    }
+                },
+                serde = JsonSerde,
+                processResponse = { resp -> resp.content.toMap() }
+            )
+        )
+        result shouldContainExactly mapOf("total_hits" to 21L)
+    }
+
+    @Test
+    fun trackersWithErrorResponse() = runTest {
         val client = ElasticsearchKtorTransport(
             "http://example.com:9200",
             MockEngine { request ->
@@ -315,16 +393,25 @@ class ElasticsearchKtorTransportTests {
             }
         ) {
             trackers = listOf(
-                { request, response, duration ->
-                    request.method shouldBe Method.GET
-                    request.path shouldBe "products/_count"
-                    response.shouldBeInstanceOf<Response.Error>()
-                    response.statusCode shouldBe 400
-                    response.contentType shouldBe "text/plain"
-                    response.error shouldBe TransportError.Simple(
-                        "Something bad happened"
-                    )
-                    duration shouldBeGreaterThan Duration.ZERO
+                {
+                    object : Tracker {
+                        override fun onRequest(request: PlainRequest) {
+                            request.method shouldBe Method.GET
+                            request.path shouldBe "products/_count"
+                        }
+
+                        override fun onResponse(responseResult: Result<PlainResponse>, duration: Duration) {
+                            // Interesting case that leads to VerifyError
+                            // responseResult.shouldBeInstanceOf<ResponseResult.Error>()
+                            // responseResult.statusCode shouldBe 400
+
+                            val response = responseResult.getOrThrow()
+                            response.statusCode shouldBe 400
+                            response.contentType shouldBe "text/plain"
+                            response.content shouldBe "Something bad happened"
+                            duration shouldBeGreaterThan Duration.ZERO
+                        }
+                    }
                 }
             )
         }
@@ -334,7 +421,7 @@ class ElasticsearchKtorTransportTests {
                     Method.GET,
                     "products/_count",
                     serde = JsonSerde,
-                    processResponse = Deserializer.ObjectCtx::toMap
+                    processResponse = { resp -> resp.content.toMap() }
                 )
             )
         }

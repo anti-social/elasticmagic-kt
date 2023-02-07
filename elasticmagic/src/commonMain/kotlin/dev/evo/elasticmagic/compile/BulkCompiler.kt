@@ -7,11 +7,11 @@ import dev.evo.elasticmagic.BulkOpType
 import dev.evo.elasticmagic.BulkResult
 import dev.evo.elasticmagic.Params
 import dev.evo.elasticmagic.bulk.Refresh
-import dev.evo.elasticmagic.serde.Deserializer
 import dev.evo.elasticmagic.serde.Serializer
 import dev.evo.elasticmagic.serde.forEachObj
 import dev.evo.elasticmagic.serde.toMap
 import dev.evo.elasticmagic.toRequestParameters
+import dev.evo.elasticmagic.transport.ApiResponse
 import dev.evo.elasticmagic.transport.Parameters
 
 class PreparedBulk(
@@ -31,7 +31,7 @@ class BulkCompiler(
         val path: String,
         val parameters: Parameters,
         val body: List<ActionCompiler.Compiled>,
-        val processResult: (Deserializer.ObjectCtx) -> BulkResult
+        val processResult: (ApiResponse) -> BulkResult
     )
 
     fun compile(
@@ -53,7 +53,8 @@ class BulkCompiler(
         )
     }
 
-    fun processResult(ctx: Deserializer.ObjectCtx): BulkResult {
+    fun processResult(response: ApiResponse): BulkResult {
+        val ctx = response.content
         val bulkItems = buildList {
             ctx.array("items").forEachObj { itemObjWrapper ->
                 val (itemObj, itemOpType) = itemObjWrapper.objOrNull("index")?.let { it to BulkOpType.INDEX }

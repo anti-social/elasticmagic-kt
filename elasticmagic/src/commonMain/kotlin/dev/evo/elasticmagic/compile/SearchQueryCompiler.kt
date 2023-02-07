@@ -55,7 +55,8 @@ class MultiSearchQueryCompiler(
             parameters = Parameters(),
             body = body,
             serde = serde,
-            processResponse = { ctx ->
+            processResponse = { resp ->
+                val ctx = resp.content
                 val took = ctx.longOrNull("took")
                 val responsesCtx = ctx.array("responses")
                 val preparedQueriesIter = preparedQueries.iterator()
@@ -94,8 +95,8 @@ open class SearchQueryCompiler(
             parameters = input.params.toRequestParameters(),
             body = body,
             serde = serde,
-            processResponse = { ctx ->
-                processResult(ctx, input)
+            processResponse = { resp ->
+                processResult(resp.content, input)
             }
         )
     }
