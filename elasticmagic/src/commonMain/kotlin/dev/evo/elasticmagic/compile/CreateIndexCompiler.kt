@@ -3,10 +3,10 @@ package dev.evo.elasticmagic.compile
 import dev.evo.elasticmagic.CreateIndexResult
 import dev.evo.elasticmagic.doc.Document
 import dev.evo.elasticmagic.Params
-import dev.evo.elasticmagic.serde.Deserializer
 import dev.evo.elasticmagic.serde.Serde
 import dev.evo.elasticmagic.transport.ApiRequest
 import dev.evo.elasticmagic.transport.Method
+import dev.evo.elasticmagic.transport.ApiResponse
 import dev.evo.elasticmagic.transport.Parameters
 
 class PreparedCreateIndex(
@@ -64,7 +64,8 @@ class CreateIndexCompiler(
         )
     }
 
-    fun processResponse(ctx: Deserializer.ObjectCtx): CreateIndexResult {
+    fun processResponse(response: ApiResponse): CreateIndexResult {
+        val ctx = response.content
         return CreateIndexResult(
             acknowledged = ctx.boolean("acknowledged"),
             shardsAcknowledged = ctx.boolean("shards_acknowledged"),

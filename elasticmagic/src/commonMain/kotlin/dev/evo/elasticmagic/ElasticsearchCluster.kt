@@ -17,15 +17,12 @@ import dev.evo.elasticmagic.transport.ApiRequest
 import dev.evo.elasticmagic.transport.Method
 import dev.evo.elasticmagic.transport.Parameters
 import kotlin.time.ExperimentalTime
-import kotlin.time.measureTime
-
+import kotlin.time.measureTimedValue
 import kotlinx.coroutines.CompletableDeferred
 
 internal fun Params.toRequestParameters(): Parameters {
     return Parameters(*this.toList().toTypedArray())
 }
-
-const val HTTP_OK_REQUEST = 200
 
 class ElasticsearchCluster(
     val transport: ElasticsearchTransport,
@@ -95,13 +92,11 @@ class ElasticsearchCluster(
             path = "",
             body = null,
             serde = apiSerde,
-            processResponse = { true }
+            processResponse = { resp -> resp.statusCode }
         )
-        val statusCode: Int
-        val responseTime = measureTime {
-            statusCode = try {
+        val (statusCode, responseTime) = measureTimedValue {
+            try {
                 transport.request(request)
-                HTTP_OK_REQUEST
             } catch (ex: ElasticsearchException.Transport) {
                 ex.statusCode
             }
@@ -148,9 +143,9 @@ class ElasticsearchCluster(
             ),
             body = null,
             serde = apiSerde,
-            processResponse = { ctx ->
+            processResponse = { resp ->
                 DeleteIndexResult(
-                    acknowledged = ctx.boolean("acknowledged"),
+                    acknowledged = resp.content.boolean("acknowledged"),
                 )
             }
         )

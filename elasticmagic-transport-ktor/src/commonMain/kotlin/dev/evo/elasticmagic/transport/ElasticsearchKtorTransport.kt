@@ -47,7 +47,9 @@ class ElasticsearchKtorTransport(
         }
     }
 
-    override suspend fun doRequest(request: Request<*, *, *>): PlainResponse {
+    override suspend fun doRequest(
+        request: PlainRequest,
+    ): PlainResponse {
         val ktorHttpMethod = when (request.method) {
             Method.GET -> HttpMethod.Get
             Method.PUT -> HttpMethod.Put
@@ -73,8 +75,7 @@ class ElasticsearchKtorTransport(
                 this.parameters.appendAll(ktorParameters)
             }
 
-            val requestEncoder = requestEncoderFactory.create().apply(request::serializeRequest)
-            requestEncoderFactory.encoding?.let { encoding ->
+            request.contentEncoding?.let { encoding ->
                 this.headers[HttpHeaders.ContentEncoding] = encoding
             }
 
@@ -82,7 +83,7 @@ class ElasticsearchKtorTransport(
                 this.headers[HttpHeaders.Accept] = acceptContentType
             }
 
-            val content = requestEncoder.toByteArray()
+            val content = request.content
             if (content.isNotEmpty()) {
                 this.setBody(ByteArrayContent(content, ContentType.parse(request.contentType)))
             }

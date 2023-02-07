@@ -2,10 +2,10 @@ package dev.evo.elasticmagic.compile
 
 import dev.evo.elasticmagic.doc.Document
 import dev.evo.elasticmagic.UpdateMappingResult
-import dev.evo.elasticmagic.serde.Deserializer
 import dev.evo.elasticmagic.serde.Serde
 import dev.evo.elasticmagic.transport.ApiRequest
 import dev.evo.elasticmagic.transport.Method
+import dev.evo.elasticmagic.transport.ApiResponse
 import dev.evo.elasticmagic.transport.Parameters
 
 class PreparedUpdateMapping(
@@ -50,9 +50,9 @@ class UpdateMappingCompiler(
         )
     }
 
-    fun processResponse(ctx: Deserializer.ObjectCtx): UpdateMappingResult {
+    fun processResponse(resp: ApiResponse): UpdateMappingResult {
         return UpdateMappingResult(
-            acknowledged = ctx.boolean("acknowledged"),
+            acknowledged = resp.content.boolean("acknowledged"),
         )
     }
 }

@@ -6,7 +6,7 @@ import java.util.zip.GZIPOutputStream
 @Suppress("MayBeConst")
 actual val isGzipSupported: Boolean = true
 
-actual class GzipEncoder : RequestEncoder {
+actual class GzipEncoder : BaseGzipEncoder() {
     private val buf = ByteArrayOutputStream()
     private val gzipStream = GZIPOutputStream(buf)
 
