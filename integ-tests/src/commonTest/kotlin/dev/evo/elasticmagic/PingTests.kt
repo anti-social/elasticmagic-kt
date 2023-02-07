@@ -10,6 +10,6 @@ class PingTests : ElasticsearchTestBase() {
     @Test
     fun successfulPing() = runTestWithTransports {
         val ping = this.cluster.ping()
-        ping.statusCode shouldBe 200
+        ping.statusCode shouldBe HTTP_OK_REQUEST
     }
 }

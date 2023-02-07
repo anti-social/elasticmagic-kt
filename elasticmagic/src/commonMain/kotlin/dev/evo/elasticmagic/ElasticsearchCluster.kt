@@ -25,6 +25,8 @@ internal fun Params.toRequestParameters(): Parameters {
     return Parameters(*this.toList().toTypedArray())
 }
 
+const val HTTP_OK_REQUEST = 200
+
 class ElasticsearchCluster(
     val transport: ElasticsearchTransport,
     val apiSerde: Serde,
@@ -51,7 +53,7 @@ class ElasticsearchCluster(
 
     private suspend fun fetchVersion(): Version<*> {
         val result = transport.request(
-            ApiRequest(Method.GET,"", serde = apiSerde)
+            ApiRequest(Method.GET, "", serde = apiSerde)
         )
         val versionObj = result.obj("version")
         val distribution = versionObj.stringOrNull("distribution") ?: "elasticsearch"
@@ -99,7 +101,7 @@ class ElasticsearchCluster(
         val responseTime = measureTime {
             statusCode = try {
                 transport.request(request)
-                200
+                HTTP_OK_REQUEST
             } catch (ex: ElasticsearchException.Transport) {
                 ex.statusCode
             }
