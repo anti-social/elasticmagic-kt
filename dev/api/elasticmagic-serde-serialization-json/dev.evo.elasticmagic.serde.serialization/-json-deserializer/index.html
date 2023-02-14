@@ -1,157 +1,190 @@
+<!doctype html>
 <html>
-  <head>
+<head>
     <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
     <title>JsonDeserializer</title>
-</head><body><link href="../../../../../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../../../";</script><script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async></script><link href="../../../styles/style.css" rel="Stylesheet"><link href="../../../styles/logo-styles.css" rel="Stylesheet"><link href="../../../styles/jetbrains-mono.css" rel="Stylesheet"><link href="../../../styles/main.css" rel="Stylesheet"><script type="text/javascript" src="../../../scripts/clipboard.js" async></script><script type="text/javascript" src="../../../scripts/navigation-loader.js" async></script><script type="text/javascript" src="../../../scripts/platform-content-handler.js" async></script><script type="text/javascript" src="../../../scripts/main.js" async></script>
-  
-    <div id="container">
-      <div id="leftColumn"><a href="../../../index.html">
-            <div id="logo"></div>
-          </a>
-        <div id="paneSearch"></div>
+<link href="../../../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../../../";</script>    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/jetbrains-mono.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/clipboard.js" async></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
+<body>
+<div class="navigation-wrapper" id="navigation-wrapper">
+    <div id="leftToggler"><span class="icon-toggler"></span></div>
+    <div class="library-name">
+<a href="../../../index.html">
+<span>elasticmagic-kt</span>            </a>    </div>
+    <div>0.0.18-10-g73182c4
+    </div>
+    <div class="pull-right d-flex">
+        <button id="theme-toggle-button"><span id="theme-toggle"></span></button>
+        <div id="searchBar"></div>
+    </div>
+</div>
+<div id="container">
+    <div id="leftColumn">
         <div id="sideMenu"></div>
-      </div>
-      <div id="main">
-        <script type="text/javascript" src="../../../scripts/main.js"></script><div id="leftToggler"><span class="icon-toggler"></span></div>
-
-        <div class="main-content" id="content" pageids="elasticmagic-serde-serialization-json::dev.evo.elasticmagic.serde.serialization/JsonDeserializer///PointingToDeclaration//-774616801">
-          <div class="navigation-wrapper" id="navigation-wrapper">
-            <div class="breadcrumbs"><a href="../../index.html">elasticmagic-serde-serialization-json</a>/<a href="../index.html">dev.evo.elasticmagic.serde.serialization</a>/<a href="index.html">JsonDeserializer</a></div>
-            <div class="pull-right d-flex">
-              <div id="searchBar"></div>
-            </div>
-          </div>
-          <div class="cover ">
-            <h1 class="cover"><span>Json</span><wbr><span>Deserializer</span></h1>
-            <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":elasticmagic-serde-serialization-json:dokkaHtmlPartial/commonMain"><div class="symbol monospace">sealed class <a href="index.html">JsonDeserializer</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
-          </div>
-          <div class="tabbedcontent">
-            <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="Types">Types</button><button class="section-tab" data-togglable="Functions">Functions</button><button class="section-tab" data-togglable="Inheritors">Inheritors</button></div>
-            <div class="tabs-section-body">
-              <h2 class="">Types</h2>
-              <div class="table" data-togglable="Types"><a data-name="784789833%2FClasslikes%2F-774616801" anchor-label="ArrayCtx" id="784789833%2FClasslikes%2F-774616801" data-filterable-set=":elasticmagic-serde-serialization-json:dokkaHtmlPartial/commonMain"></a>
-                <div class="table-row" data-filterable-current=":elasticmagic-serde-serialization-json:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic-serde-serialization-json:dokkaHtmlPartial/commonMain">
-                  <div class="main-subrow keyValue ">
-                    <div class=""><span class="inline-flex"><a href="-array-ctx/index.html">ArrayCtx</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="784789833%2FClasslikes%2F-774616801"></span>
-                          <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                        </span></span></div>
-                    <div>
-                      <div class="title"><div class="divergent-group" data-filterable-current=":elasticmagic-serde-serialization-json:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic-serde-serialization-json:dokkaHtmlPartial/commonMain"><div class="with-platform-tags"><span class="pull-right"></span></div>
-
-  <div>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":elasticmagic-serde-serialization-json:dokkaHtmlPartial/commonMain"><div class="symbol monospace">value class <a href="-array-ctx/index.html">ArrayCtx</a>(array: <span data-unresolved-link="/<ERROR CLASS>///PointingToDeclaration/">&lt;ERROR CLASS&gt;</span>)<span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+    </div>
+    <div id="main">
+<div class="main-content" id="content" pageids="elasticmagic-serde-serialization-json::dev.evo.elasticmagic.serde.serialization/JsonDeserializer///PointingToDeclaration//-774616801">
+  <div class="breadcrumbs"><a href="../../index.html">elasticmagic-serde-serialization-json</a><span class="delimiter">/</span><a href="../index.html">dev.evo.elasticmagic.serde.serialization</a><span class="delimiter">/</span><span class="current">JsonDeserializer</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span>Json</span><wbr><span><span>Deserializer</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic-serde-serialization-json:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">sealed </span><span class="token keyword">class </span><a href="index.html">JsonDeserializer</a> : <a href="../../../elasticmagic-serde/dev.evo.elasticmagic.serde/-deserializer/index.html">Deserializer</a></div></div></div>
   </div>
-</div>
-</div>
-                    </div>
-                  </div>
-                </div>
-<a data-name="-1405020796%2FClasslikes%2F-774616801" anchor-label="ArrayIterator" id="-1405020796%2FClasslikes%2F-774616801" data-filterable-set=":elasticmagic-serde-serialization-json:dokkaHtmlPartial/commonMain"></a>
-                <div class="table-row" data-filterable-current=":elasticmagic-serde-serialization-json:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic-serde-serialization-json:dokkaHtmlPartial/commonMain">
-                  <div class="main-subrow keyValue ">
-                    <div class=""><span class="inline-flex"><a href="-array-iterator/index.html">ArrayIterator</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1405020796%2FClasslikes%2F-774616801"></span>
-                          <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                        </span></span></div>
-                    <div>
-                      <div class="title"><div class="divergent-group" data-filterable-current=":elasticmagic-serde-serialization-json:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic-serde-serialization-json:dokkaHtmlPartial/commonMain"><div class="with-platform-tags"><span class="pull-right"></span></div>
-
-  <div>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":elasticmagic-serde-serialization-json:dokkaHtmlPartial/commonMain"><div class="symbol monospace">class <a href="-array-iterator/index.html">ArrayIterator</a>(iter: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-iterator/index.html">Iterator</a>&lt;<span data-unresolved-link="/<ERROR CLASS>///PointingToDeclaration/">&lt;ERROR CLASS&gt;</span>&gt;)<span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
-  </div>
-</div>
-</div>
-                    </div>
-                  </div>
-                </div>
-<a data-name="-1328281345%2FClasslikes%2F-774616801" anchor-label="Companion" id="-1328281345%2FClasslikes%2F-774616801" data-filterable-set=":elasticmagic-serde-serialization-json:dokkaHtmlPartial/commonMain"></a>
-                <div class="table-row" data-filterable-current=":elasticmagic-serde-serialization-json:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic-serde-serialization-json:dokkaHtmlPartial/commonMain">
-                  <div class="main-subrow keyValue ">
-                    <div class=""><span class="inline-flex"><a href="-companion/index.html">Companion</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1328281345%2FClasslikes%2F-774616801"></span>
-                          <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                        </span></span></div>
-                    <div>
-                      <div class="title"><div class="divergent-group" data-filterable-current=":elasticmagic-serde-serialization-json:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic-serde-serialization-json:dokkaHtmlPartial/commonMain"><div class="with-platform-tags"><span class="pull-right"></span></div>
-
-  <div>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":elasticmagic-serde-serialization-json:dokkaHtmlPartial/commonMain"><div class="symbol monospace">object <a href="-companion/index.html">Companion</a> : <a href="index.html">JsonDeserializer</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
-  </div>
-</div>
-</div>
-                    </div>
-                  </div>
-                </div>
-<a data-name="386892067%2FClasslikes%2F-774616801" anchor-label="ObjectCtx" id="386892067%2FClasslikes%2F-774616801" data-filterable-set=":elasticmagic-serde-serialization-json:dokkaHtmlPartial/commonMain"></a>
-                <div class="table-row" data-filterable-current=":elasticmagic-serde-serialization-json:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic-serde-serialization-json:dokkaHtmlPartial/commonMain">
-                  <div class="main-subrow keyValue ">
-                    <div class=""><span class="inline-flex"><a href="-object-ctx/index.html">ObjectCtx</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="386892067%2FClasslikes%2F-774616801"></span>
-                          <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                        </span></span></div>
-                    <div>
-                      <div class="title"><div class="divergent-group" data-filterable-current=":elasticmagic-serde-serialization-json:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic-serde-serialization-json:dokkaHtmlPartial/commonMain"><div class="with-platform-tags"><span class="pull-right"></span></div>
-
-  <div>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":elasticmagic-serde-serialization-json:dokkaHtmlPartial/commonMain"><div class="symbol monospace">value class <a href="-object-ctx/index.html">ObjectCtx</a>(obj: <span data-unresolved-link="/<ERROR CLASS>///PointingToDeclaration/">&lt;ERROR CLASS&gt;</span>)<span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
-  </div>
-</div>
-</div>
-                    </div>
-                  </div>
-                </div>
-<a data-name="704273898%2FClasslikes%2F-774616801" anchor-label="ObjectIterator" id="704273898%2FClasslikes%2F-774616801" data-filterable-set=":elasticmagic-serde-serialization-json:dokkaHtmlPartial/commonMain"></a>
-                <div class="table-row" data-filterable-current=":elasticmagic-serde-serialization-json:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic-serde-serialization-json:dokkaHtmlPartial/commonMain">
-                  <div class="main-subrow keyValue ">
-                    <div class=""><span class="inline-flex"><a href="-object-iterator/index.html">ObjectIterator</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="704273898%2FClasslikes%2F-774616801"></span>
-                          <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                        </span></span></div>
-                    <div>
-                      <div class="title"><div class="divergent-group" data-filterable-current=":elasticmagic-serde-serialization-json:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic-serde-serialization-json:dokkaHtmlPartial/commonMain"><div class="with-platform-tags"><span class="pull-right"></span></div>
-
-  <div>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":elasticmagic-serde-serialization-json:dokkaHtmlPartial/commonMain"><div class="symbol monospace">class <a href="-object-iterator/index.html">ObjectIterator</a>(iter: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-iterator/index.html">Iterator</a>&lt;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-map/-entry/index.html">Map.Entry</a>&lt;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a>, <span data-unresolved-link="/<ERROR CLASS>///PointingToDeclaration/">&lt;ERROR CLASS&gt;</span>&gt;&gt;)<span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
-  </div>
-</div>
-</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <h2 class="">Functions</h2>
-              <div class="table" data-togglable="Functions"><a data-name="1251188328%2FFunctions%2F-774616801" anchor-label="objFromStringOrNull" id="1251188328%2FFunctions%2F-774616801" data-filterable-set=":elasticmagic-serde-serialization-json:dokkaHtmlPartial/commonMain"></a>
-                <div class="table-row" data-filterable-current=":elasticmagic-serde-serialization-json:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic-serde-serialization-json:dokkaHtmlPartial/commonMain">
-                  <div class="main-subrow keyValue ">
-                    <div class=""><span class="inline-flex"><a href="obj-from-string-or-null.html">objFromStringOrNull</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1251188328%2FFunctions%2F-774616801"></span>
-                          <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                        </span></span></div>
-                    <div>
-                      <div class="title"><div class="divergent-group" data-filterable-current=":elasticmagic-serde-serialization-json:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic-serde-serialization-json:dokkaHtmlPartial/commonMain"><div class="with-platform-tags"><span class="pull-right"></span></div>
-
-  <div>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":elasticmagic-serde-serialization-json:dokkaHtmlPartial/commonMain"><div class="symbol monospace">open fun <a href="obj-from-string-or-null.html">objFromStringOrNull</a>(data: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a>): <span data-unresolved-link="/<ERROR CLASS>///PointingToDeclaration/">&lt;ERROR CLASS&gt;</span>?<span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
-  </div>
-</div>
-</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <h2 class="">Inheritors</h2>
-              <div class="table" data-togglable="Inheritors"><a data-name="-1328281345%2FInheritors%2F-774616801" anchor-label="JsonDeserializer" id="-1328281345%2FInheritors%2F-774616801" data-filterable-set=":elasticmagic-serde-serialization-json:dokkaHtmlPartial/commonMain"></a>
-                <div class="table-row" data-filterable-current=":elasticmagic-serde-serialization-json:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic-serde-serialization-json:dokkaHtmlPartial/commonMain">
-                  <div class="main-subrow keyValue ">
-                    <div class=""><span class="inline-flex"><a href="-companion/index.html">JsonDeserializer</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1328281345%2FInheritors%2F-774616801"></span>
-                          <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                        </span></span></div>
-                    <div></div>
-                  </div>
-                </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="Types">Types</button><button class="section-tab" data-togglable="Functions">Functions</button><button class="section-tab" data-togglable="Inheritors">Inheritors</button></div>
+    <div class="tabs-section-body">
+      <h2 class="">Types</h2>
+      <div class="table" data-togglable="Types"><a data-name="784789833%2FClasslikes%2F-774616801" anchor-label="ArrayCtx" id="784789833%2FClasslikes%2F-774616801" data-filterable-set=":elasticmagic-serde-serialization-json:dokkaHtmlPartial/commonMain"></a>
+        <div class="table-row" data-filterable-current=":elasticmagic-serde-serialization-json:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic-serde-serialization-json:dokkaHtmlPartial/commonMain">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="-array-ctx/index.html"><span>Array</span><wbr><span><span>Ctx</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="784789833%2FClasslikes%2F-774616801"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic-serde-serialization-json:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.jvm/-jvm-inline/index.html"><span class="token annotation builtin">JvmInline</span></a></div></div><span class="token keyword">value </span><span class="token keyword">class </span><a href="-array-ctx/index.html">ArrayCtx</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">array<span class="token operator">: </span><span data-unresolved-link="kotlinx.serialization.json/JsonArray///PointingToDeclaration/">JsonArray</span></span></span><span class="token punctuation">)</span> : <a href="../../../elasticmagic-serde/dev.evo.elasticmagic.serde/-deserializer/-array-ctx/index.html">Deserializer.ArrayCtx</a></div></div></div>
               </div>
             </div>
           </div>
         </div>
-        <div class="footer"><span class="go-to-top-icon"><a href="#content"></a></span><span>© 2023 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span></div>
+<a data-name="-1405020796%2FClasslikes%2F-774616801" anchor-label="ArrayIterator" id="-1405020796%2FClasslikes%2F-774616801" data-filterable-set=":elasticmagic-serde-serialization-json:dokkaHtmlPartial/commonMain"></a>
+        <div class="table-row" data-filterable-current=":elasticmagic-serde-serialization-json:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic-serde-serialization-json:dokkaHtmlPartial/commonMain">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="-array-iterator/index.html"><span>Array</span><wbr><span><span>Iterator</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1405020796%2FClasslikes%2F-774616801"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic-serde-serialization-json:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">class </span><a href="-array-iterator/index.html">ArrayIterator</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">iter<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-iterator/index.html">Iterator</a><span class="token operator">&lt;</span><span class="token keyword"></span><span data-unresolved-link="kotlinx.serialization.json/JsonElement///PointingToDeclaration/">JsonElement</span><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span> : <a href="../../../elasticmagic-serde/dev.evo.elasticmagic.serde/-deserializer/-array-iterator/index.html">Deserializer.ArrayIterator</a></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="-1328281345%2FClasslikes%2F-774616801" anchor-label="Companion" id="-1328281345%2FClasslikes%2F-774616801" data-filterable-set=":elasticmagic-serde-serialization-json:dokkaHtmlPartial/commonMain"></a>
+        <div class="table-row" data-filterable-current=":elasticmagic-serde-serialization-json:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic-serde-serialization-json:dokkaHtmlPartial/commonMain">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="-companion/index.html"><span><span>Companion</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1328281345%2FClasslikes%2F-774616801"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic-serde-serialization-json:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">object </span><a href="-companion/index.html">Companion</a> : <a href="index.html">JsonDeserializer</a></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="386892067%2FClasslikes%2F-774616801" anchor-label="ObjectCtx" id="386892067%2FClasslikes%2F-774616801" data-filterable-set=":elasticmagic-serde-serialization-json:dokkaHtmlPartial/commonMain"></a>
+        <div class="table-row" data-filterable-current=":elasticmagic-serde-serialization-json:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic-serde-serialization-json:dokkaHtmlPartial/commonMain">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="-object-ctx/index.html"><span>Object</span><wbr><span><span>Ctx</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="386892067%2FClasslikes%2F-774616801"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic-serde-serialization-json:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.jvm/-jvm-inline/index.html"><span class="token annotation builtin">JvmInline</span></a></div></div><span class="token keyword">value </span><span class="token keyword">class </span><a href="-object-ctx/index.html">ObjectCtx</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">obj<span class="token operator">: </span><span data-unresolved-link="kotlinx.serialization.json/JsonObject///PointingToDeclaration/">JsonObject</span></span></span><span class="token punctuation">)</span> : <a href="../../../elasticmagic-serde/dev.evo.elasticmagic.serde/-deserializer/-object-ctx/index.html">Deserializer.ObjectCtx</a></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="704273898%2FClasslikes%2F-774616801" anchor-label="ObjectIterator" id="704273898%2FClasslikes%2F-774616801" data-filterable-set=":elasticmagic-serde-serialization-json:dokkaHtmlPartial/commonMain"></a>
+        <div class="table-row" data-filterable-current=":elasticmagic-serde-serialization-json:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic-serde-serialization-json:dokkaHtmlPartial/commonMain">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="-object-iterator/index.html"><span>Object</span><wbr><span><span>Iterator</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="704273898%2FClasslikes%2F-774616801"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic-serde-serialization-json:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">class </span><a href="-object-iterator/index.html">ObjectIterator</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">iter<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-iterator/index.html">Iterator</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-map/-entry/index.html">Map.Entry</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span><span class="token keyword"></span><span data-unresolved-link="kotlinx.serialization.json/JsonElement///PointingToDeclaration/">JsonElement</span><span class="token operator">&gt;</span><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span> : <a href="../../../elasticmagic-serde/dev.evo.elasticmagic.serde/-deserializer/-object-iterator/index.html">Deserializer.ObjectIterator</a></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <h2 class="">Functions</h2>
+      <div class="table" data-togglable="Functions"><a data-name="-822992968%2FFunctions%2F-774616801" anchor-label="objFromString" id="-822992968%2FFunctions%2F-774616801" data-filterable-set=":elasticmagic-serde-serialization-json:dokkaHtmlPartial/commonMain"></a>
+        <div class="table-row" data-filterable-current=":elasticmagic-serde-serialization-json:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic-serde-serialization-json:dokkaHtmlPartial/commonMain">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="-companion/index.html#-822992968%2FFunctions%2F-774616801"><span>obj</span><wbr><span>From</span><wbr><span><span>String</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-822992968%2FFunctions%2F-774616801"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic-serde-serialization-json:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="-companion/index.html#-822992968%2FFunctions%2F-774616801"><span class="token function">objFromString</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">data<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../../elasticmagic-serde/dev.evo.elasticmagic.serde/-deserializer/-object-ctx/index.html">Deserializer.ObjectCtx</a></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="1251188328%2FFunctions%2F-774616801" anchor-label="objFromStringOrNull" id="1251188328%2FFunctions%2F-774616801" data-filterable-set=":elasticmagic-serde-serialization-json:dokkaHtmlPartial/commonMain"></a>
+        <div class="table-row" data-filterable-current=":elasticmagic-serde-serialization-json:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic-serde-serialization-json:dokkaHtmlPartial/commonMain">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="obj-from-string-or-null.html"><span>obj</span><wbr><span>From</span><wbr><span>String</span><wbr><span>Or</span><wbr><span><span>Null</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1251188328%2FFunctions%2F-774616801"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic-serde-serialization-json:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="obj-from-string-or-null.html"><span class="token function">objFromStringOrNull</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">data<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../../elasticmagic-serde/dev.evo.elasticmagic.serde/-deserializer/-object-ctx/index.html">Deserializer.ObjectCtx</a><span class="token operator">?</span></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <h2 class="">Inheritors</h2>
+      <div class="table" data-togglable="Inheritors"><a data-name="-1328281345%2FInheritors%2F-774616801" anchor-label="Companion" id="-1328281345%2FInheritors%2F-774616801" data-filterable-set=":elasticmagic-serde-serialization-json:dokkaHtmlPartial/commonMain"></a>
+        <div class="table-row" data-filterable-current=":elasticmagic-serde-serialization-json:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic-serde-serialization-json:dokkaHtmlPartial/commonMain">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="-companion/index.html">Companion</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1328281345%2FInheritors%2F-774616801"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div></div>
+          </div>
+        </div>
       </div>
     </div>
-  
-</body></html>
+  </div>
+</div>
+      <div class="footer">
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2023 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+      </div>
+    </div>
+</div>
 
+</body></html>
 
