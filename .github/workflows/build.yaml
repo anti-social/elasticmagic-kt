@@ -211,7 +211,6 @@ jobs:
   publish:
     needs: integ-tests
     if: |
-      always() &&
       github.event_name == 'push' &&
       startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
@@ -251,13 +250,7 @@ jobs:
   docs:
     needs: publish
     if: |
-      always() &&
-      !contains(github.event.head_commit.message, '[skip docs]') &&
-      github.event_name == 'push' && (
-        startsWith(github.ref, 'refs/tags/v') ||
-        github.ref == 'refs/heads/master' ||
-        github.ref == 'refs/heads/docs'
-      )
+      !contains(github.event.head_commit.message, '[skip docs]')
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
@@ -287,9 +280,21 @@ jobs:
       run: ./gradlew dokkaHtmlMultiModule $GRADLE_ARGS
 
     - name: Copy docs
+      if: |
+        github.event_name == 'push' && (
+          startsWith(github.ref, 'refs/tags/v') ||
+          github.ref == 'refs/heads/master' ||
+          github.ref == 'refs/heads/docs'
+        )
       run: ./gradlew gitPublishCopy $GRADLE_ARGS
 
     - name: Publish documentation
+      if: |
+        github.event_name == 'push' && (
+          startsWith(github.ref, 'refs/tags/v') ||
+          github.ref == 'refs/heads/master' ||
+          github.ref == 'refs/heads/docs'
+        )
       uses: peaceiris/actions-gh-pages@v3
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
