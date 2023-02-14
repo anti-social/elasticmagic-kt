@@ -211,6 +211,7 @@ jobs:
   publish:
     needs: integ-tests
     if: |
+      always() &&
       github.event_name == 'push' &&
       startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
@@ -248,8 +249,9 @@ jobs:
           -PsonatypePassword='${{ secrets.SONATYPE_PASSWORD }}'
 
   docs:
-    needs: publish
+    needs: integ-tests
     if: |
+      always() &&
       !contains(github.event.head_commit.message, '[skip docs]')
     runs-on: ubuntu-latest
     steps:
