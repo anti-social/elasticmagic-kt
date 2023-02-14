@@ -280,14 +280,14 @@ jobs:
     - name: Build docs
       run: |
         set -eu
-        ./gradlew mkdocsBuild --info
-        ./gradlew mkdocsVersionFile --info
+        ./gradlew mkdocsBuild $GRADLE_ARGS
+        ./gradlew mkdocsVersionFile $GRADLE_ARGS
 
     - name: Build API docs
-      run: ./gradlew dokkaHtmlMultiModule --info
+      run: ./gradlew dokkaHtmlMultiModule $GRADLE_ARGS
 
     - name: Copy docs
-      run: ./gradlew gitPublishCopy --info
+      run: ./gradlew gitPublishCopy $GRADLE_ARGS
 
     - name: Publish documentation
       uses: peaceiris/actions-gh-pages@v3
