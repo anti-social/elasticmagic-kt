@@ -307,7 +307,7 @@ jobs:
   cleanup:
     if: always()
     runs-on: ubuntu-latest
-    needs: docs
+    needs: [publish, docs]
     steps:
     - uses: geekyeggo/delete-artifact@v2
       with:
