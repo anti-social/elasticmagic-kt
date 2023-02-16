@@ -65,13 +65,18 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
         private fun collectNodes(
             expression: QueryExpression?
         ): Map<NodeHandle<*>, QueryExpressionNode<*>> {
-            val nodes = mutableMapOf<NodeHandle<*>, QueryExpressionNode<*>>()
-            expression?.collect { node ->
-                if (node is QueryExpressionNode<*>) {
-                    nodes[node.handle] = node
+            return buildMap {
+                expression?.collect { node ->
+                    if (node is QueryExpressionNode<*>) {
+                        if (node.handle in this) {
+                            throw IllegalArgumentException(
+                                "Found duplicated node handle: ${node.handle.name}"
+                            )
+                        }
+                        put(node.handle, node)
+                    }
                 }
             }
-            return nodes
         }
     }
 
@@ -141,8 +146,9 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
         )
     }
 
+    @PublishedApi
     @Suppress("UNCHECKED_CAST")
-    protected fun self(): T = this as T
+    internal fun self(): T = this as T
 
     protected fun self(block: () -> Unit): T {
         block()
@@ -163,39 +169,48 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
         updateQueryNodes()
     }
 
+    @PublishedApi
+    @Suppress("FunctionName")
+    internal fun updateQueryNodes() {
+        this.queryNodes = collectNodes(query)
+    }
+
     /**
-     * Allows modifying specific query expression node using [handle] of the node.
+     * Allows to replace a specific query expression node using a [handle] of the node.
      *
      * @param handle a handle bound to the specific query expression node.
-     * @param block a function that modifies the query expression node.
+     * @param block a function that returns new query expression node.
      * @throws IllegalArgumentException if a node specified by the [handle] is missing.
      *
      * @sample samples.code.SearchQuery.queryNode
      */
-    inline fun <reified N: QueryExpressionNode<N>> queryNode(
+    inline fun <reified N: QueryExpression> queryNode(
         handle: NodeHandle<N>,
-        block: (N) -> Unit
+        block: (N) -> N
     ): T {
         val node = requireNotNull(findNode(handle)) {
-            "Node handle not found: $handle"
+            "Node handle is not found: ${handle.name}"
         }
-        block(node as N)
-        updateQueryNodes()
+        val newNode = QueryExpressionNode(
+            handle,
+            block(node.expression as N)
+        )
+        rewriteQuery(newNode)
 
-        @Suppress("UNCHECKED_CAST")
-        return this as T
+        return self()
     }
 
     @PublishedApi
-    @Suppress("FunctionName")
     internal fun findNode(handle: NodeHandle<*>): QueryExpressionNode<*>? {
         return queryNodes[handle]
     }
 
     @PublishedApi
-    @Suppress("FunctionName")
-    internal fun updateQueryNodes() {
-        this.queryNodes = collectNodes(query)
+    internal fun rewriteQuery(newNode: QueryExpressionNode<*>) {
+        val query = this.query
+        if (query != null) {
+            query(query.rewrite(newNode))
+        }
     }
 
     /**
@@ -532,16 +547,11 @@ open class SearchQuery<S: BaseDocSource>(
             query: QueryExpression? = null,
             params: Params = Params(),
         ): SearchQuery<DynDocSource> {
-            return SearchQuery(::dynDocSourceFactory, query = query, params = params)
-        }
-
-        @Suppress("UnusedPrivateMember")
-        private fun dynDocSourceFactory(obj: Deserializer.ObjectCtx): DynDocSource {
-            return DynDocSource()
+            return SearchQuery({ DynDocSource() }, query = query, params = params)
         }
     }
 
-    override fun new(docSourceFactory: (obj: Deserializer.ObjectCtx) -> S): SearchQuery<S> {
+    override fun new(docSourceFactory: (Deserializer.ObjectCtx) -> S): SearchQuery<S> {
         return SearchQuery(docSourceFactory)
     }
 

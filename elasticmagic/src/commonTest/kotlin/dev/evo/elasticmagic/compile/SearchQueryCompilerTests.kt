@@ -14,13 +14,11 @@ import dev.evo.elasticmagic.doc.RootFieldSet
 import dev.evo.elasticmagic.types.SimpleFieldType
 import dev.evo.elasticmagic.doc.SubDocument
 import dev.evo.elasticmagic.doc.datetime
-import dev.evo.elasticmagic.query.BoolNode
+import dev.evo.elasticmagic.query.Bool
 import dev.evo.elasticmagic.query.DisMax
-import dev.evo.elasticmagic.query.DisMaxNode
 import dev.evo.elasticmagic.query.FieldFormat
 import dev.evo.elasticmagic.query.FieldOperations
 import dev.evo.elasticmagic.query.FunctionScore
-import dev.evo.elasticmagic.query.FunctionScoreNode
 import dev.evo.elasticmagic.query.Ids
 import dev.evo.elasticmagic.query.Match
 import dev.evo.elasticmagic.query.MatchAll
@@ -29,6 +27,7 @@ import dev.evo.elasticmagic.query.MultiMatch
 import dev.evo.elasticmagic.query.NodeHandle
 import dev.evo.elasticmagic.query.Script
 import dev.evo.elasticmagic.query.Sort
+import dev.evo.elasticmagic.query.QueryExpressionNode
 import dev.evo.elasticmagic.query.QueryRescore
 import dev.evo.elasticmagic.query.SearchExt
 import dev.evo.elasticmagic.query.match
@@ -899,15 +898,20 @@ class SearchQueryCompilerTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQ
     @Test
     fun disMaxNodeQuery() = testWithCompiler {
         @Suppress("VariableNaming")
-        val LANG_HANDLE = NodeHandle<DisMaxNode>()
+        val LANG_HANDLE = NodeHandle<DisMax>()
         val query = SearchQuery(
-            DisMaxNode(LANG_HANDLE)
+            QueryExpressionNode(
+                LANG_HANDLE,
+                DisMax(emptyList())
+            )
         )
         compile(query).body shouldContainExactly emptyMap()
 
         query.queryNode(LANG_HANDLE) { node ->
-            node.queries.add(
-                StringField("name.en").match("Good morning"),
+            node.copy(
+                queries = node.queries + listOf(
+                    StringField("name.en").match("Good morning"),
+                )
             )
         }
         compile(query).body shouldContainExactly mapOf(
@@ -919,9 +923,11 @@ class SearchQueryCompilerTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQ
         )
 
         query.queryNode(LANG_HANDLE) { node ->
-            node.tieBreaker = 0.7F
-            node.queries.add(
-                StringField("name.de").match("Guten Morgen"),
+            node.copy(
+                queries = node.queries + listOf(
+                    StringField("name.de").match("Guten Morgen"),
+                ),
+                tieBreaker = 0.7F,
             )
         }
         compile(query).body shouldContainExactly mapOf(
@@ -945,7 +951,7 @@ class SearchQueryCompilerTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQ
         )
 
         shouldThrow<IllegalArgumentException> {
-            query.queryNode(NodeHandle<DisMaxNode>()) {}
+            query.queryNode(NodeHandle<DisMax>()) { it }
         }
     }
 
@@ -1021,17 +1027,19 @@ class SearchQueryCompilerTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQ
 
     fun queryNodes() = testWithCompiler {
         @Suppress("VariableNaming")
-        val BOOL_HANDLE = NodeHandle<BoolNode>("bool")
+        val BOOL_HANDLE = NodeHandle<Bool>("bool")
         @Suppress("VariableNaming")
-        val AD_BOOST_HANDLE = NodeHandle<FunctionScoreNode>("ad_boost")
+        val AD_BOOST_HANDLE = NodeHandle<FunctionScore>("ad_boost")
 
         val query = SearchQuery(
-            BoolNode(
+            QueryExpressionNode(
                 BOOL_HANDLE,
-                should = listOf(
-                    FunctionScoreNode(
+                Bool.should(
+                    QueryExpressionNode(
                         AD_BOOST_HANDLE,
-                        null
+                        FunctionScore(
+                            functions = emptyList()
+                        )
                     )
                 )
             )
@@ -1040,8 +1048,10 @@ class SearchQueryCompilerTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQ
         compiled.body shouldContainExactly emptyMap()
 
         query.queryNode(BOOL_HANDLE) { node ->
-            node.should.add(
-                AnyField("opinions_count").gt(4)
+            node.copy(
+                should = node.should + listOf(
+                    AnyField("opinions_count").gt(4)
+                )
             )
         }
         compiled = compile(query)
@@ -1054,8 +1064,10 @@ class SearchQueryCompilerTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQ
         )
 
         query.queryNode(BOOL_HANDLE) { node ->
-            node.should.add(
-                AnyField("opinions_positive_percent").gt(90.0)
+            node.copy(
+                should = node.should + listOf(
+                    AnyField("opinions_positive_percent").gt(90.0)
+                )
             )
         }
         compiled = compile(query)
@@ -1079,10 +1091,12 @@ class SearchQueryCompilerTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQ
         )
 
         query.queryNode(AD_BOOST_HANDLE) { node ->
-            node.functions.add(
-                FunctionScore.Weight(
-                    1.5F,
-                    filter = StringField("name").match("test")
+            node.copy(
+                functions = node.functions + listOf(
+                    FunctionScore.Weight(
+                        1.5F,
+                        filter = StringField("name").match("test")
+                    )
                 )
             )
         }

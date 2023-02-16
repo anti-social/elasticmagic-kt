@@ -3,28 +3,14 @@ package dev.evo.elasticmagic.query
 import dev.evo.elasticmagic.compile.SearchQueryCompiler
 import dev.evo.elasticmagic.serde.Serializer
 
-interface BoolExpression : QueryExpression {
-    val filter: List<QueryExpression>
-    val should: List<QueryExpression>
-    val must: List<QueryExpression>
-    val mustNot: List<QueryExpression>
-
-    override fun children(): Iterator<QueryExpression> = iterator {
-        yieldAll(filter)
-        yieldAll(should)
-        yieldAll(must)
-        yieldAll(mustNot)
-    }
-}
-
 data class Bool(
-    override val filter: List<QueryExpression> = emptyList(),
-    override val should: List<QueryExpression> = emptyList(),
-    override val must: List<QueryExpression> = emptyList(),
-    override val mustNot: List<QueryExpression> = emptyList(),
+    val filter: List<QueryExpression> = emptyList(),
+    val should: List<QueryExpression> = emptyList(),
+    val must: List<QueryExpression> = emptyList(),
+    val mustNot: List<QueryExpression> = emptyList(),
     val minimumShouldMatch: MinimumShouldMatch? = null,
     val boost: Float? = null,
-) : BoolExpression {
+) : QueryExpression {
     override val name = "bool"
 
     companion object {
@@ -40,6 +26,29 @@ data class Bool(
 
     override fun clone() = copy()
 
+    override fun children(): Iterator<QueryExpression> = iterator {
+        yieldAll(filter)
+        yieldAll(should)
+        yieldAll(must)
+        yieldAll(mustNot)
+    }
+
+    override fun rewrite(newNode: QueryExpressionNode<*>): Bool {
+        replaceNodeInExpressions(filter, { it.rewrite(newNode) }) {
+            return copy(filter = it)
+        }
+        replaceNodeInExpressions(should, { it.rewrite(newNode) }) {
+            return copy(should = it)
+        }
+        replaceNodeInExpressions(must, { it.rewrite(newNode) }) {
+            return copy(must = it)
+        }
+        replaceNodeInExpressions(mustNot, { it.rewrite(newNode) }) {
+            return copy(mustNot = it)
+        }
+        return this
+    }
+    
     override fun reduce(): QueryExpression? {
         val filter = filter.mapNotNull { it.reduce() }
         val should = should.mapNotNull { it.reduce() }
@@ -94,53 +103,5 @@ data class Bool(
                 compiler.visit(this, mustNot)
             }
         }
-    }
-}
-
-data class BoolNode(
-    override val handle: NodeHandle<BoolNode>,
-    override var filter: MutableList<QueryExpression>,
-    override var should: MutableList<QueryExpression>,
-    override var must: MutableList<QueryExpression>,
-    override var mustNot: MutableList<QueryExpression>,
-    var minimumShouldMatch: MinimumShouldMatch? = null,
-) : QueryExpressionNode<BoolNode>(), BoolExpression {
-    override val name: String = "bool"
-
-    companion object {
-        operator fun invoke(
-            handle: NodeHandle<BoolNode>,
-            filter: List<QueryExpression> = emptyList(),
-            should: List<QueryExpression> = emptyList(),
-            must: List<QueryExpression> = emptyList(),
-            mustNot: List<QueryExpression> = emptyList(),
-            minimumShouldMatch: MinimumShouldMatch? = null,
-        ): BoolNode {
-            return BoolNode(
-                handle,
-                filter = filter.toMutableList(),
-                should = should.toMutableList(),
-                must = must.toMutableList(),
-                mustNot = mustNot.toMutableList(),
-                minimumShouldMatch = minimumShouldMatch,
-            )
-        }
-    }
-
-    override fun clone() = copy(
-        filter = filter.toMutableList(),
-        should = should.toMutableList(),
-        must = must.toMutableList(),
-        mustNot = mustNot.toMutableList()
-    )
-
-    override fun toQueryExpression(): Bool {
-        return Bool(
-            filter = filter,
-            should = should,
-            must = must,
-            mustNot = mustNot,
-            minimumShouldMatch = minimumShouldMatch,
-        )
     }
 }

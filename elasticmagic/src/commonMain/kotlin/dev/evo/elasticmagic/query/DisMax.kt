@@ -3,21 +3,24 @@ package dev.evo.elasticmagic.query
 import dev.evo.elasticmagic.compile.SearchQueryCompiler
 import dev.evo.elasticmagic.serde.Serializer
 
-interface DisMaxExpression : QueryExpression {
-    val queries: List<QueryExpression>
+data class DisMax(
+    val queries: List<QueryExpression>,
+    val tieBreaker: Float? = null,
+) : QueryExpression {
+    override val name = "dis_max"
+
+    override fun clone() = copy()
 
     override fun children(): Iterator<QueryExpression> = iterator {
         yieldAll(queries)
     }
-}
 
-data class DisMax(
-    override val queries: List<QueryExpression>,
-    val tieBreaker: Float? = null,
-) : DisMaxExpression {
-    override val name = "dis_max"
-
-    override fun clone() = copy()
+    override fun rewrite(newNode: QueryExpressionNode<*>): DisMax {
+        replaceNodeInExpressions(queries, { it.rewrite(newNode) }) {
+            return copy(queries = it)
+        }
+        return this
+    }
 
     override fun reduce(): QueryExpression? {
         return when {
@@ -32,36 +35,5 @@ data class DisMax(
             compiler.visit(this, queries)
         }
         ctx.fieldIfNotNull("tie_breaker", tieBreaker)
-    }
-}
-
-data class DisMaxNode(
-    override val handle: NodeHandle<DisMaxNode>,
-    override var queries: MutableList<QueryExpression>,
-    var tieBreaker: Float? = null,
-) : QueryExpressionNode<DisMaxNode>(), DisMaxExpression {
-    override val name = "dis_max"
-
-    companion object {
-        operator fun invoke(
-            handle: NodeHandle<DisMaxNode>,
-            queries: List<QueryExpression> = emptyList(),
-            tieBreaker: Float? = null,
-        ): DisMaxNode {
-            return DisMaxNode(
-                handle,
-                queries = queries.toMutableList(),
-                tieBreaker = tieBreaker,
-            )
-        }
-    }
-
-    override fun clone() = copy(queries = queries.toMutableList())
-
-    override fun toQueryExpression(): DisMax {
-        return DisMax(
-            queries = queries,
-            tieBreaker = tieBreaker
-        )
     }
 }

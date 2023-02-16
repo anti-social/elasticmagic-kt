@@ -6,10 +6,10 @@ import dev.evo.elasticmagic.aggs.TermsAgg
 import dev.evo.elasticmagic.doc.Document
 import dev.evo.elasticmagic.query.Bool
 import dev.evo.elasticmagic.query.FunctionScore
-import dev.evo.elasticmagic.query.FunctionScoreNode
 import dev.evo.elasticmagic.query.MatchPhrase
 import dev.evo.elasticmagic.query.MultiMatch
 import dev.evo.elasticmagic.query.NodeHandle
+import dev.evo.elasticmagic.query.QueryExpressionNode
 import dev.evo.elasticmagic.query.QueryRescore
 import dev.evo.elasticmagic.query.match
 
@@ -31,32 +31,36 @@ fun query() {
 }
 
 fun queryNode() {
-    val BOOST_HANDLE = NodeHandle<FunctionScoreNode>()
+    val BOOST_HANDLE = NodeHandle<FunctionScore>()
 
     searchQuery.query(
-        FunctionScoreNode(
+        QueryExpressionNode(
             BOOST_HANDLE,
-            query = MultiMatch("system", listOf(UserDoc.name, UserDoc.about)),
-            functions = listOf(
-                FunctionScore.FieldValueFactor(
-                    UserDoc.rank,
-                    missing = 1.0F,
-                    factor = 2.0F,
-                    modifier = FunctionScore.FieldValueFactor.Modifier.LN1P
-                )
-            ),
-            scoreMode = FunctionScore.ScoreMode.SUM,
+            FunctionScore(
+                query = MultiMatch("system", listOf(UserDoc.name, UserDoc.about)),
+                functions = listOf(
+                    FunctionScore.FieldValueFactor(
+                        UserDoc.rank,
+                        missing = 1.0F,
+                        factor = 2.0F,
+                        modifier = FunctionScore.FieldValueFactor.Modifier.LN1P
+                    )
+                ),
+                scoreMode = FunctionScore.ScoreMode.SUM,
+            )
         )
     )
 
     val boostActive = Random.nextBoolean()
     if (boostActive) {
         // Move active users the top
-        searchQuery.queryNode(BOOST_HANDLE) {
-            it.functions.add(
-                FunctionScore.Weight(
-                    1000.0F,
-                    filter = UserDoc.isActive.eq(true)
+        searchQuery.queryNode(BOOST_HANDLE) { node ->
+            node.copy(
+                functions = node.functions + listOf(
+                    FunctionScore.Weight(
+                        1000.0F,
+                        filter = UserDoc.isActive.eq(true)
+                    )
                 )
             )
         }

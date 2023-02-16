@@ -80,7 +80,7 @@ See [Search Aggregations](https://www.elastic.co/guide/en/elasticsearch/referenc
 ## Query Nodes
 
 Sometimes you don't know final form of your query when creating it. For such a usecase it is
-possible to modify parts of the query after creation using special query expressions and
+possible to replace parts of the query after creation using special query expressions and
 [queryNode](https://anti-social.github.io/elasticmagic-kt/api/latest/elasticmagic/dev.evo.elasticmagic/-base-search-query/query-node.html)
 method:
 
