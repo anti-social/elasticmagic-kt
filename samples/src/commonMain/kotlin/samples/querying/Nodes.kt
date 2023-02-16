@@ -7,11 +7,11 @@ import dev.evo.elasticmagic.doc.Document
 import dev.evo.elasticmagic.doc.MappingField
 import dev.evo.elasticmagic.doc.SubDocument
 import dev.evo.elasticmagic.query.Bool
-import dev.evo.elasticmagic.query.DisMaxNode
+import dev.evo.elasticmagic.query.DisMax
 import dev.evo.elasticmagic.query.FunctionScore
-import dev.evo.elasticmagic.query.FunctionScoreNode
-import dev.evo.elasticmagic.query.NodeHandle
 import dev.evo.elasticmagic.query.match
+import dev.evo.elasticmagic.query.NodeHandle
+import dev.evo.elasticmagic.query.QueryExpressionNode
 
 import kotlin.random.Random
 
@@ -28,41 +28,47 @@ object QuestionDoc : Document() {
     val votes by int()
 }
 
-val scoringHandle = NodeHandle<FunctionScoreNode>()
-val langHandle = NodeHandle<DisMaxNode>()
+val scoringHandle = NodeHandle<FunctionScore>()
+val langHandle = NodeHandle<DisMax>()
 
 val searchTerm = "hello world"
 val skeletonQuery = SearchQuery(
-    FunctionScoreNode(
+    QueryExpressionNode(
         scoringHandle,
-        DisMaxNode(
-            langHandle,
-            queries = listOf(
-                Bool.should(
-                    QuestionDoc.title.en.match(searchTerm),
-                    QuestionDoc.text.en.match(searchTerm),
+        FunctionScore(
+            QueryExpressionNode(
+                langHandle,
+                DisMax(
+                    queries = listOf(
+                        Bool.should(
+                            QuestionDoc.title.en.match(searchTerm),
+                            QuestionDoc.text.en.match(searchTerm),
+                        )
+                    ),
                 )
             ),
-        ),
-        functions = listOf(
-            FunctionScore.FieldValueFactor(QuestionDoc.rating),
-        ),
-        scoreMode = FunctionScore.ScoreMode.MULTIPLY,
+            functions = listOf(
+                FunctionScore.FieldValueFactor(QuestionDoc.rating),
+            ),
+            scoreMode = FunctionScore.ScoreMode.MULTIPLY,
+        )
     )
 )
 
 val boostByNumberOfVotes = Random.nextBoolean()
 var boostedQuery = if (boostByNumberOfVotes) {
     skeletonQuery.queryNode(scoringHandle) { node ->
-        node.functions += listOf(
-            FunctionScore.Weight(
-                1.1F,
-                filter = QuestionDoc.votes.range(gte = 10, lt = 50)
-            ),
-            FunctionScore.Weight(
-                1.5F,
-                filter = QuestionDoc.votes.gte(50)
-            ),
+        node.copy(
+            functions = node.functions + listOf(
+                FunctionScore.Weight(
+                    1.1F,
+                    filter = QuestionDoc.votes.range(gte = 10, lt = 50)
+                ),
+                FunctionScore.Weight(
+                    1.5F,
+                    filter = QuestionDoc.votes.gte(50)
+                ),
+            )
         )
     }
 } else {
@@ -77,9 +83,11 @@ val additionalLangFields: List<MappingField<String>> = listOfNotNull(
 )
 val langQuery = if (additionalLangFields.isNotEmpty()) {
     boostedQuery.queryNode(langHandle) { node ->
-        node.queries.add(
-            Bool.should(
-                *additionalLangFields.map { it.match(searchTerm) }.toTypedArray()
+        node.copy(
+            queries = node.queries + listOf(
+                Bool.should(
+                    *additionalLangFields.map { it.match(searchTerm) }.toTypedArray()
+                )
             )
         )
     }

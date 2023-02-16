@@ -24,8 +24,32 @@ interface Expression<T: Serializer.Ctx> : SearchQueryCompiler.Visitable<T> {
         return null
     }
 
+    fun rewrite(newNode: QueryExpressionNode<*>): Expression<T> {
+        return this
+    }
+
     fun reduce(): Expression<T>? {
         return this
+    }
+}
+
+internal inline fun <T> replaceNodeInExpressions(
+    expressions: List<T>,
+    nodeReplacer: (T) -> T,
+    block: (List<T>) -> Unit,
+) {
+    var changed = false
+    val newExpressions = expressions.map { expr ->
+        val newExpr = nodeReplacer(expr)
+        if (newExpr !== expr) {
+            changed = true
+            newExpr
+        } else {
+            expr
+        }
+    }
+    if (changed) {
+        block(newExpressions)
     }
 }
 
@@ -65,12 +89,16 @@ interface NamedExpression : ObjExpression {
 interface QueryExpression : NamedExpression {
     override fun clone(): QueryExpression
 
+    override fun rewrite(newNode: QueryExpressionNode<*>): QueryExpression {
+        return this
+    }
+
     override fun reduce(): QueryExpression? {
         return this
     }
 }
 
-data class NodeHandle<T: QueryExpressionNode<T>>(val name: String? = null) {
+data class NodeHandle<T: QueryExpression>(val name: String? = null) {
     override fun equals(other: Any?): Boolean {
         return this === other
     }
@@ -80,18 +108,32 @@ data class NodeHandle<T: QueryExpressionNode<T>>(val name: String? = null) {
     }
 }
 
-abstract class QueryExpressionNode<T: QueryExpressionNode<T>> : QueryExpression {
-    abstract val handle: NodeHandle<T>
+data class QueryExpressionNode<T: QueryExpression>(
+    val handle: NodeHandle<T>,
+    val expression: T,
+) : QueryExpression {
+    override val name = expression.name
 
-    override fun visit(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
-        toQueryExpression().visit(ctx, compiler)
+    override fun children(): Iterator<Expression<*>>? {
+        return expression.children()
+    }
+
+    override fun clone(): QueryExpressionNode<T> = copy()
+
+    override fun rewrite(newNode: QueryExpressionNode<*>): QueryExpression {
+        if (handle != newNode.handle) {
+            return this
+        }
+        return newNode
     }
 
     override fun reduce(): QueryExpression? {
-        return toQueryExpression().reduce()
+        return expression.reduce()
     }
 
-    abstract fun toQueryExpression(): QueryExpression
+    override fun visit(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
+        expression.visit(ctx, compiler)
+    }
 }
 
 interface SearchExt : NamedExpression

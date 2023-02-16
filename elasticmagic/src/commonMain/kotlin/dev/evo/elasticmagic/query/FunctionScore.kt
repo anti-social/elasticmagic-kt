@@ -3,22 +3,14 @@ package dev.evo.elasticmagic.query
 import dev.evo.elasticmagic.compile.SearchQueryCompiler
 import dev.evo.elasticmagic.serde.Serializer
 
-interface FunctionScoreExpression : QueryExpression {
-    val functions: List<FunctionScore.Function>
-
-    override fun children(): Iterator<Expression<*>> = iterator {
-        yieldAll(functions)
-    }
-}
-
 data class FunctionScore(
     val query: QueryExpression? = null,
-    override val functions: List<Function>,
+    val functions: List<Function>,
     val boost: Float? = null,
     val scoreMode: ScoreMode? = null,
     val boostMode: BoostMode? = null,
     val minScore: Float? = null,
-) : FunctionScoreExpression {
+) : QueryExpression {
     override val name = "function_score"
 
     enum class ScoreMode : ToValue<String> {
@@ -33,6 +25,17 @@ data class FunctionScore(
     }
 
     override fun clone() = copy()
+
+    override fun children(): Iterator<Expression<*>> = iterator {
+        yieldAll(functions)
+    }
+
+    override fun rewrite(newNode: QueryExpressionNode<*>): FunctionScore {
+        replaceNodeInExpressions(functions, { it.rewrite(newNode) }) {
+            return copy(functions = it)
+        }
+        return this
+    }
 
     override fun reduce(): QueryExpression? {
         if (functions.isEmpty() && minScore == null) {
@@ -80,6 +83,14 @@ data class FunctionScore(
                 return iterator { yield(filter) }
             }
             return null
+        }
+
+        override fun rewrite(newNode: QueryExpressionNode<*>): Function {
+            val newFilter = filter?.rewrite(newNode)
+            if (newFilter != filter) {
+                return copyWithFilter(newFilter)
+            }
+            return this
         }
 
         override fun reduce(): Function {
@@ -205,53 +216,5 @@ data class FunctionScore(
                 fieldIfNotNull("field", field?.getQualifiedFieldName())
             }
         }
-    }
-}
-
-data class FunctionScoreNode(
-    override val handle: NodeHandle<FunctionScoreNode>,
-    var query: QueryExpression?,
-    var boost: Float? = null,
-    var scoreMode: FunctionScore.ScoreMode? = null,
-    var boostMode: FunctionScore.BoostMode? = null,
-    var minScore: Float? = null,
-    override var functions: MutableList<FunctionScore.Function>,
-) : QueryExpressionNode<FunctionScoreNode>(), FunctionScoreExpression {
-    override val name: String = "function_score"
-
-    companion object {
-        operator fun invoke(
-            handle: NodeHandle<FunctionScoreNode>,
-            query: QueryExpression?,
-            boost: Float? = null,
-            scoreMode: FunctionScore.ScoreMode? = null,
-            boostMode: FunctionScore.BoostMode? = null,
-            minScore: Float? = null,
-            functions: List<FunctionScore.Function> = emptyList(),
-        ): FunctionScoreNode {
-            return FunctionScoreNode(
-                handle,
-                query,
-                boost = boost,
-                scoreMode = scoreMode,
-                boostMode = boostMode,
-                minScore = minScore,
-                functions = functions.toMutableList()
-
-            )
-        }
-    }
-
-    override fun clone() = copy(functions = functions.toMutableList())
-
-    override fun toQueryExpression(): QueryExpression {
-        return FunctionScore(
-            query = query,
-            boost = boost,
-            scoreMode = scoreMode,
-            boostMode = boostMode,
-            minScore = minScore,
-            functions = functions,
-        )
     }
 }

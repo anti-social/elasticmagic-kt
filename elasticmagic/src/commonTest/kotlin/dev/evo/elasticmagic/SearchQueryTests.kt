@@ -2,8 +2,8 @@ package dev.evo.elasticmagic
 
 import dev.evo.elasticmagic.doc.Document
 import dev.evo.elasticmagic.query.FunctionScore
-import dev.evo.elasticmagic.query.FunctionScoreNode
 import dev.evo.elasticmagic.query.NodeHandle
+import dev.evo.elasticmagic.query.QueryExpressionNode
 
 import io.kotest.matchers.shouldBe
 
@@ -40,21 +40,31 @@ class SearchQueryTests {
             val isActive by boolean()
         }
 
-        val fsHandle = NodeHandle<FunctionScoreNode>()
+        val fsHandle = NodeHandle<FunctionScore>()
         val sq1 = SearchQuery(
-            FunctionScoreNode(fsHandle, null)
+            QueryExpressionNode(
+                fsHandle,
+                FunctionScore(functions = emptyList())
+            )
         )
         val sq2 = sq1.clone()
 
-        sq1.queryNode(fsHandle) {
-            it.functions.add(FunctionScore.RandomScore())
+        sq1.queryNode(fsHandle) { node ->
+            node.copy(
+                functions = node.functions + listOf(FunctionScore.RandomScore())
+            )
         }
 
-        sq1.prepare().query shouldBe FunctionScoreNode(
-            fsHandle, null,
-            functions = listOf(FunctionScore.RandomScore())
+        sq1.prepare().query shouldBe QueryExpressionNode(
+            fsHandle,
+            FunctionScore(
+                functions = listOf(FunctionScore.RandomScore())
+            )
         )
 
-        sq2.prepare().query shouldBe FunctionScoreNode(fsHandle, null)
+        sq2.prepare().query shouldBe QueryExpressionNode(
+            fsHandle,
+            FunctionScore(functions = emptyList())
+        )
     }
 }

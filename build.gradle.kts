@@ -120,6 +120,10 @@ subprojects {
                     if (project.hasProperty("showPassedTests")) {
                         add(TestLogEvent.PASSED)
                     }
+                    if (project.hasProperty("showTestsOutput")) {
+                        add(TestLogEvent.STANDARD_OUT)
+                        add(TestLogEvent.STANDARD_ERROR)
+                    }
                 }
                 exceptionFormat = TestExceptionFormat.FULL
                 stackTraceFilters = setOf(
