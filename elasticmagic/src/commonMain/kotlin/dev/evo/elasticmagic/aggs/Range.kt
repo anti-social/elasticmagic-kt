@@ -2,7 +2,7 @@ package dev.evo.elasticmagic.aggs
 
 import dev.evo.elasticmagic.query.FieldOperations
 import dev.evo.elasticmagic.Params
-import dev.evo.elasticmagic.compile.SearchQueryCompiler
+import dev.evo.elasticmagic.compile.BaseSearchQueryCompiler
 import dev.evo.elasticmagic.serde.Deserializer
 import dev.evo.elasticmagic.serde.Serializer
 import dev.evo.elasticmagic.serde.forEachObj
@@ -27,7 +27,7 @@ abstract class BaseRangeAgg<T, R: AggregationResult, B> : BucketAggregation<R>()
     // abstract val keyed: Boolean?
     abstract val params: Params
 
-    override fun visit(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
+    override fun visit(ctx: Serializer.ObjectCtx, compiler: BaseSearchQueryCompiler) {
         compiler.visit(ctx, value)
         ctx.array("ranges") {
             for ((from, to, key) in ranges) {

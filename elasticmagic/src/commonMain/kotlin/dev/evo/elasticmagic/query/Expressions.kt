@@ -1,6 +1,6 @@
 package dev.evo.elasticmagic.query
 
-import dev.evo.elasticmagic.compile.SearchQueryCompiler
+import dev.evo.elasticmagic.compile.BaseSearchQueryCompiler
 import dev.evo.elasticmagic.serde.Serializer
 
 interface ToValue<T> {
@@ -17,7 +17,7 @@ interface Named : ToValue<String> {
     }
 }
 
-interface Expression<T: Serializer.Ctx> : SearchQueryCompiler.Visitable<T> {
+interface Expression<T: Serializer.Ctx> : BaseSearchQueryCompiler.Visitable<T> {
     fun clone(): Expression<T>
 
     fun children(): Iterator<Expression<*>>? {
@@ -77,13 +77,13 @@ internal inline fun Expression<*>.collect(process: (Expression<*>) -> Unit) {
 interface NamedExpression : ObjExpression {
     val name: String
 
-    override fun accept(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
+    override fun accept(ctx: Serializer.ObjectCtx, compiler: BaseSearchQueryCompiler) {
         ctx.obj(name) {
             visit(this, compiler)
         }
     }
 
-    fun visit(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler)
+    fun visit(ctx: Serializer.ObjectCtx, compiler: BaseSearchQueryCompiler)
 }
 
 interface QueryExpression : NamedExpression {
@@ -131,7 +131,7 @@ data class QueryExpressionNode<T: QueryExpression>(
         return expression.reduce()
     }
 
-    override fun visit(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
+    override fun visit(ctx: Serializer.ObjectCtx, compiler: BaseSearchQueryCompiler) {
         expression.visit(ctx, compiler)
     }
 }

@@ -193,6 +193,17 @@ public final class dev/evo/elasticmagic/BulkResult {
 	public fun toString ()Ljava/lang/String;
 }
 
+public final class dev/evo/elasticmagic/CountResult {
+	public fun <init> (J)V
+	public final fun component1 ()J
+	public final fun copy (J)Ldev/evo/elasticmagic/CountResult;
+	public static synthetic fun copy$default (Ldev/evo/elasticmagic/CountResult;JILjava/lang/Object;)Ldev/evo/elasticmagic/CountResult;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCount ()J
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
 public final class dev/evo/elasticmagic/CreateIndexResult {
 	public fun <init> (ZZLjava/lang/String;)V
 	public final fun component1 ()Z
@@ -246,6 +257,7 @@ public final class dev/evo/elasticmagic/ElasticsearchIndex {
 	public fun <init> (Ljava/lang/String;Ldev/evo/elasticmagic/ElasticsearchCluster;)V
 	public final fun bulk (Ljava/util/List;Ldev/evo/elasticmagic/bulk/Refresh;Ljava/lang/String;Ljava/util/Map;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun bulk$default (Ldev/evo/elasticmagic/ElasticsearchIndex;Ljava/util/List;Ldev/evo/elasticmagic/bulk/Refresh;Ljava/lang/String;Ljava/util/Map;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun count (Ldev/evo/elasticmagic/BaseSearchQuery;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public final fun getCluster ()Ldev/evo/elasticmagic/ElasticsearchCluster;
 	public final fun getName ()Ljava/lang/String;
 	public final fun getTransport ()Ldev/evo/elasticmagic/transport/ElasticsearchTransport;
@@ -378,6 +390,7 @@ public class dev/evo/elasticmagic/SearchQuery : dev/evo/elasticmagic/BaseSearchQ
 	public static final field Companion Ldev/evo/elasticmagic/SearchQuery$Companion;
 	public fun <init> (Lkotlin/jvm/functions/Function1;Ldev/evo/elasticmagic/query/QueryExpression;Ljava/util/Map;)V
 	public synthetic fun <init> (Lkotlin/jvm/functions/Function1;Ldev/evo/elasticmagic/query/QueryExpression;Ljava/util/Map;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun count (Ldev/evo/elasticmagic/ElasticsearchIndex;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public final fun execute (Ldev/evo/elasticmagic/ElasticsearchIndex;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public synthetic fun new (Lkotlin/jvm/functions/Function1;)Ldev/evo/elasticmagic/BaseSearchQuery;
 	protected fun new (Lkotlin/jvm/functions/Function1;)Ldev/evo/elasticmagic/SearchQuery;
@@ -524,8 +537,8 @@ public final class dev/evo/elasticmagic/aggs/AggRange$Companion {
 }
 
 public abstract class dev/evo/elasticmagic/aggs/AggValue : dev/evo/elasticmagic/query/ObjExpression {
-	public synthetic fun accept (Ldev/evo/elasticmagic/serde/Serializer$Ctx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
-	public fun accept (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
+	public synthetic fun accept (Ldev/evo/elasticmagic/serde/Serializer$Ctx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
+	public fun accept (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 	public fun children ()Ljava/util/Iterator;
 	public final fun deserializeTerm (Ljava/lang/Object;)Ljava/lang/Object;
 	public abstract fun getValueType ()Ldev/evo/elasticmagic/types/FieldType;
@@ -587,7 +600,7 @@ public abstract interface class dev/evo/elasticmagic/aggs/Aggregation : dev/evo/
 }
 
 public final class dev/evo/elasticmagic/aggs/Aggregation$DefaultImpls {
-	public static fun accept (Ldev/evo/elasticmagic/aggs/Aggregation;Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
+	public static fun accept (Ldev/evo/elasticmagic/aggs/Aggregation;Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 	public static fun children (Ldev/evo/elasticmagic/aggs/Aggregation;)Ljava/util/Iterator;
 	public static fun reduce (Ldev/evo/elasticmagic/aggs/Aggregation;)Ldev/evo/elasticmagic/query/Expression;
 	public static fun rewrite (Ldev/evo/elasticmagic/aggs/Aggregation;Ldev/evo/elasticmagic/query/QueryExpressionNode;)Ldev/evo/elasticmagic/query/Expression;
@@ -635,7 +648,7 @@ public abstract class dev/evo/elasticmagic/aggs/BaseHistogramAgg : dev/evo/elast
 	public abstract fun getValue ()Ldev/evo/elasticmagic/aggs/AggValue;
 	protected abstract fun processBucketResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;)Ljava/lang/Object;
 	public fun processResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;)Ldev/evo/elasticmagic/aggs/AggregationResult;
-	public fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
+	public fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 }
 
 public abstract class dev/evo/elasticmagic/aggs/BaseRangeAgg : dev/evo/elasticmagic/aggs/BucketAggregation {
@@ -649,7 +662,7 @@ public abstract class dev/evo/elasticmagic/aggs/BaseRangeAgg : dev/evo/elasticma
 	protected abstract fun processBucketResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;Ljava/lang/String;)Ljava/lang/Object;
 	public static synthetic fun processBucketResult$default (Ldev/evo/elasticmagic/aggs/BaseRangeAgg;Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;Ljava/lang/String;ILjava/lang/Object;)Ljava/lang/Object;
 	public fun processResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;)Ldev/evo/elasticmagic/aggs/AggregationResult;
-	public fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
+	public fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 }
 
 public abstract class dev/evo/elasticmagic/aggs/BaseTermsAgg : dev/evo/elasticmagic/aggs/BucketAggregation {
@@ -666,7 +679,7 @@ public abstract class dev/evo/elasticmagic/aggs/BaseTermsAgg : dev/evo/elasticma
 	public abstract fun getShardSize ()Ljava/lang/Integer;
 	public abstract fun getSize ()Ljava/lang/Integer;
 	public abstract fun getValue ()Ldev/evo/elasticmagic/aggs/AggValue;
-	public fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
+	public fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 }
 
 public final class dev/evo/elasticmagic/aggs/BaseTermsAgg$CollectMode : java/lang/Enum, dev/evo/elasticmagic/query/ToValue {
@@ -726,8 +739,8 @@ public abstract class dev/evo/elasticmagic/aggs/BucketAggResult : dev/evo/elasti
 
 public abstract class dev/evo/elasticmagic/aggs/BucketAggregation : dev/evo/elasticmagic/aggs/Aggregation {
 	public fun <init> ()V
-	public synthetic fun accept (Ldev/evo/elasticmagic/serde/Serializer$Ctx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
-	public fun accept (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
+	public synthetic fun accept (Ldev/evo/elasticmagic/serde/Serializer$Ctx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
+	public fun accept (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 	public fun children ()Ljava/util/Iterator;
 	public abstract fun getAggs ()Ljava/util/Map;
 	protected final fun processSubAggs (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;)Ljava/util/Map;
@@ -737,8 +750,8 @@ public abstract class dev/evo/elasticmagic/aggs/BucketAggregation : dev/evo/elas
 
 public final class dev/evo/elasticmagic/aggs/BucketsOrder : dev/evo/elasticmagic/query/ObjExpression {
 	public fun <init> (Ljava/lang/String;Ldev/evo/elasticmagic/query/Sort$Order;)V
-	public synthetic fun accept (Ldev/evo/elasticmagic/serde/Serializer$Ctx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
-	public fun accept (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
+	public synthetic fun accept (Ldev/evo/elasticmagic/serde/Serializer$Ctx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
+	public fun accept (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 	public fun children ()Ljava/util/Iterator;
 	public fun clone ()Ldev/evo/elasticmagic/aggs/BucketsOrder;
 	public synthetic fun clone ()Ldev/evo/elasticmagic/query/Expression;
@@ -824,12 +837,12 @@ public final class dev/evo/elasticmagic/aggs/DateHistogramAgg : dev/evo/elasticm
 	public fun hashCode ()I
 	public synthetic fun processBucketResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;)Ljava/lang/Object;
 	public fun toString ()Ljava/lang/String;
-	public fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
+	public fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 }
 
 public abstract class dev/evo/elasticmagic/aggs/DateHistogramAgg$Interval : dev/evo/elasticmagic/query/ObjExpression {
-	public synthetic fun accept (Ldev/evo/elasticmagic/serde/Serializer$Ctx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
-	public fun accept (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
+	public synthetic fun accept (Ldev/evo/elasticmagic/serde/Serializer$Ctx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
+	public fun accept (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 	public fun children ()Ljava/util/Iterator;
 	public abstract fun getName ()Ljava/lang/String;
 	public abstract fun intervalValue ()Ljava/lang/String;
@@ -1089,7 +1102,7 @@ public final class dev/evo/elasticmagic/aggs/FilterAgg : dev/evo/elasticmagic/ag
 	public fun getName ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
-	public fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
+	public fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 }
 
 public final class dev/evo/elasticmagic/aggs/FiltersAgg : dev/evo/elasticmagic/aggs/BucketAggregation {
@@ -1111,7 +1124,7 @@ public final class dev/evo/elasticmagic/aggs/FiltersAgg : dev/evo/elasticmagic/a
 	public synthetic fun processResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;)Ldev/evo/elasticmagic/aggs/AggregationResult;
 	public fun processResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;)Ldev/evo/elasticmagic/aggs/FiltersAggResult;
 	public fun toString ()Ljava/lang/String;
-	public fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
+	public fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 }
 
 public final class dev/evo/elasticmagic/aggs/FiltersAggResult : dev/evo/elasticmagic/aggs/AggregationResult {
@@ -1223,7 +1236,7 @@ public final class dev/evo/elasticmagic/aggs/GlobalAgg : dev/evo/elasticmagic/ag
 	public fun getName ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
-	public fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
+	public fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 }
 
 public final class dev/evo/elasticmagic/aggs/HistogramAgg : dev/evo/elasticmagic/aggs/BaseHistogramAgg {
@@ -1264,7 +1277,7 @@ public final class dev/evo/elasticmagic/aggs/HistogramAgg : dev/evo/elasticmagic
 	public fun hashCode ()I
 	public synthetic fun processBucketResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;)Ljava/lang/Object;
 	public fun toString ()Ljava/lang/String;
-	public fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
+	public fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 }
 
 public final class dev/evo/elasticmagic/aggs/HistogramAggResult : dev/evo/elasticmagic/aggs/BucketAggResult {
@@ -1383,8 +1396,8 @@ public final class dev/evo/elasticmagic/aggs/MedianAbsoluteDeviationAgg : dev/ev
 
 public abstract class dev/evo/elasticmagic/aggs/MetricAggregation : dev/evo/elasticmagic/aggs/Aggregation {
 	public fun <init> ()V
-	public synthetic fun accept (Ldev/evo/elasticmagic/serde/Serializer$Ctx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
-	public fun accept (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
+	public synthetic fun accept (Ldev/evo/elasticmagic/serde/Serializer$Ctx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
+	public fun accept (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 	public fun children ()Ljava/util/Iterator;
 	public fun reduce ()Ldev/evo/elasticmagic/query/Expression;
 	public fun rewrite (Ldev/evo/elasticmagic/query/QueryExpressionNode;)Ldev/evo/elasticmagic/query/Expression;
@@ -1425,7 +1438,7 @@ public final class dev/evo/elasticmagic/aggs/NestedAgg : dev/evo/elasticmagic/ag
 	public final fun getPath ()Ldev/evo/elasticmagic/query/FieldOperations;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
-	public fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
+	public fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 }
 
 public abstract class dev/evo/elasticmagic/aggs/NumericValueAgg : dev/evo/elasticmagic/aggs/MetricAggregation {
@@ -1433,7 +1446,7 @@ public abstract class dev/evo/elasticmagic/aggs/NumericValueAgg : dev/evo/elasti
 	public abstract fun getMissing ()Ljava/lang/Object;
 	public abstract fun getValue ()Ldev/evo/elasticmagic/aggs/AggValue;
 	public fun processResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;)Ldev/evo/elasticmagic/aggs/AggregationResult;
-	public fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
+	public fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 }
 
 public final class dev/evo/elasticmagic/aggs/OptionalDoubleValueAggResult : dev/evo/elasticmagic/aggs/SingleValueMetricAggResult {
@@ -1593,7 +1606,7 @@ public final class dev/evo/elasticmagic/aggs/SignificantTermsAgg : dev/evo/elast
 	public synthetic fun processResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;)Ldev/evo/elasticmagic/aggs/AggregationResult;
 	public fun processResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;)Ldev/evo/elasticmagic/aggs/SignificantTermsAggResult;
 	public fun toString ()Ljava/lang/String;
-	public fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
+	public fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 }
 
 public final class dev/evo/elasticmagic/aggs/SignificantTermsAggResult : dev/evo/elasticmagic/aggs/BucketAggResult {
@@ -1772,11 +1785,12 @@ public final class dev/evo/elasticmagic/aggs/TermsAgg : dev/evo/elasticmagic/agg
 	public synthetic fun processResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;)Ldev/evo/elasticmagic/aggs/AggregationResult;
 	public fun processResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;)Ldev/evo/elasticmagic/aggs/TermsAggResult;
 	public fun toString ()Ljava/lang/String;
-	public fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
+	public fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 }
 
 public final class dev/evo/elasticmagic/aggs/TermsAggResult : dev/evo/elasticmagic/aggs/BucketAggResult {
 	public fun <init> (Ljava/util/List;JJ)V
+	public synthetic fun <init> (Ljava/util/List;JJILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Ljava/util/List;
 	public final fun component2 ()J
 	public final fun component3 ()J
@@ -1828,7 +1842,7 @@ public final class dev/evo/elasticmagic/aggs/WeightedAvgAgg : dev/evo/elasticmag
 	public synthetic fun processResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;)Ldev/evo/elasticmagic/aggs/AggregationResult;
 	public fun processResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;)Ldev/evo/elasticmagic/aggs/OptionalDoubleValueAggResult;
 	public fun toString ()Ljava/lang/String;
-	public fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
+	public fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 }
 
 public final class dev/evo/elasticmagic/aggs/WeightedAvgAgg$ValueSource : dev/evo/elasticmagic/query/ObjExpression {
@@ -1836,8 +1850,8 @@ public final class dev/evo/elasticmagic/aggs/WeightedAvgAgg$ValueSource : dev/ev
 	public synthetic fun <init> (Ldev/evo/elasticmagic/aggs/AggValue;Ldev/evo/elasticmagic/query/Script;Ljava/lang/Object;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun <init> (Ldev/evo/elasticmagic/query/FieldOperations;Ljava/lang/Object;)V
 	public synthetic fun <init> (Ldev/evo/elasticmagic/query/FieldOperations;Ljava/lang/Object;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public synthetic fun accept (Ldev/evo/elasticmagic/serde/Serializer$Ctx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
-	public fun accept (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
+	public synthetic fun accept (Ldev/evo/elasticmagic/serde/Serializer$Ctx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
+	public fun accept (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 	public fun children ()Ljava/util/Iterator;
 	public fun clone ()Ldev/evo/elasticmagic/aggs/WeightedAvgAgg$ValueSource;
 	public synthetic fun clone ()Ldev/evo/elasticmagic/query/Expression;
@@ -2020,6 +2034,19 @@ public abstract class dev/evo/elasticmagic/compile/BaseCompiler {
 	public final fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ljava/util/Map;)V
 }
 
+public abstract class dev/evo/elasticmagic/compile/BaseSearchQueryCompiler : dev/evo/elasticmagic/compile/BaseCompiler {
+	public fun <init> (Ldev/evo/elasticmagic/compile/ElasticsearchFeatures;)V
+	public fun dispatch (Ldev/evo/elasticmagic/serde/Serializer$ArrayCtx;Ljava/lang/Object;)V
+	public fun dispatch (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ljava/lang/String;Ljava/lang/Object;)V
+	public final fun visit (Ldev/evo/elasticmagic/serde/Serializer$ArrayCtx;Ldev/evo/elasticmagic/query/Expression;)V
+	public final fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/PreparedSearchQuery;Z)V
+	public final fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/query/Expression;)V
+}
+
+public abstract interface class dev/evo/elasticmagic/compile/BaseSearchQueryCompiler$Visitable {
+	public abstract fun accept (Ldev/evo/elasticmagic/serde/Serializer$Ctx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
+}
+
 public final class dev/evo/elasticmagic/compile/BulkCompiler : dev/evo/elasticmagic/compile/BaseCompiler {
 	public fun <init> (Ldev/evo/elasticmagic/compile/ElasticsearchFeatures;Ldev/evo/elasticmagic/compile/ActionCompiler;)V
 	public final fun compile (Ldev/evo/elasticmagic/serde/Serializer;Ldev/evo/elasticmagic/compile/PreparedBulk;)Ldev/evo/elasticmagic/compile/BulkCompiler$Compiled;
@@ -2040,12 +2067,19 @@ public final class dev/evo/elasticmagic/compile/CompilerSet {
 	public final fun getActionMetaCompiler ()Ldev/evo/elasticmagic/compile/ActionMetaCompiler;
 	public final fun getActionSourceCompiler ()Ldev/evo/elasticmagic/compile/ActionSourceCompiler;
 	public final fun getBulk ()Ldev/evo/elasticmagic/compile/BulkCompiler;
+	public final fun getCountQuery ()Ldev/evo/elasticmagic/compile/CountQueryCompiler;
 	public final fun getCreateIndex ()Ldev/evo/elasticmagic/compile/CreateIndexCompiler;
 	public final fun getFeatures ()Ldev/evo/elasticmagic/compile/ElasticsearchFeatures;
 	public final fun getMapping ()Ldev/evo/elasticmagic/compile/MappingCompiler;
 	public final fun getMultiSearchQuery ()Ldev/evo/elasticmagic/compile/MultiSearchQueryCompiler;
 	public final fun getSearchQuery ()Ldev/evo/elasticmagic/compile/SearchQueryCompiler;
 	public final fun getUpdateMapping ()Ldev/evo/elasticmagic/compile/UpdateMappingCompiler;
+}
+
+public final class dev/evo/elasticmagic/compile/CountQueryCompiler : dev/evo/elasticmagic/compile/BaseSearchQueryCompiler {
+	public fun <init> (Ldev/evo/elasticmagic/compile/ElasticsearchFeatures;)V
+	public final fun compile (Ldev/evo/elasticmagic/serde/Serde;Ldev/evo/elasticmagic/PreparedSearchQuery;Ljava/lang/String;)Ldev/evo/elasticmagic/transport/ApiRequest;
+	public final fun compile (Ldev/evo/elasticmagic/serde/Serde;Ldev/evo/elasticmagic/SearchQueryWithIndex;)Ldev/evo/elasticmagic/transport/ApiRequest;
 }
 
 public final class dev/evo/elasticmagic/compile/CreateIndexCompiler : dev/evo/elasticmagic/compile/BaseCompiler {
@@ -2128,20 +2162,11 @@ public final class dev/evo/elasticmagic/compile/PreparedUpdateMapping {
 	public final fun getWriteIndexOnly ()Ljava/lang/Boolean;
 }
 
-public class dev/evo/elasticmagic/compile/SearchQueryCompiler : dev/evo/elasticmagic/compile/BaseCompiler {
+public class dev/evo/elasticmagic/compile/SearchQueryCompiler : dev/evo/elasticmagic/compile/BaseSearchQueryCompiler {
 	public fun <init> (Ldev/evo/elasticmagic/compile/ElasticsearchFeatures;)V
 	public final fun compile (Ldev/evo/elasticmagic/serde/Serde;Ldev/evo/elasticmagic/PreparedSearchQuery;Ljava/lang/String;)Ldev/evo/elasticmagic/transport/ApiRequest;
 	public final fun compile (Ldev/evo/elasticmagic/serde/Serde;Ldev/evo/elasticmagic/SearchQueryWithIndex;)Ldev/evo/elasticmagic/transport/ApiRequest;
-	public fun dispatch (Ldev/evo/elasticmagic/serde/Serializer$ArrayCtx;Ljava/lang/Object;)V
-	public fun dispatch (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ljava/lang/String;Ljava/lang/Object;)V
 	public final fun processResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;Ldev/evo/elasticmagic/PreparedSearchQuery;)Ldev/evo/elasticmagic/SearchQueryResult;
-	public final fun visit (Ldev/evo/elasticmagic/serde/Serializer$ArrayCtx;Ldev/evo/elasticmagic/query/Expression;)V
-	public final fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/PreparedSearchQuery;)V
-	public final fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/query/Expression;)V
-}
-
-public abstract interface class dev/evo/elasticmagic/compile/SearchQueryCompiler$Visitable {
-	public abstract fun accept (Ldev/evo/elasticmagic/serde/Serializer$Ctx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
 }
 
 public final class dev/evo/elasticmagic/compile/UpdateMappingCompiler : dev/evo/elasticmagic/compile/BaseCompiler {
@@ -2823,8 +2848,8 @@ public final class dev/evo/elasticmagic/query/Bool : dev/evo/elasticmagic/query/
 	public fun <init> ()V
 	public fun <init> (Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ldev/evo/elasticmagic/query/MinimumShouldMatch;Ljava/lang/Float;)V
 	public synthetic fun <init> (Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ldev/evo/elasticmagic/query/MinimumShouldMatch;Ljava/lang/Float;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public synthetic fun accept (Ldev/evo/elasticmagic/serde/Serializer$Ctx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
-	public fun accept (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
+	public synthetic fun accept (Ldev/evo/elasticmagic/serde/Serializer$Ctx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
+	public fun accept (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 	public fun children ()Ljava/util/Iterator;
 	public fun clone ()Ldev/evo/elasticmagic/query/Bool;
 	public synthetic fun clone ()Ldev/evo/elasticmagic/query/Expression;
@@ -2852,7 +2877,7 @@ public final class dev/evo/elasticmagic/query/Bool : dev/evo/elasticmagic/query/
 	public synthetic fun rewrite (Ldev/evo/elasticmagic/query/QueryExpressionNode;)Ldev/evo/elasticmagic/query/Expression;
 	public synthetic fun rewrite (Ldev/evo/elasticmagic/query/QueryExpressionNode;)Ldev/evo/elasticmagic/query/QueryExpression;
 	public fun toString ()Ljava/lang/String;
-	public fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
+	public fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 }
 
 public final class dev/evo/elasticmagic/query/Bool$Companion {
@@ -2877,8 +2902,8 @@ public final class dev/evo/elasticmagic/query/BoostedField$Companion {
 public final class dev/evo/elasticmagic/query/DisMax : dev/evo/elasticmagic/query/QueryExpression {
 	public fun <init> (Ljava/util/List;Ljava/lang/Float;)V
 	public synthetic fun <init> (Ljava/util/List;Ljava/lang/Float;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public synthetic fun accept (Ldev/evo/elasticmagic/serde/Serializer$Ctx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
-	public fun accept (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
+	public synthetic fun accept (Ldev/evo/elasticmagic/serde/Serializer$Ctx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
+	public fun accept (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 	public fun children ()Ljava/util/Iterator;
 	public fun clone ()Ldev/evo/elasticmagic/query/DisMax;
 	public synthetic fun clone ()Ldev/evo/elasticmagic/query/Expression;
@@ -2898,14 +2923,14 @@ public final class dev/evo/elasticmagic/query/DisMax : dev/evo/elasticmagic/quer
 	public synthetic fun rewrite (Ldev/evo/elasticmagic/query/QueryExpressionNode;)Ldev/evo/elasticmagic/query/Expression;
 	public synthetic fun rewrite (Ldev/evo/elasticmagic/query/QueryExpressionNode;)Ldev/evo/elasticmagic/query/QueryExpression;
 	public fun toString ()Ljava/lang/String;
-	public fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
+	public fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 }
 
 public final class dev/evo/elasticmagic/query/Exists : dev/evo/elasticmagic/query/QueryExpression {
 	public fun <init> (Ldev/evo/elasticmagic/query/FieldOperations;Ljava/lang/Float;)V
 	public synthetic fun <init> (Ldev/evo/elasticmagic/query/FieldOperations;Ljava/lang/Float;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public synthetic fun accept (Ldev/evo/elasticmagic/serde/Serializer$Ctx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
-	public fun accept (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
+	public synthetic fun accept (Ldev/evo/elasticmagic/serde/Serializer$Ctx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
+	public fun accept (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 	public fun children ()Ljava/util/Iterator;
 	public fun clone ()Ldev/evo/elasticmagic/query/Exists;
 	public synthetic fun clone ()Ldev/evo/elasticmagic/query/Expression;
@@ -2924,10 +2949,10 @@ public final class dev/evo/elasticmagic/query/Exists : dev/evo/elasticmagic/quer
 	public synthetic fun rewrite (Ldev/evo/elasticmagic/query/QueryExpressionNode;)Ldev/evo/elasticmagic/query/Expression;
 	public fun rewrite (Ldev/evo/elasticmagic/query/QueryExpressionNode;)Ldev/evo/elasticmagic/query/QueryExpression;
 	public fun toString ()Ljava/lang/String;
-	public fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
+	public fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 }
 
-public abstract interface class dev/evo/elasticmagic/query/Expression : dev/evo/elasticmagic/compile/SearchQueryCompiler$Visitable {
+public abstract interface class dev/evo/elasticmagic/query/Expression : dev/evo/elasticmagic/compile/BaseSearchQueryCompiler$Visitable {
 	public abstract fun children ()Ljava/util/Iterator;
 	public abstract fun clone ()Ldev/evo/elasticmagic/query/Expression;
 	public abstract fun reduce ()Ldev/evo/elasticmagic/query/Expression;
@@ -2952,8 +2977,8 @@ public final class dev/evo/elasticmagic/query/FieldFormat$Companion {
 public final class dev/evo/elasticmagic/query/FieldFormat$Impl : dev/evo/elasticmagic/query/ArrayExpression, dev/evo/elasticmagic/query/FieldFormat {
 	public fun <init> (Ldev/evo/elasticmagic/query/FieldOperations;Ljava/lang/String;)V
 	public synthetic fun <init> (Ldev/evo/elasticmagic/query/FieldOperations;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public fun accept (Ldev/evo/elasticmagic/serde/Serializer$ArrayCtx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
-	public synthetic fun accept (Ldev/evo/elasticmagic/serde/Serializer$Ctx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
+	public fun accept (Ldev/evo/elasticmagic/serde/Serializer$ArrayCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
+	public synthetic fun accept (Ldev/evo/elasticmagic/serde/Serializer$Ctx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 	public fun children ()Ljava/util/Iterator;
 	public synthetic fun clone ()Ldev/evo/elasticmagic/query/Expression;
 	public fun clone ()Ldev/evo/elasticmagic/query/FieldFormat$Impl;
@@ -3022,8 +3047,8 @@ public final class dev/evo/elasticmagic/query/FieldOperationsKt {
 public final class dev/evo/elasticmagic/query/FunctionScore : dev/evo/elasticmagic/query/QueryExpression {
 	public fun <init> (Ldev/evo/elasticmagic/query/QueryExpression;Ljava/util/List;Ljava/lang/Float;Ldev/evo/elasticmagic/query/FunctionScore$ScoreMode;Ldev/evo/elasticmagic/query/FunctionScore$BoostMode;Ljava/lang/Float;)V
 	public synthetic fun <init> (Ldev/evo/elasticmagic/query/QueryExpression;Ljava/util/List;Ljava/lang/Float;Ldev/evo/elasticmagic/query/FunctionScore$ScoreMode;Ldev/evo/elasticmagic/query/FunctionScore$BoostMode;Ljava/lang/Float;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public synthetic fun accept (Ldev/evo/elasticmagic/serde/Serializer$Ctx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
-	public fun accept (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
+	public synthetic fun accept (Ldev/evo/elasticmagic/serde/Serializer$Ctx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
+	public fun accept (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 	public fun children ()Ljava/util/Iterator;
 	public synthetic fun clone ()Ldev/evo/elasticmagic/query/Expression;
 	public fun clone ()Ldev/evo/elasticmagic/query/FunctionScore;
@@ -3051,7 +3076,7 @@ public final class dev/evo/elasticmagic/query/FunctionScore : dev/evo/elasticmag
 	public fun rewrite (Ldev/evo/elasticmagic/query/QueryExpressionNode;)Ldev/evo/elasticmagic/query/FunctionScore;
 	public synthetic fun rewrite (Ldev/evo/elasticmagic/query/QueryExpressionNode;)Ldev/evo/elasticmagic/query/QueryExpression;
 	public fun toString ()Ljava/lang/String;
-	public fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
+	public fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 }
 
 public final class dev/evo/elasticmagic/query/FunctionScore$BoostMode : java/lang/Enum, dev/evo/elasticmagic/query/ToValue {
@@ -3070,8 +3095,8 @@ public final class dev/evo/elasticmagic/query/FunctionScore$BoostMode : java/lan
 public final class dev/evo/elasticmagic/query/FunctionScore$FieldValueFactor : dev/evo/elasticmagic/query/FunctionScore$Function {
 	public static final field Companion Ldev/evo/elasticmagic/query/FunctionScore$FieldValueFactor$Companion;
 	public synthetic fun <init> (Ldev/evo/elasticmagic/query/FieldOperations;Ljava/lang/Float;Ljava/lang/Object;Ldev/evo/elasticmagic/query/FunctionScore$FieldValueFactor$Modifier;Ldev/evo/elasticmagic/query/QueryExpression;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public synthetic fun accept (Ldev/evo/elasticmagic/serde/Serializer$Ctx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
-	public fun accept (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
+	public synthetic fun accept (Ldev/evo/elasticmagic/serde/Serializer$Ctx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
+	public fun accept (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 	public synthetic fun clone ()Ldev/evo/elasticmagic/query/Expression;
 	public fun clone ()Ldev/evo/elasticmagic/query/FunctionScore$FieldValueFactor;
 	public final fun component1 ()Ldev/evo/elasticmagic/query/FieldOperations;
@@ -3115,7 +3140,7 @@ public final class dev/evo/elasticmagic/query/FunctionScore$FieldValueFactor$Mod
 
 public abstract class dev/evo/elasticmagic/query/FunctionScore$Function : dev/evo/elasticmagic/query/ObjExpression {
 	public fun <init> ()V
-	protected final fun accept (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;Lkotlin/jvm/functions/Function1;)V
+	protected final fun accept (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;Lkotlin/jvm/functions/Function1;)V
 	public fun children ()Ljava/util/Iterator;
 	protected abstract fun copyWithFilter (Ldev/evo/elasticmagic/query/QueryExpression;)Ldev/evo/elasticmagic/query/FunctionScore$Function;
 	public abstract fun getFilter ()Ldev/evo/elasticmagic/query/QueryExpression;
@@ -3129,8 +3154,8 @@ public final class dev/evo/elasticmagic/query/FunctionScore$RandomScore : dev/ev
 	public fun <init> ()V
 	public fun <init> (Ljava/lang/Object;Ldev/evo/elasticmagic/query/FieldOperations;Ldev/evo/elasticmagic/query/QueryExpression;)V
 	public synthetic fun <init> (Ljava/lang/Object;Ldev/evo/elasticmagic/query/FieldOperations;Ldev/evo/elasticmagic/query/QueryExpression;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public synthetic fun accept (Ldev/evo/elasticmagic/serde/Serializer$Ctx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
-	public fun accept (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
+	public synthetic fun accept (Ldev/evo/elasticmagic/serde/Serializer$Ctx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
+	public fun accept (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 	public synthetic fun clone ()Ldev/evo/elasticmagic/query/Expression;
 	public fun clone ()Ldev/evo/elasticmagic/query/FunctionScore$RandomScore;
 	public final fun component1 ()Ljava/lang/Object;
@@ -3163,8 +3188,8 @@ public final class dev/evo/elasticmagic/query/FunctionScore$ScoreMode : java/lan
 public final class dev/evo/elasticmagic/query/FunctionScore$ScriptScore : dev/evo/elasticmagic/query/FunctionScore$Function {
 	public fun <init> (Ldev/evo/elasticmagic/query/Script;Ldev/evo/elasticmagic/query/QueryExpression;)V
 	public synthetic fun <init> (Ldev/evo/elasticmagic/query/Script;Ldev/evo/elasticmagic/query/QueryExpression;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public synthetic fun accept (Ldev/evo/elasticmagic/serde/Serializer$Ctx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
-	public fun accept (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
+	public synthetic fun accept (Ldev/evo/elasticmagic/serde/Serializer$Ctx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
+	public fun accept (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 	public synthetic fun clone ()Ldev/evo/elasticmagic/query/Expression;
 	public fun clone ()Ldev/evo/elasticmagic/query/FunctionScore$ScriptScore;
 	public final fun component1 ()Ldev/evo/elasticmagic/query/Script;
@@ -3182,8 +3207,8 @@ public final class dev/evo/elasticmagic/query/FunctionScore$ScriptScore : dev/ev
 public final class dev/evo/elasticmagic/query/FunctionScore$Weight : dev/evo/elasticmagic/query/FunctionScore$Function {
 	public fun <init> (FLdev/evo/elasticmagic/query/QueryExpression;)V
 	public synthetic fun <init> (FLdev/evo/elasticmagic/query/QueryExpression;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public synthetic fun accept (Ldev/evo/elasticmagic/serde/Serializer$Ctx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
-	public fun accept (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
+	public synthetic fun accept (Ldev/evo/elasticmagic/serde/Serializer$Ctx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
+	public fun accept (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 	public synthetic fun clone ()Ldev/evo/elasticmagic/query/Expression;
 	public fun clone ()Ldev/evo/elasticmagic/query/FunctionScore$Weight;
 	public final fun component1 ()F
@@ -3201,8 +3226,8 @@ public final class dev/evo/elasticmagic/query/FunctionScore$Weight : dev/evo/ela
 public final class dev/evo/elasticmagic/query/Ids : dev/evo/elasticmagic/query/QueryExpression {
 	public fun <init> (Ljava/util/List;Ljava/lang/Float;)V
 	public synthetic fun <init> (Ljava/util/List;Ljava/lang/Float;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public synthetic fun accept (Ldev/evo/elasticmagic/serde/Serializer$Ctx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
-	public fun accept (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
+	public synthetic fun accept (Ldev/evo/elasticmagic/serde/Serializer$Ctx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
+	public fun accept (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 	public fun children ()Ljava/util/Iterator;
 	public synthetic fun clone ()Ldev/evo/elasticmagic/query/Expression;
 	public fun clone ()Ldev/evo/elasticmagic/query/Ids;
@@ -3221,14 +3246,14 @@ public final class dev/evo/elasticmagic/query/Ids : dev/evo/elasticmagic/query/Q
 	public synthetic fun rewrite (Ldev/evo/elasticmagic/query/QueryExpressionNode;)Ldev/evo/elasticmagic/query/Expression;
 	public fun rewrite (Ldev/evo/elasticmagic/query/QueryExpressionNode;)Ldev/evo/elasticmagic/query/QueryExpression;
 	public fun toString ()Ljava/lang/String;
-	public fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
+	public fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 }
 
 public final class dev/evo/elasticmagic/query/Match : dev/evo/elasticmagic/query/QueryExpression {
 	public fun <init> (Ldev/evo/elasticmagic/query/FieldOperations;Ljava/lang/String;Ljava/lang/Float;Ljava/lang/String;Ldev/evo/elasticmagic/query/MinimumShouldMatch;Ljava/util/Map;)V
 	public synthetic fun <init> (Ldev/evo/elasticmagic/query/FieldOperations;Ljava/lang/String;Ljava/lang/Float;Ljava/lang/String;Ldev/evo/elasticmagic/query/MinimumShouldMatch;Ljava/util/Map;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public synthetic fun accept (Ldev/evo/elasticmagic/serde/Serializer$Ctx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
-	public fun accept (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
+	public synthetic fun accept (Ldev/evo/elasticmagic/serde/Serializer$Ctx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
+	public fun accept (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 	public fun children ()Ljava/util/Iterator;
 	public synthetic fun clone ()Ldev/evo/elasticmagic/query/Expression;
 	public fun clone ()Ldev/evo/elasticmagic/query/Match;
@@ -3255,13 +3280,13 @@ public final class dev/evo/elasticmagic/query/Match : dev/evo/elasticmagic/query
 	public synthetic fun rewrite (Ldev/evo/elasticmagic/query/QueryExpressionNode;)Ldev/evo/elasticmagic/query/Expression;
 	public fun rewrite (Ldev/evo/elasticmagic/query/QueryExpressionNode;)Ldev/evo/elasticmagic/query/QueryExpression;
 	public fun toString ()Ljava/lang/String;
-	public fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
+	public fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 }
 
 public final class dev/evo/elasticmagic/query/MatchAll : dev/evo/elasticmagic/query/QueryExpression {
 	public static final field INSTANCE Ldev/evo/elasticmagic/query/MatchAll;
-	public synthetic fun accept (Ldev/evo/elasticmagic/serde/Serializer$Ctx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
-	public fun accept (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
+	public synthetic fun accept (Ldev/evo/elasticmagic/serde/Serializer$Ctx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
+	public fun accept (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 	public fun children ()Ljava/util/Iterator;
 	public synthetic fun clone ()Ldev/evo/elasticmagic/query/Expression;
 	public fun clone ()Ldev/evo/elasticmagic/query/MatchAll;
@@ -3271,14 +3296,14 @@ public final class dev/evo/elasticmagic/query/MatchAll : dev/evo/elasticmagic/qu
 	public fun reduce ()Ldev/evo/elasticmagic/query/QueryExpression;
 	public synthetic fun rewrite (Ldev/evo/elasticmagic/query/QueryExpressionNode;)Ldev/evo/elasticmagic/query/Expression;
 	public fun rewrite (Ldev/evo/elasticmagic/query/QueryExpressionNode;)Ldev/evo/elasticmagic/query/QueryExpression;
-	public fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
+	public fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 }
 
 public final class dev/evo/elasticmagic/query/MatchPhrase : dev/evo/elasticmagic/query/QueryExpression {
 	public fun <init> (Ldev/evo/elasticmagic/query/FieldOperations;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/Float;Ljava/lang/String;Ljava/util/Map;)V
 	public synthetic fun <init> (Ldev/evo/elasticmagic/query/FieldOperations;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/Float;Ljava/lang/String;Ljava/util/Map;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public synthetic fun accept (Ldev/evo/elasticmagic/serde/Serializer$Ctx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
-	public fun accept (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
+	public synthetic fun accept (Ldev/evo/elasticmagic/serde/Serializer$Ctx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
+	public fun accept (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 	public fun children ()Ljava/util/Iterator;
 	public synthetic fun clone ()Ldev/evo/elasticmagic/query/Expression;
 	public fun clone ()Ldev/evo/elasticmagic/query/MatchPhrase;
@@ -3305,7 +3330,7 @@ public final class dev/evo/elasticmagic/query/MatchPhrase : dev/evo/elasticmagic
 	public synthetic fun rewrite (Ldev/evo/elasticmagic/query/QueryExpressionNode;)Ldev/evo/elasticmagic/query/Expression;
 	public fun rewrite (Ldev/evo/elasticmagic/query/QueryExpressionNode;)Ldev/evo/elasticmagic/query/QueryExpression;
 	public fun toString ()Ljava/lang/String;
-	public fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
+	public fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 }
 
 public abstract class dev/evo/elasticmagic/query/MinimumShouldMatch : dev/evo/elasticmagic/query/ToValue {
@@ -3358,8 +3383,8 @@ public abstract class dev/evo/elasticmagic/query/MinimumShouldMatch$Simple : dev
 public final class dev/evo/elasticmagic/query/MultiMatch : dev/evo/elasticmagic/query/QueryExpression {
 	public fun <init> (Ljava/lang/String;Ljava/util/List;Ldev/evo/elasticmagic/query/MultiMatch$Type;Ljava/lang/Float;Ljava/util/Map;)V
 	public synthetic fun <init> (Ljava/lang/String;Ljava/util/List;Ldev/evo/elasticmagic/query/MultiMatch$Type;Ljava/lang/Float;Ljava/util/Map;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public synthetic fun accept (Ldev/evo/elasticmagic/serde/Serializer$Ctx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
-	public fun accept (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
+	public synthetic fun accept (Ldev/evo/elasticmagic/serde/Serializer$Ctx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
+	public fun accept (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 	public fun children ()Ljava/util/Iterator;
 	public synthetic fun clone ()Ldev/evo/elasticmagic/query/Expression;
 	public fun clone ()Ldev/evo/elasticmagic/query/MultiMatch;
@@ -3384,7 +3409,7 @@ public final class dev/evo/elasticmagic/query/MultiMatch : dev/evo/elasticmagic/
 	public synthetic fun rewrite (Ldev/evo/elasticmagic/query/QueryExpressionNode;)Ldev/evo/elasticmagic/query/Expression;
 	public fun rewrite (Ldev/evo/elasticmagic/query/QueryExpressionNode;)Ldev/evo/elasticmagic/query/QueryExpression;
 	public fun toString ()Ljava/lang/String;
-	public fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
+	public fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 }
 
 public final class dev/evo/elasticmagic/query/MultiMatch$Type : java/lang/Enum, dev/evo/elasticmagic/query/ToValue {
@@ -3410,13 +3435,13 @@ public final class dev/evo/elasticmagic/query/Named$DefaultImpls {
 }
 
 public abstract interface class dev/evo/elasticmagic/query/NamedExpression : dev/evo/elasticmagic/query/ObjExpression {
-	public abstract fun accept (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
+	public abstract fun accept (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 	public abstract fun getName ()Ljava/lang/String;
-	public abstract fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
+	public abstract fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 }
 
 public final class dev/evo/elasticmagic/query/NamedExpression$DefaultImpls {
-	public static fun accept (Ldev/evo/elasticmagic/query/NamedExpression;Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
+	public static fun accept (Ldev/evo/elasticmagic/query/NamedExpression;Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 	public static fun children (Ldev/evo/elasticmagic/query/NamedExpression;)Ljava/util/Iterator;
 	public static fun reduce (Ldev/evo/elasticmagic/query/NamedExpression;)Ldev/evo/elasticmagic/query/Expression;
 	public static fun rewrite (Ldev/evo/elasticmagic/query/NamedExpression;Ldev/evo/elasticmagic/query/QueryExpressionNode;)Ldev/evo/elasticmagic/query/Expression;
@@ -3425,8 +3450,8 @@ public final class dev/evo/elasticmagic/query/NamedExpression$DefaultImpls {
 public final class dev/evo/elasticmagic/query/Nested : dev/evo/elasticmagic/query/QueryExpression {
 	public fun <init> (Ldev/evo/elasticmagic/query/FieldOperations;Ldev/evo/elasticmagic/query/QueryExpression;Ldev/evo/elasticmagic/query/Nested$ScoreMode;Ljava/lang/Boolean;)V
 	public synthetic fun <init> (Ldev/evo/elasticmagic/query/FieldOperations;Ldev/evo/elasticmagic/query/QueryExpression;Ldev/evo/elasticmagic/query/Nested$ScoreMode;Ljava/lang/Boolean;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public synthetic fun accept (Ldev/evo/elasticmagic/serde/Serializer$Ctx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
-	public fun accept (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
+	public synthetic fun accept (Ldev/evo/elasticmagic/serde/Serializer$Ctx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
+	public fun accept (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 	public fun children ()Ljava/util/Iterator;
 	public synthetic fun clone ()Ldev/evo/elasticmagic/query/Expression;
 	public fun clone ()Ldev/evo/elasticmagic/query/Nested;
@@ -3449,7 +3474,7 @@ public final class dev/evo/elasticmagic/query/Nested : dev/evo/elasticmagic/quer
 	public synthetic fun rewrite (Ldev/evo/elasticmagic/query/QueryExpressionNode;)Ldev/evo/elasticmagic/query/Expression;
 	public fun rewrite (Ldev/evo/elasticmagic/query/QueryExpressionNode;)Ldev/evo/elasticmagic/query/QueryExpression;
 	public fun toString ()Ljava/lang/String;
-	public fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
+	public fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 }
 
 public final class dev/evo/elasticmagic/query/Nested$ScoreMode : java/lang/Enum, dev/evo/elasticmagic/query/ToValue {
@@ -3493,7 +3518,7 @@ public abstract interface class dev/evo/elasticmagic/query/QueryExpression : dev
 }
 
 public final class dev/evo/elasticmagic/query/QueryExpression$DefaultImpls {
-	public static fun accept (Ldev/evo/elasticmagic/query/QueryExpression;Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
+	public static fun accept (Ldev/evo/elasticmagic/query/QueryExpression;Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 	public static fun children (Ldev/evo/elasticmagic/query/QueryExpression;)Ljava/util/Iterator;
 	public static fun reduce (Ldev/evo/elasticmagic/query/QueryExpression;)Ldev/evo/elasticmagic/query/QueryExpression;
 	public static fun rewrite (Ldev/evo/elasticmagic/query/QueryExpression;Ldev/evo/elasticmagic/query/QueryExpressionNode;)Ldev/evo/elasticmagic/query/QueryExpression;
@@ -3501,8 +3526,8 @@ public final class dev/evo/elasticmagic/query/QueryExpression$DefaultImpls {
 
 public final class dev/evo/elasticmagic/query/QueryExpressionNode : dev/evo/elasticmagic/query/QueryExpression {
 	public fun <init> (Ldev/evo/elasticmagic/query/NodeHandle;Ldev/evo/elasticmagic/query/QueryExpression;)V
-	public synthetic fun accept (Ldev/evo/elasticmagic/serde/Serializer$Ctx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
-	public fun accept (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
+	public synthetic fun accept (Ldev/evo/elasticmagic/serde/Serializer$Ctx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
+	public fun accept (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 	public fun children ()Ljava/util/Iterator;
 	public synthetic fun clone ()Ldev/evo/elasticmagic/query/Expression;
 	public synthetic fun clone ()Ldev/evo/elasticmagic/query/QueryExpression;
@@ -3521,7 +3546,7 @@ public final class dev/evo/elasticmagic/query/QueryExpressionNode : dev/evo/elas
 	public synthetic fun rewrite (Ldev/evo/elasticmagic/query/QueryExpressionNode;)Ldev/evo/elasticmagic/query/Expression;
 	public fun rewrite (Ldev/evo/elasticmagic/query/QueryExpressionNode;)Ldev/evo/elasticmagic/query/QueryExpression;
 	public fun toString ()Ljava/lang/String;
-	public fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
+	public fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 }
 
 public final class dev/evo/elasticmagic/query/QueryRescore : dev/evo/elasticmagic/query/Rescore {
@@ -3545,7 +3570,7 @@ public final class dev/evo/elasticmagic/query/QueryRescore : dev/evo/elasticmagi
 	public fun getWindowSize ()Ljava/lang/Integer;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
-	public fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
+	public fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 }
 
 public final class dev/evo/elasticmagic/query/QueryRescore$ScoreMode : java/lang/Enum, dev/evo/elasticmagic/query/ToValue {
@@ -3563,8 +3588,8 @@ public final class dev/evo/elasticmagic/query/QueryRescore$ScoreMode : java/lang
 public final class dev/evo/elasticmagic/query/Range : dev/evo/elasticmagic/query/QueryExpression {
 	public fun <init> (Ldev/evo/elasticmagic/query/FieldOperations;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ldev/evo/elasticmagic/query/Range$Relation;Ljava/lang/Float;)V
 	public synthetic fun <init> (Ldev/evo/elasticmagic/query/FieldOperations;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ldev/evo/elasticmagic/query/Range$Relation;Ljava/lang/Float;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public synthetic fun accept (Ldev/evo/elasticmagic/serde/Serializer$Ctx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
-	public fun accept (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
+	public synthetic fun accept (Ldev/evo/elasticmagic/serde/Serializer$Ctx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
+	public fun accept (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 	public fun children ()Ljava/util/Iterator;
 	public synthetic fun clone ()Ldev/evo/elasticmagic/query/Expression;
 	public synthetic fun clone ()Ldev/evo/elasticmagic/query/QueryExpression;
@@ -3593,7 +3618,7 @@ public final class dev/evo/elasticmagic/query/Range : dev/evo/elasticmagic/query
 	public synthetic fun rewrite (Ldev/evo/elasticmagic/query/QueryExpressionNode;)Ldev/evo/elasticmagic/query/Expression;
 	public fun rewrite (Ldev/evo/elasticmagic/query/QueryExpressionNode;)Ldev/evo/elasticmagic/query/QueryExpression;
 	public fun toString ()Ljava/lang/String;
-	public fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
+	public fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 }
 
 public final class dev/evo/elasticmagic/query/Range$Relation : java/lang/Enum, dev/evo/elasticmagic/query/ToValue {
@@ -3608,8 +3633,8 @@ public final class dev/evo/elasticmagic/query/Range$Relation : java/lang/Enum, d
 
 public abstract class dev/evo/elasticmagic/query/Rescore : dev/evo/elasticmagic/query/NamedExpression {
 	public fun <init> ()V
-	public synthetic fun accept (Ldev/evo/elasticmagic/serde/Serializer$Ctx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
-	public fun accept (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
+	public synthetic fun accept (Ldev/evo/elasticmagic/serde/Serializer$Ctx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
+	public fun accept (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 	public fun children ()Ljava/util/Iterator;
 	public abstract fun getWindowSize ()Ljava/lang/Integer;
 	public fun reduce ()Ldev/evo/elasticmagic/query/Expression;
@@ -3617,8 +3642,8 @@ public abstract class dev/evo/elasticmagic/query/Rescore : dev/evo/elasticmagic/
 }
 
 public abstract class dev/evo/elasticmagic/query/Script : dev/evo/elasticmagic/query/ObjExpression {
-	public synthetic fun accept (Ldev/evo/elasticmagic/serde/Serializer$Ctx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
-	public fun accept (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
+	public synthetic fun accept (Ldev/evo/elasticmagic/serde/Serializer$Ctx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
+	public fun accept (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 	public fun children ()Ljava/util/Iterator;
 	protected abstract fun getBy ()Ljava/lang/String;
 	public abstract fun getLang ()Ljava/lang/String;
@@ -3668,7 +3693,7 @@ public abstract interface class dev/evo/elasticmagic/query/SearchExt : dev/evo/e
 }
 
 public final class dev/evo/elasticmagic/query/SearchExt$DefaultImpls {
-	public static fun accept (Ldev/evo/elasticmagic/query/SearchExt;Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
+	public static fun accept (Ldev/evo/elasticmagic/query/SearchExt;Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 	public static fun children (Ldev/evo/elasticmagic/query/SearchExt;)Ljava/util/Iterator;
 	public static fun reduce (Ldev/evo/elasticmagic/query/SearchExt;)Ldev/evo/elasticmagic/query/Expression;
 	public static fun rewrite (Ldev/evo/elasticmagic/query/SearchExt;Ldev/evo/elasticmagic/query/QueryExpressionNode;)Ldev/evo/elasticmagic/query/Expression;
@@ -3688,8 +3713,8 @@ public final class dev/evo/elasticmagic/query/Sort$Companion {
 public final class dev/evo/elasticmagic/query/Sort$Field : dev/evo/elasticmagic/query/ArrayExpression, dev/evo/elasticmagic/query/Sort {
 	public fun <init> (Ldev/evo/elasticmagic/query/FieldOperations;Ldev/evo/elasticmagic/query/Sort$Order;Ldev/evo/elasticmagic/query/Sort$Mode;Ldev/evo/elasticmagic/query/Sort$NumericType;Ldev/evo/elasticmagic/query/Sort$Missing;Ldev/evo/elasticmagic/types/FieldType;Ldev/evo/elasticmagic/query/Sort$Nested;)V
 	public synthetic fun <init> (Ldev/evo/elasticmagic/query/FieldOperations;Ldev/evo/elasticmagic/query/Sort$Order;Ldev/evo/elasticmagic/query/Sort$Mode;Ldev/evo/elasticmagic/query/Sort$NumericType;Ldev/evo/elasticmagic/query/Sort$Missing;Ldev/evo/elasticmagic/types/FieldType;Ldev/evo/elasticmagic/query/Sort$Nested;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public fun accept (Ldev/evo/elasticmagic/serde/Serializer$ArrayCtx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
-	public synthetic fun accept (Ldev/evo/elasticmagic/serde/Serializer$Ctx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
+	public fun accept (Ldev/evo/elasticmagic/serde/Serializer$ArrayCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
+	public synthetic fun accept (Ldev/evo/elasticmagic/serde/Serializer$Ctx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 	public fun children ()Ljava/util/Iterator;
 	public synthetic fun clone ()Ldev/evo/elasticmagic/query/Expression;
 	public fun clone ()Ldev/evo/elasticmagic/query/Sort$Field;
@@ -3748,8 +3773,8 @@ public final class dev/evo/elasticmagic/query/Sort$Mode : java/lang/Enum, dev/ev
 public final class dev/evo/elasticmagic/query/Sort$Nested : dev/evo/elasticmagic/query/ObjExpression {
 	public fun <init> (Ldev/evo/elasticmagic/query/FieldOperations;Ldev/evo/elasticmagic/query/QueryExpression;Ljava/lang/Integer;Ldev/evo/elasticmagic/query/Sort$Nested;)V
 	public synthetic fun <init> (Ldev/evo/elasticmagic/query/FieldOperations;Ldev/evo/elasticmagic/query/QueryExpression;Ljava/lang/Integer;Ldev/evo/elasticmagic/query/Sort$Nested;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public synthetic fun accept (Ldev/evo/elasticmagic/serde/Serializer$Ctx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
-	public fun accept (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
+	public synthetic fun accept (Ldev/evo/elasticmagic/serde/Serializer$Ctx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
+	public fun accept (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 	public fun children ()Ljava/util/Iterator;
 	public synthetic fun clone ()Ldev/evo/elasticmagic/query/Expression;
 	public fun clone ()Ldev/evo/elasticmagic/query/Sort$Nested;
@@ -3793,8 +3818,8 @@ public final class dev/evo/elasticmagic/query/Sort$Order : java/lang/Enum, dev/e
 public final class dev/evo/elasticmagic/query/Sort$Script : dev/evo/elasticmagic/query/ArrayExpression, dev/evo/elasticmagic/query/Sort {
 	public fun <init> (Ldev/evo/elasticmagic/query/Script;Ljava/lang/String;Ldev/evo/elasticmagic/query/Sort$Order;Ldev/evo/elasticmagic/query/Sort$Mode;Ldev/evo/elasticmagic/query/Sort$Nested;)V
 	public synthetic fun <init> (Ldev/evo/elasticmagic/query/Script;Ljava/lang/String;Ldev/evo/elasticmagic/query/Sort$Order;Ldev/evo/elasticmagic/query/Sort$Mode;Ldev/evo/elasticmagic/query/Sort$Nested;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public fun accept (Ldev/evo/elasticmagic/serde/Serializer$ArrayCtx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
-	public synthetic fun accept (Ldev/evo/elasticmagic/serde/Serializer$Ctx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
+	public fun accept (Ldev/evo/elasticmagic/serde/Serializer$ArrayCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
+	public synthetic fun accept (Ldev/evo/elasticmagic/serde/Serializer$Ctx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 	public fun children ()Ljava/util/Iterator;
 	public synthetic fun clone ()Ldev/evo/elasticmagic/query/Expression;
 	public fun clone ()Ldev/evo/elasticmagic/query/Sort$Script;
@@ -3826,24 +3851,24 @@ public abstract class dev/evo/elasticmagic/query/Source : dev/evo/elasticmagic/q
 
 public final class dev/evo/elasticmagic/query/Source$Disable : dev/evo/elasticmagic/query/Source {
 	public static final field INSTANCE Ldev/evo/elasticmagic/query/Source$Disable;
-	public synthetic fun accept (Ldev/evo/elasticmagic/serde/Serializer$Ctx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
-	public fun accept (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
+	public synthetic fun accept (Ldev/evo/elasticmagic/serde/Serializer$Ctx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
+	public fun accept (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 	public synthetic fun clone ()Ldev/evo/elasticmagic/query/Expression;
 	public fun clone ()Ldev/evo/elasticmagic/query/Source$Disable;
 }
 
 public final class dev/evo/elasticmagic/query/Source$Enable : dev/evo/elasticmagic/query/Source {
 	public static final field INSTANCE Ldev/evo/elasticmagic/query/Source$Enable;
-	public synthetic fun accept (Ldev/evo/elasticmagic/serde/Serializer$Ctx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
-	public fun accept (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
+	public synthetic fun accept (Ldev/evo/elasticmagic/serde/Serializer$Ctx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
+	public fun accept (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 	public synthetic fun clone ()Ldev/evo/elasticmagic/query/Expression;
 	public fun clone ()Ldev/evo/elasticmagic/query/Source$Enable;
 }
 
 public final class dev/evo/elasticmagic/query/Source$Filter : dev/evo/elasticmagic/query/Source {
 	public fun <init> (Ljava/util/List;Ljava/util/List;)V
-	public synthetic fun accept (Ldev/evo/elasticmagic/serde/Serializer$Ctx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
-	public fun accept (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
+	public synthetic fun accept (Ldev/evo/elasticmagic/serde/Serializer$Ctx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
+	public fun accept (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 	public synthetic fun clone ()Ldev/evo/elasticmagic/query/Expression;
 	public fun clone ()Ldev/evo/elasticmagic/query/Source$Filter;
 	public final fun component1 ()Ljava/util/List;
@@ -3860,8 +3885,8 @@ public final class dev/evo/elasticmagic/query/Source$Filter : dev/evo/elasticmag
 public final class dev/evo/elasticmagic/query/Term : dev/evo/elasticmagic/query/QueryExpression {
 	public fun <init> (Ldev/evo/elasticmagic/query/FieldOperations;Ljava/lang/Object;Ljava/lang/Float;)V
 	public synthetic fun <init> (Ldev/evo/elasticmagic/query/FieldOperations;Ljava/lang/Object;Ljava/lang/Float;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public synthetic fun accept (Ldev/evo/elasticmagic/serde/Serializer$Ctx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
-	public fun accept (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
+	public synthetic fun accept (Ldev/evo/elasticmagic/serde/Serializer$Ctx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
+	public fun accept (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 	public fun children ()Ljava/util/Iterator;
 	public synthetic fun clone ()Ldev/evo/elasticmagic/query/Expression;
 	public synthetic fun clone ()Ldev/evo/elasticmagic/query/QueryExpression;
@@ -3882,14 +3907,14 @@ public final class dev/evo/elasticmagic/query/Term : dev/evo/elasticmagic/query/
 	public synthetic fun rewrite (Ldev/evo/elasticmagic/query/QueryExpressionNode;)Ldev/evo/elasticmagic/query/Expression;
 	public fun rewrite (Ldev/evo/elasticmagic/query/QueryExpressionNode;)Ldev/evo/elasticmagic/query/QueryExpression;
 	public fun toString ()Ljava/lang/String;
-	public fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
+	public fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 }
 
 public final class dev/evo/elasticmagic/query/Terms : dev/evo/elasticmagic/query/QueryExpression {
 	public fun <init> (Ldev/evo/elasticmagic/query/FieldOperations;Ljava/util/List;Ljava/lang/Float;)V
 	public synthetic fun <init> (Ldev/evo/elasticmagic/query/FieldOperations;Ljava/util/List;Ljava/lang/Float;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public synthetic fun accept (Ldev/evo/elasticmagic/serde/Serializer$Ctx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
-	public fun accept (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
+	public synthetic fun accept (Ldev/evo/elasticmagic/serde/Serializer$Ctx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
+	public fun accept (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 	public fun children ()Ljava/util/Iterator;
 	public synthetic fun clone ()Ldev/evo/elasticmagic/query/Expression;
 	public synthetic fun clone ()Ldev/evo/elasticmagic/query/QueryExpression;
@@ -3910,7 +3935,7 @@ public final class dev/evo/elasticmagic/query/Terms : dev/evo/elasticmagic/query
 	public synthetic fun rewrite (Ldev/evo/elasticmagic/query/QueryExpressionNode;)Ldev/evo/elasticmagic/query/Expression;
 	public fun rewrite (Ldev/evo/elasticmagic/query/QueryExpressionNode;)Ldev/evo/elasticmagic/query/QueryExpression;
 	public fun toString ()Ljava/lang/String;
-	public fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/SearchQueryCompiler;)V
+	public fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 }
 
 public abstract interface class dev/evo/elasticmagic/query/ToValue {

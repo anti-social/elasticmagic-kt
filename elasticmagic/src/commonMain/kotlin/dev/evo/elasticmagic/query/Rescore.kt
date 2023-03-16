@@ -1,12 +1,12 @@
 package dev.evo.elasticmagic.query
 
-import dev.evo.elasticmagic.compile.SearchQueryCompiler
+import dev.evo.elasticmagic.compile.BaseSearchQueryCompiler
 import dev.evo.elasticmagic.serde.Serializer
 
 abstract class Rescore : NamedExpression {
     abstract val windowSize: Int?
 
-    override fun accept(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
+    override fun accept(ctx: Serializer.ObjectCtx, compiler: BaseSearchQueryCompiler) {
         super.accept(ctx, compiler)
         ctx.fieldIfNotNull("window_size", windowSize)
     }
@@ -29,7 +29,7 @@ data class QueryRescore(
 
     override fun clone() = copy()
 
-    override fun visit(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
+    override fun visit(ctx: Serializer.ObjectCtx, compiler: BaseSearchQueryCompiler) {
         ctx.obj("rescore_query") {
             compiler.visit(this, query)
         }

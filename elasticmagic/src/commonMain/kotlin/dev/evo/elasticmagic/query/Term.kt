@@ -1,6 +1,6 @@
 package dev.evo.elasticmagic.query
 
-import dev.evo.elasticmagic.compile.SearchQueryCompiler
+import dev.evo.elasticmagic.compile.BaseSearchQueryCompiler
 import dev.evo.elasticmagic.serde.Serializer
 
 /**
@@ -19,7 +19,7 @@ data class Term<T>(
 
     override fun visit(
         ctx: Serializer.ObjectCtx,
-        compiler: SearchQueryCompiler
+        compiler: BaseSearchQueryCompiler
     ) {
         if (boost != null) {
             ctx.obj(field.getQualifiedFieldName()) {
@@ -48,7 +48,7 @@ data class Terms<T>(
 
     override fun visit(
         ctx: Serializer.ObjectCtx,
-        compiler: SearchQueryCompiler
+        compiler: BaseSearchQueryCompiler
     ) {
         ctx.array(field.getQualifiedFieldName()) {
             for (term in terms) {
@@ -74,7 +74,7 @@ data class Ids(
 
     override fun clone() = copy()
 
-    override fun visit(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
+    override fun visit(ctx: Serializer.ObjectCtx, compiler: BaseSearchQueryCompiler) {
         ctx.array("values") {
             compiler.visit(this, values)
         }
@@ -97,7 +97,7 @@ data class Exists(
 
     override fun visit(
         ctx: Serializer.ObjectCtx,
-        compiler: SearchQueryCompiler
+        compiler: BaseSearchQueryCompiler
     ) {
         ctx.field("field", field.getQualifiedFieldName())
         ctx.fieldIfNotNull("boost", boost)
@@ -131,7 +131,7 @@ data class Range<T>(
 
     override fun visit(
         ctx: Serializer.ObjectCtx,
-        compiler: SearchQueryCompiler
+        compiler: BaseSearchQueryCompiler
     ) {
         ctx.obj(field.getQualifiedFieldName()) {
             if (gt != null) {

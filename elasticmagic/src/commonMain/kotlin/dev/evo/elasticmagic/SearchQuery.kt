@@ -558,6 +558,10 @@ open class SearchQuery<S: BaseDocSource>(
     suspend fun execute(index: ElasticsearchIndex): SearchQueryResult<S> {
         return index.search(this)
     }
+
+    suspend fun count(index: ElasticsearchIndex): CountResult {
+        return index.count(this)
+    }
 }
 
 data class SearchQueryWithIndex<S: BaseDocSource>(

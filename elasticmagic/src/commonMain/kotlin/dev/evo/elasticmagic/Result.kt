@@ -100,6 +100,10 @@ data class SearchHit<S : BaseDocSource>(
     }
 }
 
+data class CountResult(
+    val count: Long,
+)
+
 data class CreateIndexResult(
     val acknowledged: Boolean,
     val shardsAcknowledged: Boolean,
