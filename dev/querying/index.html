@@ -673,7 +673,7 @@ method to define aggregations:</p>
 <p>See <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations.html">Search Aggregations</a></p>
 <h2 id="query-nodes">Query Nodes<a class="headerlink" href="#query-nodes" title="Permanent link">&para;</a></h2>
 <p>Sometimes you don't know final form of your query when creating it. For such a usecase it is
-possible to modify parts of the query after creation using special query expressions and
+possible to replace parts of the query after creation using special query expressions and
 <a href="https://anti-social.github.io/elasticmagic-kt/api/latest/elasticmagic/dev.evo.elasticmagic/-base-search-query/query-node.html">queryNode</a>
 method:</p>
 <div class="highlight"><pre><span></span><code><span class="k">package</span><span class="w"> </span><span class="nn">samples.querying</span><span class="w"></span>
@@ -685,11 +685,11 @@ method:</p>
 <span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.doc.MappingField</span><span class="w"></span>
 <span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.doc.SubDocument</span><span class="w"></span>
 <span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.query.Bool</span><span class="w"></span>
-<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.query.DisMaxNode</span><span class="w"></span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.query.DisMax</span><span class="w"></span>
 <span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.query.FunctionScore</span><span class="w"></span>
-<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.query.FunctionScoreNode</span><span class="w"></span>
-<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.query.NodeHandle</span><span class="w"></span>
 <span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.query.match</span><span class="w"></span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.query.NodeHandle</span><span class="w"></span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.query.QueryExpressionNode</span><span class="w"></span>
 
 <span class="k">import</span><span class="w"> </span><span class="nn">kotlin.random.Random</span><span class="w"></span>
 
@@ -706,41 +706,47 @@ method:</p>
 <span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">votes</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">int</span><span class="p">()</span><span class="w"></span>
 <span class="p">}</span><span class="w"></span>
 
-<span class="kd">val</span><span class="w"> </span><span class="nv">scoringHandle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">NodeHandle</span><span class="o">&lt;</span><span class="n">FunctionScoreNode</span><span class="o">&gt;</span><span class="p">()</span><span class="w"></span>
-<span class="kd">val</span><span class="w"> </span><span class="nv">langHandle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">NodeHandle</span><span class="o">&lt;</span><span class="n">DisMaxNode</span><span class="o">&gt;</span><span class="p">()</span><span class="w"></span>
+<span class="kd">val</span><span class="w"> </span><span class="nv">scoringHandle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">NodeHandle</span><span class="o">&lt;</span><span class="n">FunctionScore</span><span class="o">&gt;</span><span class="p">()</span><span class="w"></span>
+<span class="kd">val</span><span class="w"> </span><span class="nv">langHandle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">NodeHandle</span><span class="o">&lt;</span><span class="n">DisMax</span><span class="o">&gt;</span><span class="p">()</span><span class="w"></span>
 
 <span class="kd">val</span><span class="w"> </span><span class="nv">searchTerm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;hello world&quot;</span><span class="w"></span>
 <span class="kd">val</span><span class="w"> </span><span class="nv">skeletonQuery</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SearchQuery</span><span class="p">(</span><span class="w"></span>
-<span class="w">    </span><span class="n">FunctionScoreNode</span><span class="p">(</span><span class="w"></span>
+<span class="w">    </span><span class="n">QueryExpressionNode</span><span class="p">(</span><span class="w"></span>
 <span class="w">        </span><span class="n">scoringHandle</span><span class="p">,</span><span class="w"></span>
-<span class="w">        </span><span class="n">DisMaxNode</span><span class="p">(</span><span class="w"></span>
-<span class="w">            </span><span class="n">langHandle</span><span class="p">,</span><span class="w"></span>
-<span class="w">            </span><span class="n">queries</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">listOf</span><span class="p">(</span><span class="w"></span>
-<span class="w">                </span><span class="n">Bool</span><span class="p">.</span><span class="na">should</span><span class="p">(</span><span class="w"></span>
-<span class="w">                    </span><span class="n">QuestionDoc</span><span class="p">.</span><span class="na">title</span><span class="p">.</span><span class="na">en</span><span class="p">.</span><span class="na">match</span><span class="p">(</span><span class="n">searchTerm</span><span class="p">),</span><span class="w"></span>
-<span class="w">                    </span><span class="n">QuestionDoc</span><span class="p">.</span><span class="na">text</span><span class="p">.</span><span class="na">en</span><span class="p">.</span><span class="na">match</span><span class="p">(</span><span class="n">searchTerm</span><span class="p">),</span><span class="w"></span>
+<span class="w">        </span><span class="n">FunctionScore</span><span class="p">(</span><span class="w"></span>
+<span class="w">            </span><span class="n">QueryExpressionNode</span><span class="p">(</span><span class="w"></span>
+<span class="w">                </span><span class="n">langHandle</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="n">DisMax</span><span class="p">(</span><span class="w"></span>
+<span class="w">                    </span><span class="n">queries</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">listOf</span><span class="p">(</span><span class="w"></span>
+<span class="w">                        </span><span class="n">Bool</span><span class="p">.</span><span class="na">should</span><span class="p">(</span><span class="w"></span>
+<span class="w">                            </span><span class="n">QuestionDoc</span><span class="p">.</span><span class="na">title</span><span class="p">.</span><span class="na">en</span><span class="p">.</span><span class="na">match</span><span class="p">(</span><span class="n">searchTerm</span><span class="p">),</span><span class="w"></span>
+<span class="w">                            </span><span class="n">QuestionDoc</span><span class="p">.</span><span class="na">text</span><span class="p">.</span><span class="na">en</span><span class="p">.</span><span class="na">match</span><span class="p">(</span><span class="n">searchTerm</span><span class="p">),</span><span class="w"></span>
+<span class="w">                        </span><span class="p">)</span><span class="w"></span>
+<span class="w">                    </span><span class="p">),</span><span class="w"></span>
 <span class="w">                </span><span class="p">)</span><span class="w"></span>
 <span class="w">            </span><span class="p">),</span><span class="w"></span>
-<span class="w">        </span><span class="p">),</span><span class="w"></span>
-<span class="w">        </span><span class="n">functions</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">listOf</span><span class="p">(</span><span class="w"></span>
-<span class="w">            </span><span class="n">FunctionScore</span><span class="p">.</span><span class="na">FieldValueFactor</span><span class="p">(</span><span class="n">QuestionDoc</span><span class="p">.</span><span class="na">rating</span><span class="p">),</span><span class="w"></span>
-<span class="w">        </span><span class="p">),</span><span class="w"></span>
-<span class="w">        </span><span class="n">scoreMode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">FunctionScore</span><span class="p">.</span><span class="na">ScoreMode</span><span class="p">.</span><span class="na">MULTIPLY</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="n">functions</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">listOf</span><span class="p">(</span><span class="w"></span>
+<span class="w">                </span><span class="n">FunctionScore</span><span class="p">.</span><span class="na">FieldValueFactor</span><span class="p">(</span><span class="n">QuestionDoc</span><span class="p">.</span><span class="na">rating</span><span class="p">),</span><span class="w"></span>
+<span class="w">            </span><span class="p">),</span><span class="w"></span>
+<span class="w">            </span><span class="n">scoreMode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">FunctionScore</span><span class="p">.</span><span class="na">ScoreMode</span><span class="p">.</span><span class="na">MULTIPLY</span><span class="p">,</span><span class="w"></span>
+<span class="w">        </span><span class="p">)</span><span class="w"></span>
 <span class="w">    </span><span class="p">)</span><span class="w"></span>
 <span class="p">)</span><span class="w"></span>
 
 <span class="kd">val</span><span class="w"> </span><span class="nv">boostByNumberOfVotes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Random</span><span class="p">.</span><span class="na">nextBoolean</span><span class="p">()</span><span class="w"></span>
 <span class="kd">var</span><span class="w"> </span><span class="nv">boostedQuery</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">boostByNumberOfVotes</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">    </span><span class="n">skeletonQuery</span><span class="p">.</span><span class="na">queryNode</span><span class="p">(</span><span class="n">scoringHandle</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"></span>
-<span class="w">        </span><span class="n">node</span><span class="p">.</span><span class="na">functions</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">listOf</span><span class="p">(</span><span class="w"></span>
-<span class="w">            </span><span class="n">FunctionScore</span><span class="p">.</span><span class="na">Weight</span><span class="p">(</span><span class="w"></span>
-<span class="w">                </span><span class="m">1.1F</span><span class="p">,</span><span class="w"></span>
-<span class="w">                </span><span class="n">filter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">QuestionDoc</span><span class="p">.</span><span class="na">votes</span><span class="p">.</span><span class="na">range</span><span class="p">(</span><span class="n">gte</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">10</span><span class="p">,</span><span class="w"> </span><span class="n">lt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">50</span><span class="p">)</span><span class="w"></span>
-<span class="w">            </span><span class="p">),</span><span class="w"></span>
-<span class="w">            </span><span class="n">FunctionScore</span><span class="p">.</span><span class="na">Weight</span><span class="p">(</span><span class="w"></span>
-<span class="w">                </span><span class="m">1.5F</span><span class="p">,</span><span class="w"></span>
-<span class="w">                </span><span class="n">filter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">QuestionDoc</span><span class="p">.</span><span class="na">votes</span><span class="p">.</span><span class="na">gte</span><span class="p">(</span><span class="m">50</span><span class="p">)</span><span class="w"></span>
-<span class="w">            </span><span class="p">),</span><span class="w"></span>
+<span class="w">        </span><span class="n">node</span><span class="p">.</span><span class="na">copy</span><span class="p">(</span><span class="w"></span>
+<span class="w">            </span><span class="n">functions</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">node</span><span class="p">.</span><span class="na">functions</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">listOf</span><span class="p">(</span><span class="w"></span>
+<span class="w">                </span><span class="n">FunctionScore</span><span class="p">.</span><span class="na">Weight</span><span class="p">(</span><span class="w"></span>
+<span class="w">                    </span><span class="m">1.1F</span><span class="p">,</span><span class="w"></span>
+<span class="w">                    </span><span class="n">filter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">QuestionDoc</span><span class="p">.</span><span class="na">votes</span><span class="p">.</span><span class="na">range</span><span class="p">(</span><span class="n">gte</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">10</span><span class="p">,</span><span class="w"> </span><span class="n">lt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">50</span><span class="p">)</span><span class="w"></span>
+<span class="w">                </span><span class="p">),</span><span class="w"></span>
+<span class="w">                </span><span class="n">FunctionScore</span><span class="p">.</span><span class="na">Weight</span><span class="p">(</span><span class="w"></span>
+<span class="w">                    </span><span class="m">1.5F</span><span class="p">,</span><span class="w"></span>
+<span class="w">                    </span><span class="n">filter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">QuestionDoc</span><span class="p">.</span><span class="na">votes</span><span class="p">.</span><span class="na">gte</span><span class="p">(</span><span class="m">50</span><span class="p">)</span><span class="w"></span>
+<span class="w">                </span><span class="p">),</span><span class="w"></span>
+<span class="w">            </span><span class="p">)</span><span class="w"></span>
 <span class="w">        </span><span class="p">)</span><span class="w"></span>
 <span class="w">    </span><span class="p">}</span><span class="w"></span>
 <span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
@@ -755,9 +761,11 @@ method:</p>
 <span class="p">)</span><span class="w"></span>
 <span class="kd">val</span><span class="w"> </span><span class="nv">langQuery</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">additionalLangFields</span><span class="p">.</span><span class="na">isNotEmpty</span><span class="p">())</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">    </span><span class="n">boostedQuery</span><span class="p">.</span><span class="na">queryNode</span><span class="p">(</span><span class="n">langHandle</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"></span>
-<span class="w">        </span><span class="n">node</span><span class="p">.</span><span class="na">queries</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="w"></span>
-<span class="w">            </span><span class="n">Bool</span><span class="p">.</span><span class="na">should</span><span class="p">(</span><span class="w"></span>
-<span class="w">                </span><span class="o">*</span><span class="n">additionalLangFields</span><span class="p">.</span><span class="na">map</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nb">it</span><span class="p">.</span><span class="na">match</span><span class="p">(</span><span class="n">searchTerm</span><span class="p">)</span><span class="w"> </span><span class="p">}.</span><span class="na">toTypedArray</span><span class="p">()</span><span class="w"></span>
+<span class="w">        </span><span class="n">node</span><span class="p">.</span><span class="na">copy</span><span class="p">(</span><span class="w"></span>
+<span class="w">            </span><span class="n">queries</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">node</span><span class="p">.</span><span class="na">queries</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">listOf</span><span class="p">(</span><span class="w"></span>
+<span class="w">                </span><span class="n">Bool</span><span class="p">.</span><span class="na">should</span><span class="p">(</span><span class="w"></span>
+<span class="w">                    </span><span class="o">*</span><span class="n">additionalLangFields</span><span class="p">.</span><span class="na">map</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nb">it</span><span class="p">.</span><span class="na">match</span><span class="p">(</span><span class="n">searchTerm</span><span class="p">)</span><span class="w"> </span><span class="p">}.</span><span class="na">toTypedArray</span><span class="p">()</span><span class="w"></span>
+<span class="w">                </span><span class="p">)</span><span class="w"></span>
 <span class="w">            </span><span class="p">)</span><span class="w"></span>
 <span class="w">        </span><span class="p">)</span><span class="w"></span>
 <span class="w">    </span><span class="p">}</span><span class="w"></span>
