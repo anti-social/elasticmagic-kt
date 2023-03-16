@@ -36,8 +36,7 @@ abstract class BaseSearchQueryCompiler(
         fun accept(ctx: T, compiler: BaseSearchQueryCompiler)
     }
 
-    @Suppress("ComplexMethod")
-    fun visit(ctx: ObjectCtx, searchQuery: PreparedSearchQuery<*>, isCountOnly: Boolean) {
+    open fun visit(ctx: ObjectCtx, searchQuery: PreparedSearchQuery<*>) {
         val query = searchQuery.query?.reduce()
         val filteredQuery = if (searchQuery.filters.isNotEmpty()) {
             if (query != null) {
@@ -63,71 +62,8 @@ abstract class BaseSearchQueryCompiler(
                 visit(this, postFilterExpr)
             }
         }
-        if (!isCountOnly && searchQuery.aggregations.isNotEmpty()) {
-            ctx.obj("aggs") {
-                visit(this, searchQuery.aggregations)
-            }
-        }
-        if (!isCountOnly && searchQuery.rescores.isNotEmpty()) {
-            ctx.array("rescore") {
-                visit(this, searchQuery.rescores)
-            }
-        }
-        if (!isCountOnly && searchQuery.sorts.isNotEmpty()) {
-            ctx.array("sort") {
-                visit(this, searchQuery.sorts)
-            }
-        }
-        if (!isCountOnly && searchQuery.trackScores != null) {
-            ctx.field("track_scores", searchQuery.trackScores)
-        }
-        if (!isCountOnly && searchQuery.trackTotalHits != null && features.supportsTrackingOfTotalHits) {
-            ctx.field("track_total_hits", searchQuery.trackTotalHits)
-        }
-        if (searchQuery.source != null) {
-            visit(ctx, searchQuery.source)
-        }
-        if (!isCountOnly && searchQuery.fields.isNotEmpty()) {
-            ctx.array("fields") {
-                visit(this, searchQuery.fields)
-            }
-        }
-        if (!isCountOnly && searchQuery.docvalueFields.isNotEmpty()) {
-            ctx.array("docvalue_fields") {
-                visit(this, searchQuery.docvalueFields)
-            }
-        }
-        if (!isCountOnly && searchQuery.storedFields.isNotEmpty()) {
-            ctx.array("stored_fields") {
-                visit(this, searchQuery.storedFields)
-            }
-        }
-        if (!isCountOnly && searchQuery.scriptFields.isNotEmpty()) {
-            ctx.obj("script_fields") {
-                for ((fieldName, script) in searchQuery.scriptFields) {
-                    obj(fieldName) {
-                        obj("script") {
-                            visit(this, script)
-                        }
-                    }
-                }
-            }
-        }
-        if (!isCountOnly && searchQuery.size != null) {
-            ctx.field("size", searchQuery.size)
-        }
-        if (!isCountOnly && searchQuery.from != null) {
-            ctx.field("from", searchQuery.from)
-        }
         if (searchQuery.terminateAfter != null) {
             ctx.field("terminate_after", searchQuery.terminateAfter)
-        }
-        if (!isCountOnly && searchQuery.extensions.isNotEmpty()) {
-            ctx.obj("ext") {
-                for (ext in searchQuery.extensions) {
-                    visit(this, ext)
-                }
-            }
         }
     }
 
@@ -173,11 +109,80 @@ abstract class BaseSearchQueryCompiler(
 open class SearchQueryCompiler(
     features: ElasticsearchFeatures,
 ) : BaseSearchQueryCompiler(features) {
+
+    @Suppress("ComplexMethod")
+    override fun visit(ctx: ObjectCtx, searchQuery: PreparedSearchQuery<*>) {
+        super.visit(ctx, searchQuery)
+        if (searchQuery.aggregations.isNotEmpty()) {
+            ctx.obj("aggs") {
+                visit(this, searchQuery.aggregations)
+            }
+        }
+        if (searchQuery.rescores.isNotEmpty()) {
+            ctx.array("rescore") {
+                visit(this, searchQuery.rescores)
+            }
+        }
+        if (searchQuery.sorts.isNotEmpty()) {
+            ctx.array("sort") {
+                visit(this, searchQuery.sorts)
+            }
+        }
+        if (searchQuery.trackScores != null) {
+            ctx.field("track_scores", searchQuery.trackScores)
+        }
+        if (searchQuery.trackTotalHits != null && features.supportsTrackingOfTotalHits) {
+            ctx.field("track_total_hits", searchQuery.trackTotalHits)
+        }
+        if (searchQuery.source != null) {
+            visit(ctx, searchQuery.source)
+        }
+        if (searchQuery.fields.isNotEmpty()) {
+            ctx.array("fields") {
+                visit(this, searchQuery.fields)
+            }
+        }
+        if (searchQuery.docvalueFields.isNotEmpty()) {
+            ctx.array("docvalue_fields") {
+                visit(this, searchQuery.docvalueFields)
+            }
+        }
+        if (searchQuery.storedFields.isNotEmpty()) {
+            ctx.array("stored_fields") {
+                visit(this, searchQuery.storedFields)
+            }
+        }
+        if (searchQuery.scriptFields.isNotEmpty()) {
+            ctx.obj("script_fields") {
+                for ((fieldName, script) in searchQuery.scriptFields) {
+                    obj(fieldName) {
+                        obj("script") {
+                            visit(this, script)
+                        }
+                    }
+                }
+            }
+        }
+        if (searchQuery.size != null) {
+            ctx.field("size", searchQuery.size)
+        }
+        if (searchQuery.from != null) {
+            ctx.field("from", searchQuery.from)
+        }
+        if (searchQuery.extensions.isNotEmpty()) {
+            ctx.obj("ext") {
+                for (ext in searchQuery.extensions) {
+                    visit(this, ext)
+                }
+            }
+        }
+    }
+
     fun <S: BaseDocSource> compile(
         serde: Serde, input: PreparedSearchQuery<S>, indexName: String
     ): ApiRequest<SearchQueryResult<S>> {
         val body = serde.serializer.obj {
-            visit(this, input, isCountOnly = false)
+            visit(this, input)
         }
         return ApiRequest(
             method = Method.POST,
@@ -285,7 +290,7 @@ class CountQueryCompiler(
         serde: Serde, input: PreparedSearchQuery<*>, indexName: String
     ): ApiRequest<CountResult> {
         val body = serde.serializer.obj {
-            visit(this, input, isCountOnly = true)
+            visit(this, input)
         }
         return ApiRequest(
             method = Method.POST,
@@ -310,6 +315,7 @@ class MultiSearchQueryCompiler(
     features: ElasticsearchFeatures,
     private val searchQueryCompiler: SearchQueryCompiler
 ) : BaseCompiler(features) {
+
     fun compile(
         serde: Serde.OneLineJson, input: List<SearchQueryWithIndex<*>>
     ): BulkRequest<MultiSearchQueryResult> {
