@@ -29,7 +29,7 @@ actual open class TestBase {
     ) {
         var ex: Throwable? = null
         try {
-            runBlocking(block = block, context = CoroutineExceptionHandler { context, e ->
+            runBlocking(block = block, context = CoroutineExceptionHandler { _, e ->
                 if (e is CancellationException) return@CoroutineExceptionHandler // are ignored
                 setError(e)
             })

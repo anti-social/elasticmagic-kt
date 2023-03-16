@@ -5,6 +5,7 @@ import kotlin.js.Promise
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.promise
 
@@ -35,6 +36,7 @@ actual open class TestBase {
     //     runTest(null, block)
     // }
 
+    @OptIn(DelicateCoroutinesApi::class)
     @Suppress("ACTUAL_FUNCTION_WITH_DEFAULT_ARGUMENTS")
     actual fun runTest(
         expected: ((Throwable) -> Boolean)? = null,
@@ -53,7 +55,7 @@ actual open class TestBase {
             } else {
                 throw e
             }
-        }.finally {
+        }.always {
             if (ex == null && expected != null) {
                 error("Exception was expected but none produced")
             }
@@ -62,7 +64,7 @@ actual open class TestBase {
     }
 }
 
-private fun <T> Promise<T>.finally(block: () -> Unit): Promise<T> =
+private fun <T> Promise<T>.always(block: () -> Unit): Promise<T> =
     then(
         onFulfilled = { value ->
             block()

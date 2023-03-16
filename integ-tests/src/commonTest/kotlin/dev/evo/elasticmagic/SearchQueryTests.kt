@@ -183,7 +183,6 @@ class SearchQueryTests : ElasticsearchTestBase() {
     private fun TestScope.checkOrderHits(hits: List<SearchHit<OrderDocSource>>, expectedIds: Set<String>) {
         hits.size shouldBe expectedIds.size
         for (hit in hits) {
-            val orderId = hit.id
             hit.index shouldBe index.name
             hit.type shouldBe "_doc"
             hit.version shouldBe null

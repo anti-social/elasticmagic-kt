@@ -35,11 +35,6 @@ class SearchQueryTests {
 
     @Test
     fun cloningNodes() {
-        val userDoc = object : Document() {
-            val login by keyword()
-            val isActive by boolean()
-        }
-
         val fsHandle = NodeHandle<FunctionScore>()
         val sq1 = SearchQuery(
             QueryExpressionNode(

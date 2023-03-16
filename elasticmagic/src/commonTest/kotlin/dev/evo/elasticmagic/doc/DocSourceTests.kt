@@ -30,6 +30,7 @@ class DocSourceTests {
     }
 
     @Test
+    @Suppress("NAME_SHADOWING")
     fun dynDocSource() {
         // TODO: Split into multiple test cases
         val order = DynDocSource()
