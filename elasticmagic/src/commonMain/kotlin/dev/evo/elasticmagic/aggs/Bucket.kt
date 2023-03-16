@@ -1,7 +1,7 @@
 package dev.evo.elasticmagic.aggs
 
 import dev.evo.elasticmagic.AggAwareResult
-import dev.evo.elasticmagic.compile.SearchQueryCompiler
+import dev.evo.elasticmagic.compile.BaseSearchQueryCompiler
 import dev.evo.elasticmagic.query.FieldOperations
 import dev.evo.elasticmagic.query.ObjExpression
 import dev.evo.elasticmagic.query.QueryExpression
@@ -13,7 +13,7 @@ import dev.evo.elasticmagic.serde.forEachObj
 abstract class BucketAggregation<R: AggregationResult> : Aggregation<R> {
     abstract val aggs: Map<String, Aggregation<*>>
 
-    override fun accept(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
+    override fun accept(ctx: Serializer.ObjectCtx, compiler: BaseSearchQueryCompiler) {
         super.accept(ctx, compiler)
 
         if (aggs.isNotEmpty()) {
@@ -64,7 +64,7 @@ data class BucketsOrder(
 ) : ObjExpression {
     override fun clone() = copy()
 
-    override fun accept(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
+    override fun accept(ctx: Serializer.ObjectCtx, compiler: BaseSearchQueryCompiler) {
         ctx.field(key, order.toValue())
     }
 }
@@ -76,7 +76,7 @@ data class GlobalAgg(
 
     override fun clone() = copy()
 
-    override fun visit(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {}
+    override fun visit(ctx: Serializer.ObjectCtx, compiler: BaseSearchQueryCompiler) {}
 }
 
 data class FilterAgg(
@@ -87,7 +87,7 @@ data class FilterAgg(
 
     override fun clone() = copy()
 
-    override fun visit(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
+    override fun visit(ctx: Serializer.ObjectCtx, compiler: BaseSearchQueryCompiler) {
         compiler.visit(ctx, filter)
     }
 
@@ -111,7 +111,7 @@ data class FiltersAgg(
 
     override fun clone() = copy()
 
-    override fun visit(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
+    override fun visit(ctx: Serializer.ObjectCtx, compiler: BaseSearchQueryCompiler) {
         ctx.obj("filters") {
             compiler.visit(this, filters)
         }
@@ -158,7 +158,7 @@ data class NestedAgg(
 
     override fun clone() = copy()
 
-    override fun visit(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
+    override fun visit(ctx: Serializer.ObjectCtx, compiler: BaseSearchQueryCompiler) {
         ctx.field("path", path.getQualifiedFieldName())
     }
 }

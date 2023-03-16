@@ -1148,7 +1148,7 @@ class SearchQueryCompilerTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQ
 
             override fun clone() = copy()
 
-            override fun visit(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
+            override fun visit(ctx: Serializer.ObjectCtx, compiler: BaseSearchQueryCompiler) {
                 ctx.field("field", field.getQualifiedFieldName())
                 ctx.field("window_size", windowSize)
                 ctx.field("shard_size", shardSize)

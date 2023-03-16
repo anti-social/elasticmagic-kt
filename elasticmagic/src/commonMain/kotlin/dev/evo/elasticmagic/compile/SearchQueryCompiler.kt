@@ -1,5 +1,6 @@
 package dev.evo.elasticmagic.compile
 
+import dev.evo.elasticmagic.CountResult
 import dev.evo.elasticmagic.MultiSearchQueryResult
 import dev.evo.elasticmagic.PreparedSearchQuery
 import dev.evo.elasticmagic.SearchHit
@@ -27,88 +28,16 @@ import dev.evo.elasticmagic.transport.ApiRequest
 import dev.evo.elasticmagic.transport.Method
 import dev.evo.elasticmagic.transport.Parameters
 
-class MultiSearchQueryCompiler(
+abstract class BaseSearchQueryCompiler(
     features: ElasticsearchFeatures,
-    private val searchQueryCompiler: SearchQueryCompiler
 ) : BaseCompiler(features) {
-    fun compile(
-        serde: Serde.OneLineJson, input: List<SearchQueryWithIndex<*>>
-    ): BulkRequest<MultiSearchQueryResult> {
-        val preparedQueries = mutableListOf<PreparedSearchQuery<*>>()
-        val body = mutableListOf<ObjectCtx>()
-        for (query in input) {
-            val preparedQuery = query.searchQuery.prepare()
-                .also(preparedQueries::add)
-            val compiledQuery = searchQueryCompiler.compile(
-                serde, preparedQuery, query.indexName
-            )
-            val header = serde.serializer.obj {
-                searchQueryCompiler.visit(this, compiledQuery.parameters)
-                field("index", query.indexName)
-            }
-            body.add(header)
-            body.add(compiledQuery.body ?: serde.serializer.obj {})
-        }
-        return BulkRequest(
-            method = Method.POST,
-            path = "_msearch",
-            parameters = Parameters(),
-            body = body,
-            serde = serde,
-            processResponse = { resp ->
-                val ctx = resp.content
-                val took = ctx.longOrNull("took")
-                val responsesCtx = ctx.array("responses")
-                val preparedQueriesIter = preparedQueries.iterator()
-                val results = buildList {
-                    responsesCtx.forEachObj { respCtx ->
-                        add(
-                            searchQueryCompiler.processResult(respCtx, preparedQueriesIter.next())
-                        )
-                    }
-                }
-                MultiSearchQueryResult(
-                    took = took,
-                    responses = results,
-                )
-            }
-        )
-    }
-}
 
-open class SearchQueryCompiler(
-    features: ElasticsearchFeatures,
-) : BaseCompiler(features) {
     interface Visitable<T: Serializer.Ctx> {
-        fun accept(ctx: T, compiler: SearchQueryCompiler)
-    }
-
-    fun <S: BaseDocSource> compile(
-        serde: Serde, input: PreparedSearchQuery<S>, indexName: String
-    ): ApiRequest<SearchQueryResult<S>> {
-        val body = serde.serializer.obj {
-            visit(this, input)
-        }
-        return ApiRequest(
-            method = Method.POST,
-            path = "$indexName/_search",
-            parameters = input.params.toRequestParameters(),
-            body = body,
-            serde = serde,
-            processResponse = { resp ->
-                processResult(resp.content, input)
-            }
-        )
-    }
-
-    fun <S: BaseDocSource> compile(
-        serde: Serde, input: SearchQueryWithIndex<S>
-    ): ApiRequest<SearchQueryResult<S>> {
-        return compile(serde, input.searchQuery.prepare(), input.indexName)
+        fun accept(ctx: T, compiler: BaseSearchQueryCompiler)
     }
 
     @Suppress("ComplexMethod")
-    fun visit(ctx: ObjectCtx, searchQuery: PreparedSearchQuery<*>) {
+    fun visit(ctx: ObjectCtx, searchQuery: PreparedSearchQuery<*>, isCountOnly: Boolean) {
         val query = searchQuery.query?.reduce()
         val filteredQuery = if (searchQuery.filters.isNotEmpty()) {
             if (query != null) {
@@ -134,46 +63,46 @@ open class SearchQueryCompiler(
                 visit(this, postFilterExpr)
             }
         }
-        if (searchQuery.aggregations.isNotEmpty()) {
+        if (!isCountOnly && searchQuery.aggregations.isNotEmpty()) {
             ctx.obj("aggs") {
                 visit(this, searchQuery.aggregations)
             }
         }
-        if (searchQuery.rescores.isNotEmpty()) {
+        if (!isCountOnly && searchQuery.rescores.isNotEmpty()) {
             ctx.array("rescore") {
                 visit(this, searchQuery.rescores)
             }
         }
-        if (searchQuery.sorts.isNotEmpty()) {
+        if (!isCountOnly && searchQuery.sorts.isNotEmpty()) {
             ctx.array("sort") {
                 visit(this, searchQuery.sorts)
             }
         }
-        if (searchQuery.trackScores != null) {
+        if (!isCountOnly && searchQuery.trackScores != null) {
             ctx.field("track_scores", searchQuery.trackScores)
         }
-        if (searchQuery.trackTotalHits != null && features.supportsTrackingOfTotalHits) {
+        if (!isCountOnly && searchQuery.trackTotalHits != null && features.supportsTrackingOfTotalHits) {
             ctx.field("track_total_hits", searchQuery.trackTotalHits)
         }
         if (searchQuery.source != null) {
             visit(ctx, searchQuery.source)
         }
-        if (searchQuery.fields.isNotEmpty()) {
+        if (!isCountOnly && searchQuery.fields.isNotEmpty()) {
             ctx.array("fields") {
                 visit(this, searchQuery.fields)
             }
         }
-        if (searchQuery.docvalueFields.isNotEmpty()) {
+        if (!isCountOnly && searchQuery.docvalueFields.isNotEmpty()) {
             ctx.array("docvalue_fields") {
                 visit(this, searchQuery.docvalueFields)
             }
         }
-        if (searchQuery.storedFields.isNotEmpty()) {
+        if (!isCountOnly && searchQuery.storedFields.isNotEmpty()) {
             ctx.array("stored_fields") {
                 visit(this, searchQuery.storedFields)
             }
         }
-        if (searchQuery.scriptFields.isNotEmpty()) {
+        if (!isCountOnly && searchQuery.scriptFields.isNotEmpty()) {
             ctx.obj("script_fields") {
                 for ((fieldName, script) in searchQuery.scriptFields) {
                     obj(fieldName) {
@@ -184,16 +113,16 @@ open class SearchQueryCompiler(
                 }
             }
         }
-        if (searchQuery.size != null) {
+        if (!isCountOnly && searchQuery.size != null) {
             ctx.field("size", searchQuery.size)
         }
-        if (searchQuery.from != null) {
+        if (!isCountOnly && searchQuery.from != null) {
             ctx.field("from", searchQuery.from)
         }
         if (searchQuery.terminateAfter != null) {
             ctx.field("terminate_after", searchQuery.terminateAfter)
         }
-        if (searchQuery.extensions.isNotEmpty()) {
+        if (!isCountOnly && searchQuery.extensions.isNotEmpty()) {
             ctx.obj("ext") {
                 for (ext in searchQuery.extensions) {
                     visit(this, ext)
@@ -238,6 +167,34 @@ open class SearchQueryCompiler(
             }
             else -> super.dispatch(ctx, name, value)
         }
+    }
+}
+
+open class SearchQueryCompiler(
+    features: ElasticsearchFeatures,
+) : BaseSearchQueryCompiler(features) {
+    fun <S: BaseDocSource> compile(
+        serde: Serde, input: PreparedSearchQuery<S>, indexName: String
+    ): ApiRequest<SearchQueryResult<S>> {
+        val body = serde.serializer.obj {
+            visit(this, input, isCountOnly = false)
+        }
+        return ApiRequest(
+            method = Method.POST,
+            path = "$indexName/_search",
+            parameters = input.params.toRequestParameters(),
+            body = body,
+            serde = serde,
+            processResponse = { resp ->
+                processResult(resp.content, input)
+            }
+        )
+    }
+
+    fun <S: BaseDocSource> compile(
+        serde: Serde, input: SearchQueryWithIndex<S>
+    ): ApiRequest<SearchQueryResult<S>> {
+        return compile(serde, input.searchQuery.prepare(), input.indexName)
     }
 
     fun <S: BaseDocSource> processResult(
@@ -317,6 +274,82 @@ open class SearchQueryCompiler(
             sort = sort.ifEmpty { null },
             source = source,
             fields = fields,
+        )
+    }
+}
+
+class CountQueryCompiler(
+    features: ElasticsearchFeatures,
+) : BaseSearchQueryCompiler(features) {
+    fun compile(
+        serde: Serde, input: PreparedSearchQuery<*>, indexName: String
+    ): ApiRequest<CountResult> {
+        val body = serde.serializer.obj {
+            visit(this, input, isCountOnly = true)
+        }
+        return ApiRequest(
+            method = Method.POST,
+            path = "$indexName/_count",
+            parameters = input.params.toRequestParameters(),
+            body = body,
+            serde = serde,
+            processResponse = { resp ->
+                CountResult(resp.content.long("count"))
+            }
+        )
+    }
+
+    fun compile(
+        serde: Serde, input: SearchQueryWithIndex<*>
+    ): ApiRequest<CountResult> {
+        return compile(serde, input.searchQuery.prepare(), input.indexName)
+    }
+}
+
+class MultiSearchQueryCompiler(
+    features: ElasticsearchFeatures,
+    private val searchQueryCompiler: SearchQueryCompiler
+) : BaseCompiler(features) {
+    fun compile(
+        serde: Serde.OneLineJson, input: List<SearchQueryWithIndex<*>>
+    ): BulkRequest<MultiSearchQueryResult> {
+        val preparedQueries = mutableListOf<PreparedSearchQuery<*>>()
+        val body = mutableListOf<ObjectCtx>()
+        for (query in input) {
+            val preparedQuery = query.searchQuery.prepare()
+                .also(preparedQueries::add)
+            val compiledQuery = searchQueryCompiler.compile(
+                serde, preparedQuery, query.indexName
+            )
+            val header = serde.serializer.obj {
+                searchQueryCompiler.visit(this, compiledQuery.parameters)
+                field("index", query.indexName)
+            }
+            body.add(header)
+            body.add(compiledQuery.body ?: serde.serializer.obj {})
+        }
+        return BulkRequest(
+            method = Method.POST,
+            path = "_msearch",
+            parameters = Parameters(),
+            body = body,
+            serde = serde,
+            processResponse = { resp ->
+                val took = resp.content.longOrNull("took")
+                val responsesCtx = resp.content.array("responses")
+                val preparedQueriesIter = preparedQueries.iterator()
+                val results = buildList {
+                    responsesCtx.forEachObj { respCtx ->
+                        add(
+                            searchQueryCompiler.processResult(respCtx, preparedQueriesIter.next())
+                        )
+                    }
+                }
+                MultiSearchQueryResult(
+                    took = took,
+                    responses = results,
+                )
+            }
         )
     }
 }

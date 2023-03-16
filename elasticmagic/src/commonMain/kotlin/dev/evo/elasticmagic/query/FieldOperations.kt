@@ -1,6 +1,6 @@
 package dev.evo.elasticmagic.query
 
-import dev.evo.elasticmagic.compile.SearchQueryCompiler
+import dev.evo.elasticmagic.compile.BaseSearchQueryCompiler
 import dev.evo.elasticmagic.serde.Serializer
 import dev.evo.elasticmagic.types.FieldType
 
@@ -29,7 +29,7 @@ interface FieldFormat {
     ) : FieldFormat, ArrayExpression {
         override fun clone() = copy()
 
-        override fun accept(ctx: Serializer.ArrayCtx, compiler: SearchQueryCompiler) {
+        override fun accept(ctx: Serializer.ArrayCtx, compiler: BaseSearchQueryCompiler) {
             if (format != null) {
                 ctx.obj {
                     field("field", field.getQualifiedFieldName())

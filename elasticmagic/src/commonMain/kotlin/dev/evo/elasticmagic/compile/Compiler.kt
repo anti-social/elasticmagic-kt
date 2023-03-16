@@ -119,6 +119,7 @@ class CompilerSet(esVersion: Version<*>) {
     val features: ElasticsearchFeatures = ElasticsearchFeatures(esVersion)
 
     val searchQuery: SearchQueryCompiler = SearchQueryCompiler(features)
+    val countQuery: CountQueryCompiler = CountQueryCompiler(features)
     val multiSearchQuery: MultiSearchQueryCompiler = MultiSearchQueryCompiler(features, searchQuery)
 
     val mapping: MappingCompiler = MappingCompiler(features, searchQuery)

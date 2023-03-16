@@ -1,6 +1,6 @@
 package dev.evo.elasticmagic.query
 
-import dev.evo.elasticmagic.compile.SearchQueryCompiler
+import dev.evo.elasticmagic.compile.BaseSearchQueryCompiler
 import dev.evo.elasticmagic.serde.Serializer
 
 data class FunctionScore(
@@ -58,7 +58,7 @@ data class FunctionScore(
 
     override fun visit(
         ctx: Serializer.ObjectCtx,
-        compiler: SearchQueryCompiler
+        compiler: BaseSearchQueryCompiler
     ) {
         if (query != null) {
             ctx.obj("query") {
@@ -105,7 +105,7 @@ data class FunctionScore(
 
         protected inline fun accept(
             ctx: Serializer.ObjectCtx,
-            compiler: SearchQueryCompiler,
+            compiler: BaseSearchQueryCompiler,
             block: Serializer.ObjectCtx.() -> Unit
         ) {
             val fn = filter
@@ -127,7 +127,7 @@ data class FunctionScore(
         override fun copyWithFilter(filter: QueryExpression?) = copy(filter = filter)
 
         override fun accept(
-            ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler
+            ctx: Serializer.ObjectCtx, compiler: BaseSearchQueryCompiler
         ) = accept(ctx, compiler) {
             field("weight", weight)
         }
@@ -161,7 +161,7 @@ data class FunctionScore(
         override fun copyWithFilter(filter: QueryExpression?) = copy(filter = filter)
 
         override fun accept(
-            ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler
+            ctx: Serializer.ObjectCtx, compiler: BaseSearchQueryCompiler
         ) = accept(ctx, compiler) {
             obj("field_value_factor") {
                 field("field", field.getQualifiedFieldName())
@@ -189,7 +189,7 @@ data class FunctionScore(
         override fun copyWithFilter(filter: QueryExpression?) = copy(filter = filter)
 
         override fun accept(
-            ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler
+            ctx: Serializer.ObjectCtx, compiler: BaseSearchQueryCompiler
         ) = accept(ctx, compiler) {
             obj("script_score") {
                 obj("script") {
@@ -209,7 +209,7 @@ data class FunctionScore(
         override fun copyWithFilter(filter: QueryExpression?) = copy(filter = filter)
 
         override fun accept(
-            ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler
+            ctx: Serializer.ObjectCtx, compiler: BaseSearchQueryCompiler
         ) = accept(ctx, compiler) {
             obj("random_score") {
                 fieldIfNotNull("seed", seed)

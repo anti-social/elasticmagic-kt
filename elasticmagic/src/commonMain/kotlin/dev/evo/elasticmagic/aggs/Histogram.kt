@@ -1,7 +1,7 @@
 package dev.evo.elasticmagic.aggs
 
 import dev.evo.elasticmagic.Params
-import dev.evo.elasticmagic.compile.SearchQueryCompiler
+import dev.evo.elasticmagic.compile.BaseSearchQueryCompiler
 import dev.evo.elasticmagic.query.FieldOperations
 import dev.evo.elasticmagic.query.ObjExpression
 import dev.evo.elasticmagic.query.ToValue
@@ -31,7 +31,7 @@ abstract class BaseHistogramAgg<T, R: AggregationResult, B> : BucketAggregation<
     abstract val hardBounds: HistogramBounds<T>?
     abstract val params: Params
 
-    override fun visit(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
+    override fun visit(ctx: Serializer.ObjectCtx, compiler: BaseSearchQueryCompiler) {
         compiler.visit(ctx, value)
         ctx.fieldIfNotNull("min_doc_count", minDocCount)
         missing?.let { missing ->
@@ -140,7 +140,7 @@ data class HistogramAgg<T: Number>(
 
     override fun clone() = copy()
 
-    override fun visit(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
+    override fun visit(ctx: Serializer.ObjectCtx, compiler: BaseSearchQueryCompiler) {
         ctx.field("interval", interval)
         ctx.fieldIfNotNull("offset", offset)
 
@@ -247,7 +247,7 @@ data class DateHistogramAgg<T>(
 
         abstract fun intervalValue(): String
 
-        override fun accept(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
+        override fun accept(ctx: Serializer.ObjectCtx, compiler: BaseSearchQueryCompiler) {
             ctx.field(name, intervalValue())
         }
 
@@ -278,7 +278,7 @@ data class DateHistogramAgg<T>(
 
     override fun clone() = copy()
 
-    override fun visit(ctx: Serializer.ObjectCtx, compiler: SearchQueryCompiler) {
+    override fun visit(ctx: Serializer.ObjectCtx, compiler: BaseSearchQueryCompiler) {
         compiler.visit(ctx, interval)
         offset?.let { offset ->
             ctx.field("offset", offset.toValue())

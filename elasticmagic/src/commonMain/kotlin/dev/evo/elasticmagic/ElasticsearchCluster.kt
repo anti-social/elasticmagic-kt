@@ -227,6 +227,15 @@ class ElasticsearchIndex(
         return cluster.multiSearch(searchQueries.map { query -> query.usingIndex(name) })
     }
 
+    suspend fun count(
+        searchQuery: BaseSearchQuery<*, *>
+    ): CountResult {
+        val compiled = cluster.getCompilers().countQuery.compile(
+            cluster.apiSerde, searchQuery.usingIndex(name)
+        )
+        return transport.request(compiled)
+    }
+
     suspend fun bulk(
         actions: List<Action<*>>,
         refresh: Refresh? = null,
