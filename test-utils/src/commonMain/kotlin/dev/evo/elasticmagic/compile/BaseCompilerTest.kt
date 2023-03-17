@@ -40,4 +40,12 @@ abstract class BaseCompilerTest<T: BaseCompiler>(
             body = compiled.body.shouldBeInstanceOf<TestSerializer.ObjectCtx>().toMap(),
         )
     }
+
+    protected fun CountQueryCompiler.compile(query: SearchQuery<*>): CompiledSearchQuery {
+        val compiled = this@compile.compile(serde, query.usingIndex("test"))
+        return CompiledSearchQuery(
+            params = compiled.parameters,
+            body = compiled.body.shouldBeInstanceOf<TestSerializer.ObjectCtx>().toMap(),
+        )
+    }
 }
