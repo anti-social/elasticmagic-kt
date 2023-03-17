@@ -623,4 +623,23 @@ class SearchQueryTests : ElasticsearchTestBase() {
             acceptedOrdersResult.hits[0].id shouldBe "103"
         }
     }
+
+    @Test
+    fun count() = runTestWithTransports {
+        withFixtures(OrderDoc, listOf(
+            karlssonsJam, karlssonsBestDonuts, karlssonsJustDonuts, littleBrotherDogStuff
+        )) {
+            SearchQuery()
+                .count(index).let { res ->
+                    res.count shouldBe 4
+                }
+
+            SearchQuery()
+                .filter(OrderDoc.status eq OrderStatus.NEW)
+                .docvalueFields(OrderDoc.status)
+                .count(index).let { res ->
+                    res.count shouldBe 3
+                }
+        }
+    }
 }
