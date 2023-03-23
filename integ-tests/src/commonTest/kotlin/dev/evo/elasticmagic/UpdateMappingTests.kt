@@ -3,7 +3,6 @@ package dev.evo.elasticmagic
 import dev.evo.elasticmagic.bulk.CreateAction
 import dev.evo.elasticmagic.bulk.IdActionMeta
 import dev.evo.elasticmagic.bulk.IndexAction
-import dev.evo.elasticmagic.bulk.Refresh
 import dev.evo.elasticmagic.doc.DocSource
 import dev.evo.elasticmagic.doc.Document
 import dev.evo.elasticmagic.doc.Dynamic

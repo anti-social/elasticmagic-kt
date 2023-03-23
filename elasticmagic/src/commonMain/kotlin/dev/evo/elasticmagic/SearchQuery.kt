@@ -13,7 +13,6 @@ import dev.evo.elasticmagic.query.Script
 import dev.evo.elasticmagic.query.SearchExt
 import dev.evo.elasticmagic.query.Sort
 import dev.evo.elasticmagic.query.Source
-import dev.evo.elasticmagic.query.ToValue
 import dev.evo.elasticmagic.query.collect
 import dev.evo.elasticmagic.serde.Deserializer
 
@@ -122,29 +121,10 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
      * val preparedQuery = searchQuery.clone().prepare()
      * ```
      */
-    fun prepare(): PreparedSearchQuery<S> {
-        return PreparedSearchQuery(
-            docSourceFactory,
-            query = query,
-            filters = filters,
-            postFilters = postFilters,
-            aggregations = aggregations,
-            rescores = rescores,
-            sorts = sorts,
-            trackScores = trackScores,
-            trackTotalHits = trackTotalHits,
-            source = source,
-            fields = fields,
-            docvalueFields = docvalueFields,
-            storedFields = storedFields,
-            scriptFields = scriptFields,
-            size = size,
-            from = from,
-            terminateAfter = terminateAfter,
-            extensions = extensions,
-            params = params,
-        )
-    }
+    // fun usingIndex(
+    //     indexName: String
+    // ): PreparedSearchQuery<S> {
+    // }
 
     @PublishedApi
     @Suppress("UNCHECKED_CAST")
@@ -491,7 +471,7 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
     }
 
     fun searchType(searchType: SearchType?): T = self {
-        params.putNotNullOrRemove("search_type", searchType?.toValue())
+        params.putNotNullOrRemove("search_type", searchType)
     }
 
     fun routing(routing: String?): T = self {
@@ -516,6 +496,73 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
 
     fun seqNoPrimaryTerm(seqNoPrimaryTerm: Boolean?): T = self {
         params.putNotNullOrRemove("seq_no_primary_term", seqNoPrimaryTerm)
+    }
+
+    fun prepareSearch(params: Params? = null): SearchQuery.Search<S> {
+        return SearchQuery.Search(
+            docSourceFactory,
+            query = query,
+            filters = filters,
+            postFilters = postFilters,
+            aggregations = aggregations,
+            rescores = rescores,
+            sorts = sorts,
+            trackScores = trackScores,
+            trackTotalHits = trackTotalHits,
+            source = source,
+            fields = fields,
+            docvalueFields = docvalueFields,
+            storedFields = storedFields,
+            scriptFields = scriptFields,
+            size = size,
+            from = from,
+            terminateAfter = terminateAfter,
+            extensions = extensions,
+            params = Params(
+                PreparedSearchQuery.filteredParams(this.params, SearchQuery.Search.ALLOWED_PARAMS),
+                params
+            )
+        )
+    }
+
+    fun prepareCount(params: Params? = null): SearchQuery.Count {
+        return SearchQuery.Count(
+            query = query,
+            filters = filters,
+            postFilters = postFilters,
+            terminateAfter = terminateAfter,
+            params = Params(
+                PreparedSearchQuery.filteredParams(this.params, SearchQuery.Count.ALLOWED_PARAMS),
+                params
+            )
+        )
+    }
+
+    fun prepareUpdate(script: Script? = null, params: Params? = null): SearchQuery.Update {
+        return SearchQuery.Update(
+            query = query,
+            filters = filters,
+            postFilters = postFilters,
+            terminateAfter = terminateAfter,
+            script = script,
+            params = Params(
+                PreparedSearchQuery.filteredParams(this.params, SearchQuery.Delete.ALLOWED_PARAMS),
+                params
+            )
+        )
+    }
+
+    fun prepareDelete(params: Params? = null): SearchQuery.Delete {
+        return SearchQuery.Delete(
+            query = query,
+            filters = filters,
+            postFilters = postFilters,
+            terminateAfter = terminateAfter,
+            params = Params(
+                PreparedSearchQuery.filteredParams(this.params, SearchQuery.Delete.ALLOWED_PARAMS),
+                params
+            )
+        )
     }
 }
 
@@ -555,48 +602,278 @@ open class SearchQuery<S: BaseDocSource>(
         return SearchQuery(docSourceFactory)
     }
 
-    suspend fun execute(index: ElasticsearchIndex): SearchQueryResult<S> {
-        return index.search(this)
+    suspend fun execute(index: ElasticsearchIndex, params: Params? = null): SearchQueryResult<S> {
+        return index.search(prepareSearch(params))
     }
 
-    suspend fun count(index: ElasticsearchIndex): CountResult {
-        return index.count(this)
+    suspend fun count(index: ElasticsearchIndex, params: Params? = null): CountResult {
+        return index.count(prepareCount(params))
+    }
+
+    /**
+     * Update by query API.
+     *
+     * @see <https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-delete-by-query.html>
+     */
+    suspend fun delete(
+        index: ElasticsearchIndex,
+        refresh: Refresh? = null,
+        conflicts: Conflicts? = null,
+        maxDocs: Int? = null,
+        scrollSize: Int? = null,
+        params: Params? = null,
+    ): DeleteByQueryResult {
+        return index.deleteByQuery(
+            prepareDelete(
+                Params(
+                    params,
+                    "refresh" to refresh,
+                    "conflicts" to conflicts,
+                    "max_docs" to maxDocs,
+                    "scroll_size" to scrollSize,
+                )
+            )
+        )
+    }
+
+    suspend fun deleteAsync(
+        index: ElasticsearchIndex,
+        refresh: Refresh? = null,
+        conflicts: Conflicts? = null,
+        maxDocs: Int? = null,
+        scrollSize: Int? = null,
+        params: Params? = null,
+    ): AsyncResult {
+        return index.deleteByQueryAsync(
+            prepareDelete(
+                Params(
+                    params,
+                    "refresh" to refresh,
+                    "conflicts" to conflicts,
+                    "max_docs" to maxDocs,
+                    "scroll_size" to scrollSize,
+                )
+            )
+        )
+    }
+
+    /**
+     * Update by query API.
+     *
+     * @see <https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-update-by-query.html>
+     */
+    suspend fun update(
+        index: ElasticsearchIndex,
+        script: Script? = null,
+        refresh: Refresh? = null,
+        conflicts: Conflicts? = null,
+        maxDocs: Int? = null,
+        scrollSize: Int? = null,
+        params: Params? = null,
+    ): UpdateByQueryResult {
+        return index.updateByQuery(
+            prepareUpdate(
+                script,
+                Params(
+                    params,
+                    "refresh" to refresh,
+                    "conflicts" to conflicts,
+                    "max_docs" to maxDocs,
+                    "scroll_size" to scrollSize,
+                )
+            )
+        )
+    }
+
+    suspend fun updateAsync(
+        index: ElasticsearchIndex,
+        script: Script? = null,
+        refresh: Refresh? = null,
+        conflicts: Conflicts? = null,
+        maxDocs: Int? = null,
+        scrollSize: Int? = null,
+        params: Params? = null,
+    ): AsyncResult {
+        return index.updateByQueryAsync(
+            prepareUpdate(
+                script,
+                Params(
+                    params,
+                    "refresh" to refresh,
+                    "conflicts" to conflicts,
+                    "max_docs" to maxDocs,
+                    "scroll_size" to scrollSize,
+                )
+            )
+        )
+    }
+
+    /**
+     * A prepared search query is a public read-only view to a search query.
+     * Mainly it is used to compile a search query.
+     */
+    data class Search<out S: BaseDocSource>(
+        val docSourceFactory: (obj: Deserializer.ObjectCtx) -> S,
+        override val query: QueryExpression?,
+        override val filters: List<QueryExpression>,
+        override val postFilters: List<QueryExpression>,
+        val aggregations: Map<String, Aggregation<*>>,
+        val rescores: List<Rescore>,
+        val sorts: List<Sort>,
+        val trackScores: Boolean?,
+        val trackTotalHits: Boolean?,
+        val source: Source?,
+        val fields: List<FieldFormat>,
+        val docvalueFields: List<FieldFormat>,
+        val storedFields: List<FieldOperations<*>>,
+        val scriptFields: Map<String, Script>,
+        val size: Int?,
+        val from: Int?,
+        override val terminateAfter: Int?,
+        val extensions: List<SearchExt>,
+        val params: Params,
+    ) : PreparedSearchQuery {
+        companion object {
+            val ALLOWED_PARAMS = PreparedSearchQuery.COMMON_PARAMS + setOf(
+                "allow_partial_search_results",
+                "batched_reduce_size",
+                "ccs_minimize_roundtrips",
+                "docvalue_fields",
+                "explain",
+                "from",
+                "ignore_throttled",
+                "max_concurrent_shard_requests",
+                "pre_filter_shard_size",
+                "request_cache",
+                "rest_total_hits_as_int",
+                "scroll",
+                "search_type",
+                "seq_no_primary_term",
+                "size",
+                "sort",
+                "_source",
+                "_source_excludes",
+                "_source_includes",
+                "stats",
+                "stored_fields",
+                "suggest_mode",
+                "suggest_text",
+                "track_scores",
+                "track_total_hits",
+                "typed_keys",
+                "version",
+            )
+        }
+    }
+
+    /**
+     * A prepared search query used for delete by count API.
+     */
+    data class Count(
+        override val query: QueryExpression?,
+        override val filters: List<QueryExpression>,
+        override val postFilters: List<QueryExpression>,
+        override val terminateAfter: Int?,
+        val params: Params,
+    ) : PreparedSearchQuery {
+        companion object {
+            val ALLOWED_PARAMS = PreparedSearchQuery.COMMON_PARAMS + setOf(
+                "ignore_throttled",
+                "min_score",
+            )
+        }
+    }
+
+    /**
+     * A prepared search query used for update by query API.
+     */
+    data class Update(
+        override val query: QueryExpression?,
+        override val filters: List<QueryExpression>,
+        override val postFilters: List<QueryExpression>,
+        override val terminateAfter: Int?,
+        val script: Script?,
+        val params: Params,
+    ) : PreparedSearchQuery {
+        companion object {
+            val ALLOWED_PARAMS = PreparedSearchQuery.COMMON_PARAMS + setOf(
+                "conflicts",
+                "max_docs",
+                "pipeline",
+                "refresh",
+                "request_cache",
+                "requests_per_second",
+                "scroll",
+                "scroll_size",
+                "search_type",
+                "search_timeout",
+                "slices",
+                "sort",
+                "stats",
+                "timeout",
+                "version",
+                "wait_for_active_shards",
+            )
+        }
+    }
+
+    /**
+     * A prepared search query used for delete by query API.
+     */
+    data class Delete(
+        override val query: QueryExpression?,
+        override val filters: List<QueryExpression>,
+        override val postFilters: List<QueryExpression>,
+        override val terminateAfter: Int?,
+        val params: Params,
+    ) : PreparedSearchQuery {
+        companion object {
+            val ALLOWED_PARAMS = PreparedSearchQuery.COMMON_PARAMS + setOf(
+                "conflicts",
+                "max_docs",
+                "refresh",
+                "request_cache",
+                "requests_per_second",
+                "scroll",
+                "scroll_size",
+                "search_type",
+                "search_timeout",
+                "slices",
+                "sort",
+                "stats",
+                "timeout",
+                "version",
+                "wait_for_active_shards",
+            )
+        }
     }
 }
 
-data class SearchQueryWithIndex<S: BaseDocSource>(
-    val searchQuery: BaseSearchQuery<S, *>,
-    val indexName: String,
-)
+interface PreparedSearchQuery {
+    val query: QueryExpression?
+    val filters: List<QueryExpression>
+    val postFilters: List<QueryExpression>
+    val terminateAfter: Int?
 
-fun <S: BaseDocSource> BaseSearchQuery<S, *>.usingIndex(
-    indexName: String
-): SearchQueryWithIndex<S> {
-    return SearchQueryWithIndex(this, indexName)
+    companion object {
+        val COMMON_PARAMS = setOf(
+            "allow_no_indices",
+            "analyzer",
+            "analyze_wildcard",
+            "default_operator",
+            "df",
+            "expand_wildcards",
+            "ignore_unavailable",
+            "lenient",
+            "preference",
+            "q",
+            "routing",
+            "terminate_after",
+        )
+
+        fun filteredParams(params: Params, allowedParams: Set<String>): Params {
+            return params.filterKeys { k -> k in allowedParams }
+        }
+    }
 }
 
-/**
- * A prepared search query is a public read-only view to a search query.
- * Mainly it is used to compile a search query.
- */
-data class PreparedSearchQuery<S: BaseDocSource>(
-    val docSourceFactory: (obj: Deserializer.ObjectCtx) -> S,
-    val query: QueryExpression?,
-    val filters: List<QueryExpression>,
-    val postFilters: List<QueryExpression>,
-    val aggregations: Map<String, Aggregation<*>>,
-    val rescores: List<Rescore>,
-    val sorts: List<Sort>,
-    val trackScores: Boolean?,
-    val trackTotalHits: Boolean?,
-    val source: Source?,
-    val fields: List<FieldFormat>,
-    val docvalueFields: List<FieldFormat>,
-    val storedFields: List<FieldOperations<*>>,
-    val scriptFields: Map<String, Script>,
-    val size: Int?,
-    val from: Int?,
-    val terminateAfter: Int?,
-    val extensions: List<SearchExt>,
-    val params: Params,
-)

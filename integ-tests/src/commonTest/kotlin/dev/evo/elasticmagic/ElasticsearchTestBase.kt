@@ -5,17 +5,21 @@ import dev.evo.elasticmagic.bulk.DeleteAction
 import dev.evo.elasticmagic.bulk.DocSourceAndMeta
 import dev.evo.elasticmagic.doc.Document
 import dev.evo.elasticmagic.bulk.IndexAction
-import dev.evo.elasticmagic.bulk.Refresh
 import dev.evo.elasticmagic.doc.mergeDocuments
 import dev.evo.elasticmagic.serde.Serde
 import dev.evo.elasticmagic.transport.ElasticsearchException
 import dev.evo.elasticmagic.transport.ElasticsearchKtorTransport
+import dev.evo.elasticmagic.transport.PlainRequest
+import dev.evo.elasticmagic.transport.PlainResponse
+import dev.evo.elasticmagic.transport.Request
+import dev.evo.elasticmagic.transport.Tracker
+import kotlin.time.Duration
 
 @Suppress("UnnecessaryAbstractClass")
 abstract class ElasticsearchTestBase : TestBase() {
     abstract val indexName: String
 
-    protected fun runTestWithTransports(block: suspend TestScope.() -> Unit) {
+    protected fun runTestWithTransports(debug: Boolean = false, block: suspend TestScope.() -> Unit) {
         for (apiSerde in apiSerdes) {
             val transport = ElasticsearchKtorTransport(
                 elasticUrl,
@@ -23,6 +27,42 @@ abstract class ElasticsearchTestBase : TestBase() {
             ) {
                 if (elasticAuth != null) {
                     auth = elasticAuth
+                }
+
+                if (debug) {
+                    trackers = listOf({
+                        @Suppress("ForbiddenMethodCall")
+                        object : Tracker {
+                            override fun requiresTextContent(request: Request<*, *, *>) = true
+
+                            override fun onRequest(request: PlainRequest) {
+                                println(">>>")
+                                val queryParams = request.parameters
+                                    .flatMap { (k, v) -> v.map { w -> "$k=$w" } }
+                                    .joinToString("&")
+                                println("${request.method} ${request.path.ifEmpty { "/" }}?${queryParams}")
+                                println(request.textContent)
+                                println()
+                            }
+
+                            override fun onResponse(responseResult: Result<PlainResponse>, duration: Duration) {
+                                responseResult
+                                    .onSuccess { response ->
+                                        println("<<< ${response.statusCode}: ${duration}")
+                                        response.headers.forEach { header ->
+                                            println("< ${header.key}: ${header.value}")
+                                        }
+                                        println(response.contentType)
+                                        println(response.content)
+                                        println()
+                                    }
+                                    .onFailure { exception ->
+                                        println("!!! $exception")
+                                        println()
+                                    }
+                            }
+                        }
+                    })
                 }
             }
             val bulkSerde = if (apiSerde is Serde.OneLineJson) {

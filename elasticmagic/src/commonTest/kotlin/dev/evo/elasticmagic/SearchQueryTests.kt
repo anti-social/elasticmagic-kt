@@ -23,11 +23,11 @@ class SearchQueryTests {
             .filter(userDoc.isActive.eq(true))
             .size(1)
 
-        sq1.prepare().let {
+        sq1.prepareSearch().let {
             it.size shouldBe null
             it.filters.size shouldBe 1
         }
-        sq2.prepare().let {
+        sq2.prepareSearch().let {
             it.size shouldBe 1
             it.filters.size shouldBe 2
         }
@@ -50,14 +50,14 @@ class SearchQueryTests {
             )
         }
 
-        sq1.prepare().query shouldBe QueryExpressionNode(
+        sq1.prepareSearch().query shouldBe QueryExpressionNode(
             fsHandle,
             FunctionScore(
                 functions = listOf(FunctionScore.RandomScore())
             )
         )
 
-        sq2.prepare().query shouldBe QueryExpressionNode(
+        sq2.prepareSearch().query shouldBe QueryExpressionNode(
             fsHandle,
             FunctionScore(functions = emptyList())
         )

@@ -120,6 +120,8 @@ class CompilerSet(esVersion: Version<*>) {
 
     val searchQuery: SearchQueryCompiler = SearchQueryCompiler(features)
     val countQuery: CountQueryCompiler = CountQueryCompiler(features)
+    val updateByQuery: UpdateByQueryCompiler = UpdateByQueryCompiler(features)
+    val deleteByQuery: DeleteByQueryCompiler = DeleteByQueryCompiler(features)
     val multiSearchQuery: MultiSearchQueryCompiler = MultiSearchQueryCompiler(features, searchQuery)
 
     val mapping: MappingCompiler = MappingCompiler(features, searchQuery)

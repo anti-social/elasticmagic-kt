@@ -1,10 +1,10 @@
 package samples.started
 
+import dev.evo.elasticmagic.Refresh
 import dev.evo.elasticmagic.doc.DynDocSource
 import dev.evo.elasticmagic.bulk.IndexAction
 import dev.evo.elasticmagic.bulk.IdActionMeta
 import dev.evo.elasticmagic.doc.list
-import dev.evo.elasticmagic.bulk.Refresh
 
 suspend fun indexDocs() {
     val docs = listOf(

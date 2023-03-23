@@ -1,9 +1,9 @@
 package samples.bikeshop
 
+import dev.evo.elasticmagic.ToValue
 import dev.evo.elasticmagic.doc.DocSource
 import dev.evo.elasticmagic.doc.Document
 import dev.evo.elasticmagic.doc.enum
-import dev.evo.elasticmagic.query.ToValue
 
 enum class BikeKind : ToValue<String> {
     BMX, MTB, CITY, ROAD, CYCLOCROSS, GRAVEL, EBIKE;

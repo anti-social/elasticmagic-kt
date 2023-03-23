@@ -1,5 +1,6 @@
 package dev.evo.elasticmagic.query
 
+import dev.evo.elasticmagic.ToValue
 import dev.evo.elasticmagic.compile.BaseSearchQueryCompiler
 import dev.evo.elasticmagic.serde.Serializer
 

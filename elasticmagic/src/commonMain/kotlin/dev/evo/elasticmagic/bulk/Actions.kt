@@ -1,33 +1,9 @@
 package dev.evo.elasticmagic.bulk
 
+import dev.evo.elasticmagic.ToValue
 import dev.evo.elasticmagic.doc.BaseDocSource
 import dev.evo.elasticmagic.query.Script
-import dev.evo.elasticmagic.query.ToValue
 
-/**
- * Refresh controls when changes will be searchable.
- *
- * @see <https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-refresh.html>
- */
-enum class Refresh : ToValue<String> {
-    /**
-     * Refresh primary and replica shards immediately after the operation.
-     */
-    TRUE,
-
-    /**
-     * Refresh will be done asynchronously when the `index.refresh_interval` time comes.
-     * It is the default behaviour.
-     */
-    FALSE,
-
-    /**
-     * Wait when changes are made visible to search queries.
-     */
-    WAIT_FOR;
-
-    override fun toValue() = name.lowercase()
-}
 
 /**
  * Controls optimistic concurrency.

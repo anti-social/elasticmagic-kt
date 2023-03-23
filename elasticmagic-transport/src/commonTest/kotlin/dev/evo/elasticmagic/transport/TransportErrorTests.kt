@@ -3,11 +3,14 @@ package dev.evo.elasticmagic.transport
 import dev.evo.elasticmagic.serde.serialization.JsonDeserializer
 
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.types.shouldBeInstanceOf
 
 import kotlin.test.Test
 
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.addJsonObject
 import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.put
 import kotlinx.serialization.json.putJsonArray
 import kotlinx.serialization.json.putJsonObject
@@ -23,13 +26,13 @@ class TransportErrorTests {
         }
 
         val ex = TransportError.parse(
-            JsonDeserializer.ObjectCtx(rawError)
+            Json.Default.encodeToString(rawError), JsonDeserializer
         )
         ex shouldBe TransportError.Structured("error", "error reason")
     }
 
     @Test
-    fun parseInvalidJson() {
+    fun parseNonStructuredJson() {
         val rawError = buildJsonObject {
             putJsonObject("error") {
                 putJsonArray("root_cause") {
@@ -42,9 +45,10 @@ class TransportErrorTests {
         }
 
         val ex = TransportError.parse(
-            JsonDeserializer.ObjectCtx(rawError)
+            Json.Default.encodeToString(rawError), JsonDeserializer
         )
-        ex shouldBe TransportError.Simple("{root_cause=[{type=error, reason=error reason}]}")
+        ex.shouldBeInstanceOf<TransportError.Simple>()
+        ex.error shouldBe "{root_cause=[{type=error, reason=error reason}]}"
     }
 
     @Test
@@ -53,8 +57,9 @@ class TransportErrorTests {
             put("error", "Just error message")
         }
         val ex = TransportError.parse(
-            JsonDeserializer.ObjectCtx(rawError)
+            Json.Default.encodeToString(rawError), JsonDeserializer
         )
-        ex shouldBe TransportError.Simple("Just error message")
+        ex.shouldBeInstanceOf<TransportError.Simple>()
+        ex.error shouldBe "Just error message"
     }
 }

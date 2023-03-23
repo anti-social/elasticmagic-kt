@@ -1,17 +1,23 @@
 package dev.evo.elasticmagic.compile
 
+import dev.evo.elasticmagic.AsyncResult
+import dev.evo.elasticmagic.BulkScrollRetries
 import dev.evo.elasticmagic.CountResult
+import dev.evo.elasticmagic.DeleteByQueryResult
 import dev.evo.elasticmagic.MultiSearchQueryResult
+import dev.evo.elasticmagic.Params
 import dev.evo.elasticmagic.PreparedSearchQuery
 import dev.evo.elasticmagic.SearchHit
+import dev.evo.elasticmagic.SearchQuery
 import dev.evo.elasticmagic.SearchQueryResult
-import dev.evo.elasticmagic.SearchQueryWithIndex
+import dev.evo.elasticmagic.ToValue
+import dev.evo.elasticmagic.UpdateByQueryResult
+import dev.evo.elasticmagic.WithIndex
 import dev.evo.elasticmagic.doc.BaseDocSource
 import dev.evo.elasticmagic.query.ArrayExpression
 import dev.evo.elasticmagic.query.Bool
 import dev.evo.elasticmagic.query.Expression
 import dev.evo.elasticmagic.query.ObjExpression
-import dev.evo.elasticmagic.query.ToValue
 import dev.evo.elasticmagic.serde.Deserializer
 import dev.evo.elasticmagic.serde.Serde
 import dev.evo.elasticmagic.serde.Serializer
@@ -27,6 +33,7 @@ import dev.evo.elasticmagic.transport.BulkRequest
 import dev.evo.elasticmagic.transport.ApiRequest
 import dev.evo.elasticmagic.transport.Method
 import dev.evo.elasticmagic.transport.Parameters
+import dev.evo.elasticmagic.BulkScrollFailure
 
 abstract class BaseSearchQueryCompiler(
     features: ElasticsearchFeatures,
@@ -36,7 +43,7 @@ abstract class BaseSearchQueryCompiler(
         fun accept(ctx: T, compiler: BaseSearchQueryCompiler)
     }
 
-    open fun visit(ctx: ObjectCtx, searchQuery: PreparedSearchQuery<*>) {
+    open fun visit(ctx: ObjectCtx, searchQuery: PreparedSearchQuery) {
         val query = searchQuery.query?.reduce()
         val filteredQuery = if (searchQuery.filters.isNotEmpty()) {
             if (query != null) {
@@ -111,7 +118,7 @@ open class SearchQueryCompiler(
 ) : BaseSearchQueryCompiler(features) {
 
     @Suppress("ComplexMethod")
-    override fun visit(ctx: ObjectCtx, searchQuery: PreparedSearchQuery<*>) {
+    fun visit(ctx: ObjectCtx, searchQuery: SearchQuery.Search<*>) {
         super.visit(ctx, searchQuery)
         if (searchQuery.aggregations.isNotEmpty()) {
             ctx.obj("aggs") {
@@ -179,32 +186,26 @@ open class SearchQueryCompiler(
     }
 
     fun <S: BaseDocSource> compile(
-        serde: Serde, input: PreparedSearchQuery<S>, indexName: String
+        serde: Serde, searchQuery: WithIndex<SearchQuery.Search<S>>
     ): ApiRequest<SearchQueryResult<S>> {
         val body = serde.serializer.obj {
-            visit(this, input)
+            visit(this, searchQuery.request)
         }
         return ApiRequest(
             method = Method.POST,
-            path = "$indexName/_search",
-            parameters = input.params.toRequestParameters(),
+            path = "${searchQuery.indexName}/_search",
+            parameters = searchQuery.request.params.toRequestParameters(),
             body = body,
             serde = serde,
             processResponse = { resp ->
-                processResult(resp.content, input)
+                processResult(resp.content, searchQuery.request)
             }
         )
     }
 
-    fun <S: BaseDocSource> compile(
-        serde: Serde, input: SearchQueryWithIndex<S>
-    ): ApiRequest<SearchQueryResult<S>> {
-        return compile(serde, input.searchQuery.prepare(), input.indexName)
-    }
-
     fun <S: BaseDocSource> processResult(
         ctx: Deserializer.ObjectCtx,
-        preparedSearchQuery: PreparedSearchQuery<S>,
+        preparedSearchQuery: SearchQuery.Search<S>,
     ): SearchQueryResult<S> {
         val rawHitsData = ctx.obj("hits")
         val rawTotal = rawHitsData.objOrNull("total")
@@ -215,7 +216,7 @@ open class SearchQueryCompiler(
         }
 
         val rawHits = rawHitsData.arrayOrNull("hits")
-        val hits = buildList {
+        val hits = buildList<SearchHit<S>> {
             rawHits?.forEachObj { rawHit ->
                 add(processSearchHit(rawHit, preparedSearchQuery))
             }
@@ -245,7 +246,7 @@ open class SearchQueryCompiler(
 
     private fun <S: BaseDocSource> processSearchHit(
         rawHit: Deserializer.ObjectCtx,
-        preparedSearchQuery: PreparedSearchQuery<S>,
+        preparedSearchQuery: SearchQuery.Search<S>,
     ): SearchHit<S> {
         val source = rawHit.objOrNull("_source")?.let { rawSource ->
             preparedSearchQuery.docSourceFactory(rawHit).apply {
@@ -287,15 +288,15 @@ class CountQueryCompiler(
     features: ElasticsearchFeatures,
 ) : BaseSearchQueryCompiler(features) {
     fun compile(
-        serde: Serde, input: PreparedSearchQuery<*>, indexName: String
+        serde: Serde, countQuery: WithIndex<SearchQuery.Count>
     ): ApiRequest<CountResult> {
         val body = serde.serializer.obj {
-            visit(this, input)
+            visit(this, countQuery.request)
         }
         return ApiRequest(
             method = Method.POST,
-            path = "$indexName/_count",
-            parameters = input.params.toRequestParameters(),
+            path = "${countQuery.indexName}/_count",
+            parameters = countQuery.request.params.toRequestParameters(),
             body = body,
             serde = serde,
             processResponse = { resp ->
@@ -303,11 +304,151 @@ class CountQueryCompiler(
             }
         )
     }
+}
+
+class UpdateByQueryCompiler(
+    features: ElasticsearchFeatures,
+) : BaseSearchQueryCompiler(features) {
+    private val apiEndpoint = "_update_by_query"
+
+    fun visit(ctx: ObjectCtx, updateByQuery: WithIndex<SearchQuery.Update>) {
+        super.visit(ctx, updateByQuery.request)
+        if (updateByQuery.request.script != null) {
+            ctx.obj("script") {
+                visit(this, updateByQuery.request.script)
+            }
+        }
+    }
 
     fun compile(
-        serde: Serde, input: SearchQueryWithIndex<*>
-    ): ApiRequest<CountResult> {
-        return compile(serde, input.searchQuery.prepare(), input.indexName)
+        serde: Serde, updateByQuery: WithIndex<SearchQuery.Update>
+    ): ApiRequest<UpdateByQueryResult> {
+        val body = serde.serializer.obj {
+            visit(this, updateByQuery)
+        }
+        return ApiRequest(
+            method = Method.POST,
+            path = "${updateByQuery.indexName}/$apiEndpoint",
+            parameters = updateByQuery.request.params.toRequestParameters(),
+            body = body,
+            serde = serde,
+            processResponse = { resp ->
+                val content = resp.content
+                UpdateByQueryResult(
+                    took = content.long("took"),
+                    timedOut = content.boolean("timed_out"),
+                    total = content.long("total"),
+                    updated = content.long("updated"),
+                    deleted = content.long("deleted"),
+                    batches = content.int("batches"),
+                    versionConflicts = content.long("version_conflicts"),
+                    noops = content.long("noops"),
+                    retries = content.obj("retries").let { retries ->
+                        BulkScrollRetries(
+                            search = retries.long("search"),
+                            bulk = retries.long("bulk"),
+                        )
+                    },
+                    throttledMillis = content.long("throttled_millis"),
+                    requestsPerSecond = content.float("requests_per_second"),
+                    throttledUntilMillis = content.long("throttled_until_millis"),
+                    failures = buildList {
+                        content.array("failures").forEachObj { failure ->
+                            add(BulkScrollFailure.create(failure))
+                        }
+                    }
+                )
+            }
+        )
+    }
+
+    fun compileAsync(
+        serde: Serde, updateByQuery: WithIndex<SearchQuery.Update>
+    ): ApiRequest<AsyncResult> {
+        val body = serde.serializer.obj {
+            visit(this, updateByQuery)
+        }
+        val params = Params(updateByQuery.request.params, "wait_for_completion" to false)
+        return ApiRequest(
+            method = Method.POST,
+            path = "${updateByQuery.indexName}/$apiEndpoint",
+            parameters = params.toRequestParameters(),
+            body = body,
+            serde = serde,
+            processResponse = { resp ->
+                AsyncResult(resp.content.string("task"))
+            }
+        )
+    }
+}
+
+class DeleteByQueryCompiler(
+    features: ElasticsearchFeatures,
+) : BaseSearchQueryCompiler(features) {
+    private val apiEndpoint = "_delete_by_query"
+
+    fun visit(ctx: ObjectCtx, deleteByQuery: WithIndex<SearchQuery.Delete>) {
+        super.visit(ctx, deleteByQuery.request)
+    }
+
+    fun compile(
+        serde: Serde, deleteByQuery: WithIndex<SearchQuery.Delete>
+    ): ApiRequest<DeleteByQueryResult> {
+        val body = serde.serializer.obj {
+            visit(this, deleteByQuery)
+        }
+        return ApiRequest(
+            method = Method.POST,
+            path = "${deleteByQuery.indexName}/$apiEndpoint",
+            parameters = deleteByQuery.request.params.toRequestParameters(),
+            body = body,
+            serde = serde,
+            processResponse = { resp ->
+                val content = resp.content
+                DeleteByQueryResult(
+                    took = content.long("took"),
+                    timedOut = content.boolean("timed_out"),
+                    total = content.long("total"),
+                    deleted = content.long("deleted"),
+                    batches = content.int("batches"),
+                    versionConflicts = content.long("version_conflicts"),
+                    noops = content.long("noops"),
+                    retries = content.obj("retries").let { retries ->
+                        BulkScrollRetries(
+                            search = retries.long("search"),
+                            bulk = retries.long("bulk"),
+                        )
+                    },
+                    throttledMillis = content.long("throttled_millis"),
+                    requestsPerSecond = content.float("requests_per_second"),
+                    throttledUntilMillis = content.long("throttled_until_millis"),
+                    failures = buildList {
+                        content.array("failures").forEachObj { failure ->
+                            add(BulkScrollFailure.create(failure))
+                        }
+                    }
+                )
+            }
+        )
+    }
+
+    fun compileAsync(
+        serde: Serde, deleteByQuery: WithIndex<SearchQuery.Delete>
+    ): ApiRequest<AsyncResult> {
+        val body = serde.serializer.obj {
+            visit(this, deleteByQuery)
+        }
+        val params = Params(deleteByQuery.request.params, "wait_for_completion" to false)
+        return ApiRequest(
+            method = Method.POST,
+            path = "${deleteByQuery.indexName}/$apiEndpoint",
+            parameters = params.toRequestParameters(),
+            body = body,
+            serde = serde,
+            processResponse = { resp ->
+                AsyncResult(resp.content.string("task"))
+            }
+        )
     }
 }
 
@@ -317,16 +458,11 @@ class MultiSearchQueryCompiler(
 ) : BaseCompiler(features) {
 
     fun compile(
-        serde: Serde.OneLineJson, input: List<SearchQueryWithIndex<*>>
+        serde: Serde.OneLineJson, searchQueries: List<WithIndex<SearchQuery.Search<*>>>
     ): BulkRequest<MultiSearchQueryResult> {
-        val preparedQueries = mutableListOf<PreparedSearchQuery<*>>()
         val body = mutableListOf<ObjectCtx>()
-        for (query in input) {
-            val preparedQuery = query.searchQuery.prepare()
-                .also(preparedQueries::add)
-            val compiledQuery = searchQueryCompiler.compile(
-                serde, preparedQuery, query.indexName
-            )
+        for (query in searchQueries) {
+            val compiledQuery = searchQueryCompiler.compile(serde, query)
             val header = serde.serializer.obj {
                 searchQueryCompiler.visit(this, compiledQuery.parameters)
                 field("index", query.indexName)
@@ -343,11 +479,11 @@ class MultiSearchQueryCompiler(
             processResponse = { resp ->
                 val took = resp.content.longOrNull("took")
                 val responsesCtx = resp.content.array("responses")
-                val preparedQueriesIter = preparedQueries.iterator()
+                val preparedQueriesIter = searchQueries.iterator()
                 val results = buildList {
                     responsesCtx.forEachObj { respCtx ->
                         add(
-                            searchQueryCompiler.processResult(respCtx, preparedQueriesIter.next())
+                            searchQueryCompiler.processResult(respCtx, preparedQueriesIter.next().request)
                         )
                     }
                 }

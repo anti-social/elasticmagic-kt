@@ -1,14 +1,14 @@
 package samples.bikeshop
 
 import dev.evo.elasticmagic.Params
+import dev.evo.elasticmagic.Refresh
 import dev.evo.elasticmagic.SearchQuery
-import dev.evo.elasticmagic.bulk.Refresh
+import dev.evo.elasticmagic.ToValue
 import dev.evo.elasticmagic.qf.FacetFilterResult
 import dev.evo.elasticmagic.qf.MutableQueryFilterParams
 import dev.evo.elasticmagic.qf.QueryFiltersResult
 import dev.evo.elasticmagic.qf.FacetRangeFilterResult
 import dev.evo.elasticmagic.qf.SortFilter
-import dev.evo.elasticmagic.query.ToValue
 import kotlinx.coroutines.runBlocking
 
 import samples.started.cluster

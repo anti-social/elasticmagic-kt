@@ -22,6 +22,19 @@ fun Params(
     )
 }
 
+fun Params(
+    params: Params,
+    others: Params?,
+): Params {
+    if (others == null) {
+        return params
+    }
+    return buildMap(params.size + others.size) {
+        putAll(params)
+        putAll(others)
+    }
+}
+
 internal fun MutableParams(): MutableParams {
     return mutableMapOf()
 }

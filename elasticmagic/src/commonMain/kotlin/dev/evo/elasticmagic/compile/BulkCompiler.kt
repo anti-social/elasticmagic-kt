@@ -1,12 +1,12 @@
 package dev.evo.elasticmagic.compile
 
-import dev.evo.elasticmagic.bulk.Action
+import dev.evo.elasticmagic.Refresh
 import dev.evo.elasticmagic.BulkError
 import dev.evo.elasticmagic.BulkItem
 import dev.evo.elasticmagic.BulkOpType
 import dev.evo.elasticmagic.BulkResult
 import dev.evo.elasticmagic.Params
-import dev.evo.elasticmagic.bulk.Refresh
+import dev.evo.elasticmagic.bulk.Action
 import dev.evo.elasticmagic.serde.Serializer
 import dev.evo.elasticmagic.serde.forEachObj
 import dev.evo.elasticmagic.serde.toMap

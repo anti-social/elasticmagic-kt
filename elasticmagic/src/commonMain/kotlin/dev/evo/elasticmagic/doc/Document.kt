@@ -1,10 +1,10 @@
 package dev.evo.elasticmagic.doc
 
 import dev.evo.elasticmagic.Params
+import dev.evo.elasticmagic.ToValue
 import dev.evo.elasticmagic.query.FieldOperations
 import dev.evo.elasticmagic.query.Named
 import dev.evo.elasticmagic.query.Script
-import dev.evo.elasticmagic.query.ToValue
 import dev.evo.elasticmagic.types.AnyFieldType
 import dev.evo.elasticmagic.types.BooleanType
 import dev.evo.elasticmagic.types.ByteType

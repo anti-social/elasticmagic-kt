@@ -1,6 +1,7 @@
 package dev.evo.elasticmagic.transport
 
 import dev.evo.elasticmagic.serde.Deserializer
+import dev.evo.elasticmagic.serde.DeserializationException
 import dev.evo.elasticmagic.serde.toMap
 
 data class ErrorReason(
@@ -129,23 +130,33 @@ sealed class TransportError {
         }
     }
 
-    data class Simple(val error: String) : TransportError()
+    data class Simple(
+        val error: String,
+        val obj: Deserializer.ObjectCtx? = null,
+    ) : TransportError()
 
     companion object {
-        fun parse(data: Deserializer.ObjectCtx): TransportError {
-            val errorData = data.objOrNull("error")
-            if (errorData != null) {
-                val error = Structured.parse(errorData)
-                if (error != null) {
-                    return error
+        fun parse(error: String, deserializer: Deserializer): TransportError {
+            // TODO: Implement parsing failures for delete and update by query APIs
+            try {
+                val jsonError = deserializer.objFromString(error)
+                val errorObj = jsonError.objOrNull("error")
+                if (errorObj != null) {
+                    val structuredError = Structured.parse(errorObj)
+                    if (structuredError != null) {
+                        return structuredError
+                    }
                 }
+
+                return when (val errorData = jsonError.anyOrNull("error")) {
+                    null -> Simple(error)
+                    is Deserializer.ObjectCtx -> Simple(errorData.toMap().toString(), errorData)
+                    else -> Simple(errorData.toString())
+                }
+            } catch (e: DeserializationException) {
+                return Simple(error)
             }
 
-            return when (val error = data.anyOrNull("error")) {
-                is Deserializer.ObjectCtx -> Simple(error.toMap().toString())
-                null -> Simple(data.toMap().toString())
-                else -> Simple(error.toString())
-            }
         }
     }
 }
