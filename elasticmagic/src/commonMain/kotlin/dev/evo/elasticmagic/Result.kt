@@ -6,6 +6,7 @@ import dev.evo.elasticmagic.doc.BaseDocSource
 import dev.evo.elasticmagic.doc.BoundField
 import dev.evo.elasticmagic.bulk.IdActionMeta
 import dev.evo.elasticmagic.query.FieldOperations
+import dev.evo.elasticmagic.serde.Deserializer
 
 abstract class AggAwareResult {
     abstract val aggs: Map<String, AggregationResult>
@@ -32,7 +33,7 @@ data class SearchQueryResult<S : BaseDocSource>(
 
 data class MultiSearchQueryResult(
     val took: Long?,
-    val responses: List<SearchQueryResult<*>>
+    val responses: List<SearchQueryResult<BaseDocSource>>
 ) {
     inline fun <reified S : BaseDocSource> get(ix: Int): SearchQueryResult<S> {
         @Suppress("UNCHECKED_CAST")
@@ -104,6 +105,66 @@ data class CountResult(
     val count: Long,
 )
 
+data class AsyncResult(
+    val task: String
+)
+
+data class UpdateByQueryResult(
+    val took: Long,
+    val timedOut: Boolean,
+    val total: Long,
+    val updated: Long,
+    val deleted: Long,
+    val batches: Int,
+    val versionConflicts: Long,
+    val noops: Long,
+    val retries: BulkScrollRetries,
+    val throttledMillis: Long,
+    val requestsPerSecond: Float,
+    val throttledUntilMillis: Long,
+    val failures: List<BulkScrollFailure>,
+)
+
+data class DeleteByQueryResult(
+    val took: Long,
+    val timedOut: Boolean,
+    val total: Long,
+    val deleted: Long,
+    val batches: Int,
+    val versionConflicts: Long,
+    val noops: Long,
+    val retries: BulkScrollRetries,
+    val throttledMillis: Long,
+    val requestsPerSecond: Float,
+    val throttledUntilMillis: Long,
+    val failures: List<BulkScrollFailure>,
+)
+
+data class BulkScrollRetries(
+    val bulk: Long,
+    val search: Long,
+)
+
+data class BulkScrollFailure(
+    val index: String,
+    val type: String?,
+    val id: String,
+    val status: Int,
+    val cause: BulkError,
+) {
+    companion object {
+        fun create(ctx: Deserializer.ObjectCtx): BulkScrollFailure {
+            return BulkScrollFailure(
+                id = ctx.string("id"),
+                index = ctx.string("index"),
+                type = ctx.stringOrNull("type"),
+                status = ctx.int("status"),
+                cause = BulkError.create(ctx.obj("cause"))
+            )
+        }
+    }
+}
+
 data class CreateIndexResult(
     val acknowledged: Boolean,
     val shardsAcknowledged: Boolean,
@@ -170,6 +231,18 @@ data class BulkError(
     val index: String,
     val indexUuid: String,
     val shard: Int?,
-)
+) {
+    companion object {
+        fun create(ctx: Deserializer.ObjectCtx): BulkError {
+            return BulkError(
+                type = ctx.string("type"),
+                reason = ctx.string("reason"),
+                index = ctx.string("index"),
+                indexUuid = ctx.string("index_uuid"),
+                shard = ctx.intOrNull("shard"),
+            )
+        }
+    }
+}
 
 data class PingResult(val statusCode: Int, val responseTimeMs: Long)

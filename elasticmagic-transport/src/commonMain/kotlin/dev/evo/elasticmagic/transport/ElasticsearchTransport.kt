@@ -1,6 +1,5 @@
 package dev.evo.elasticmagic.transport
 
-import dev.evo.elasticmagic.serde.DeserializationException
 import dev.evo.elasticmagic.serde.Deserializer
 import dev.evo.elasticmagic.serde.Serde
 import dev.evo.elasticmagic.serde.Serializer
@@ -105,6 +104,7 @@ abstract class Request<out BodyT, ResponseT, out ResultT> {
     abstract val body: BodyT?
     abstract val contentType: String
     abstract val errorSerde: Serde
+    // TODO: try to rid of from processResponse here
     abstract val processResponse: (ResponseT) -> ResultT
 
     open val acceptContentType: String? = null
@@ -423,16 +423,9 @@ abstract class ElasticsearchTransport(
                 )
             }
             else -> {
-                val jsonError = try {
-                    request.errorSerde.deserializer.objFromStringOrNull(content)
-                } catch (e: DeserializationException) {
-                    null
-                }
-                val transportError = if (jsonError != null) {
-                    TransportError.parse(jsonError)
-                } else {
-                    TransportError.Simple(content)
-                }
+                val transportError = TransportError.parse(
+                    content, request.errorSerde.deserializer
+                )
                 ResponseResult.Error(
                     statusCode, response.headers, response.contentType, transportError
                 )

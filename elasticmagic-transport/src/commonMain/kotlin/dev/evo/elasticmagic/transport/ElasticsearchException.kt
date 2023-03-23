@@ -19,7 +19,7 @@ open class ElasticsearchException(msg: String) : Exception(msg) {
         open val isRetriable = false
 
         companion object {
-            private const val MAX_TEXT_ERROR_LENGTH = 256
+            private const val MAX_TEXT_ERROR_LENGTH = 1024
 
             private fun trimText(text: String) =
                 text.slice(0 until text.length.coerceAtMost(MAX_TEXT_ERROR_LENGTH))

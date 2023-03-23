@@ -401,16 +401,19 @@ public abstract class dev/evo/elasticmagic/transport/TransportError {
 }
 
 public final class dev/evo/elasticmagic/transport/TransportError$Companion {
-	public final fun parse (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;)Ldev/evo/elasticmagic/transport/TransportError;
+	public final fun parse (Ljava/lang/String;Ldev/evo/elasticmagic/serde/Deserializer;)Ldev/evo/elasticmagic/transport/TransportError;
 }
 
 public final class dev/evo/elasticmagic/transport/TransportError$Simple : dev/evo/elasticmagic/transport/TransportError {
-	public fun <init> (Ljava/lang/String;)V
+	public fun <init> (Ljava/lang/String;Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;)V
+	public synthetic fun <init> (Ljava/lang/String;Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Ljava/lang/String;
-	public final fun copy (Ljava/lang/String;)Ldev/evo/elasticmagic/transport/TransportError$Simple;
-	public static synthetic fun copy$default (Ldev/evo/elasticmagic/transport/TransportError$Simple;Ljava/lang/String;ILjava/lang/Object;)Ldev/evo/elasticmagic/transport/TransportError$Simple;
+	public final fun component2 ()Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;
+	public final fun copy (Ljava/lang/String;Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;)Ldev/evo/elasticmagic/transport/TransportError$Simple;
+	public static synthetic fun copy$default (Ldev/evo/elasticmagic/transport/TransportError$Simple;Ljava/lang/String;Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;ILjava/lang/Object;)Ldev/evo/elasticmagic/transport/TransportError$Simple;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getError ()Ljava/lang/String;
+	public final fun getObj ()Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }

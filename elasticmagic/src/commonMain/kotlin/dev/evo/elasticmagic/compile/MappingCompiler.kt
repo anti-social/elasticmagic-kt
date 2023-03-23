@@ -1,5 +1,6 @@
 package dev.evo.elasticmagic.compile
 
+import dev.evo.elasticmagic.ToValue
 import dev.evo.elasticmagic.doc.MappingField
 import dev.evo.elasticmagic.doc.BaseDocument
 import dev.evo.elasticmagic.doc.BoundMappingTemplate
@@ -14,7 +15,6 @@ import dev.evo.elasticmagic.doc.SubDocumentField
 import dev.evo.elasticmagic.doc.SubFieldsField
 import dev.evo.elasticmagic.query.ArrayExpression
 import dev.evo.elasticmagic.query.ObjExpression
-import dev.evo.elasticmagic.query.ToValue
 import dev.evo.elasticmagic.serde.Serializer
 import dev.evo.elasticmagic.serde.Serializer.ArrayCtx
 import dev.evo.elasticmagic.serde.Serializer.ObjectCtx

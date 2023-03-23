@@ -1,7 +1,6 @@
 package dev.evo.elasticmagic
 
 import dev.evo.elasticmagic.bulk.Action
-import dev.evo.elasticmagic.bulk.Refresh
 import dev.evo.elasticmagic.compile.ActionCompiler
 import dev.evo.elasticmagic.compile.PreparedBulk
 import dev.evo.elasticmagic.compile.CompilerSet
@@ -21,7 +20,13 @@ import kotlin.time.measureTimedValue
 import kotlinx.coroutines.CompletableDeferred
 
 internal fun Params.toRequestParameters(): Parameters {
-    return Parameters(*this.toList().toTypedArray())
+    val entries = this.map { (key, value) ->
+        key to when (value) {
+            is ToValue<*> -> value.toValue()
+            else -> value
+        }
+    }
+    return Parameters(*entries.toTypedArray())
 }
 
 class ElasticsearchCluster(
@@ -198,12 +203,21 @@ class ElasticsearchCluster(
         )
     }
 
-    suspend fun multiSearch(searchQueries: List<SearchQueryWithIndex<*>>): MultiSearchQueryResult {
+    suspend fun multiSearch(searchQueries: List<WithIndex<SearchQuery.Search<*>>>): MultiSearchQueryResult {
         val compiled = getCompilers().multiSearchQuery.compile(
             bulkSerde, searchQueries
         )
         return transport.request(compiled)
     }
+}
+
+data class WithIndex<out T>(
+    val indexName: String,
+    val request: T,
+)
+
+fun <T> T.withIndex(indexName: String): WithIndex<T> {
+    return WithIndex(indexName, this)
 }
 
 class ElasticsearchIndex(
@@ -213,25 +227,61 @@ class ElasticsearchIndex(
     val transport: ElasticsearchTransport = cluster.transport
 
     suspend fun <S : BaseDocSource> search(
-        searchQuery: BaseSearchQuery<S, *>
+        searchQuery: SearchQuery.Search<S>
     ): SearchQueryResult<S> {
-        val compiled = cluster.getCompilers().searchQuery.compile(
-            cluster.apiSerde, searchQuery.usingIndex(name)
+        val compiled = cluster.getCompilers().searchQuery.compile<S>(
+            cluster.apiSerde, searchQuery.withIndex(name)
         )
         return transport.request(compiled)
     }
 
     suspend fun multiSearch(
-        searchQueries: List<BaseSearchQuery<*, *>>
+        searchQueries: List<SearchQuery.Search<*>>
     ): MultiSearchQueryResult {
-        return cluster.multiSearch(searchQueries.map { query -> query.usingIndex(name) })
+        return cluster.multiSearch(
+            searchQueries.map { query -> WithIndex(name, query) }
+        )
     }
 
-    suspend fun count(
-        searchQuery: BaseSearchQuery<*, *>
-    ): CountResult {
+    suspend fun count(searchQuery: SearchQuery.Count): CountResult {
         val compiled = cluster.getCompilers().countQuery.compile(
-            cluster.apiSerde, searchQuery.usingIndex(name)
+            cluster.apiSerde, searchQuery.withIndex(name)
+        )
+        return transport.request(compiled)
+    }
+
+    suspend fun updateByQuery(
+        searchQuery: SearchQuery.Update,
+    ): UpdateByQueryResult {
+        val compiled = cluster.getCompilers().updateByQuery.compile(
+            cluster.apiSerde, searchQuery.withIndex(name)
+        )
+        return transport.request(compiled)
+    }
+
+    suspend fun updateByQueryAsync(
+        searchQuery: SearchQuery.Update,
+    ): AsyncResult {
+        val compiled = cluster.getCompilers().updateByQuery.compileAsync(
+            cluster.apiSerde, searchQuery.withIndex(name)
+        )
+        return transport.request(compiled)
+    }
+
+    suspend fun deleteByQuery(
+        searchQuery: SearchQuery.Delete,
+    ): DeleteByQueryResult {
+        val compiled = cluster.getCompilers().deleteByQuery.compile(
+            cluster.apiSerde, searchQuery.withIndex(name)
+        )
+        return transport.request(compiled)
+    }
+
+    suspend fun deleteByQueryAsync(
+        searchQuery: SearchQuery.Delete,
+    ): AsyncResult {
+        val compiled = cluster.getCompilers().deleteByQuery.compileAsync(
+            cluster.apiSerde, searchQuery.withIndex(name)
         )
         return transport.request(compiled)
     }

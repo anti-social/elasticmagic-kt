@@ -32,6 +32,7 @@ import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.floats.shouldBeGreaterThan
+import io.kotest.matchers.string.shouldHaveMinLength
 import io.kotest.matchers.types.shouldBeInstanceOf
 
 import kotlinx.datetime.Instant
@@ -43,8 +44,10 @@ import kotlinx.datetime.toInstant
 
 import kotlin.test.Test
 
-enum class OrderStatus(val id: Int) {
-    NEW(0), ACCEPTED(1), SHIPPED(2), DELIVERED(3), CANCELLED(4)
+enum class OrderStatus(val id: Int) : ToValue<Int> {
+    NEW(0), ACCEPTED(1), SHIPPED(2), DELIVERED(3), CANCELLED(4);
+
+    override fun toValue() = id
 }
 
 object OrderDoc : Document() {
@@ -359,7 +362,7 @@ class SearchQueryTests : ElasticsearchTestBase() {
                         OrderDoc.items,
                         OrderDoc.items.productName.match("donut")
                     )
-                )
+                ).prepareSearch()
             )
 
             searchResult.totalHits shouldBe 2
@@ -606,7 +609,9 @@ class SearchQueryTests : ElasticsearchTestBase() {
             val acceptedOrdersQuery = SearchQuery()
                 .filter(OrderDoc.status eq OrderStatus.ACCEPTED)
                 .sort(OrderDoc.dateCreated)
-            val searchResult = index.multiSearch(listOf(newOrdersQuery, acceptedOrdersQuery))
+            val searchResult = index.multiSearch(listOf(
+                newOrdersQuery.prepareSearch(), acceptedOrdersQuery.prepareSearch()
+            ))
 
             searchResult.responses.size shouldBe 2
 
@@ -640,6 +645,134 @@ class SearchQueryTests : ElasticsearchTestBase() {
                 .count(index).let { res ->
                     res.count shouldBe 3
                 }
+        }
+    }
+
+    @Test
+    fun updateByQuery() = runTestWithTransports() {
+        withFixtures(OrderDoc, listOf(
+            karlssonsJam, karlssonsBestDonuts, karlssonsJustDonuts, littleBrotherDogStuff
+        )) {
+            SearchQuery()
+                .filter(OrderDoc.status eq OrderStatus.ACCEPTED)
+                .count(index).let { res ->
+                    res.count shouldBe 1
+                }
+
+            SearchQuery()
+                .filter(OrderDoc.status eq OrderStatus.NEW)
+                .update(
+                    index,
+                    Script.Source(
+                        "ctx._source.status = params.new_status",
+                        params = Params(
+                            "new_status" to OrderStatus.ACCEPTED
+                        )
+                    ),
+                    refresh = Refresh.TRUE
+                ).let { res ->
+                    res.updated shouldBe 3
+                }
+
+            SearchQuery()
+                .filter(OrderDoc.status eq OrderStatus.NEW)
+                .count(index).let { res ->
+                    res.count shouldBe 0
+                }
+
+            SearchQuery()
+                .filter(OrderDoc.status eq OrderStatus.ACCEPTED)
+                .count(index).let { res ->
+                    res.count shouldBe 4
+                }
+        }
+    }
+
+    @Test
+    fun updateByQuery_conflict() = runTestWithTransports() {
+        withFixtures(OrderDoc, listOf(
+            karlssonsJam, karlssonsBestDonuts, karlssonsJustDonuts, littleBrotherDogStuff
+        )) {
+            SearchQuery()
+                .filter(OrderDoc.status eq OrderStatus.ACCEPTED)
+                .count(index).let { res ->
+                    res.count shouldBe 1
+                }
+
+            shouldThrow<ElasticsearchException.BadRequest> {
+                SearchQuery()
+                    .filter(OrderDoc.status eq OrderStatus.NEW)
+                    .update(
+                        index,
+                        Script.Source(
+                            "ctx._source.status = 'accepted'",
+                        ),
+                        refresh = Refresh.TRUE
+                    )
+            }
+        }
+    }
+
+    @Test
+    fun updateByQueryAsync() = runTestWithTransports {
+        withFixtures(OrderDoc, listOf(
+            karlssonsJam, karlssonsBestDonuts, karlssonsJustDonuts, littleBrotherDogStuff
+        )) {
+            SearchQuery()
+                .filter(OrderDoc.status eq OrderStatus.ACCEPTED)
+                .count(index).let { res ->
+                    res.count shouldBe 1
+                }
+
+            val result = SearchQuery()
+                .filter(OrderDoc.status eq OrderStatus.NEW)
+                .updateAsync(
+                    index,
+                    Script.Source(
+                        "ctx._source.status = params.new_status",
+                        params = Params(
+                            "new_status" to OrderStatus.ACCEPTED
+                        )
+                    ),
+                    refresh = Refresh.TRUE
+                )
+
+            result.task shouldHaveMinLength 1
+            // TODO: Implement task API and check task result
+        }
+    }
+
+    @Test
+    fun deleteByQuery() = runTestWithTransports {
+        withFixtures(OrderDoc, listOf(
+            karlssonsJam, karlssonsBestDonuts, karlssonsJustDonuts, littleBrotherDogStuff
+        )) {
+            SearchQuery()
+                .filter(OrderDoc.status eq OrderStatus.NEW)
+                .docvalueFields(OrderDoc.status)
+                .delete(index, refresh = Refresh.TRUE).let { res ->
+                    res.deleted shouldBe 3
+                }
+
+            SearchQuery()
+                .count(index).let { res ->
+                    res.count shouldBe 1
+                }
+        }
+    }
+
+    @Test
+    fun deleteByQueryAsync() = runTestWithTransports {
+        withFixtures(OrderDoc, listOf(
+            karlssonsJam, karlssonsBestDonuts, karlssonsJustDonuts, littleBrotherDogStuff
+        )) {
+            val result = SearchQuery()
+                .filter(OrderDoc.status eq OrderStatus.NEW)
+                .docvalueFields(OrderDoc.status)
+                .deleteAsync(index, refresh = Refresh.TRUE)
+
+            result.task shouldHaveMinLength 1
+            // TODO: Implement task API and check task result
         }
     }
 }
