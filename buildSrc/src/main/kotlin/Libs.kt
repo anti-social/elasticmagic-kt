@@ -20,7 +20,7 @@ object Versions {
     // At 1.5.0 it started to fall with JS
     const val kotlinxSerialization = "1.4.1"
     const val kotlinxCoroutines = "1.6.3-native-mt"
-    const val kotlinxDatetime = "0.3.3"
+    const val kotlinxDatetime = "0.4.0"
     const val kotlinxAtomicfu = "0.20.0"
     const val ktor = "2.1.3"
 
