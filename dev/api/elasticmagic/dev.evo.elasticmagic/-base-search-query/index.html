@@ -34,7 +34,7 @@
     <div class="library-name">
 <a href="../../../index.html">
 <span>elasticmagic-kt</span>            </a>    </div>
-    <div>0.0.19-6-g815fa37
+    <div>0.0.19-7-g60761bc
     </div>
     <div class="pull-right d-flex">
         <button id="theme-toggle-button"><span id="theme-toggle"></span></button>
@@ -53,7 +53,7 @@
     <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">class </span><a href="index.html">BaseSearchQuery</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="index.html">S</a><span class="token operator"> : </span><a href="../../dev.evo.elasticmagic.doc/-base-doc-source/index.html">BaseDocSource</a><span class="token punctuation">, </span><span class="token keyword"></span><a href="index.html">T</a><span class="token operator"> : </span><a href="index.html">BaseSearchQuery</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="index.html">S</a><span class="token punctuation">, </span><span class="token keyword"></span><a href="index.html">T</a><span class="token operator">&gt;</span><span class="token operator">&gt;</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">docSourceFactory<span class="token operator">: </span><span class="token punctuation">(</span><span class="token keyword"></span>obj<span class="token operator">: </span><a href="../../../elasticmagic-serde/dev.evo.elasticmagic.serde/-deserializer/-object-ctx/index.html">Deserializer.ObjectCtx</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><span class="token keyword"></span><a href="index.html">S</a><span class="token punctuation">, </span></span><span class="parameter ">query<span class="token operator">: </span><a href="../../dev.evo.elasticmagic.query/-query-expression/index.html">QueryExpression</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">params<span class="token operator">: </span><a href="../index.html#-1872009219%2FClasslikes%2F-1391351333">Params</a><span class="token operator"> = </span>Params()</span></span><span class="token punctuation">)</span></div><p class="paragraph">An abstract class that holds all the search query builder methods. Inheritors of the class can implement some shortcut methods. For instance <a href="../-search-query/execute.html">SearchQuery.execute</a> which can be suspendable or blocking.</p></div></div>
   </div>
   <div class="tabbedcontent">
-    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="Types">Types</button><button class="section-tab" data-togglable="Constructors">Constructors</button><button class="section-tab" data-togglable="Functions">Functions</button><button class="section-tab" data-togglable="Extensions">Extensions</button><button class="section-tab" data-togglable="Inheritors">Inheritors</button></div>
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="Types">Types</button><button class="section-tab" data-togglable="Constructors">Constructors</button><button class="section-tab" data-togglable="Functions">Functions</button><button class="section-tab" data-togglable="Inheritors">Inheritors</button></div>
     <div class="tabs-section-body">
       <h2 class="tabbedcontent">Constructors</h2>
       <div class="table" data-togglable="Constructors"><a data-name="754847709%2FConstructors%2F-1391351333" anchor-label="BaseSearchQuery" id="754847709%2FConstructors%2F-1391351333" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"></a>
@@ -210,17 +210,62 @@
             </div>
           </div>
         </div>
-<a data-name="-1619023900%2FFunctions%2F-1391351333" anchor-label="prepare" id="-1619023900%2FFunctions%2F-1391351333" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"></a>
+<a data-name="1690756551%2FFunctions%2F-1391351333" anchor-label="prepareCount" id="1690756551%2FFunctions%2F-1391351333" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"></a>
         <div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain">
           <div class="main-subrow keyValue ">
             <div class=""><span class="inline-flex">
-                <div><a href="prepare.html"><span><span>prepare</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1619023900%2FFunctions%2F-1391351333"></span>
+                <div><a href="prepare-count.html"><span>prepare</span><wbr><span><span>Count</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1690756551%2FFunctions%2F-1391351333"></span>
                   <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="prepare.html"><span class="token function">prepare</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../-prepared-search-query/index.html">PreparedSearchQuery</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="index.html">S</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Makes an immutable view of the search query. Be careful when using this method.</p></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="prepare-count.html"><span class="token function">prepareCount</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">params<span class="token operator">: </span><a href="../index.html#-1872009219%2FClasslikes%2F-1391351333">Params</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../-search-query/-count/index.html">SearchQuery.Count</a></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="-77934923%2FFunctions%2F-1391351333" anchor-label="prepareDelete" id="-77934923%2FFunctions%2F-1391351333" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"></a>
+        <div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="prepare-delete.html"><span>prepare</span><wbr><span><span>Delete</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-77934923%2FFunctions%2F-1391351333"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="prepare-delete.html"><span class="token function">prepareDelete</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">params<span class="token operator">: </span><a href="../index.html#-1872009219%2FClasslikes%2F-1391351333">Params</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../-search-query/-delete/index.html">SearchQuery.Delete</a></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="730607218%2FFunctions%2F-1391351333" anchor-label="prepareSearch" id="730607218%2FFunctions%2F-1391351333" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"></a>
+        <div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="prepare-search.html"><span>prepare</span><wbr><span><span>Search</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="730607218%2FFunctions%2F-1391351333"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="prepare-search.html"><span class="token function">prepareSearch</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">params<span class="token operator">: </span><a href="../index.html#-1872009219%2FClasslikes%2F-1391351333">Params</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../-search-query/-search/index.html">SearchQuery.Search</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="index.html">S</a><span class="token operator">&gt;</span></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="343091913%2FFunctions%2F-1391351333" anchor-label="prepareUpdate" id="343091913%2FFunctions%2F-1391351333" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"></a>
+        <div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="prepare-update.html"><span>prepare</span><wbr><span><span>Update</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="343091913%2FFunctions%2F-1391351333"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="prepare-update.html"><span class="token function">prepareUpdate</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">script<span class="token operator">: </span><a href="../../dev.evo.elasticmagic.query/-script/index.html">Script</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">params<span class="token operator">: </span><a href="../index.html#-1872009219%2FClasslikes%2F-1391351333">Params</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../-search-query/-update/index.html">SearchQuery.Update</a></div></div></div>
               </div>
             </div>
           </div>
@@ -506,23 +551,6 @@
                   <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                 </span></span></div>
             <div></div>
-          </div>
-        </div>
-      </div>
-      <h2 class="tabbedcontent">Extensions</h2>
-      <div class="table" data-togglable="Extensions"><a data-name="-1388456861%2FExtensions%2F-1391351333" anchor-label="usingIndex" id="-1388456861%2FExtensions%2F-1391351333" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"></a>
-        <div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="../using-index.html"><span>using</span><wbr><span><span>Index</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1388456861%2FExtensions%2F-1391351333"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../using-index.html">S</a><span class="token operator"> : </span><a href="../../dev.evo.elasticmagic.doc/-base-doc-source/index.html">BaseDocSource</a><span class="token operator">&gt; </span><a href="index.html">BaseSearchQuery</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../using-index.html">S</a><span class="token punctuation">, </span><span class="token operator">*</span><span class="token operator">&gt;</span><span class="token punctuation">.</span><a href="../using-index.html"><span class="token function">usingIndex</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">indexName<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../-search-query-with-index/index.html">SearchQueryWithIndex</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../using-index.html">S</a><span class="token operator">&gt;</span></div></div></div>
-              </div>
-            </div>
           </div>
         </div>
       </div>

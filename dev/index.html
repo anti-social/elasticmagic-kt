@@ -513,7 +513,7 @@ Use it on your own risk</p>
 <span class="w">    </span><span class="n">mavenCentral</span><span class="p">()</span><span class="w"></span>
 <span class="p">}</span><span class="w"></span>
 
-<span class="kd">val</span><span class="w"> </span><span class="nv">elasticmagicVersion</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;0.0.19-6-g815fa37&quot;</span><span class="w"></span>
+<span class="kd">val</span><span class="w"> </span><span class="nv">elasticmagicVersion</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;0.0.19-7-g60761bc&quot;</span><span class="w"></span>
 <span class="kd">val</span><span class="w"> </span><span class="nv">ktorVersion</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;2.1.3&quot;</span><span class="w"></span>
 
 <span class="n">dependencies</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
@@ -679,11 +679,11 @@ http client.</p>
 <p>Describe document sources and index them: </p>
 <div class="highlight"><pre><span></span><code><span class="k">package</span><span class="w"> </span><span class="nn">samples.started</span><span class="w"></span>
 
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.Refresh</span><span class="w"></span>
 <span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.doc.DynDocSource</span><span class="w"></span>
 <span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.bulk.IndexAction</span><span class="w"></span>
 <span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.bulk.IdActionMeta</span><span class="w"></span>
 <span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.doc.list</span><span class="w"></span>
-<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.bulk.Refresh</span><span class="w"></span>
 
 <span class="kd">suspend</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">indexDocs</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">docs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">listOf</span><span class="p">(</span><span class="w"></span>
