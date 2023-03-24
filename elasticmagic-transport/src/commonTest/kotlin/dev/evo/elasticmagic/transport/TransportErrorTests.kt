@@ -1,6 +1,6 @@
 package dev.evo.elasticmagic.transport
 
-import dev.evo.elasticmagic.serde.serialization.JsonDeserializer
+import dev.evo.elasticmagic.serde.kotlinx.JsonDeserializer
 
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf

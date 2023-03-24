@@ -1,6 +1,6 @@
 package samples.started
 
-import dev.evo.elasticmagic.serde.serialization.JsonSerde
+import dev.evo.elasticmagic.serde.kotlinx.JsonSerde
 import dev.evo.elasticmagic.transport.Auth
 import dev.evo.elasticmagic.transport.ElasticsearchKtorTransport
 

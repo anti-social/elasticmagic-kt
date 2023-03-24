@@ -9,7 +9,7 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation("org.jetbrains.kotlinx:kotlinx-benchmark-runtime:0.4.4")
-                implementation(project(":elasticmagic-serde-serialization-json"))
+                implementation(project(":elasticmagic-serde-kotlinx-json"))
             }
         }
         val jvmMain by getting {

@@ -23,7 +23,7 @@ configure<org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension> {
             dependencies {
                 implementation(project(":elasticmagic"))
                 implementation(project(":elasticmagic-query-filters"))
-                implementation(project(":elasticmagic-serde-serialization-json"))
+                implementation(project(":elasticmagic-serde-kotlinx-json"))
                 implementation(project(":elasticmagic-transport-ktor"))
 
                 implementation(Libs.kotlinxCoroutines("core"))

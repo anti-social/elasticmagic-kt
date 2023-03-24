@@ -1,6 +1,6 @@
 package dev.evo.elasticmagic
 
-import dev.evo.elasticmagic.serde.serialization.JsonSerde
+import dev.evo.elasticmagic.serde.kotlinx.JsonSerde
 import dev.evo.elasticmagic.transport.CatRequest
 import dev.evo.elasticmagic.transport.ElasticsearchException
 import dev.evo.elasticmagic.transport.ElasticsearchKtorTransport

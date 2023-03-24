@@ -24,7 +24,7 @@ dependencies {
     // Elasticmagic core api
     implementation("dev.evo.elasticmagic:elasticmagic:$elasticmagicVersion")
     // Json serialization using kotlinx.serialization
-    implementation("dev.evo.elasticmagic:elasticmagic-serde-serialization-json:$elasticmagicVersion")
+    implementation("dev.evo.elasticmagic:elasticmagic-serde-kotlinx-json:$elasticmagicVersion")
     // Transport that uses ktor http client
     implementation("dev.evo.elasticmagic:elasticmagic-transport-ktor:$elasticmagicVersion")
 
