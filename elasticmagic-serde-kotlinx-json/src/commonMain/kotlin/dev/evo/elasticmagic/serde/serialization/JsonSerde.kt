@@ -1,4 +1,4 @@
-package dev.evo.elasticmagic.serde.serialization
+package dev.evo.elasticmagic.serde.kotlinx
 
 import dev.evo.elasticmagic.serde.Serde
 

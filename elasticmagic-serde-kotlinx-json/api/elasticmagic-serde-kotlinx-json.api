@@ -1,11 +1,11 @@
-public abstract class dev/evo/elasticmagic/serde/serialization/JsonDeserializer : dev/evo/elasticmagic/serde/Deserializer {
-	public static final field Companion Ldev/evo/elasticmagic/serde/serialization/JsonDeserializer$Companion;
+public abstract class dev/evo/elasticmagic/serde/kotlinx/JsonDeserializer : dev/evo/elasticmagic/serde/Deserializer {
+	public static final field Companion Ldev/evo/elasticmagic/serde/kotlinx/JsonDeserializer$Companion;
 	public fun objFromString (Ljava/lang/String;)Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;
 	public fun objFromStringOrNull (Ljava/lang/String;)Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;
 }
 
-public final class dev/evo/elasticmagic/serde/serialization/JsonDeserializer$ArrayCtx : dev/evo/elasticmagic/serde/Deserializer$ArrayCtx {
-	public static final synthetic fun box-impl (Lkotlinx/serialization/json/JsonArray;)Ldev/evo/elasticmagic/serde/serialization/JsonDeserializer$ArrayCtx;
+public final class dev/evo/elasticmagic/serde/kotlinx/JsonDeserializer$ArrayCtx : dev/evo/elasticmagic/serde/Deserializer$ArrayCtx {
+	public static final synthetic fun box-impl (Lkotlinx/serialization/json/JsonArray;)Ldev/evo/elasticmagic/serde/kotlinx/JsonDeserializer$ArrayCtx;
 	public static fun constructor-impl (Lkotlinx/serialization/json/JsonArray;)Lkotlinx/serialization/json/JsonArray;
 	public fun equals (Ljava/lang/Object;)Z
 	public static fun equals-impl (Lkotlinx/serialization/json/JsonArray;Ljava/lang/Object;)Z
@@ -19,7 +19,7 @@ public final class dev/evo/elasticmagic/serde/serialization/JsonDeserializer$Arr
 	public final synthetic fun unbox-impl ()Lkotlinx/serialization/json/JsonArray;
 }
 
-public final class dev/evo/elasticmagic/serde/serialization/JsonDeserializer$ArrayIterator : dev/evo/elasticmagic/serde/Deserializer$ArrayIterator {
+public final class dev/evo/elasticmagic/serde/kotlinx/JsonDeserializer$ArrayIterator : dev/evo/elasticmagic/serde/Deserializer$ArrayIterator {
 	public fun <init> (Ljava/util/Iterator;)V
 	public fun any ()Ljava/lang/Object;
 	public fun anyOrNull ()Ljava/lang/Object;
@@ -42,10 +42,10 @@ public final class dev/evo/elasticmagic/serde/serialization/JsonDeserializer$Arr
 	public fun stringOrNull ()Ljava/lang/String;
 }
 
-public final class dev/evo/elasticmagic/serde/serialization/JsonDeserializer$Companion : dev/evo/elasticmagic/serde/serialization/JsonDeserializer {
+public final class dev/evo/elasticmagic/serde/kotlinx/JsonDeserializer$Companion : dev/evo/elasticmagic/serde/kotlinx/JsonDeserializer {
 }
 
-public final class dev/evo/elasticmagic/serde/serialization/JsonDeserializer$ObjectCtx : dev/evo/elasticmagic/serde/Deserializer$ObjectCtx {
+public final class dev/evo/elasticmagic/serde/kotlinx/JsonDeserializer$ObjectCtx : dev/evo/elasticmagic/serde/Deserializer$ObjectCtx {
 	public fun any (Ljava/lang/String;)Ljava/lang/Object;
 	public static fun any-impl (Lkotlinx/serialization/json/JsonObject;Ljava/lang/String;)Ljava/lang/Object;
 	public fun anyOrNull (Ljava/lang/String;)Ljava/lang/Object;
@@ -58,7 +58,7 @@ public final class dev/evo/elasticmagic/serde/serialization/JsonDeserializer$Obj
 	public static fun boolean-impl (Lkotlinx/serialization/json/JsonObject;Ljava/lang/String;)Z
 	public fun booleanOrNull (Ljava/lang/String;)Ljava/lang/Boolean;
 	public static fun booleanOrNull-impl (Lkotlinx/serialization/json/JsonObject;Ljava/lang/String;)Ljava/lang/Boolean;
-	public static final synthetic fun box-impl (Lkotlinx/serialization/json/JsonObject;)Ldev/evo/elasticmagic/serde/serialization/JsonDeserializer$ObjectCtx;
+	public static final synthetic fun box-impl (Lkotlinx/serialization/json/JsonObject;)Ldev/evo/elasticmagic/serde/kotlinx/JsonDeserializer$ObjectCtx;
 	public static fun constructor-impl (Lkotlinx/serialization/json/JsonObject;)Lkotlinx/serialization/json/JsonObject;
 	public fun double (Ljava/lang/String;)D
 	public static fun double-impl (Lkotlinx/serialization/json/JsonObject;Ljava/lang/String;)D
@@ -79,8 +79,8 @@ public final class dev/evo/elasticmagic/serde/serialization/JsonDeserializer$Obj
 	public fun intOrNull (Ljava/lang/String;)Ljava/lang/Integer;
 	public static fun intOrNull-impl (Lkotlinx/serialization/json/JsonObject;Ljava/lang/String;)Ljava/lang/Integer;
 	public synthetic fun iterator ()Ldev/evo/elasticmagic/serde/Deserializer$ObjectIterator;
-	public fun iterator ()Ldev/evo/elasticmagic/serde/serialization/JsonDeserializer$ObjectIterator;
-	public static fun iterator-impl (Lkotlinx/serialization/json/JsonObject;)Ldev/evo/elasticmagic/serde/serialization/JsonDeserializer$ObjectIterator;
+	public fun iterator ()Ldev/evo/elasticmagic/serde/kotlinx/JsonDeserializer$ObjectIterator;
+	public static fun iterator-impl (Lkotlinx/serialization/json/JsonObject;)Ldev/evo/elasticmagic/serde/kotlinx/JsonDeserializer$ObjectIterator;
 	public fun long (Ljava/lang/String;)J
 	public static fun long-impl (Lkotlinx/serialization/json/JsonObject;Ljava/lang/String;)J
 	public fun longOrNull (Ljava/lang/String;)Ljava/lang/Long;
@@ -98,7 +98,7 @@ public final class dev/evo/elasticmagic/serde/serialization/JsonDeserializer$Obj
 	public final synthetic fun unbox-impl ()Lkotlinx/serialization/json/JsonObject;
 }
 
-public final class dev/evo/elasticmagic/serde/serialization/JsonDeserializer$ObjectIterator : dev/evo/elasticmagic/serde/Deserializer$ObjectIterator {
+public final class dev/evo/elasticmagic/serde/kotlinx/JsonDeserializer$ObjectIterator : dev/evo/elasticmagic/serde/Deserializer$ObjectIterator {
 	public fun <init> (Ljava/util/Iterator;)V
 	public fun any ()Ljava/lang/Object;
 	public fun anyOrNull ()Ljava/lang/Object;
@@ -122,23 +122,23 @@ public final class dev/evo/elasticmagic/serde/serialization/JsonDeserializer$Obj
 	public fun stringOrNull ()Ljava/lang/String;
 }
 
-public final class dev/evo/elasticmagic/serde/serialization/JsonSerde : dev/evo/elasticmagic/serde/Serde$OneLineJson {
-	public static final field INSTANCE Ldev/evo/elasticmagic/serde/serialization/JsonSerde;
+public final class dev/evo/elasticmagic/serde/kotlinx/JsonSerde : dev/evo/elasticmagic/serde/Serde$OneLineJson {
+	public static final field INSTANCE Ldev/evo/elasticmagic/serde/kotlinx/JsonSerde;
 	public synthetic fun getDeserializer ()Ldev/evo/elasticmagic/serde/Deserializer;
-	public fun getDeserializer ()Ldev/evo/elasticmagic/serde/serialization/JsonDeserializer$Companion;
+	public fun getDeserializer ()Ldev/evo/elasticmagic/serde/kotlinx/JsonDeserializer$Companion;
 	public synthetic fun getSerializer ()Ldev/evo/elasticmagic/serde/Serializer;
-	public fun getSerializer ()Ldev/evo/elasticmagic/serde/serialization/JsonSerializer$Companion;
+	public fun getSerializer ()Ldev/evo/elasticmagic/serde/kotlinx/JsonSerializer$Companion;
 }
 
-public abstract class dev/evo/elasticmagic/serde/serialization/JsonSerializer : dev/evo/elasticmagic/serde/Serializer {
-	public static final field Companion Ldev/evo/elasticmagic/serde/serialization/JsonSerializer$Companion;
+public abstract class dev/evo/elasticmagic/serde/kotlinx/JsonSerializer : dev/evo/elasticmagic/serde/Serializer {
+	public static final field Companion Ldev/evo/elasticmagic/serde/kotlinx/JsonSerializer$Companion;
 	public fun array (Lkotlin/jvm/functions/Function1;)Ldev/evo/elasticmagic/serde/Serializer$ArrayCtx;
 	protected fun getJson ()Lkotlinx/serialization/json/Json;
 	public fun obj (Lkotlin/jvm/functions/Function1;)Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;
 }
 
-public final class dev/evo/elasticmagic/serde/serialization/JsonSerializer$ArrayCtx : dev/evo/elasticmagic/serde/Serializer$ArrayCtx {
-	public fun <init> (Ldev/evo/elasticmagic/serde/serialization/JsonSerializer;)V
+public final class dev/evo/elasticmagic/serde/kotlinx/JsonSerializer$ArrayCtx : dev/evo/elasticmagic/serde/Serializer$ArrayCtx {
+	public fun <init> (Ldev/evo/elasticmagic/serde/kotlinx/JsonSerializer;)V
 	public fun array (Lkotlin/jvm/functions/Function1;)V
 	public final fun build ()Lkotlinx/serialization/json/JsonArray;
 	public fun obj (Lkotlin/jvm/functions/Function1;)V
@@ -159,11 +159,11 @@ public final class dev/evo/elasticmagic/serde/serialization/JsonSerializer$Array
 	public fun valueIfNotNull (Ljava/lang/String;)V
 }
 
-public final class dev/evo/elasticmagic/serde/serialization/JsonSerializer$Companion : dev/evo/elasticmagic/serde/serialization/JsonSerializer {
+public final class dev/evo/elasticmagic/serde/kotlinx/JsonSerializer$Companion : dev/evo/elasticmagic/serde/kotlinx/JsonSerializer {
 }
 
-public final class dev/evo/elasticmagic/serde/serialization/JsonSerializer$ObjectCtx : dev/evo/elasticmagic/serde/Serializer$ObjectCtx {
-	public fun <init> (Ldev/evo/elasticmagic/serde/serialization/JsonSerializer;)V
+public final class dev/evo/elasticmagic/serde/kotlinx/JsonSerializer$ObjectCtx : dev/evo/elasticmagic/serde/Serializer$ObjectCtx {
+	public fun <init> (Ldev/evo/elasticmagic/serde/kotlinx/JsonSerializer;)V
 	public fun array (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
 	public final fun build ()Lkotlinx/serialization/json/JsonObject;
 	public fun field (Ljava/lang/String;Ljava/lang/Boolean;)V
@@ -184,15 +184,15 @@ public final class dev/evo/elasticmagic/serde/serialization/JsonSerializer$Objec
 	public fun serialize ()Ljava/lang/String;
 }
 
-public final class dev/evo/elasticmagic/serde/serialization/PrettyJsonSerde : dev/evo/elasticmagic/serde/Serde$Json {
-	public static final field INSTANCE Ldev/evo/elasticmagic/serde/serialization/PrettyJsonSerde;
+public final class dev/evo/elasticmagic/serde/kotlinx/PrettyJsonSerde : dev/evo/elasticmagic/serde/Serde$Json {
+	public static final field INSTANCE Ldev/evo/elasticmagic/serde/kotlinx/PrettyJsonSerde;
 	public synthetic fun getDeserializer ()Ldev/evo/elasticmagic/serde/Deserializer;
-	public fun getDeserializer ()Ldev/evo/elasticmagic/serde/serialization/JsonDeserializer$Companion;
+	public fun getDeserializer ()Ldev/evo/elasticmagic/serde/kotlinx/JsonDeserializer$Companion;
 	public synthetic fun getSerializer ()Ldev/evo/elasticmagic/serde/Serializer;
-	public fun getSerializer ()Ldev/evo/elasticmagic/serde/serialization/PrettyJsonSerializer;
+	public fun getSerializer ()Ldev/evo/elasticmagic/serde/kotlinx/PrettyJsonSerializer;
 }
 
-public final class dev/evo/elasticmagic/serde/serialization/PrettyJsonSerializer : dev/evo/elasticmagic/serde/serialization/JsonSerializer {
-	public static final field INSTANCE Ldev/evo/elasticmagic/serde/serialization/PrettyJsonSerializer;
+public final class dev/evo/elasticmagic/serde/kotlinx/PrettyJsonSerializer : dev/evo/elasticmagic/serde/kotlinx/JsonSerializer {
+	public static final field INSTANCE Ldev/evo/elasticmagic/serde/kotlinx/PrettyJsonSerializer;
 }
 

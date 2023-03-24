@@ -1,6 +1,6 @@
 package dev.evo.elasticmagic.serde
 
-import dev.evo.elasticmagic.serde.serialization.JsonSerde
+import dev.evo.elasticmagic.serde.kotlinx.JsonSerde
 
 import kotlinx.benchmark.BenchmarkTimeUnit
 import kotlinx.benchmark.OutputTimeUnit

@@ -14,7 +14,7 @@ kotlin {
         val commonTest by getting {
             dependencies {
                 implementation(Libs.ktorClient("mock"))
-                implementation(project(":elasticmagic-serde-serialization-json"))
+                implementation(project(":elasticmagic-serde-kotlinx-json"))
             }
         }
     }

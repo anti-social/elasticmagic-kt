@@ -1,7 +1,7 @@
 package samples.started
 
 import dev.evo.elasticmagic.ElasticsearchCluster
-import dev.evo.elasticmagic.serde.serialization.JsonSerde
+import dev.evo.elasticmagic.serde.kotlinx.JsonSerde
 import dev.evo.elasticmagic.transport.ElasticsearchKtorTransport
 
 const val DEFAULT_ELASTIC_URL = "http://localhost:9200"

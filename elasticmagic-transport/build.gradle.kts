@@ -10,7 +10,7 @@ kotlin {
 
         getByName("commonTest") {
             dependencies {
-                api(project(":elasticmagic-serde-serialization-json"))
+                api(project(":elasticmagic-serde-kotlinx-json"))
                 api(Libs.kotlinxSerialization("json"))
             }
         }

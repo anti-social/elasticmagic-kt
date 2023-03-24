@@ -1,8 +1,8 @@
 package dev.evo.elasticmagic.transport
 
-import dev.evo.elasticmagic.serde.serialization.JsonDeserializer
-import dev.evo.elasticmagic.serde.serialization.JsonSerde
-import dev.evo.elasticmagic.serde.serialization.JsonSerializer
+import dev.evo.elasticmagic.serde.kotlinx.JsonDeserializer
+import dev.evo.elasticmagic.serde.kotlinx.JsonSerde
+import dev.evo.elasticmagic.serde.kotlinx.JsonSerializer
 import dev.evo.elasticmagic.serde.toMap
 
 import io.kotest.assertions.throwables.shouldThrow

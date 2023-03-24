@@ -18,7 +18,7 @@ kotlin {
             dependencies {
                 implementation(project(":elasticmagic"))
 
-                implementation(project(":elasticmagic-serde-serialization-json"))
+                implementation(project(":elasticmagic-serde-kotlinx-json"))
 
                 implementation(project(":elasticmagic-transport-ktor"))
                 implementation(Libs.ktorClient("core"))
