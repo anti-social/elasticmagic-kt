@@ -1,3 +1,15 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath(Libs.kotlinxAtomicfuGradlePlugin())
+    }
+}
+
+apply(plugin = "kotlinx-atomicfu")
+
 configureMultiplatform()
 
 kotlin {
@@ -11,6 +23,7 @@ kotlin {
                 implementation(project(":elasticmagic-transport-ktor"))
                 implementation(Libs.ktorClient("core"))
                 implementation(Libs.kotlinxCoroutines("core"))
+                implementation(Libs.kotlinxAtomicfu())
 
                 implementation(project(":elasticmagic-kotlinx-datetime"))
                 implementation(Libs.kotlinxDatetime())

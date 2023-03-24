@@ -14,57 +14,66 @@ import dev.evo.elasticmagic.transport.PlainResponse
 import dev.evo.elasticmagic.transport.Request
 import dev.evo.elasticmagic.transport.Tracker
 import kotlin.time.Duration
+import kotlinx.atomicfu.atomic
 
 @Suppress("UnnecessaryAbstractClass")
 abstract class ElasticsearchTestBase : TestBase() {
     abstract val indexName: String
 
-    protected fun runTestWithTransports(debug: Boolean = false, block: suspend TestScope.() -> Unit) {
-        for (apiSerde in apiSerdes) {
-            val transport = ElasticsearchKtorTransport(
-                elasticUrl,
-                engine = httpEngine,
-            ) {
-                if (elasticAuth != null) {
-                    auth = elasticAuth
+    protected val debug = atomic(false)
+    protected val transport = ElasticsearchKtorTransport(
+        elasticUrl,
+        engine = httpEngine,
+    ) {
+        if (elasticAuth != null) {
+            auth = elasticAuth
+        }
+
+        trackers = listOf({
+            @Suppress("ForbiddenMethodCall")
+            object : Tracker {
+                override fun requiresTextContent(request: Request<*, *, *>) = true
+
+                override fun onRequest(request: PlainRequest) {
+                    if (!debug.value) {
+                        return
+                    }
+                    println(">>>")
+                    val queryParams = request.parameters
+                        .flatMap { (k, v) -> v.map { w -> "$k=$w" } }
+                        .joinToString("&")
+                    println("${request.method} ${request.path.ifEmpty { "/" }}?${queryParams}")
+                    println(request.textContent)
+                    println()
                 }
 
-                if (debug) {
-                    trackers = listOf({
-                        @Suppress("ForbiddenMethodCall")
-                        object : Tracker {
-                            override fun requiresTextContent(request: Request<*, *, *>) = true
-
-                            override fun onRequest(request: PlainRequest) {
-                                println(">>>")
-                                val queryParams = request.parameters
-                                    .flatMap { (k, v) -> v.map { w -> "$k=$w" } }
-                                    .joinToString("&")
-                                println("${request.method} ${request.path.ifEmpty { "/" }}?${queryParams}")
-                                println(request.textContent)
-                                println()
+                override fun onResponse(responseResult: Result<PlainResponse>, duration: Duration) {
+                    if (!debug.value) {
+                        return
+                    }
+                    responseResult
+                        .onSuccess { response ->
+                            println("<<< ${response.statusCode}: ${duration}")
+                            response.headers.forEach { header ->
+                                println("< ${header.key}: ${header.value}")
                             }
-
-                            override fun onResponse(responseResult: Result<PlainResponse>, duration: Duration) {
-                                responseResult
-                                    .onSuccess { response ->
-                                        println("<<< ${response.statusCode}: ${duration}")
-                                        response.headers.forEach { header ->
-                                            println("< ${header.key}: ${header.value}")
-                                        }
-                                        println(response.contentType)
-                                        println(response.content)
-                                        println()
-                                    }
-                                    .onFailure { exception ->
-                                        println("!!! $exception")
-                                        println()
-                                    }
-                            }
+                            println(response.contentType)
+                            println(response.content)
+                            println()
                         }
-                    })
+                        .onFailure { exception ->
+                            println("!!! $exception")
+                            println()
+                        }
                 }
             }
+        })
+    }
+
+    protected fun runTestWithTransports(debug: Boolean = false, block: suspend TestScope.() -> Unit) {
+        this.debug.value = debug
+
+        for (apiSerde in apiSerdes) {
             val bulkSerde = if (apiSerde is Serde.OneLineJson) {
                 apiSerde
             } else {

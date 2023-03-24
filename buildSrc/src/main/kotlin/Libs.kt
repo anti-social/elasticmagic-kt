@@ -20,6 +20,7 @@ object Versions {
     const val kotlinxSerialization = "1.3.3"
     const val kotlinxCoroutines = "1.6.3-native-mt"
     const val kotlinxDatetime = "0.3.3"
+    const val kotlinxAtomicfu = "0.20.0"
     const val ktor = "2.1.3"
 
     // Serialization dependencies
@@ -47,19 +48,27 @@ object Libs {
     }
 
     fun kotlinxLib(lib: String, version: String): String {
-        return "org.jetbrains.kotlinx:kotlinx-$lib:$version"
+        return "org.jetbrains.kotlinx:$lib:$version"
     }
 
     fun kotlinxSerialization(flavor: String): String {
-        return kotlinxLib("serialization-$flavor", Versions.kotlinxSerialization)
+        return kotlinxLib("kotlinx-serialization-$flavor", Versions.kotlinxSerialization)
     }
 
     fun kotlinxCoroutines(flavor: String): String {
-        return kotlinxLib("coroutines-$flavor", Versions.kotlinxCoroutines)
+        return kotlinxLib("kotlinx-coroutines-$flavor", Versions.kotlinxCoroutines)
     }
 
     fun kotlinxDatetime(): String {
-        return kotlinxLib("datetime", Versions.kotlinxDatetime)
+        return kotlinxLib("kotlinx-datetime", Versions.kotlinxDatetime)
+    }
+
+    fun kotlinxAtomicfu(): String {
+        return kotlinxLib("atomicfu", Versions.kotlinxAtomicfu)
+    }
+
+    fun kotlinxAtomicfuGradlePlugin(): String {
+        return kotlinxLib("atomicfu-gradle-plugin", Versions.kotlinxAtomicfu)
     }
 
     fun ktorClient(flavor: String): String {
