@@ -421,14 +421,8 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
         scriptFields.clear()
     }
 
-    fun runtimeMappings(vararg fields: Pair<String, BoundRuntimeField<*>>): T = self {
-        runtimeMappings.putAll(fields)
-    }
-
     fun runtimeMappings(vararg fields: BoundRuntimeField<*>): T = self {
-        for (field in fields) {
-            runtimeMappings.put(field.getFieldName(), field)
-        }
+        fields.associateByTo(runtimeMappings, BoundRuntimeField<*>::getFieldName)
     }
 
     fun runtimeMappings(fields: RuntimeFields): T = self {

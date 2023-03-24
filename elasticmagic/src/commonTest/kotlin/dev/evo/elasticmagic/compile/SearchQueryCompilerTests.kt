@@ -751,7 +751,7 @@ class SearchQueryCompilerTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQ
     @Test
     fun runtimeMappings() = testWithCompiler {
         val query = SearchQuery().runtimeMappings(
-            "day_of_week" to BoundRuntimeField(
+            BoundRuntimeField(
                 "day_of_week", KeywordType,
                 Script.Source(
                     """
