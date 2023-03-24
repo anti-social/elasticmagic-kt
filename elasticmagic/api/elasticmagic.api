@@ -74,7 +74,6 @@ public abstract class dev/evo/elasticmagic/BaseSearchQuery {
 	public final fun runtimeMappings (Ldev/evo/elasticmagic/SearchQuery$CLEAR;)Ldev/evo/elasticmagic/BaseSearchQuery;
 	public final fun runtimeMappings (Ldev/evo/elasticmagic/doc/RuntimeFields;)Ldev/evo/elasticmagic/BaseSearchQuery;
 	public final fun runtimeMappings ([Ldev/evo/elasticmagic/doc/BoundRuntimeField;)Ldev/evo/elasticmagic/BaseSearchQuery;
-	public final fun runtimeMappings ([Lkotlin/Pair;)Ldev/evo/elasticmagic/BaseSearchQuery;
 	public final fun scriptFields (Ldev/evo/elasticmagic/SearchQuery$CLEAR;)Ldev/evo/elasticmagic/BaseSearchQuery;
 	public final fun scriptFields ([Lkotlin/Pair;)Ldev/evo/elasticmagic/BaseSearchQuery;
 	public final fun searchParams ([Lkotlin/Pair;)Ldev/evo/elasticmagic/BaseSearchQuery;

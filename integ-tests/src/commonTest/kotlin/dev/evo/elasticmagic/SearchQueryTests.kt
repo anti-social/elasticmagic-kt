@@ -71,21 +71,6 @@ object OrderDoc : Document() {
     val status by int().enum(OrderStatus::id)
     val comment by text()
     val dateCreated by instant()
-    val dayOfWeek by runtime(
-        "day_of_week",
-        KeywordType,
-        Script.Source(
-            """
-            emit(
-                doc[params.timestampField].value
-                    .dayOfWeekEnum
-                    .getDisplayName(TextStyle.FULL, Locale.ROOT)
-            )""".trimIndent(),
-            params = Params(
-                "timestampField" to dateCreated
-            )
-        )
-    )
 }
 
 class OrderDocSource : DocSource() {
@@ -632,18 +617,43 @@ class SearchQueryTests : ElasticsearchTestBase() {
             OrderDoc,
             listOf(karlssonsJam, karlssonsBestDonuts, karlssonsJustDonuts, karlssonsJustAnotherDonuts)
         ) {
+            val version = cluster.getVersion()
+            if (
+                version is Version.Opensearch ||
+                version is Version.Elasticsearch && version < Version.Elasticsearch(7, 11, 0)
+            ) {
+                return@withFixtures
+            }
+
             val statusStrField = OrderDoc.runtimeField(
-                "status_str", KeywordType, Script.Source("emit(doc['status'].value.toString())")
+                "status_str",
+                KeywordType,
+                Script.Source("emit(doc['status'].value.toString())")
+            )
+            val dayOfWeekField = OrderDoc.runtimeField(
+                "day_of_week",
+                KeywordType,
+                Script.Source(
+                    """
+                    emit(
+                        doc[params.timestampField].value
+                            .dayOfWeekEnum
+                            .getDisplayName(TextStyle.FULL, Locale.ROOT)
+                    )""".trimIndent(),
+                    params = Params(
+                        "timestampField" to OrderDoc.dateCreated
+                    )
+                )
             )
             val searchResult = SearchQuery()
-                .runtimeMappings(OrderDoc.dayOfWeek, statusStrField)
-                .aggs("days_of_week" to TermsAgg(OrderDoc.dayOfWeek))
-                .fields(OrderDoc.dayOfWeek, statusStrField)
-                .sort(OrderDoc.dayOfWeek)
+                .runtimeMappings(dayOfWeekField, statusStrField)
+                .aggs("days_of_week" to TermsAgg(dayOfWeekField))
+                .fields(dayOfWeekField, statusStrField)
+                .sort(dayOfWeekField)
                 .execute(index)
 
             searchResult.hits.size shouldBe 4
-            searchResult.hits.flatMap { hit -> hit.fields[OrderDoc.dayOfWeek]!! } shouldBe listOf(
+            searchResult.hits.flatMap { hit -> hit.fields[dayOfWeekField]!! } shouldBe listOf(
                 "Thursday", "Thursday", "Tuesday", "Wednesday"
             )
             searchResult.hits.flatMap { hit -> hit.fields[statusStrField]!! } shouldBe listOf(
