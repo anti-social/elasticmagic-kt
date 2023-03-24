@@ -30,7 +30,7 @@ object Versions {
     const val jackson = "2.12.2"
 
     // Testing
-    const val kotest = "4.4.1"
+    const val kotest = "5.5.5"
 
     private fun readVersionProperties(): Properties {
         return Versions::class.java.getResourceAsStream("/elasticmagic/versions.properties").use { versions ->
