@@ -70,7 +70,7 @@ abstract class ElasticsearchTestBase : TestBase() {
         })
     }
 
-    protected fun runTestWithTransports(debug: Boolean = false, block: suspend TestScope.() -> Unit) {
+    protected fun runTestWithSerdes(debug: Boolean = false, block: suspend TestScope.() -> Unit) {
         this.debug.value = debug
 
         for (apiSerde in apiSerdes) {

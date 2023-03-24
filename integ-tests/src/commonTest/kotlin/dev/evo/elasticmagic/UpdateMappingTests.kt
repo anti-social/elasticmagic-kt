@@ -30,7 +30,7 @@ class UpdateMappingTests : ElasticsearchTestBase() {
     override val indexName = "update-mapping"
     
     @Test
-    fun testUpdateMapping() = runTestWithTransports {
+    fun testUpdateMapping() = runTestWithSerdes {
         withTestIndex(UserV1Doc) {
             index.bulk(listOf(
                 CreateAction(
