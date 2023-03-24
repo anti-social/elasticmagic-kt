@@ -25,6 +25,7 @@ import dev.evo.elasticmagic.query.Script
 import dev.evo.elasticmagic.query.Sort
 import dev.evo.elasticmagic.query.match
 import dev.evo.elasticmagic.transport.ElasticsearchException
+import dev.evo.elasticmagic.types.KeywordType
 
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
@@ -70,6 +71,21 @@ object OrderDoc : Document() {
     val status by int().enum(OrderStatus::id)
     val comment by text()
     val dateCreated by instant()
+    val dayOfWeek by runtime(
+        "day_of_week",
+        KeywordType,
+        Script.Source(
+            """
+            emit(
+                doc[params.timestampField].value
+                    .dayOfWeekEnum
+                    .getDisplayName(TextStyle.FULL, Locale.ROOT)
+            )""".trimIndent(),
+            params = Params(
+                "timestampField" to dateCreated
+            )
+        )
+    )
 }
 
 class OrderDocSource : DocSource() {
@@ -150,6 +166,21 @@ class SearchQueryTests : ElasticsearchTestBase() {
     }
         .withActionMeta(id = "103")
         .also { docSources[it.meta.id] = it }
+    private val karlssonsJustAnotherDonuts = OrderDocSource().apply {
+        user = karlsson
+        items = mutableListOf(
+            OrderDocSource.CartItem().apply {
+                productId = 3
+                productName = "Shop donut"
+                productPrice = 0.1F
+                quantity = 10
+            }
+        )
+        status = OrderStatus.ACCEPTED
+        dateCreated = LocalDateTime(2020, 12, 31, 0, 0, 0).toInstant(TimeZone.UTC)
+    }
+        .withActionMeta(id = "104")
+        .also { docSources[it.meta.id] = it }
     private val littleBrother = OrderDocSource.User().apply {
         id = 2
         name = "Svante"
@@ -180,7 +211,7 @@ class SearchQueryTests : ElasticsearchTestBase() {
         status = OrderStatus.NEW
         dateCreated = LocalDateTime(2021, 10, 9, 15, 31, 45).toInstant(TimeZone.UTC)
     }
-        .withActionMeta(id = "104")
+        .withActionMeta(id = "105")
         .also { docSources[it.meta.id] = it }
 
     private fun TestScope.checkOrderHits(hits: List<SearchHit<OrderDocSource>>, expectedIds: Set<String>) {
@@ -416,13 +447,13 @@ class SearchQueryTests : ElasticsearchTestBase() {
             karlssonsJam, karlssonsBestDonuts, karlssonsJustDonuts, littleBrotherDogStuff
         )) {
             val searchResult = SearchQuery(::OrderDocSource)
-                .filter(Ids(listOf("104", "102")))
+                .filter(Ids(listOf("105", "102")))
                 .execute(index)
 
             searchResult.totalHits shouldBe 2
             searchResult.maxScore shouldBe 0.0F
 
-            checkOrderHits(searchResult.hits, setOf("102", "104"))
+            checkOrderHits(searchResult.hits, setOf("102", "105"))
         }
     }
 
@@ -450,7 +481,7 @@ class SearchQueryTests : ElasticsearchTestBase() {
             searchResult.maxScore shouldBe null
 
             val hits = searchResult.hits
-            checkOrderHitsSorted(hits, listOf("104", "103", "102", "101"))
+            checkOrderHitsSorted(hits, listOf("105", "103", "102", "101"))
             hits[0].sort shouldBe listOf(1.633793505E12)
             hits[1].sort shouldBe listOf(1.609459199E12)
             hits[2].sort shouldBe listOf(1.608713228E12)
@@ -478,7 +509,7 @@ class SearchQueryTests : ElasticsearchTestBase() {
             searchResult.maxScore shouldBe null
 
             val hits = searchResult.hits
-            checkOrderHitsSorted(hits, listOf("102", "104", "103", "101"))
+            checkOrderHitsSorted(hits, listOf("102", "105", "103", "101"))
             hits[0].sort shouldBe listOf(100)
             hits[1].sort shouldBe listOf(13)
             hits[2].sort shouldBe listOf(10)
@@ -596,6 +627,40 @@ class SearchQueryTests : ElasticsearchTestBase() {
     }
 
     @Test
+    fun runtimeMappings() = runTestWithSerdes {
+        withFixtures(
+            OrderDoc,
+            listOf(karlssonsJam, karlssonsBestDonuts, karlssonsJustDonuts, karlssonsJustAnotherDonuts)
+        ) {
+            val statusStrField = OrderDoc.runtimeField(
+                "status_str", KeywordType, Script.Source("emit(doc['status'].value.toString())")
+            )
+            val searchResult = SearchQuery()
+                .runtimeMappings(OrderDoc.dayOfWeek, statusStrField)
+                .aggs("days_of_week" to TermsAgg(OrderDoc.dayOfWeek))
+                .fields(OrderDoc.dayOfWeek, statusStrField)
+                .sort(OrderDoc.dayOfWeek)
+                .execute(index)
+
+            searchResult.hits.size shouldBe 4
+            searchResult.hits.flatMap { hit -> hit.fields[OrderDoc.dayOfWeek]!! } shouldBe listOf(
+                "Thursday", "Thursday", "Tuesday", "Wednesday"
+            )
+            searchResult.hits.flatMap { hit -> hit.fields[statusStrField]!! } shouldBe listOf(
+                "1", "1", "0", "0"
+            )
+            val daysOfWeekAgg = searchResult.agg<TermsAggResult<String>>("days_of_week")
+            daysOfWeekAgg.buckets.size shouldBe 3
+            daysOfWeekAgg.buckets[0].key shouldBe "Thursday"
+            daysOfWeekAgg.buckets[0].docCount shouldBe 2
+            daysOfWeekAgg.buckets[1].key shouldBe "Tuesday"
+            daysOfWeekAgg.buckets[1].docCount shouldBe 1
+            daysOfWeekAgg.buckets[2].key shouldBe "Wednesday"
+            daysOfWeekAgg.buckets[2].docCount shouldBe 1
+        }
+    }
+
+    @Test
     fun multiSearch() = runTestWithSerdes {
         withFixtures(
             OrderDoc,
@@ -620,7 +685,7 @@ class SearchQueryTests : ElasticsearchTestBase() {
             newOrdersResult.hits[0].source.shouldBeInstanceOf<OrderDocSource>()
             newOrdersResult.hits[0].id shouldBe "101"
             newOrdersResult.hits[1].id shouldBe "102"
-            newOrdersResult.hits[2].id shouldBe "104"
+            newOrdersResult.hits[2].id shouldBe "105"
 
             val acceptedOrdersResult = searchResult.responses[1]
             acceptedOrdersResult.totalHits shouldBe 1
