@@ -13,7 +13,8 @@ object Versions {
     const val detekt = "1.22.0"
     const val dokka = "1.7.20"
     const val mkdocs = "2.4.0"
-    const val binaryCompatibilityValidator = "0.10.1"
+    // With 0.13.0 ':integ-tests:transformJvmTestAtomicfu' task somehow fails
+    const val binaryCompatibilityValidator = "0.12.1"
 
     // Kotlin and libs
     val kotlin = versionProps["kotlin"]!!.toString()
