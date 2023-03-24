@@ -17,7 +17,8 @@ object Versions {
 
     // Kotlin and libs
     val kotlin = versionProps["kotlin"]!!.toString()
-    const val kotlinxSerialization = "1.3.3"
+    // At 1.5.0 it started to fall with JS
+    const val kotlinxSerialization = "1.4.1"
     const val kotlinxCoroutines = "1.6.3-native-mt"
     const val kotlinxDatetime = "0.3.3"
     const val kotlinxAtomicfu = "0.20.0"
