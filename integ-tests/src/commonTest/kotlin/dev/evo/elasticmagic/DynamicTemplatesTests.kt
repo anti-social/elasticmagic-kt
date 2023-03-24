@@ -28,7 +28,7 @@ class DynamicTemplatesTests : ElasticsearchTestBase() {
     override val indexName = "dynamic-templates"
 
     @Test
-    fun dynamicTemplates() = runTestWithTransports {
+    fun dynamicTemplates() = runTestWithSerdes {
         val companyIdField = ProductDoc.ids.field("company_id")
 
         val p1 = DynDocSource {

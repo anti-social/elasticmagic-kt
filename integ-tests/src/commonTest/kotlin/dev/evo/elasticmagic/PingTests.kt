@@ -8,7 +8,7 @@ class PingTests : ElasticsearchTestBase() {
     override val indexName = "ping"
 
     @Test
-    fun successfulPing() = runTestWithTransports {
+    fun successfulPing() = runTestWithSerdes {
         val ping = this.cluster.ping()
         ping.statusCode shouldBe 200
     }
