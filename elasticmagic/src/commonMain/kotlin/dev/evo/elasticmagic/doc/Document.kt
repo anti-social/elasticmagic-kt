@@ -85,6 +85,10 @@ open class BoundField<V, T>(
         h = 37 * h + params.hashCode()
         return h
     }
+
+    override fun toString(): String {
+        return "BoundField($name, $type, $params, $parent)"
+    }
 }
 
 /**
@@ -134,13 +138,13 @@ class BoundJoinField(
 class BoundRuntimeField<V>(
     name: String,
     type: FieldType<V, V>,
-    script: Script,
+    val script: Script,
     parent: FieldSet,
 ) : BoundField<V, V>(name, type, Params("script" to script), parent)
 
 @Suppress("UnnecessaryAbstractClass")
 abstract class FieldSetShortcuts {
-    fun <V, T> field(
+    protected fun <V, T> field(
         name: String?,
         type: FieldType<V, T>,
         docValues: Boolean? = null,
@@ -158,7 +162,7 @@ abstract class FieldSetShortcuts {
         return FieldSet.Field(name, type, params)
     }
 
-    fun <V, T> field(
+    protected fun <V, T> field(
         type: FieldType<V, T>,
         docValues: Boolean? = null,
         index: Boolean? = null,
@@ -174,7 +178,7 @@ abstract class FieldSetShortcuts {
         )
     }
 
-    fun boolean(
+    protected fun boolean(
         name: String? = null,
         docValues: Boolean? = null,
         index: Boolean? = null,
@@ -190,7 +194,7 @@ abstract class FieldSetShortcuts {
         )
     }
 
-    fun byte(
+    protected fun byte(
         name: String? = null,
         docValues: Boolean? = null,
         index: Boolean? = null,
@@ -206,7 +210,7 @@ abstract class FieldSetShortcuts {
         )
     }
 
-    fun short(
+    protected fun short(
         name: String? = null,
         docValues: Boolean? = null,
         index: Boolean? = null,
@@ -222,7 +226,7 @@ abstract class FieldSetShortcuts {
         )
     }
 
-    fun int(
+    protected fun int(
         name: String? = null,
         docValues: Boolean? = null,
         index: Boolean? = null,
@@ -238,7 +242,7 @@ abstract class FieldSetShortcuts {
         )
     }
 
-    fun long(
+    protected fun long(
         name: String? = null,
         docValues: Boolean? = null,
         index: Boolean? = null,
@@ -254,7 +258,7 @@ abstract class FieldSetShortcuts {
         )
     }
 
-    fun float(
+    protected fun float(
         name: String? = null,
         docValues: Boolean? = null,
         index: Boolean? = null,
@@ -270,7 +274,7 @@ abstract class FieldSetShortcuts {
         )
     }
 
-    fun double(
+    protected fun double(
         name: String? = null,
         docValues: Boolean? = null,
         index: Boolean? = null,
@@ -286,7 +290,7 @@ abstract class FieldSetShortcuts {
         )
     }
 
-    fun keyword(
+    protected fun keyword(
         name: String? = null,
         normalizer: String? = null,
         docValues: Boolean? = null,
@@ -309,7 +313,7 @@ abstract class FieldSetShortcuts {
         )
     }
 
-    fun text(
+    protected fun text(
         name: String? = null,
         index: Boolean? = null,
         indexOptions: String? = null,
@@ -337,7 +341,7 @@ abstract class FieldSetShortcuts {
         )
     }
 
-    fun join(
+    protected fun join(
         name: String? = null,
         relations: Map<String, List<String>>,
         eagerGlobalOrdinals: Boolean? = null,
@@ -1284,12 +1288,16 @@ abstract class Document(
         )
     )
 
-    fun <V> runtime(name: String, type: FieldType<V, V>, script: Script): RuntimeField<V> {
+    protected fun <V> runtime(name: String, type: FieldType<V, V>, script: Script): RuntimeField<V> {
         return RuntimeField(name, type, script)
     }
 
-    fun <V> runtime(type: FieldType<V, V>, script: Script): RuntimeField<V> {
+    protected fun <V> runtime(type: FieldType<V, V>, script: Script): RuntimeField<V> {
         return RuntimeField(null, type, script)
+    }
+
+    fun <V> runtimeField(name: String, type: FieldType<V, V>, script: Script): BoundRuntimeField<V> {
+        return BoundRuntimeField(name, type, script, this)
     }
 
     class RuntimeField<V>(

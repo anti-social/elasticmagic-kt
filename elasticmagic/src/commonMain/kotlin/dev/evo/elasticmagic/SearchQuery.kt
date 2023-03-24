@@ -2,7 +2,9 @@ package dev.evo.elasticmagic
 
 import dev.evo.elasticmagic.aggs.Aggregation
 import dev.evo.elasticmagic.doc.BaseDocSource
+import dev.evo.elasticmagic.doc.BoundRuntimeField
 import dev.evo.elasticmagic.doc.DynDocSource
+import dev.evo.elasticmagic.doc.RuntimeFields
 import dev.evo.elasticmagic.query.FieldFormat
 import dev.evo.elasticmagic.query.FieldOperations
 import dev.evo.elasticmagic.query.NodeHandle
@@ -45,6 +47,7 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
     protected val docvalueFields: MutableList<FieldFormat> = mutableListOf()
     protected val storedFields: MutableList<FieldOperations<*>> = mutableListOf()
     protected val scriptFields: MutableMap<String, Script> = mutableMapOf()
+    protected val runtimeMappings: MutableMap<String, BoundRuntimeField<*>> = mutableMapOf()
 
     protected val rescores: MutableList<Rescore> = mutableListOf()
     protected val sorts: MutableList<Sort> = mutableListOf()
@@ -105,26 +108,6 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
         cloned.params.putAll(params)
         return cloned
     }
-
-    /**
-     * Makes an immutable view of the search query. Be careful when using this method.
-     *
-     * <b>Note:</b>
-     *
-     * Returned [PreparedSearchQuery] is just a view of the [SearchQuery], thus changes in
-     * the search query are reflected in the [PreparedSearchQuery].
-     * Therefore [PreparedSearchQuery] should only be used from the same thread as the underlying
-     * [SearchQuery]. If you really need to share [PreparedSearchQuery] between threads
-     * you should clone the [SearchQuery]:
-     *
-     * ```kotlin
-     * val preparedQuery = searchQuery.clone().prepare()
-     * ```
-     */
-    // fun usingIndex(
-    //     indexName: String
-    // ): PreparedSearchQuery<S> {
-    // }
 
     @PublishedApi
     @Suppress("UNCHECKED_CAST")
@@ -438,6 +421,26 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
         scriptFields.clear()
     }
 
+    fun runtimeMappings(vararg fields: Pair<String, BoundRuntimeField<*>>): T = self {
+        runtimeMappings.putAll(fields)
+    }
+
+    fun runtimeMappings(vararg fields: BoundRuntimeField<*>): T = self {
+        for (field in fields) {
+            runtimeMappings.put(field.getFieldName(), field)
+        }
+    }
+
+    fun runtimeMappings(fields: RuntimeFields): T = self {
+        fields.getAllFields().filterIsInstance<BoundRuntimeField<*>>()
+            .associateByTo(runtimeMappings, BoundRuntimeField<*>::getFieldName)
+    }
+
+    @Suppress("UNUSED_PARAMETER")
+    fun runtimeMappings(clear: SearchQuery.CLEAR): T = self {
+        runtimeMappings.clear()
+    }
+
     fun size(size: Int?): T = self {
         this.size = size
     }
@@ -498,6 +501,21 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
         params.putNotNullOrRemove("seq_no_primary_term", seqNoPrimaryTerm)
     }
 
+    /**
+     * Makes an immutable view of the search query. Be careful when using this method.
+     *
+     * <b>Note:</b>
+     *
+     * Returned [SearchQuery.Search] is just a view of the [SearchQuery], thus changes in
+     * the search query are reflected in the [SearchQuery.Search].
+     * Therefore [SearchQuery.Search] should only be used from the same thread as the underlying
+     * [SearchQuery]. If you really need to share [SearchQuery.Search] between threads
+     * you should clone the [SearchQuery]:
+     *
+     * ```kotlin
+     * val search = searchQuery.clone().prepareSearch()
+     * ```
+     */
     fun prepareSearch(params: Params? = null): SearchQuery.Search<S> {
         return SearchQuery.Search(
             docSourceFactory,
@@ -514,6 +532,7 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
             docvalueFields = docvalueFields,
             storedFields = storedFields,
             scriptFields = scriptFields,
+            runtimeMappings = runtimeMappings,
             size = size,
             from = from,
             terminateAfter = terminateAfter,
@@ -727,6 +746,7 @@ open class SearchQuery<S: BaseDocSource>(
         val docvalueFields: List<FieldFormat>,
         val storedFields: List<FieldOperations<*>>,
         val scriptFields: Map<String, Script>,
+        val runtimeMappings: Map<String, BoundRuntimeField<*>>,
         val size: Int?,
         val from: Int?,
         override val terminateAfter: Int?,
@@ -876,4 +896,3 @@ interface PreparedSearchQuery {
         }
     }
 }
-

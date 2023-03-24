@@ -13,13 +13,14 @@ fun FieldSet.instant(
     store: Boolean? = null,
     params: Params? = null,
 ): FieldSet.Field<Instant, Instant> {
-    return field(
-        name, InstantType,
-        docValues = docValues,
-        index = index,
-        store = store,
-        params = params,
+    @Suppress("NAME_SHADOWING")
+    val params = Params(
+        params,
+        "doc_values" to docValues,
+        "index" to index,
+        "store" to store,
     )
+    return FieldSet.Field(name, InstantType, params)
 }
 
 fun FieldSet.datetime(
@@ -29,13 +30,14 @@ fun FieldSet.datetime(
     store: Boolean? = null,
     params: Params? = null,
 ): FieldSet.Field<LocalDateTime, LocalDateTime> {
-    return field(
-        name, DateTimeType,
-        docValues = docValues,
-        index = index,
-        store = store,
-        params = params,
+    @Suppress("NAME_SHADOWING")
+    val params = Params(
+        params,
+        "doc_values" to docValues,
+        "index" to index,
+        "store" to store,
     )
+    return FieldSet.Field(name, DateTimeType, params)
 }
 
 fun FieldSet.date(
@@ -45,11 +47,12 @@ fun FieldSet.date(
     store: Boolean? = null,
     params: Params? = null,
 ): FieldSet.Field<LocalDate, LocalDate> {
-    return field(
-        name, DateType,
-        docValues = docValues,
-        index = index,
-        store = store,
-        params = params,
+    @Suppress("NAME_SHADOWING")
+    val params = Params(
+        params,
+        "doc_values" to docValues,
+        "index" to index,
+        "store" to store,
     )
+    return FieldSet.Field(name, DateType, params)
 }

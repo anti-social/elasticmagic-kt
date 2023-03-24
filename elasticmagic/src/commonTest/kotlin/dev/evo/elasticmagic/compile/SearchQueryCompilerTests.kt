@@ -9,6 +9,7 @@ import dev.evo.elasticmagic.aggs.MinAgg
 import dev.evo.elasticmagic.aggs.TermsAgg
 import dev.evo.elasticmagic.doc.BaseDocSource
 import dev.evo.elasticmagic.doc.BoundField
+import dev.evo.elasticmagic.doc.BoundRuntimeField
 import dev.evo.elasticmagic.doc.Document
 import dev.evo.elasticmagic.doc.RootFieldSet
 import dev.evo.elasticmagic.types.SimpleFieldType
@@ -32,6 +33,7 @@ import dev.evo.elasticmagic.query.QueryRescore
 import dev.evo.elasticmagic.query.SearchExt
 import dev.evo.elasticmagic.query.match
 import dev.evo.elasticmagic.serde.Serializer
+import dev.evo.elasticmagic.types.KeywordType
 import dev.evo.elasticmagic.types.LongType
 
 import io.kotest.assertions.throwables.shouldThrow
@@ -744,6 +746,49 @@ class SearchQueryCompilerTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQ
         )
 
         compile(query.scriptFields(SearchQuery.CLEAR)).body shouldContainExactly emptyMap()
+    }
+
+    @Test
+    fun runtimeMappings() = testWithCompiler {
+        val query = SearchQuery().runtimeMappings(
+            "day_of_week" to BoundRuntimeField(
+                "day_of_week", KeywordType,
+                Script.Source(
+                    """
+                        emit(
+                            doc[params.timestamp_field].value
+                                .dayOfWeekEnum
+                                .getDisplayName(TextStyle.FULL, Locale.ROOT)
+                        )
+                    """.trimIndent(),
+                    params = Params(
+                        "timestamp_field" to AnyField("@timestamp"),
+                    )
+                ),
+                RootFieldSet
+            )
+        )
+        compile(query).body shouldContainExactly mapOf(
+            "runtime_mappings" to mapOf(
+                "day_of_week" to mapOf(
+                    "type" to "keyword",
+                    "script" to mapOf(
+                        "source" to """
+                            emit(
+                                doc[params.timestamp_field].value
+                                    .dayOfWeekEnum
+                                    .getDisplayName(TextStyle.FULL, Locale.ROOT)
+                            )
+                        """.trimIndent(),
+                        "params" to mapOf(
+                            "timestamp_field" to "@timestamp",
+                        )
+                    )
+                )
+            )
+        )
+
+        compile(query.runtimeMappings(SearchQuery.CLEAR)).body shouldContainExactly emptyMap()
     }
 
     @Test

@@ -170,6 +170,18 @@ open class SearchQueryCompiler(
                 }
             }
         }
+        if (searchQuery.runtimeMappings.isNotEmpty()) {
+            ctx.obj("runtime_mappings") {
+                for ((fieldName, field) in searchQuery.runtimeMappings) {
+                    obj(fieldName) {
+                        field("type", field.getFieldType().name)
+                        obj("script") {
+                            visit(this, field.script)
+                        }
+                    }
+                }
+            }
+        }
         if (searchQuery.size != null) {
             ctx.field("size", searchQuery.size)
         }
