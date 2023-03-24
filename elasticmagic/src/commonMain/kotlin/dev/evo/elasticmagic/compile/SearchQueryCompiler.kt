@@ -117,7 +117,7 @@ open class SearchQueryCompiler(
     features: ElasticsearchFeatures,
 ) : BaseSearchQueryCompiler(features) {
 
-    @Suppress("ComplexMethod")
+    @Suppress("CyclomaticComplexMethod")
     fun visit(ctx: ObjectCtx, searchQuery: SearchQuery.Search<*>) {
         super.visit(ctx, searchQuery)
         if (searchQuery.aggregations.isNotEmpty()) {
