@@ -4,7 +4,6 @@ import dev.evo.elasticmagic.aggs.Aggregation
 import dev.evo.elasticmagic.doc.BaseDocSource
 import dev.evo.elasticmagic.doc.BoundRuntimeField
 import dev.evo.elasticmagic.doc.DynDocSource
-import dev.evo.elasticmagic.doc.RuntimeFields
 import dev.evo.elasticmagic.query.FieldFormat
 import dev.evo.elasticmagic.query.FieldOperations
 import dev.evo.elasticmagic.query.NodeHandle
@@ -423,11 +422,6 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
 
     fun runtimeMappings(vararg fields: BoundRuntimeField<*>): T = self {
         fields.associateByTo(runtimeMappings, BoundRuntimeField<*>::getFieldName)
-    }
-
-    fun runtimeMappings(fields: RuntimeFields): T = self {
-        fields.getAllFields().filterIsInstance<BoundRuntimeField<*>>()
-            .associateByTo(runtimeMappings, BoundRuntimeField<*>::getFieldName)
     }
 
     @Suppress("UNUSED_PARAMETER")
