@@ -29,7 +29,7 @@ fun main() = runBlocking {
     println("=== Bike shop is opened ===")
     println()
 
-    val qfParams = mutableMapOf<Pair<String, String>, MutableList<String>>()
+    val qfParams = MutableQueryFilterParams()
     mainLoop@while (true) {
         println("Query filter params: $qfParams")
         val searchQuery = SearchQuery(::BikeDocSource)
@@ -124,7 +124,7 @@ fun MutableQueryFilterParams.processFacetFilterCmd(arg: String?, result: QueryFi
     if (argParts.size == 1) {
         val iter = this.iterator()
         for ((key, _) in iter) {
-            if (filter.name == key.first) {
+            if (filter.name == key.first()) {
                 iter.remove()
             }
         }
@@ -149,7 +149,7 @@ fun MutableQueryFilterParams.processFacetFilterCmd(arg: String?, result: QueryFi
                     value.toString()
                 }
 
-                val paramValues = this.getOrPut(filter.name to "", ::mutableListOf)
+                val paramValues = this.getOrPut(listOf(filter.name), ::mutableListOf)
                 if (filterValue.selected) {
                     paramValues.remove(valueStr)
                 } else {
@@ -168,13 +168,13 @@ fun MutableQueryFilterParams.processFacetFilterCmd(arg: String?, result: QueryFi
                         return false
                     }
                     val to = valueParts[1]
-                    this[filter.name to "lte"] = mutableListOf(to)
+                    this[listOf(filter.name, "lte")] = mutableListOf(to)
                 } else {
                     val from = valueParts[0]
-                    this[filter.name to "gte"] = mutableListOf(from)
+                    this[listOf(filter.name, "gte")] = mutableListOf(from)
                     if (valueParts.size == 3) {
                         val to = valueParts[2]
-                        this[filter.name to "lte"] = mutableListOf(to)
+                        this[listOf(filter.name, "lte")] = mutableListOf(to)
                     }
                 }
             }
@@ -182,7 +182,7 @@ fun MutableQueryFilterParams.processFacetFilterCmd(arg: String?, result: QueryFi
     }
 
     // Clear page when any filter was changed
-    this.remove(BikeShopQueryFilters.page.name to "")
+    this.remove(listOf(BikeShopQueryFilters.page.name))
 
     return true
 }
@@ -206,10 +206,10 @@ fun MutableQueryFilterParams.processSortCmd(arg: String?): Boolean {
         return false
     }
 
-    this[BikeShopQueryFilters.sort.name to ""] = mutableListOf(sortValue.value)
+    this[listOf(BikeShopQueryFilters.sort.name)] = mutableListOf(sortValue.value)
 
     // Clear page when sort was changed
-    this.remove(BikeShopQueryFilters.page.name to "")
+    this.remove(listOf(BikeShopQueryFilters.page.name))
 
     return true
 }
@@ -226,7 +226,7 @@ fun MutableQueryFilterParams.processPageCmd(arg: String?): Boolean {
         return false
     }
 
-    this[BikeShopQueryFilters.page.name to ""] = mutableListOf(page.toString())
+    this[listOf(BikeShopQueryFilters.page.name)] = mutableListOf(page.toString())
     return true
 }
 

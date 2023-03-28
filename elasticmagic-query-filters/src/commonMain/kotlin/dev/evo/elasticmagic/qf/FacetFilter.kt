@@ -15,20 +15,40 @@ import dev.evo.elasticmagic.query.QueryExpression
 import dev.evo.elasticmagic.util.OrderedMap
 
 /**
- * [FacetFilterMode] determines a way how values should be filtered:
- *
- * - [UNION] - 2 or more selected values are combined with *OR* operator.
- *   Most of the facet filters should use this mode. For example, you are buying car wheels
- *   of one of the sizes: R16 or R17. So after you choose corresponding values, a search query
- *   will be filtered with in following way: `wheel_size == R16 || wheel_size == R17`
- * - [INTERSECT] - 2 or more selected values are combined using *AND* operator.
- *   Especially useful with multi-valued fields. For example, you want to buy a charger
- *   that supports AA, AAA and 18650 battery types. So when you choose all the required values,
- *   a generated search query should be filtered with
- *   `battery_type == AA && battery_type == AAA && battery_type == 18650`
+ * [FacetFilterMode] determines a way how values should be filtered.
  */
 enum class FacetFilterMode {
-    UNION, INTERSECT
+    /**
+     * 2 or more selected values are combined with *OR* operator.
+     * Most of the facet filters should use this mode. For example, you are buying car wheels
+     * of one of the sizes: R16 or R17. So after you choose corresponding values, a search query
+     * will be filtered with in following way: `wheel_size == R16 || wheel_size == R17`
+     */
+    UNION,
+    // TODO
+    // UNION_MULTIVALUE,
+    /**
+     * 2 or more selected values are combined using *AND* operator.
+     * Especially useful with multi-valued fields. For example, you want to buy a charger
+     * that supports AA, AAA and 18650 battery types. So when you choose all the required values,
+     * a generated search query should be filtered with
+     * `battery_type == AA && battery_type == AAA && battery_type == 18650`
+     */
+    INTERSECT;
+
+    fun <T> filterByValues(field: FieldOperations<T>, filterValues: List<T & Any>): QueryExpression? {
+        return when (filterValues.size) {
+            0 -> null
+            1 -> field.eq(filterValues[0])
+            else -> {
+                when (this) {
+                    FacetFilterMode.UNION -> field.oneOf(filterValues)
+                    FacetFilterMode.INTERSECT -> Bool.filter(filterValues.map { field eq it })
+                }
+
+            }
+        }
+    }
 }
 
 /**
@@ -82,24 +102,15 @@ class FacetFilter<T, V>(
      * @param name - name of the filter
      * @param params - parameters that should be applied to a search query.
      *   Examples:
-     *   - `mapOf(("manufacturer" to "") to listOf("Giant", "Cube"))`
+     *   - `mapOf(listOf("manufacturer") to listOf("Giant", "Cube"))`
      */
     override fun prepare(name: String, params: QueryFilterParams): PreparedFacetFilter<T> {
-        val filterValues = params.decodeValues(name to "", field.getFieldType())
-        val filterExpr = when (filterValues.size) {
-            0 -> null
-            1 -> field.eq(filterValues[0])
-            else -> {
-                when (mode) {
-                    FacetFilterMode.UNION -> field.oneOf(filterValues)
-                    FacetFilterMode.INTERSECT -> Bool.filter(filterValues.map { field eq it })
-                }
-
-            }
-        }
+        val filterValues = params.decodeValues(name, field.getFieldType())
         return PreparedFacetFilter(
-            this, name, filterExpr,
-            selectedValues = params.decodeValues(name to "", termsAgg.value.getValueType()),
+            this,
+            name,
+            mode.filterByValues(field, filterValues),
+            selectedValues = params.decodeValues(name, termsAgg.value.getValueType()),
         )
     }
 }
@@ -196,11 +207,8 @@ data class FacetFilterResult<T>(
     val mode: FacetFilterMode,
     val values: List<FacetFilterValue<T>>,
     val selected: Boolean,
-) : FilterResult, Iterable<FacetFilterValue<T>> {
-    override fun iterator(): Iterator<FacetFilterValue<T>> {
-        return values.iterator()
-    }
-}
+) : FilterResult, Iterable<FacetFilterValue<T>> by values
+
 
 /**
  * [FacetFilterValue] represents bucket of the corresponding terms aggregation.
