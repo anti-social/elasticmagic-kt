@@ -52,7 +52,7 @@ class SortFilterTests  : BaseCompilerTest<SearchQueryCompiler>(::SearchQueryComp
         }
 
         SearchQuery().also { sq ->
-            val ctx = filter.prepare("sort", mapOf(("sort" to "") to listOf("price")))
+            val ctx = filter.prepare("sort", mapOf(listOf("sort") to listOf("price")))
             ctx.apply(sq, emptyList())
             compile(sq).body shouldContainExactly mapOf(
                 "sort" to listOf("price")
@@ -70,7 +70,7 @@ class SortFilterTests  : BaseCompilerTest<SearchQueryCompiler>(::SearchQueryComp
         }
 
         SearchQuery().also { sq ->
-            val ctx = filter.prepare("sort", mapOf(("sort" to "") to listOf("-price")))
+            val ctx = filter.prepare("sort", mapOf(listOf("sort") to listOf("-price")))
             ctx.apply(sq, emptyList())
             compile(sq).body shouldContainExactly mapOf(
                 "sort" to listOf(mapOf("price" to mapOf("order" to "desc")))

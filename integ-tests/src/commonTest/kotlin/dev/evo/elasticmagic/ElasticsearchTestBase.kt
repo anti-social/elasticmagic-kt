@@ -70,10 +70,14 @@ abstract class ElasticsearchTestBase : TestBase() {
         })
     }
 
-    protected fun runTestWithSerdes(debug: Boolean = false, block: suspend TestScope.() -> Unit) {
+    protected fun runTestWithSerdes(
+        serdes: List<Serde>,
+        debug: Boolean = false,
+        block: suspend TestScope.() -> Unit
+    ) {
         this.debug.value = debug
 
-        for (apiSerde in apiSerdes) {
+        for (apiSerde in serdes) {
             val bulkSerde = if (apiSerde is Serde.OneLineJson) {
                 apiSerde
             } else {
@@ -85,6 +89,10 @@ abstract class ElasticsearchTestBase : TestBase() {
 
             runTest { testScope.block() }
         }
+    }
+
+    protected fun runTestWithSerdes(debug: Boolean = false, block: suspend TestScope.() -> Unit) {
+        runTestWithSerdes(apiSerdes, debug = debug, block)
     }
 
     protected data class TestScope(

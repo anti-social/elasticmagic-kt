@@ -9,11 +9,11 @@ import dev.evo.elasticmagic.SearchQuery
 // sort=weight&
 // page=2&
 val qfParams = mapOf(
-    ("manufacturer" to "") to listOf("Giant", "Cannondale"),
-    ("kind" to "") to listOf("CITY", "CYCLOCROSS", "GRAVEL"),
-    ("price" to "lte") to listOf("2000"),
-    ("sort" to "") to listOf("weight"),
-    ("page" to "") to listOf("2"),
+    listOf("manufacturer") to listOf("Giant", "Cannondale"),
+    listOf("kind") to listOf("CITY", "CYCLOCROSS", "GRAVEL"),
+    listOf("price", "lte") to listOf("2000"),
+    listOf("sort") to listOf("weight"),
+    listOf("page") to listOf("2"),
 )
 
 val searchQuery = SearchQuery()

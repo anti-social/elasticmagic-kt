@@ -35,11 +35,11 @@ class FacetRangeFilter<T>(
      * @param name - name of the filter
      * @param params - parameters that should be applied to a search query.
      *   Supports 2 operations: `gte` and `lte`. Examples:
-     *   - `mapOf(("price" to "gte") to listOf("10"), ("price" to "lte") to listOf("150")))`
+     *   - `mapOf(listOf("price", "gte") to listOf("10"), listOf("price", "lte") to listOf("150")))`
      */
     override fun prepare(name: String, params: QueryFilterParams): PreparedFacetRangeFilter<T> {
-        val from = params.decodeLastValue(name to "gte", field.getFieldType())
-        val to = params.decodeLastValue(name to "lte", field.getFieldType())
+        val from = params.decodeLastValue(listOf(name, "gte"), field.getFieldType())
+        val to = params.decodeLastValue(listOf(name, "lte"), field.getFieldType())
         val filterExpression = if (from != null || to != null) {
             field.range(gte = from, lte = to)
         } else {
