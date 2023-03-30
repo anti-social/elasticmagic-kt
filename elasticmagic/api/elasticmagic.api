@@ -1804,6 +1804,45 @@ public final class dev/evo/elasticmagic/aggs/RangeBucket : dev/evo/elasticmagic/
 	public fun toString ()Ljava/lang/String;
 }
 
+public final class dev/evo/elasticmagic/aggs/ScriptedMetricAgg : dev/evo/elasticmagic/aggs/MetricAggregation {
+	public fun <init> (Ldev/evo/elasticmagic/types/SimpleFieldType;Ldev/evo/elasticmagic/query/Script;Ldev/evo/elasticmagic/query/Script;Ldev/evo/elasticmagic/query/Script;Ldev/evo/elasticmagic/query/Script;Ljava/util/Map;)V
+	public synthetic fun <init> (Ldev/evo/elasticmagic/types/SimpleFieldType;Ldev/evo/elasticmagic/query/Script;Ldev/evo/elasticmagic/query/Script;Ldev/evo/elasticmagic/query/Script;Ldev/evo/elasticmagic/query/Script;Ljava/util/Map;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun clone ()Ldev/evo/elasticmagic/aggs/ScriptedMetricAgg;
+	public synthetic fun clone ()Ldev/evo/elasticmagic/query/Expression;
+	public final fun component1 ()Ldev/evo/elasticmagic/types/SimpleFieldType;
+	public final fun component2 ()Ldev/evo/elasticmagic/query/Script;
+	public final fun component3 ()Ldev/evo/elasticmagic/query/Script;
+	public final fun component4 ()Ldev/evo/elasticmagic/query/Script;
+	public final fun component5 ()Ldev/evo/elasticmagic/query/Script;
+	public final fun component6 ()Ljava/util/Map;
+	public final fun copy (Ldev/evo/elasticmagic/types/SimpleFieldType;Ldev/evo/elasticmagic/query/Script;Ldev/evo/elasticmagic/query/Script;Ldev/evo/elasticmagic/query/Script;Ldev/evo/elasticmagic/query/Script;Ljava/util/Map;)Ldev/evo/elasticmagic/aggs/ScriptedMetricAgg;
+	public static synthetic fun copy$default (Ldev/evo/elasticmagic/aggs/ScriptedMetricAgg;Ldev/evo/elasticmagic/types/SimpleFieldType;Ldev/evo/elasticmagic/query/Script;Ldev/evo/elasticmagic/query/Script;Ldev/evo/elasticmagic/query/Script;Ldev/evo/elasticmagic/query/Script;Ljava/util/Map;ILjava/lang/Object;)Ldev/evo/elasticmagic/aggs/ScriptedMetricAgg;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCombineScript ()Ldev/evo/elasticmagic/query/Script;
+	public final fun getInitScript ()Ldev/evo/elasticmagic/query/Script;
+	public final fun getMapScript ()Ldev/evo/elasticmagic/query/Script;
+	public fun getName ()Ljava/lang/String;
+	public final fun getParams ()Ljava/util/Map;
+	public final fun getReduceScript ()Ldev/evo/elasticmagic/query/Script;
+	public final fun getValueType ()Ldev/evo/elasticmagic/types/SimpleFieldType;
+	public fun hashCode ()I
+	public synthetic fun processResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;)Ldev/evo/elasticmagic/aggs/AggregationResult;
+	public fun processResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;)Ldev/evo/elasticmagic/aggs/ScriptedMetricAggResult;
+	public fun toString ()Ljava/lang/String;
+	public fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
+}
+
+public final class dev/evo/elasticmagic/aggs/ScriptedMetricAggResult : dev/evo/elasticmagic/aggs/AggregationResult {
+	public fun <init> (Ljava/lang/Object;)V
+	public final fun component1 ()Ljava/lang/Object;
+	public final fun copy (Ljava/lang/Object;)Ldev/evo/elasticmagic/aggs/ScriptedMetricAggResult;
+	public static synthetic fun copy$default (Ldev/evo/elasticmagic/aggs/ScriptedMetricAggResult;Ljava/lang/Object;ILjava/lang/Object;)Ldev/evo/elasticmagic/aggs/ScriptedMetricAggResult;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getValue ()Ljava/lang/Object;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
 public final class dev/evo/elasticmagic/aggs/SignificantTermBucket : dev/evo/elasticmagic/aggs/KeyedBucket {
 	public fun <init> (Ljava/lang/Object;JJFLjava/lang/Long;Ljava/util/Map;)V
 	public synthetic fun <init> (Ljava/lang/Object;JJFLjava/lang/Long;Ljava/util/Map;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
@@ -4362,6 +4401,14 @@ public final class dev/evo/elasticmagic/types/KeywordType : dev/evo/elasticmagic
 	public fun getName ()Ljava/lang/String;
 }
 
+public final class dev/evo/elasticmagic/types/ListType : dev/evo/elasticmagic/types/SimpleFieldType {
+	public fun <init> (Ldev/evo/elasticmagic/types/SimpleFieldType;)V
+	public synthetic fun deserialize (Ljava/lang/Object;Lkotlin/jvm/functions/Function0;)Ljava/lang/Object;
+	public fun deserialize (Ljava/lang/Object;Lkotlin/jvm/functions/Function0;)Ljava/util/List;
+	public fun getName ()Ljava/lang/String;
+	public fun getTermType ()Lkotlin/reflect/KClass;
+}
+
 public final class dev/evo/elasticmagic/types/LongRangeType : dev/evo/elasticmagic/types/RangeType {
 	public static final field INSTANCE Ldev/evo/elasticmagic/types/LongRangeType;
 }
@@ -4370,6 +4417,14 @@ public final class dev/evo/elasticmagic/types/LongType : dev/evo/elasticmagic/ty
 	public static final field INSTANCE Ldev/evo/elasticmagic/types/LongType;
 	public fun deserialize (Ljava/lang/Object;Lkotlin/jvm/functions/Function0;)Ljava/lang/Long;
 	public synthetic fun deserialize (Ljava/lang/Object;Lkotlin/jvm/functions/Function0;)Ljava/lang/Object;
+	public fun getName ()Ljava/lang/String;
+	public fun getTermType ()Lkotlin/reflect/KClass;
+}
+
+public final class dev/evo/elasticmagic/types/MapType : dev/evo/elasticmagic/types/SimpleFieldType {
+	public fun <init> (Ldev/evo/elasticmagic/types/SimpleFieldType;)V
+	public synthetic fun deserialize (Ljava/lang/Object;Lkotlin/jvm/functions/Function0;)Ljava/lang/Object;
+	public fun deserialize (Ljava/lang/Object;Lkotlin/jvm/functions/Function0;)Ljava/util/Map;
 	public fun getName ()Ljava/lang/String;
 	public fun getTermType ()Lkotlin/reflect/KClass;
 }

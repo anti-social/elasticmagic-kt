@@ -3,6 +3,8 @@ package dev.evo.elasticmagic.types
 import dev.evo.elasticmagic.Params
 import dev.evo.elasticmagic.doc.BaseDocSource
 import dev.evo.elasticmagic.doc.DynDocSource
+import dev.evo.elasticmagic.serde.Deserializer
+import dev.evo.elasticmagic.serde.forEach
 
 import kotlin.reflect.KClass
 
@@ -732,5 +734,45 @@ internal object DynDocSourceFieldType : FieldType<DynDocSource, Nothing> {
 
     override fun deserializeTerm(v: Any): Nothing {
         throw IllegalStateException("Unreachable")
+    }
+}
+
+/**
+ *
+ */
+class ListType<T>(private val type: SimpleFieldType<T>) : SimpleFieldType<List<T>>() {
+    override val name: String
+        get() = throw IllegalStateException("Should not be used in mappings")
+    override val termType = type.termType
+
+    override fun deserialize(v: Any, valueFactory: (() -> List<T>)?): List<T> {
+        if (v !is Deserializer.ArrayCtx) {
+            deErr(v, "List")
+        }
+        return buildList {
+            v.forEach { w ->
+                add(type.deserialize(w))
+            }
+        }
+    }
+}
+
+/**
+ *
+ */
+class MapType<T>(private val type: SimpleFieldType<T>) : SimpleFieldType<Map<String, T>>() {
+    override val name: String
+        get() = throw IllegalStateException("Should not be used in mappings")
+    override val termType = type.termType
+
+    override fun deserialize(v: Any, valueFactory: (() -> Map<String, T>)?): Map<String, T> {
+        if (v !is Deserializer.ObjectCtx) {
+            deErr(v, "List")
+        }
+        return buildMap {
+            v.forEach { k, w ->
+                put(k, type.deserialize(w))
+            }
+        }
     }
 }

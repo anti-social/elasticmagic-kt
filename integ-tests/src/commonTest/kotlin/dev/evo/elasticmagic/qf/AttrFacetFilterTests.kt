@@ -171,7 +171,6 @@ class AttrFacetFilterTests : ElasticsearchTestBase() {
                     )
                 },
             ).mapIndexed { ix, doc ->
-                // println("$ix: ${doc[ItemDoc.selectAttrs.list()]}")
                 DocSourceAndMeta(IdActionMeta(ix.toString()), doc)
             },
             cleanup = false
@@ -240,7 +239,6 @@ class AttrFacetFilterTests : ElasticsearchTestBase() {
                 connectivityFacet.values[3].count shouldBe 2
             }
 
-            // println("===============================")
             searchQuery = SearchQuery()
             ItemQueryFilters.apply(
                 searchQuery, mapOf(listOf("attr", "1") to listOf("0"))
@@ -293,7 +291,6 @@ class AttrFacetFilterTests : ElasticsearchTestBase() {
                 }
             }
 
-            // println("===============================")
             searchQuery = SearchQuery()
             ItemQueryFilters.apply(
                 searchQuery,
@@ -348,7 +345,6 @@ class AttrFacetFilterTests : ElasticsearchTestBase() {
                 }
             }
 
-            // println("===============================")
             searchQuery = SearchQuery()
             ItemQueryFilters.apply(
                 searchQuery,

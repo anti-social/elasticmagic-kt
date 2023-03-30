@@ -6,26 +6,25 @@ import dev.evo.elasticmagic.SearchQueryResult
 import dev.evo.elasticmagic.aggs.Aggregation
 import dev.evo.elasticmagic.aggs.FilterAgg
 import dev.evo.elasticmagic.aggs.FilterAggResult
+import dev.evo.elasticmagic.aggs.ScriptedMetricAgg
+import dev.evo.elasticmagic.aggs.ScriptedMetricAggResult
 import dev.evo.elasticmagic.aggs.SingleBucketAggResult
 import dev.evo.elasticmagic.aggs.TermsAgg
 import dev.evo.elasticmagic.aggs.TermsAggResult
-import dev.evo.elasticmagic.doc.BoundRuntimeField
-import dev.evo.elasticmagic.doc.RootFieldSet
 import dev.evo.elasticmagic.query.Bool
 import dev.evo.elasticmagic.query.FieldOperations
 import dev.evo.elasticmagic.query.QueryExpression
 import dev.evo.elasticmagic.query.Script
 import dev.evo.elasticmagic.types.IntType
 import dev.evo.elasticmagic.types.LongType
+import dev.evo.elasticmagic.types.ListType
 
-@Suppress("MagicNumber")
 fun encodeAttrWithValue(attrId: Int, valueId: Int): Long {
-    return (attrId.toLong() shl 32) or valueId.toLong()
+    return (attrId.toLong() shl Int.SIZE_BITS) or valueId.toLong()
 }
 
-@Suppress("MagicNumber")
 fun decodeAttrAndValue(attrValue: Long): Pair<Int, Int> {
-    return (attrValue ushr 32).toInt() to attrValue.toInt()
+    return (attrValue ushr Int.SIZE_BITS).toInt() to attrValue.toInt()
 }
 
 internal fun maybeWrapBool(
@@ -125,16 +124,87 @@ class PreparedAttrFacetFilter(
     companion object {
         const val DEFAULT_FULL_AGG_SIZE = 10_000
         const val DEFAULT_ATTR_AGG_SIZE = 100
-        internal val ATTR_SCRIPT = """
-            int attrsLen = doc[params.attrsField].size();
-            if (attrsLen > 0) {
-                for (def attrValue : doc[params.attrsField]) {
-                    long attrId = attrValue >> 32;
-                    if (attrId == params.attrId) {
-                        emit(attrValue & 0xffffffffL);
+        private const val INT_MASK = 0xffff_ffffL
+        internal val SELECTED_ATTR_INIT_SCRIPT = """
+            state.buckets = new HashMap();
+        """.trimIndent()
+        internal val SELECTED_ATTR_MAP_SCRIPT = """
+            if (doc[params.attrsField].size() == 0) {
+                return;
+            }
+            for (v in doc[params.attrsField]) {
+                def attrId = (int) (v >>> 32);
+                def value = (int) v;
+                if (attrId != params.attrId) {
+                    continue;
+                }
+                state.buckets.compute(
+                    value,
+                    (_, docCount) -> {
+                        if (docCount == null) {
+                            return 1;
+                        } else {
+                            return docCount + 1;
+                        }
                     }
+                );
+            }
+        """.trimIndent()
+        // Entries are longs where higher 32 bits is a number of documents
+        // and lower 32 bits is a value (bucket key). This trick allows
+        // to sort entries by number of documents and select `params.size * 1.5 + 10` top entries.
+        // The goal is to minimize heap allocations.
+        private const val QUEUE_ENTRY_FROM_BUCKET = "(((long) bucket.value) << 32) | bucket.key"
+        private const val BUCKET_KEY_FROM_ENTRY = "(int) entry"
+        private const val DOC_COUNT_FROM_ENTRY = "(int) (entry >>> 32)"
+        internal val SELECTED_ATTR_COMBINE_SCRIPT = """
+            def shardSize = (int) (params.size * 1.5 + 10);
+            def queue = new java.util.PriorityQueue();
+            for (bucket in state.buckets.entrySet()) {
+                queue.offer($QUEUE_ENTRY_FROM_BUCKET);
+                if (queue.size() == shardSize) {
+                    queue.poll();
                 }
             }
+            return queue.toArray();
+        """.trimIndent()
+        // Merge entries from all shards and then select `params.size` top entries.
+        // Finally move entries into array and return them as a result of an aggregation.
+        // When processing the result we should decompose entries into a bucket key and a count.
+        // Note returned entries are not sorted because `Arrays.sort` method is missing in Painless
+        // so they should be sorted on a client side.
+        internal val SELECTED_ATTR_REDUCE_SCRIPT = """
+            def buckets = new HashMap();
+            for (state in states) {
+                for (entry in state) {
+                    buckets.compute(
+                        $BUCKET_KEY_FROM_ENTRY,
+                        (_, docCount) -> {
+                            if (docCount == null) {
+                                return $DOC_COUNT_FROM_ENTRY;
+                            } else {
+                                return docCount + $DOC_COUNT_FROM_ENTRY;
+                            }
+                        }
+                    );
+                }
+            }
+
+            def queue = new java.util.PriorityQueue();
+            for (bucket in buckets.entrySet()) {
+                queue.offer($QUEUE_ENTRY_FROM_BUCKET);
+                if (queue.size() == params.size) {
+                    queue.poll();
+                }
+            }
+
+            def result = new long[queue.size()];
+            int i = queue.size() - 1;
+            for (entry in queue) {
+                result[i] = entry;
+                i--;
+            }
+            return result;
         """.trimIndent()
     }
 
@@ -151,6 +221,8 @@ class PreparedAttrFacetFilter(
         }
 
         for ((attrId, selectedAttrValues) in selectedValues) {
+            // For an intersect mode we don't need a dedicated aggregation:
+            // values and counts will be taken from a common aggregation
             if (selectedAttrValues.mode == FacetFilterMode.INTERSECT) {
                 continue
             }
@@ -162,19 +234,18 @@ class PreparedAttrFacetFilter(
                         null
                     }
                 }
-            val attrField = BoundRuntimeField(
-                "_attr_${attrId}", LongType,
-                Script.Source(
-                    ATTR_SCRIPT,
-                    params = mapOf(
-                        "attrId" to attrId,
-                        "attrsField" to filter.field,
-                    )
-                ),
-                RootFieldSet
+            val attrAgg = ScriptedMetricAgg(
+                ListType(LongType),
+                initScript = Script.Source(SELECTED_ATTR_INIT_SCRIPT),
+                mapScript = Script.Source(SELECTED_ATTR_MAP_SCRIPT),
+                combineScript = Script.Source(SELECTED_ATTR_COMBINE_SCRIPT),
+                reduceScript = Script.Source(SELECTED_ATTR_REDUCE_SCRIPT),
+                params = mapOf(
+                    "attrId" to attrId,
+                    "attrsField" to filter.field,
+                    "size" to DEFAULT_ATTR_AGG_SIZE,
+                )
             )
-            searchQuery.runtimeMappings(attrField)
-            val attrAgg = TermsAgg(attrField, size = DEFAULT_ATTR_AGG_SIZE)
             if (otherAttrFacetFilterExpressions.isNotEmpty()) {
                 attrAggs[filterAttrAggName(attrId)] = FilterAgg(
                     maybeWrapBool(Bool::filter, otherAttrFacetFilterExpressions),
@@ -229,15 +300,22 @@ class PreparedAttrFacetFilter(
             val filteredAttrIdMatch = filterAttrAggNameRe.matchEntire(aggName)
             val (attrId, attrAgg) = if (filteredAttrIdMatch != null) {
                 val attrId = filteredAttrIdMatch.groups[1]?.value?.toInt() ?: continue
-                val attrAgg = (agg as FilterAggResult).agg<TermsAggResult<Long>>(attrAggName(attrId))
+                val attrAgg = (agg as FilterAggResult).agg<ScriptedMetricAggResult<List<Long>>>(attrAggName(attrId))
                 attrId to attrAgg
             } else {
                 val attrIdMatch = attrAggNameRe.matchEntire(aggName) ?: continue
                 val attrId = attrIdMatch.groups[1]?.value?.toInt() ?: continue
-                attrId to (agg as TermsAggResult<*>)
+                attrId to (agg as ScriptedMetricAggResult<List<Long>>)
             }
-            facetValues[attrId] = attrAgg.buckets
-                .map { bucket -> AttrFacetValue((bucket.key as Long).toInt(), bucket.docCount) }
+            facetValues[attrId] = attrAgg.value
+                .map {entry ->
+                    val (docCount, valueId) = decodeAttrAndValue(entry)
+                    AttrFacetValue(valueId, docCount.toLong())
+                }
+                // Sort by count descending and then by value ascending
+                .sortedByDescending { fv ->
+                    fv.count shl Int.SIZE_BITS or (fv.value.inv().toLong() and INT_MASK)
+                }
                 .toMutableList()
         }
 

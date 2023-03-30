@@ -1,11 +1,13 @@
 package dev.evo.elasticmagic.aggs
 
+import dev.evo.elasticmagic.Params
 import dev.evo.elasticmagic.compile.BaseSearchQueryCompiler
 import dev.evo.elasticmagic.query.FieldOperations
 import dev.evo.elasticmagic.query.ObjExpression
 import dev.evo.elasticmagic.query.Script
 import dev.evo.elasticmagic.serde.Deserializer
 import dev.evo.elasticmagic.serde.Serializer
+import dev.evo.elasticmagic.types.SimpleFieldType
 
 @Suppress("UnnecessaryAbstractClass")
 abstract class MetricAggregation<R: AggregationResult> : Aggregation<R>
@@ -369,3 +371,48 @@ data class ExtendedStatsAggResult(
         }
     }
 }
+
+data class ScriptedMetricAgg<T>(
+    val valueType: SimpleFieldType<T>,
+    val initScript: Script? = null,
+    val mapScript: Script,
+    val combineScript: Script? = null,
+    val reduceScript: Script? = null,
+    val params: Params = Params(),
+) : MetricAggregation<ScriptedMetricAggResult<T>>() {
+    override val name = "scripted_metric"
+
+    override fun clone() = copy()
+
+    override fun visit(ctx: Serializer.ObjectCtx, compiler: BaseSearchQueryCompiler) {
+        if (initScript != null) {
+            ctx.obj("init_script") {
+                compiler.visit(this, initScript)
+            }
+        }
+        ctx.obj("map_script") {
+            compiler.visit(this, mapScript)
+        }
+        if (combineScript != null) {
+            ctx.obj("combine_script") {
+                compiler.visit(this, combineScript)
+            }
+        }
+        if (reduceScript != null) {
+            ctx.obj("reduce_script") {
+                compiler.visit(this, reduceScript)
+            }
+        }
+        ctx.obj("params") {
+            compiler.visit(this, params)
+        }
+    }
+
+    override fun processResult(obj: Deserializer.ObjectCtx): ScriptedMetricAggResult<T> {
+        return ScriptedMetricAggResult(valueType.deserialize(obj.any("value")))
+    }
+}
+
+data class ScriptedMetricAggResult<T>(
+    val value: T
+) : AggregationResult
