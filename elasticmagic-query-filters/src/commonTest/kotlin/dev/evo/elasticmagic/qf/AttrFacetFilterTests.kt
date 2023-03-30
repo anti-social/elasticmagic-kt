@@ -1,9 +1,10 @@
 package dev.evo.elasticmagic.qf
 
 import dev.evo.elasticmagic.SearchQuery
+import dev.evo.elasticmagic.aggs.FilterAggResult
+import dev.evo.elasticmagic.aggs.ScriptedMetricAggResult
 import dev.evo.elasticmagic.aggs.TermsAggResult
 import dev.evo.elasticmagic.aggs.TermBucket
-import dev.evo.elasticmagic.aggs.FilterAggResult
 import dev.evo.elasticmagic.compile.BaseCompilerTest
 import dev.evo.elasticmagic.compile.SearchQueryCompiler
 import dev.evo.elasticmagic.doc.Document
@@ -86,23 +87,26 @@ class AttrFacetFilterTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQuery
         ctx.apply(sq, emptyList())
 
         compile(sq).body shouldContainExactly mapOf(
-            "runtime_mappings" to mapOf(
-                "_attr_1" to mapOf(
-                    "type" to "long",
-                    "script" to mapOf(
-                        "source" to PreparedAttrFacetFilter.ATTR_SCRIPT,
-                        "params" to mapOf(
-                            "attrId" to 1,
-                            "attrsField" to "attrs"
-                        )
-                    )
-                )
-            ),
             "aggs" to mapOf(
                 "qf:attrs.1" to mapOf(
-                    "terms" to mapOf(
-                        "field" to "_attr_1",
-                        "size" to 100
+                    "scripted_metric" to mapOf(
+                        "init_script" to mapOf(
+                            "source" to PreparedAttrFacetFilter.SELECTED_ATTR_INIT_SCRIPT
+                        ),
+                        "map_script" to mapOf(
+                            "source" to PreparedAttrFacetFilter.SELECTED_ATTR_MAP_SCRIPT
+                        ),
+                        "combine_script" to mapOf(
+                            "source" to PreparedAttrFacetFilter.SELECTED_ATTR_COMBINE_SCRIPT
+                        ),
+                        "reduce_script" to mapOf(
+                            "source" to PreparedAttrFacetFilter.SELECTED_ATTR_REDUCE_SCRIPT
+                        ),
+                        "params" to mapOf(
+                            "attrId" to 1,
+                            "attrsField" to "attrs",
+                            "size" to 100,
+                        )
                     )
                 ),
                 "qf:attrs.full.filter" to mapOf(
@@ -129,10 +133,10 @@ class AttrFacetFilterTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQuery
         )
 
         val attrs = ctx.processResult(searchResultWithAggs(
-            "qf:attrs.1" to TermsAggResult(
+            "qf:attrs.1" to ScriptedMetricAggResult(
                 listOf(
-                    TermBucket(0x00000001_00000008L, 103),
-                    TermBucket(0x00000001_00000004L, 58)
+                    0x00000067_00000008L,
+                    0x0000003a_00000004L,
                 )
             ),
             "qf:attrs.full.filter" to FilterAggResult(
@@ -179,28 +183,6 @@ class AttrFacetFilterTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQuery
         ctx.apply(sq, emptyList())
 
         compile(sq).body shouldContainExactly mapOf(
-            "runtime_mappings" to mapOf(
-                "_attr_1" to mapOf(
-                    "type" to "long",
-                    "script" to mapOf(
-                        "source" to PreparedAttrFacetFilter.ATTR_SCRIPT,
-                        "params" to mapOf(
-                            "attrId" to 1,
-                            "attrsField" to "attrs"
-                        )
-                    )
-                ),
-                "_attr_2" to mapOf(
-                    "type" to "long",
-                    "script" to mapOf(
-                        "source" to PreparedAttrFacetFilter.ATTR_SCRIPT,
-                        "params" to mapOf(
-                            "attrId" to 2,
-                            "attrsField" to "attrs"
-                        )
-                    )
-                )
-            ),
             "aggs" to mapOf(
                 "qf:attrs.1.filter" to mapOf(
                     "filter" to mapOf(
@@ -210,9 +192,24 @@ class AttrFacetFilterTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQuery
                     ),
                     "aggs" to mapOf(
                         "qf:attrs.1" to mapOf(
-                            "terms" to mapOf(
-                                "field" to "_attr_1",
-                                "size" to 100
+                            "scripted_metric" to mapOf(
+                                "init_script" to mapOf(
+                                    "source" to PreparedAttrFacetFilter.SELECTED_ATTR_INIT_SCRIPT
+                                ),
+                                "map_script" to mapOf(
+                                    "source" to PreparedAttrFacetFilter.SELECTED_ATTR_MAP_SCRIPT
+                                ),
+                                "combine_script" to mapOf(
+                                    "source" to PreparedAttrFacetFilter.SELECTED_ATTR_COMBINE_SCRIPT
+                                ),
+                                "reduce_script" to mapOf(
+                                    "source" to PreparedAttrFacetFilter.SELECTED_ATTR_REDUCE_SCRIPT
+                                ),
+                                "params" to mapOf(
+                                    "attrId" to 1,
+                                    "attrsField" to "attrs",
+                                    "size" to 100,
+                                )
                             )
                         )
                     )
@@ -225,9 +222,24 @@ class AttrFacetFilterTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQuery
                     ),
                     "aggs" to mapOf(
                         "qf:attrs.2" to mapOf(
-                            "terms" to mapOf(
-                                "field" to "_attr_2",
-                                "size" to 100
+                            "scripted_metric" to mapOf(
+                                "init_script" to mapOf(
+                                    "source" to PreparedAttrFacetFilter.SELECTED_ATTR_INIT_SCRIPT
+                                ),
+                                "map_script" to mapOf(
+                                    "source" to PreparedAttrFacetFilter.SELECTED_ATTR_MAP_SCRIPT
+                                ),
+                                "combine_script" to mapOf(
+                                    "source" to PreparedAttrFacetFilter.SELECTED_ATTR_COMBINE_SCRIPT
+                                ),
+                                "reduce_script" to mapOf(
+                                    "source" to PreparedAttrFacetFilter.SELECTED_ATTR_REDUCE_SCRIPT
+                                ),
+                                "params" to mapOf(
+                                    "attrId" to 2,
+                                    "attrsField" to "attrs",
+                                    "size" to 100,
+                                )
                             )
                         )
                     )
@@ -354,18 +366,6 @@ class AttrFacetFilterTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQuery
         ctx.apply(sq, emptyList())
 
         compile(sq).body shouldContainExactly mapOf(
-            "runtime_mappings" to mapOf(
-                "_attr_2" to mapOf(
-                    "type" to "long",
-                    "script" to mapOf(
-                        "source" to PreparedAttrFacetFilter.ATTR_SCRIPT,
-                        "params" to mapOf(
-                            "attrId" to 2,
-                            "attrsField" to "attrs"
-                        )
-                    )
-                )
-            ),
             "aggs" to mapOf(
                 "qf:attrs.2.filter" to mapOf(
                     "filter" to mapOf(
@@ -386,9 +386,24 @@ class AttrFacetFilterTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQuery
                     ),
                     "aggs" to mapOf(
                         "qf:attrs.2" to mapOf(
-                            "terms" to mapOf(
-                                "field" to "_attr_2",
-                                "size" to 100
+                            "scripted_metric" to mapOf(
+                                "init_script" to mapOf(
+                                    "source" to PreparedAttrFacetFilter.SELECTED_ATTR_INIT_SCRIPT
+                                ),
+                                "map_script" to mapOf(
+                                    "source" to PreparedAttrFacetFilter.SELECTED_ATTR_MAP_SCRIPT
+                                ),
+                                "combine_script" to mapOf(
+                                    "source" to PreparedAttrFacetFilter.SELECTED_ATTR_COMBINE_SCRIPT
+                                ),
+                                "reduce_script" to mapOf(
+                                    "source" to PreparedAttrFacetFilter.SELECTED_ATTR_REDUCE_SCRIPT
+                                ),
+                                "params" to mapOf(
+                                    "attrId" to 2,
+                                    "attrsField" to "attrs",
+                                    "size" to 100,
+                                )
                             )
                         )
                     )
