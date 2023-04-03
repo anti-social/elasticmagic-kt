@@ -37,15 +37,15 @@ class FacetRangeFilter<T>(
      *   Supports 2 operations: `gte` and `lte`. Examples:
      *   - `mapOf(listOf("price", "gte") to listOf("10"), listOf("price", "lte") to listOf("150")))`
      */
-    override fun prepare(name: String, params: QueryFilterParams): PreparedFacetRangeFilter<T> {
-        val from = params.decodeLastValue(listOf(name, "gte"), field.getFieldType())
-        val to = params.decodeLastValue(listOf(name, "lte"), field.getFieldType())
+    override fun prepare(name: String, paramName: String, params: QueryFilterParams): PreparedFacetRangeFilter<T> {
+        val from = params.decodeLastValue(listOf(paramName, "gte"), field.getFieldType())
+        val to = params.decodeLastValue(listOf(paramName, "lte"), field.getFieldType())
         val filterExpression = if (from != null || to != null) {
             field.range(gte = from, lte = to)
         } else {
             null
         }
-        return PreparedFacetRangeFilter(this, name, filterExpression, from = from, to = to)
+        return PreparedFacetRangeFilter(this, name, paramName, filterExpression, from = from, to = to)
     }
 }
 
@@ -55,10 +55,11 @@ class FacetRangeFilter<T>(
 class PreparedFacetRangeFilter<T>(
     val filter: FacetRangeFilter<T>,
     name: String,
+    paramName: String,
     facetFilterExpr: QueryExpression?,
     val from: Any?,
     val to: Any?,
-) : PreparedFilter<FacetRangeFilterResult<T>>(name, facetFilterExpr) {
+) : PreparedFilter<FacetRangeFilterResult<T>>(name, paramName, facetFilterExpr) {
 
     private val countAggName = aggName("count")
     private val filterAggName = aggName("filter")
@@ -102,6 +103,7 @@ class PreparedFacetRangeFilter<T>(
         }
         return FacetRangeFilterResult(
             name,
+            paramName,
             from = from?.let(filter.field::deserializeTerm),
             to = to?.let(filter.field::deserializeTerm),
             count = count,
@@ -121,6 +123,7 @@ class PreparedFacetRangeFilter<T>(
  */
 data class FacetRangeFilterResult<T>(
     override val name: String,
+    override val paramName: String,
     val from: T?,
     val to: T?,
     val count: Long,

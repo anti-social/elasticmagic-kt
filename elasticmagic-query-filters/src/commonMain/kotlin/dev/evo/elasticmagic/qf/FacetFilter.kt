@@ -9,6 +9,7 @@ import dev.evo.elasticmagic.aggs.SingleBucketAggResult
 import dev.evo.elasticmagic.aggs.TermBucket
 import dev.evo.elasticmagic.aggs.TermsAgg
 import dev.evo.elasticmagic.aggs.TermsAggResult
+import dev.evo.elasticmagic.doc.MappingField
 import dev.evo.elasticmagic.query.Bool
 import dev.evo.elasticmagic.query.FieldOperations
 import dev.evo.elasticmagic.query.QueryExpression
@@ -73,7 +74,7 @@ class FacetFilter<T, V>(
          * A shortcut to create a [FacetFilter] without a custom terms aggregation.
          */
         operator fun <T> invoke(
-            field: FieldOperations<T>,
+            field: MappingField<T>,
             name: String? = null,
             mode: FacetFilterMode = FacetFilterMode.UNION,
         ): FacetFilter<T, T> {
@@ -87,7 +88,7 @@ class FacetFilter<T, V>(
          * @param termsAggFactory - factory that creates terms aggregation for a [FacetFilter.field]
          */
         operator fun <T> invoke(
-            field: FieldOperations<T>,
+            field: MappingField<T>,
             name: String? = null,
             mode: FacetFilterMode = FacetFilterMode.UNION,
             termsAggFactory: (FieldOperations<T>) -> TermsAgg<T>
@@ -104,11 +105,12 @@ class FacetFilter<T, V>(
      *   Examples:
      *   - `mapOf(listOf("manufacturer") to listOf("Giant", "Cube"))`
      */
-    override fun prepare(name: String, params: QueryFilterParams): PreparedFacetFilter<T> {
-        val filterValues = params.decodeValues(name, field.getFieldType())
+    override fun prepare(name: String, paramName: String, params: QueryFilterParams): PreparedFacetFilter<T> {
+        val filterValues = params.decodeValues(paramName, field.getFieldType())
         return PreparedFacetFilter(
             this,
             name,
+            paramName,
             mode.filterByValues(field, filterValues),
             selectedValues = params.decodeValues(name, termsAgg.value.getValueType()),
         )
@@ -121,9 +123,10 @@ class FacetFilter<T, V>(
 class PreparedFacetFilter<T>(
     val filter: FacetFilter<T, *>,
     name: String,
+    paramName: String,
     facetFilterExpr: QueryExpression?,
     val selectedValues: List<Any>,
-) : PreparedFilter<FacetFilterResult<T>>(name, facetFilterExpr) {
+) : PreparedFilter<FacetFilterResult<T>>(name, paramName, facetFilterExpr) {
     private val termsAggName = "qf:$name"
 
     private val filterAggName = "qf:$name.filter"
@@ -180,7 +183,7 @@ class PreparedFacetFilter<T>(
                 )
             )
         }
-        return FacetFilterResult(name, filter.mode, values, isSelected)
+        return FacetFilterResult(name, paramName, filter.mode, values, isSelected)
     }
 
     private fun getTermsAggResult(
@@ -204,6 +207,7 @@ class PreparedFacetFilter<T>(
  */
 data class FacetFilterResult<T>(
     override val name: String,
+    override val paramName: String,
     val mode: FacetFilterMode,
     val values: List<FacetFilterValue<T>>,
     val selected: Boolean,

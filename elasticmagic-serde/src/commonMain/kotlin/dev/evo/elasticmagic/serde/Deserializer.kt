@@ -133,10 +133,10 @@ fun Deserializer.ObjectCtx.toMap(): Map<String, Any?> {
     return map
 }
 
-inline fun Deserializer.ArrayCtx.forEach(block: (Any) -> Unit) {
+inline fun Deserializer.ArrayCtx.forEach(block: (Any?) -> Unit) {
     val iter = iterator()
     while (iter.hasNext()) {
-        block(iter.any())
+        block(iter.anyOrNull())
     }
 }
 

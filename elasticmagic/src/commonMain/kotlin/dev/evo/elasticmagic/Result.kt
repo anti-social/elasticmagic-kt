@@ -50,7 +50,7 @@ data class SearchHit<S : BaseDocSource>(
     override val seqNo: Long? = null,
     override val primaryTerm: Long? = null,
     val score: Float? = null,
-    val sort: List<Any>? = null,
+    val sort: List<Any?>? = null,
     val source: S? = null,
     val fields: Fields = Fields(emptyMap()),
 ) : ActionMeta {

@@ -19,7 +19,7 @@ class PageFilter(
     val availablePageSizes: List<Int> = DEFAULT_AVAILABLE_PAGE_SIZES,
     defaultPageSize: Int? = null,
     val maxHits: Int = DEFAULT_MAX_HITS,
-) : Filter<PageFilterContext, PageFilterResult>(name) {
+) : Filter<PreparedPageFilter, PageFilterResult>(name) {
     init {
         if (availablePageSizes.isEmpty()) {
             throw IllegalArgumentException("availablePageSizes argument should not be empty")
@@ -44,9 +44,9 @@ class PageFilter(
      *   Examples:
      *   - `mapOf(listOf("page") to listOf("2"), listOf("page", "size") to listOf("100"))`
      */
-    override fun prepare(name: String, params: QueryFilterParams): PageFilterContext {
-        val page = params.decodeLastValue(name, IntType)?.coerceAtLeast(1) ?: 1
-        val pageSize = params.decodeLastValue(listOf(name, "size"), IntType)?.coerceAtLeast(1)
+    override fun prepare(name: String, paramName: String, params: QueryFilterParams): PreparedPageFilter {
+        val page = params.decodeLastValue(paramName, IntType)?.coerceAtLeast(1) ?: 1
+        val pageSize = params.decodeLastValue(listOf(paramName, "size"), IntType)?.coerceAtLeast(1)
             ?: defaultPageSize
         val perPage = if (availablePageSizes.contains(pageSize)) {
             pageSize
@@ -55,9 +55,10 @@ class PageFilter(
         }
         val from = ((page - 1) * perPage).coerceAtMost(maxHits)
         val size = perPage.coerceAtMost(maxHits - from)
-        return PageFilterContext(
+        return PreparedPageFilter(
             this,
             name,
+            paramName,
             page = page,
             perPage = perPage,
             from = from,
@@ -69,14 +70,15 @@ class PageFilter(
 /**
  * Filter that is ready for applying to a search query.
  */
-class PageFilterContext(
+class PreparedPageFilter(
     val filter: PageFilter,
     name: String,
+    paramName: String,
     val page: Int,
     val perPage: Int,
     val from: Int,
     val size: Int,
-) : PreparedFilter<PageFilterResult>(name, null) {
+) : PreparedFilter<PageFilterResult>(name, paramName, null) {
     override fun apply(
         searchQuery: SearchQuery<*>,
         otherFacetFilterExpressions: List<QueryExpression>
@@ -92,6 +94,7 @@ class PageFilterContext(
         val maxTotalPages = (filter.maxHits - 1) / perPage + 1
         return PageFilterResult(
             name,
+            paramName,
             hits = searchQueryResult.hits,
             totalHits = totalHits,
             page = page,
@@ -117,6 +120,7 @@ class PageFilterContext(
  */
 data class PageFilterResult(
     override val name: String,
+    override val paramName: String,
     val hits: List<SearchHit<*>>,
     val totalHits: Long,
     val page: Int,

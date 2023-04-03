@@ -23,13 +23,13 @@ fun serErr(v: Any?, cause: Throwable? = null): Nothing =
 /**
  * An exception for deserialization errors.
  */
-class ValueDeserializationException(value: Any, type: String, cause: Throwable? = null) :
+class ValueDeserializationException(value: Any?, type: String, cause: Throwable? = null) :
     IllegalArgumentException("Cannot deserialize [$value] to [$type]", cause)
 
 /**
  * A shortcut to throw [ValueDeserializationException].
  */
-fun deErr(v: Any, type: String, cause: Throwable? = null): Nothing =
+fun deErr(v: Any?, type: String, cause: Throwable? = null): Nothing =
     throw ValueDeserializationException(v, type, cause)
 
 /**
@@ -621,7 +621,7 @@ internal class SourceType<V: BaseDocSource>(
  * Serializes/deserializes [type] into list of optional values.
  * Used by [dev.evo.elasticmagic.doc.DocSource].
  */
-internal class OptionalListType<V, T>(val type: FieldType<V, T>) : FieldType<MutableList<V?>, T> {
+class OptionalListType<V, T>(val type: FieldType<V, T>) : FieldType<MutableList<V?>, T> {
     override val name get() = type.name
     override val termType = type.termType
 
@@ -647,6 +647,18 @@ internal class OptionalListType<V, T>(val type: FieldType<V, T>) : FieldType<Mut
                 }
                     .toMutableList()
             }
+            is Deserializer.ArrayCtx -> {
+                buildList {
+                    v.forEach { w ->
+                        if (w == null) {
+                            add(null)
+                        } else {
+                            add(type.deserialize(w))
+                        }
+                    }
+                }
+                    .toMutableList()
+            }
             else -> mutableListOf(type.deserialize(v))
         }
     }
@@ -662,7 +674,7 @@ internal class OptionalListType<V, T>(val type: FieldType<V, T>) : FieldType<Mut
  * Serializes/deserializes [type] into list of required values.
  * Used by [dev.evo.elasticmagic.doc.DocSource].
  */
-internal class RequiredListType<V, T>(val type: FieldType<V, T>) : FieldType<MutableList<V & Any>, T> {
+class RequiredListType<V, T>(val type: FieldType<V, T>) : FieldType<MutableList<V & Any>, T> {
     override val name get() = type.name
     override val termType = type.termType
 
@@ -679,7 +691,18 @@ internal class RequiredListType<V, T>(val type: FieldType<V, T>) : FieldType<Mut
                     if (it != null) {
                         type.deserialize(it)
                     } else {
-                        throw IllegalArgumentException("null is not allowed")
+                        deErr(null, type.name)
+                    }
+                }
+                    .toMutableList()
+            }
+            is Deserializer.ArrayCtx -> {
+                buildList {
+                    v.forEach { w ->
+                        if (w == null) {
+                            deErr(null, type.name)
+                        }
+                        add(type.deserialize(w))
                     }
                 }
                     .toMutableList()
@@ -689,7 +712,7 @@ internal class RequiredListType<V, T>(val type: FieldType<V, T>) : FieldType<Mut
     }
 
     override fun deserializeTerm(v: Any): T & Any {
-        throw IllegalStateException("Unreachable")
+        throw IllegalStateException("RequiredListType.deserializeTerm: unreachable")
     }
 }
 
@@ -734,45 +757,5 @@ internal object DynDocSourceFieldType : FieldType<DynDocSource, Nothing> {
 
     override fun deserializeTerm(v: Any): Nothing {
         throw IllegalStateException("Unreachable")
-    }
-}
-
-/**
- *
- */
-class ListType<T>(private val type: SimpleFieldType<T>) : SimpleFieldType<List<T>>() {
-    override val name: String
-        get() = throw IllegalStateException("Should not be used in mappings")
-    override val termType = type.termType
-
-    override fun deserialize(v: Any, valueFactory: (() -> List<T>)?): List<T> {
-        if (v !is Deserializer.ArrayCtx) {
-            deErr(v, "List")
-        }
-        return buildList {
-            v.forEach { w ->
-                add(type.deserialize(w))
-            }
-        }
-    }
-}
-
-/**
- *
- */
-class MapType<T>(private val type: SimpleFieldType<T>) : SimpleFieldType<Map<String, T>>() {
-    override val name: String
-        get() = throw IllegalStateException("Should not be used in mappings")
-    override val termType = type.termType
-
-    override fun deserialize(v: Any, valueFactory: (() -> Map<String, T>)?): Map<String, T> {
-        if (v !is Deserializer.ObjectCtx) {
-            deErr(v, "List")
-        }
-        return buildMap {
-            v.forEach { k, w ->
-                put(k, type.deserialize(w))
-            }
-        }
     }
 }

@@ -7,7 +7,7 @@ import dev.evo.elasticmagic.query.ObjExpression
 import dev.evo.elasticmagic.query.Script
 import dev.evo.elasticmagic.serde.Deserializer
 import dev.evo.elasticmagic.serde.Serializer
-import dev.evo.elasticmagic.types.SimpleFieldType
+import dev.evo.elasticmagic.types.FieldType
 
 @Suppress("UnnecessaryAbstractClass")
 abstract class MetricAggregation<R: AggregationResult> : Aggregation<R>
@@ -373,7 +373,7 @@ data class ExtendedStatsAggResult(
 }
 
 data class ScriptedMetricAgg<T>(
-    val valueType: SimpleFieldType<T>,
+    val valueType: FieldType<T, *>,
     val initScript: Script? = null,
     val mapScript: Script,
     val combineScript: Script? = null,

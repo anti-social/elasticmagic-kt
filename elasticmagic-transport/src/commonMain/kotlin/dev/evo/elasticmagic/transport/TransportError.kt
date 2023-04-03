@@ -2,6 +2,7 @@ package dev.evo.elasticmagic.transport
 
 import dev.evo.elasticmagic.serde.Deserializer
 import dev.evo.elasticmagic.serde.DeserializationException
+import dev.evo.elasticmagic.serde.forEach
 import dev.evo.elasticmagic.serde.toMap
 
 data class ErrorReason(
@@ -9,6 +10,9 @@ data class ErrorReason(
     val reason: String,
     val resourceId: String?,
     val resourceType: String?,
+    val script: String?,
+    val scriptStack: List<String>,
+    val causedBy: CausedBy?,
 ) {
     companion object {
         fun parse(data: Deserializer.ObjectCtx): ErrorReason? {
@@ -16,11 +20,37 @@ data class ErrorReason(
             val reason = data.stringOrNull("reason") ?: return null
             val resourceId = data.stringOrNull("resource.id")
             val resourceType = data.stringOrNull("resource.type")
+            val script = data.stringOrNull("script")
+            val scriptStack = buildList {
+                data.arrayOrNull("script_stack")?.forEach { v ->
+                    add(v.toString())
+                }
+            }
+            val causedBy = data.objOrNull("caused_by")?.run(CausedBy::parse)
             return ErrorReason(
                 type = type,
                 reason = reason,
                 resourceId = resourceId,
                 resourceType = resourceType,
+                script = script,
+                scriptStack = scriptStack,
+                causedBy = causedBy,
+            )
+        }
+    }
+}
+
+data class CausedBy(
+    val type: String,
+    val reason: String,
+) {
+    companion object {
+        fun parse(data: Deserializer.ObjectCtx): CausedBy? {
+            val type = data.stringOrNull("type") ?: return null
+            val reason = data.stringOrNull("reason") ?: return null
+            return CausedBy(
+                type = type,
+                reason = reason,
             )
         }
     }
@@ -84,6 +114,7 @@ sealed class TransportError {
         val grouped: Boolean? = null,
         val rootCauses: List<ErrorCause> = emptyList(),
         val failedShards: List<FailedShard> = emptyList(),
+        val causedBy: ErrorReason? = null
     ) : TransportError() {
         companion object {
             @Suppress("NestedBlockDepth")
@@ -116,6 +147,7 @@ sealed class TransportError {
                         }
                     }
                 }
+                val causedBy = data.objOrNull("caused_by")?.run(ErrorReason::parse)
                 return Structured(
                     type = cause.type,
                     reason = cause.reason,
@@ -125,6 +157,7 @@ sealed class TransportError {
                     grouped = grouped,
                     rootCauses = rootCauses,
                     failedShards = failedShards,
+                    causedBy = causedBy,
                 )
             }
         }
