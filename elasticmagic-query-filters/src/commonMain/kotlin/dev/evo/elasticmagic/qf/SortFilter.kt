@@ -46,11 +46,11 @@ class SortFilter(
      *   Examples:
      *   - `mapOf(listOf("sort") to listOf("price"))`
      */
-    override fun prepare(name: String, params: QueryFilterParams): PreparedSortFilter {
-        val selectedValue = params.decodeLastValue(name, KeywordType)
+    override fun prepare(name: String, paramName: String, params: QueryFilterParams): PreparedSortFilter {
+        val selectedValue = params.decodeLastValue(paramName, KeywordType)
             ?.let { valuesByName[it] }
             ?: values[0]
-        return PreparedSortFilter(this, name, selectedValue)
+        return PreparedSortFilter(this, name, paramName, selectedValue)
     }
 }
 
@@ -69,8 +69,9 @@ class SortFilterValue(
 class PreparedSortFilter(
     val filter: SortFilter,
     name: String,
+    paramName: String,
     val selectedValue: SortFilterValue,
-) : PreparedFilter<SortFilterResult>(name, null) {
+) : PreparedFilter<SortFilterResult>(name, paramName, null) {
     override fun apply(
         searchQuery: SearchQuery<*>,
         otherFacetFilterExpressions: List<QueryExpression>
@@ -83,6 +84,7 @@ class PreparedSortFilter(
     ): SortFilterResult {
         return SortFilterResult(
             name,
+            paramName,
             values = filter.values.map { SortFilterValueResult(it.value, it == selectedValue) }
         )
     }
@@ -96,6 +98,7 @@ class PreparedSortFilter(
  */
 data class SortFilterResult(
     override val name: String,
+    override val paramName: String,
     val values: List<SortFilterValueResult>,
 ) : FilterResult, Iterable<SortFilterValueResult> by values
 

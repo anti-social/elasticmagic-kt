@@ -104,6 +104,24 @@ public final class dev/evo/elasticmagic/transport/CatResponse : dev/evo/elasticm
 	public fun getStatusCode ()I
 }
 
+public final class dev/evo/elasticmagic/transport/CausedBy {
+	public static final field Companion Ldev/evo/elasticmagic/transport/CausedBy$Companion;
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;)Ldev/evo/elasticmagic/transport/CausedBy;
+	public static synthetic fun copy$default (Ldev/evo/elasticmagic/transport/CausedBy;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Ldev/evo/elasticmagic/transport/CausedBy;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getReason ()Ljava/lang/String;
+	public final fun getType ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/evo/elasticmagic/transport/CausedBy$Companion {
+	public final fun parse (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;)Ldev/evo/elasticmagic/transport/CausedBy;
+}
+
 public abstract interface class dev/evo/elasticmagic/transport/ContentEncoder : java/lang/Appendable {
 	public abstract fun append (C)Ljava/lang/Appendable;
 	public abstract fun append (Ljava/lang/CharSequence;II)Ljava/lang/Appendable;
@@ -220,17 +238,23 @@ public final class dev/evo/elasticmagic/transport/ErrorCause$Companion {
 
 public final class dev/evo/elasticmagic/transport/ErrorReason {
 	public static final field Companion Ldev/evo/elasticmagic/transport/ErrorReason$Companion;
-	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ldev/evo/elasticmagic/transport/CausedBy;)V
 	public final fun component1 ()Ljava/lang/String;
 	public final fun component2 ()Ljava/lang/String;
 	public final fun component3 ()Ljava/lang/String;
 	public final fun component4 ()Ljava/lang/String;
-	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ldev/evo/elasticmagic/transport/ErrorReason;
-	public static synthetic fun copy$default (Ldev/evo/elasticmagic/transport/ErrorReason;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Ldev/evo/elasticmagic/transport/ErrorReason;
+	public final fun component5 ()Ljava/lang/String;
+	public final fun component6 ()Ljava/util/List;
+	public final fun component7 ()Ldev/evo/elasticmagic/transport/CausedBy;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ldev/evo/elasticmagic/transport/CausedBy;)Ldev/evo/elasticmagic/transport/ErrorReason;
+	public static synthetic fun copy$default (Ldev/evo/elasticmagic/transport/ErrorReason;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ldev/evo/elasticmagic/transport/CausedBy;ILjava/lang/Object;)Ldev/evo/elasticmagic/transport/ErrorReason;
 	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCausedBy ()Ldev/evo/elasticmagic/transport/CausedBy;
 	public final fun getReason ()Ljava/lang/String;
 	public final fun getResourceId ()Ljava/lang/String;
 	public final fun getResourceType ()Ljava/lang/String;
+	public final fun getScript ()Ljava/lang/String;
+	public final fun getScriptStack ()Ljava/util/List;
 	public final fun getType ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
@@ -420,8 +444,8 @@ public final class dev/evo/elasticmagic/transport/TransportError$Simple : dev/ev
 
 public final class dev/evo/elasticmagic/transport/TransportError$Structured : dev/evo/elasticmagic/transport/TransportError {
 	public static final field Companion Ldev/evo/elasticmagic/transport/TransportError$Structured$Companion;
-	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/String;Ljava/lang/Boolean;Ljava/util/List;Ljava/util/List;)V
-	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/String;Ljava/lang/Boolean;Ljava/util/List;Ljava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/String;Ljava/lang/Boolean;Ljava/util/List;Ljava/util/List;Ldev/evo/elasticmagic/transport/ErrorReason;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/String;Ljava/lang/Boolean;Ljava/util/List;Ljava/util/List;Ldev/evo/elasticmagic/transport/ErrorReason;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Ljava/lang/String;
 	public final fun component2 ()Ljava/lang/String;
 	public final fun component3 ()Ljava/lang/Integer;
@@ -430,9 +454,11 @@ public final class dev/evo/elasticmagic/transport/TransportError$Structured : de
 	public final fun component6 ()Ljava/lang/Boolean;
 	public final fun component7 ()Ljava/util/List;
 	public final fun component8 ()Ljava/util/List;
-	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/String;Ljava/lang/Boolean;Ljava/util/List;Ljava/util/List;)Ldev/evo/elasticmagic/transport/TransportError$Structured;
-	public static synthetic fun copy$default (Ldev/evo/elasticmagic/transport/TransportError$Structured;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/String;Ljava/lang/Boolean;Ljava/util/List;Ljava/util/List;ILjava/lang/Object;)Ldev/evo/elasticmagic/transport/TransportError$Structured;
+	public final fun component9 ()Ldev/evo/elasticmagic/transport/ErrorReason;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/String;Ljava/lang/Boolean;Ljava/util/List;Ljava/util/List;Ldev/evo/elasticmagic/transport/ErrorReason;)Ldev/evo/elasticmagic/transport/TransportError$Structured;
+	public static synthetic fun copy$default (Ldev/evo/elasticmagic/transport/TransportError$Structured;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/String;Ljava/lang/Boolean;Ljava/util/List;Ljava/util/List;Ldev/evo/elasticmagic/transport/ErrorReason;ILjava/lang/Object;)Ldev/evo/elasticmagic/transport/TransportError$Structured;
 	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCausedBy ()Ldev/evo/elasticmagic/transport/ErrorReason;
 	public final fun getCol ()Ljava/lang/Integer;
 	public final fun getFailedShards ()Ljava/util/List;
 	public final fun getGrouped ()Ljava/lang/Boolean;

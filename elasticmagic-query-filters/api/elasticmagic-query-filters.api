@@ -3,6 +3,76 @@ public final class dev/evo/elasticmagic/qf/AppliedQueryFilters {
 	public final fun processResult (Ldev/evo/elasticmagic/SearchQueryResult;)Ldev/evo/elasticmagic/qf/QueryFiltersResult;
 }
 
+public final class dev/evo/elasticmagic/qf/AttrBoolFacet : java/lang/Iterable, kotlin/jvm/internal/markers/KMappedMarker {
+	public fun <init> (ILjava/util/List;)V
+	public final fun component1 ()I
+	public final fun component2 ()Ljava/util/List;
+	public final fun copy (ILjava/util/List;)Ldev/evo/elasticmagic/qf/AttrBoolFacet;
+	public static synthetic fun copy$default (Ldev/evo/elasticmagic/qf/AttrBoolFacet;ILjava/util/List;ILjava/lang/Object;)Ldev/evo/elasticmagic/qf/AttrBoolFacet;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAttrId ()I
+	public final fun getValues ()Ljava/util/List;
+	public fun hashCode ()I
+	public fun iterator ()Ljava/util/Iterator;
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/evo/elasticmagic/qf/AttrBoolFacetFilter : dev/evo/elasticmagic/qf/Filter {
+	public fun <init> (Ldev/evo/elasticmagic/query/FieldOperations;Ljava/lang/String;)V
+	public synthetic fun <init> (Ldev/evo/elasticmagic/query/FieldOperations;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun getField ()Ldev/evo/elasticmagic/query/FieldOperations;
+	public fun prepare (Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;)Ldev/evo/elasticmagic/qf/PreparedAttrBoolFacetFilter;
+	public synthetic fun prepare (Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;)Ldev/evo/elasticmagic/qf/PreparedFilter;
+}
+
+public final class dev/evo/elasticmagic/qf/AttrBoolFacetFilter$SelectedValues {
+	public fun <init> (ILjava/util/List;)V
+	public final fun component1 ()I
+	public final fun component2 ()Ljava/util/List;
+	public final fun copy (ILjava/util/List;)Ldev/evo/elasticmagic/qf/AttrBoolFacetFilter$SelectedValues;
+	public static synthetic fun copy$default (Ldev/evo/elasticmagic/qf/AttrBoolFacetFilter$SelectedValues;ILjava/util/List;ILjava/lang/Object;)Ldev/evo/elasticmagic/qf/AttrBoolFacetFilter$SelectedValues;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun filterExpression (Ldev/evo/elasticmagic/query/FieldOperations;)Ldev/evo/elasticmagic/query/QueryExpression;
+	public final fun getAttrId ()I
+	public final fun getValues ()Ljava/util/List;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/evo/elasticmagic/qf/AttrBoolFacetFilterKt {
+	public static final fun decodeBoolAttrAndValue (J)Lkotlin/Pair;
+	public static final fun encodeBoolAttrWithValue (IZ)J
+}
+
+public final class dev/evo/elasticmagic/qf/AttrBoolFacetFilterResult : dev/evo/elasticmagic/qf/FilterResult, java/lang/Iterable, kotlin/jvm/internal/markers/KMappedMarker {
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/util/Map;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;)Ldev/evo/elasticmagic/qf/AttrBoolFacetFilterResult;
+	public static synthetic fun copy$default (Ldev/evo/elasticmagic/qf/AttrBoolFacetFilterResult;Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;ILjava/lang/Object;)Ldev/evo/elasticmagic/qf/AttrBoolFacetFilterResult;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getFacets ()Ljava/util/Map;
+	public fun getName ()Ljava/lang/String;
+	public fun getParamName ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun iterator ()Ljava/util/Iterator;
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/evo/elasticmagic/qf/AttrBoolFacetValue {
+	public fun <init> (ZJ)V
+	public final fun component1 ()Z
+	public final fun component2 ()J
+	public final fun copy (ZJ)Ldev/evo/elasticmagic/qf/AttrBoolFacetValue;
+	public static synthetic fun copy$default (Ldev/evo/elasticmagic/qf/AttrBoolFacetValue;ZJILjava/lang/Object;)Ldev/evo/elasticmagic/qf/AttrBoolFacetValue;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCount ()J
+	public final fun getValue ()Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
 public final class dev/evo/elasticmagic/qf/AttrFacet : java/lang/Iterable, kotlin/jvm/internal/markers/KMappedMarker {
 	public fun <init> (ILjava/util/List;)V
 	public final fun component1 ()I
@@ -21,8 +91,8 @@ public final class dev/evo/elasticmagic/qf/AttrFacetFilter : dev/evo/elasticmagi
 	public fun <init> (Ldev/evo/elasticmagic/query/FieldOperations;Ljava/lang/String;)V
 	public synthetic fun <init> (Ldev/evo/elasticmagic/query/FieldOperations;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun getField ()Ldev/evo/elasticmagic/query/FieldOperations;
-	public fun prepare (Ljava/lang/String;Ljava/util/Map;)Ldev/evo/elasticmagic/qf/PreparedAttrFacetFilter;
-	public synthetic fun prepare (Ljava/lang/String;Ljava/util/Map;)Ldev/evo/elasticmagic/qf/PreparedFilter;
+	public fun prepare (Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;)Ldev/evo/elasticmagic/qf/PreparedAttrFacetFilter;
+	public synthetic fun prepare (Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;)Ldev/evo/elasticmagic/qf/PreparedFilter;
 }
 
 public final class dev/evo/elasticmagic/qf/AttrFacetFilter$SelectedValues {
@@ -47,14 +117,16 @@ public final class dev/evo/elasticmagic/qf/AttrFacetFilterKt {
 }
 
 public final class dev/evo/elasticmagic/qf/AttrFacetFilterResult : dev/evo/elasticmagic/qf/FilterResult, java/lang/Iterable, kotlin/jvm/internal/markers/KMappedMarker {
-	public fun <init> (Ljava/lang/String;Ljava/util/Map;)V
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;)V
 	public final fun component1 ()Ljava/lang/String;
-	public final fun component2 ()Ljava/util/Map;
-	public final fun copy (Ljava/lang/String;Ljava/util/Map;)Ldev/evo/elasticmagic/qf/AttrFacetFilterResult;
-	public static synthetic fun copy$default (Ldev/evo/elasticmagic/qf/AttrFacetFilterResult;Ljava/lang/String;Ljava/util/Map;ILjava/lang/Object;)Ldev/evo/elasticmagic/qf/AttrFacetFilterResult;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/util/Map;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;)Ldev/evo/elasticmagic/qf/AttrFacetFilterResult;
+	public static synthetic fun copy$default (Ldev/evo/elasticmagic/qf/AttrFacetFilterResult;Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;ILjava/lang/Object;)Ldev/evo/elasticmagic/qf/AttrFacetFilterResult;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getFacets ()Ljava/util/Map;
 	public fun getName ()Ljava/lang/String;
+	public fun getParamName ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun iterator ()Ljava/util/Iterator;
 	public fun toString ()Ljava/lang/String;
@@ -73,10 +145,115 @@ public final class dev/evo/elasticmagic/qf/AttrFacetValue {
 	public fun toString ()Ljava/lang/String;
 }
 
+public final class dev/evo/elasticmagic/qf/AttrRangeFacet {
+	public fun <init> (IJFF)V
+	public final fun component1 ()I
+	public final fun component2 ()J
+	public final fun component3 ()F
+	public final fun component4 ()F
+	public final fun copy (IJFF)Ldev/evo/elasticmagic/qf/AttrRangeFacet;
+	public static synthetic fun copy$default (Ldev/evo/elasticmagic/qf/AttrRangeFacet;IJFFILjava/lang/Object;)Ldev/evo/elasticmagic/qf/AttrRangeFacet;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAttrId ()I
+	public final fun getCount ()J
+	public final fun getMax ()F
+	public final fun getMin ()F
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/evo/elasticmagic/qf/AttrRangeFacetFilter : dev/evo/elasticmagic/qf/Filter {
+	public fun <init> (Ldev/evo/elasticmagic/query/FieldOperations;Ljava/lang/String;)V
+	public synthetic fun <init> (Ldev/evo/elasticmagic/query/FieldOperations;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun getField ()Ldev/evo/elasticmagic/query/FieldOperations;
+	public fun prepare (Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;)Ldev/evo/elasticmagic/qf/PreparedAttrRangeFacetFilter;
+	public synthetic fun prepare (Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;)Ldev/evo/elasticmagic/qf/PreparedFilter;
+}
+
+public abstract class dev/evo/elasticmagic/qf/AttrRangeFacetFilter$SelectedValue {
+	public abstract fun filterExpression (Ldev/evo/elasticmagic/query/FieldOperations;)Ldev/evo/elasticmagic/query/QueryExpression;
+	public abstract fun getAttrId ()I
+}
+
+public final class dev/evo/elasticmagic/qf/AttrRangeFacetFilter$SelectedValue$Between : dev/evo/elasticmagic/qf/AttrRangeFacetFilter$SelectedValue {
+	public fun <init> (IFF)V
+	public final fun component1 ()I
+	public final fun component2 ()F
+	public final fun component3 ()F
+	public final fun copy (IFF)Ldev/evo/elasticmagic/qf/AttrRangeFacetFilter$SelectedValue$Between;
+	public static synthetic fun copy$default (Ldev/evo/elasticmagic/qf/AttrRangeFacetFilter$SelectedValue$Between;IFFILjava/lang/Object;)Ldev/evo/elasticmagic/qf/AttrRangeFacetFilter$SelectedValue$Between;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun filterExpression (Ldev/evo/elasticmagic/query/FieldOperations;)Ldev/evo/elasticmagic/query/QueryExpression;
+	public fun getAttrId ()I
+	public final fun getGte ()F
+	public final fun getLte ()F
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/evo/elasticmagic/qf/AttrRangeFacetFilter$SelectedValue$Gte : dev/evo/elasticmagic/qf/AttrRangeFacetFilter$SelectedValue {
+	public fun <init> (IF)V
+	public final fun component1 ()I
+	public final fun component2 ()F
+	public final fun copy (IF)Ldev/evo/elasticmagic/qf/AttrRangeFacetFilter$SelectedValue$Gte;
+	public static synthetic fun copy$default (Ldev/evo/elasticmagic/qf/AttrRangeFacetFilter$SelectedValue$Gte;IFILjava/lang/Object;)Ldev/evo/elasticmagic/qf/AttrRangeFacetFilter$SelectedValue$Gte;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun filterExpression (Ldev/evo/elasticmagic/query/FieldOperations;)Ldev/evo/elasticmagic/query/QueryExpression;
+	public fun getAttrId ()I
+	public final fun getGte ()F
+	public fun hashCode ()I
+	public final fun lte (F)Ldev/evo/elasticmagic/qf/AttrRangeFacetFilter$SelectedValue;
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/evo/elasticmagic/qf/AttrRangeFacetFilter$SelectedValue$Lte : dev/evo/elasticmagic/qf/AttrRangeFacetFilter$SelectedValue {
+	public fun <init> (IF)V
+	public final fun component1 ()I
+	public final fun component2 ()F
+	public final fun copy (IF)Ldev/evo/elasticmagic/qf/AttrRangeFacetFilter$SelectedValue$Lte;
+	public static synthetic fun copy$default (Ldev/evo/elasticmagic/qf/AttrRangeFacetFilter$SelectedValue$Lte;IFILjava/lang/Object;)Ldev/evo/elasticmagic/qf/AttrRangeFacetFilter$SelectedValue$Lte;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun filterExpression (Ldev/evo/elasticmagic/query/FieldOperations;)Ldev/evo/elasticmagic/query/QueryExpression;
+	public fun getAttrId ()I
+	public final fun getLte ()F
+	public final fun gte (F)Ldev/evo/elasticmagic/qf/AttrRangeFacetFilter$SelectedValue;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/evo/elasticmagic/qf/AttrRangeFacetFilterKt {
+	public static final fun encodeRangeAttrWithValue (IF)J
+}
+
+public final class dev/evo/elasticmagic/qf/AttrRangeFacetFilterResult : dev/evo/elasticmagic/qf/FilterResult {
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/util/Map;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;)Ldev/evo/elasticmagic/qf/AttrRangeFacetFilterResult;
+	public static synthetic fun copy$default (Ldev/evo/elasticmagic/qf/AttrRangeFacetFilterResult;Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;ILjava/lang/Object;)Ldev/evo/elasticmagic/qf/AttrRangeFacetFilterResult;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getFacets ()Ljava/util/Map;
+	public fun getName ()Ljava/lang/String;
+	public fun getParamName ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/evo/elasticmagic/qf/AttrRangeFacetType : dev/evo/elasticmagic/types/SimpleFieldType {
+	public static final field INSTANCE Ldev/evo/elasticmagic/qf/AttrRangeFacetType;
+	public fun deserialize (Ljava/lang/Object;Lkotlin/jvm/functions/Function0;)Ldev/evo/elasticmagic/qf/AttrRangeFacet;
+	public synthetic fun deserialize (Ljava/lang/Object;Lkotlin/jvm/functions/Function0;)Ljava/lang/Object;
+	public synthetic fun getName ()Ljava/lang/String;
+	public fun getName ()Ljava/lang/Void;
+	public fun getTermType ()Lkotlin/reflect/KClass;
+}
+
 public final class dev/evo/elasticmagic/qf/BoundFilter {
-	public fun <init> (Ljava/lang/String;Ldev/evo/elasticmagic/qf/Filter;)V
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ldev/evo/elasticmagic/qf/Filter;)V
 	public final fun getFilter ()Ldev/evo/elasticmagic/qf/Filter;
 	public final fun getName ()Ljava/lang/String;
+	public final fun getParamName ()Ljava/lang/String;
 	public final fun prepare (Ljava/util/Map;)Ldev/evo/elasticmagic/qf/PreparedFilter;
 }
 
@@ -87,15 +264,15 @@ public final class dev/evo/elasticmagic/qf/FacetFilter : dev/evo/elasticmagic/qf
 	public final fun getField ()Ldev/evo/elasticmagic/query/FieldOperations;
 	public final fun getMode ()Ldev/evo/elasticmagic/qf/FacetFilterMode;
 	public final fun getTermsAgg ()Ldev/evo/elasticmagic/aggs/TermsAgg;
-	public fun prepare (Ljava/lang/String;Ljava/util/Map;)Ldev/evo/elasticmagic/qf/PreparedFacetFilter;
-	public synthetic fun prepare (Ljava/lang/String;Ljava/util/Map;)Ldev/evo/elasticmagic/qf/PreparedFilter;
+	public fun prepare (Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;)Ldev/evo/elasticmagic/qf/PreparedFacetFilter;
+	public synthetic fun prepare (Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;)Ldev/evo/elasticmagic/qf/PreparedFilter;
 }
 
 public final class dev/evo/elasticmagic/qf/FacetFilter$Companion {
-	public final fun invoke (Ldev/evo/elasticmagic/query/FieldOperations;Ljava/lang/String;Ldev/evo/elasticmagic/qf/FacetFilterMode;)Ldev/evo/elasticmagic/qf/FacetFilter;
-	public final fun invoke (Ldev/evo/elasticmagic/query/FieldOperations;Ljava/lang/String;Ldev/evo/elasticmagic/qf/FacetFilterMode;Lkotlin/jvm/functions/Function1;)Ldev/evo/elasticmagic/qf/FacetFilter;
-	public static synthetic fun invoke$default (Ldev/evo/elasticmagic/qf/FacetFilter$Companion;Ldev/evo/elasticmagic/query/FieldOperations;Ljava/lang/String;Ldev/evo/elasticmagic/qf/FacetFilterMode;ILjava/lang/Object;)Ldev/evo/elasticmagic/qf/FacetFilter;
-	public static synthetic fun invoke$default (Ldev/evo/elasticmagic/qf/FacetFilter$Companion;Ldev/evo/elasticmagic/query/FieldOperations;Ljava/lang/String;Ldev/evo/elasticmagic/qf/FacetFilterMode;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Ldev/evo/elasticmagic/qf/FacetFilter;
+	public final fun invoke (Ldev/evo/elasticmagic/doc/MappingField;Ljava/lang/String;Ldev/evo/elasticmagic/qf/FacetFilterMode;)Ldev/evo/elasticmagic/qf/FacetFilter;
+	public final fun invoke (Ldev/evo/elasticmagic/doc/MappingField;Ljava/lang/String;Ldev/evo/elasticmagic/qf/FacetFilterMode;Lkotlin/jvm/functions/Function1;)Ldev/evo/elasticmagic/qf/FacetFilter;
+	public static synthetic fun invoke$default (Ldev/evo/elasticmagic/qf/FacetFilter$Companion;Ldev/evo/elasticmagic/doc/MappingField;Ljava/lang/String;Ldev/evo/elasticmagic/qf/FacetFilterMode;ILjava/lang/Object;)Ldev/evo/elasticmagic/qf/FacetFilter;
+	public static synthetic fun invoke$default (Ldev/evo/elasticmagic/qf/FacetFilter$Companion;Ldev/evo/elasticmagic/doc/MappingField;Ljava/lang/String;Ldev/evo/elasticmagic/qf/FacetFilterMode;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Ldev/evo/elasticmagic/qf/FacetFilter;
 }
 
 public final class dev/evo/elasticmagic/qf/FacetFilterMode : java/lang/Enum {
@@ -107,16 +284,18 @@ public final class dev/evo/elasticmagic/qf/FacetFilterMode : java/lang/Enum {
 }
 
 public final class dev/evo/elasticmagic/qf/FacetFilterResult : dev/evo/elasticmagic/qf/FilterResult, java/lang/Iterable, kotlin/jvm/internal/markers/KMappedMarker {
-	public fun <init> (Ljava/lang/String;Ldev/evo/elasticmagic/qf/FacetFilterMode;Ljava/util/List;Z)V
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ldev/evo/elasticmagic/qf/FacetFilterMode;Ljava/util/List;Z)V
 	public final fun component1 ()Ljava/lang/String;
-	public final fun component2 ()Ldev/evo/elasticmagic/qf/FacetFilterMode;
-	public final fun component3 ()Ljava/util/List;
-	public final fun component4 ()Z
-	public final fun copy (Ljava/lang/String;Ldev/evo/elasticmagic/qf/FacetFilterMode;Ljava/util/List;Z)Ldev/evo/elasticmagic/qf/FacetFilterResult;
-	public static synthetic fun copy$default (Ldev/evo/elasticmagic/qf/FacetFilterResult;Ljava/lang/String;Ldev/evo/elasticmagic/qf/FacetFilterMode;Ljava/util/List;ZILjava/lang/Object;)Ldev/evo/elasticmagic/qf/FacetFilterResult;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ldev/evo/elasticmagic/qf/FacetFilterMode;
+	public final fun component4 ()Ljava/util/List;
+	public final fun component5 ()Z
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ldev/evo/elasticmagic/qf/FacetFilterMode;Ljava/util/List;Z)Ldev/evo/elasticmagic/qf/FacetFilterResult;
+	public static synthetic fun copy$default (Ldev/evo/elasticmagic/qf/FacetFilterResult;Ljava/lang/String;Ljava/lang/String;Ldev/evo/elasticmagic/qf/FacetFilterMode;Ljava/util/List;ZILjava/lang/Object;)Ldev/evo/elasticmagic/qf/FacetFilterResult;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getMode ()Ldev/evo/elasticmagic/qf/FacetFilterMode;
 	public fun getName ()Ljava/lang/String;
+	public fun getParamName ()Ljava/lang/String;
 	public final fun getSelected ()Z
 	public final fun getValues ()Ljava/util/List;
 	public fun hashCode ()I
@@ -145,24 +324,26 @@ public final class dev/evo/elasticmagic/qf/FacetRangeFilter : dev/evo/elasticmag
 	public synthetic fun <init> (Ldev/evo/elasticmagic/query/FieldOperations;Ljava/lang/String;Ljava/util/Map;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun getAggs ()Ljava/util/Map;
 	public final fun getField ()Ldev/evo/elasticmagic/query/FieldOperations;
-	public fun prepare (Ljava/lang/String;Ljava/util/Map;)Ldev/evo/elasticmagic/qf/PreparedFacetRangeFilter;
-	public synthetic fun prepare (Ljava/lang/String;Ljava/util/Map;)Ldev/evo/elasticmagic/qf/PreparedFilter;
+	public fun prepare (Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;)Ldev/evo/elasticmagic/qf/PreparedFacetRangeFilter;
+	public synthetic fun prepare (Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;)Ldev/evo/elasticmagic/qf/PreparedFilter;
 }
 
 public final class dev/evo/elasticmagic/qf/FacetRangeFilterResult : dev/evo/elasticmagic/AggAwareResult, dev/evo/elasticmagic/qf/FilterResult {
-	public fun <init> (Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;JLjava/util/Map;)V
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;JLjava/util/Map;)V
 	public final fun component1 ()Ljava/lang/String;
-	public final fun component2 ()Ljava/lang/Object;
+	public final fun component2 ()Ljava/lang/String;
 	public final fun component3 ()Ljava/lang/Object;
-	public final fun component4 ()J
-	public final fun component5 ()Ljava/util/Map;
-	public final fun copy (Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;JLjava/util/Map;)Ldev/evo/elasticmagic/qf/FacetRangeFilterResult;
-	public static synthetic fun copy$default (Ldev/evo/elasticmagic/qf/FacetRangeFilterResult;Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;JLjava/util/Map;ILjava/lang/Object;)Ldev/evo/elasticmagic/qf/FacetRangeFilterResult;
+	public final fun component4 ()Ljava/lang/Object;
+	public final fun component5 ()J
+	public final fun component6 ()Ljava/util/Map;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;JLjava/util/Map;)Ldev/evo/elasticmagic/qf/FacetRangeFilterResult;
+	public static synthetic fun copy$default (Ldev/evo/elasticmagic/qf/FacetRangeFilterResult;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;JLjava/util/Map;ILjava/lang/Object;)Ldev/evo/elasticmagic/qf/FacetRangeFilterResult;
 	public fun equals (Ljava/lang/Object;)Z
 	public fun getAggs ()Ljava/util/Map;
 	public final fun getCount ()J
 	public final fun getFrom ()Ljava/lang/Object;
 	public fun getName ()Ljava/lang/String;
+	public fun getParamName ()Ljava/lang/String;
 	public final fun getTo ()Ljava/lang/Object;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
@@ -170,12 +351,14 @@ public final class dev/evo/elasticmagic/qf/FacetRangeFilterResult : dev/evo/elas
 
 public abstract class dev/evo/elasticmagic/qf/Filter {
 	public fun <init> (Ljava/lang/String;)V
-	public abstract fun prepare (Ljava/lang/String;Ljava/util/Map;)Ldev/evo/elasticmagic/qf/PreparedFilter;
+	public abstract fun prepare (Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;)Ldev/evo/elasticmagic/qf/PreparedFilter;
+	public final fun prepare (Ljava/lang/String;Ljava/util/Map;)Ldev/evo/elasticmagic/qf/PreparedFilter;
 	public final fun provideDelegate (Ldev/evo/elasticmagic/qf/QueryFilters;Lkotlin/reflect/KProperty;)Lkotlin/properties/ReadOnlyProperty;
 }
 
 public abstract interface class dev/evo/elasticmagic/qf/FilterResult {
 	public abstract fun getName ()Ljava/lang/String;
+	public abstract fun getParamName ()Ljava/lang/String;
 }
 
 public abstract class dev/evo/elasticmagic/qf/MatchKey {
@@ -203,43 +386,33 @@ public final class dev/evo/elasticmagic/qf/PageFilter : dev/evo/elasticmagic/qf/
 	public final fun getAvailablePageSizes ()Ljava/util/List;
 	public final fun getDefaultPageSize ()I
 	public final fun getMaxHits ()I
-	public fun prepare (Ljava/lang/String;Ljava/util/Map;)Ldev/evo/elasticmagic/qf/PageFilterContext;
-	public synthetic fun prepare (Ljava/lang/String;Ljava/util/Map;)Ldev/evo/elasticmagic/qf/PreparedFilter;
+	public synthetic fun prepare (Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;)Ldev/evo/elasticmagic/qf/PreparedFilter;
+	public fun prepare (Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;)Ldev/evo/elasticmagic/qf/PreparedPageFilter;
 }
 
 public final class dev/evo/elasticmagic/qf/PageFilter$Companion {
 	public final fun getDEFAULT_AVAILABLE_PAGE_SIZES ()Ljava/util/List;
 }
 
-public final class dev/evo/elasticmagic/qf/PageFilterContext : dev/evo/elasticmagic/qf/PreparedFilter {
-	public fun <init> (Ldev/evo/elasticmagic/qf/PageFilter;Ljava/lang/String;IIII)V
-	public fun apply (Ldev/evo/elasticmagic/SearchQuery;Ljava/util/List;)V
-	public final fun getFilter ()Ldev/evo/elasticmagic/qf/PageFilter;
-	public final fun getFrom ()I
-	public final fun getPage ()I
-	public final fun getPerPage ()I
-	public final fun getSize ()I
-	public synthetic fun processResult (Ldev/evo/elasticmagic/SearchQueryResult;)Ldev/evo/elasticmagic/qf/FilterResult;
-	public fun processResult (Ldev/evo/elasticmagic/SearchQueryResult;)Ldev/evo/elasticmagic/qf/PageFilterResult;
-}
-
 public final class dev/evo/elasticmagic/qf/PageFilterResult : dev/evo/elasticmagic/qf/FilterResult, java/lang/Iterable, kotlin/jvm/internal/markers/KMappedMarker {
-	public fun <init> (Ljava/lang/String;Ljava/util/List;JIIIII)V
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/util/List;JIIIII)V
 	public final fun component1 ()Ljava/lang/String;
-	public final fun component2 ()Ljava/util/List;
-	public final fun component3 ()J
-	public final fun component4 ()I
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/util/List;
+	public final fun component4 ()J
 	public final fun component5 ()I
 	public final fun component6 ()I
 	public final fun component7 ()I
 	public final fun component8 ()I
-	public final fun copy (Ljava/lang/String;Ljava/util/List;JIIIII)Ldev/evo/elasticmagic/qf/PageFilterResult;
-	public static synthetic fun copy$default (Ldev/evo/elasticmagic/qf/PageFilterResult;Ljava/lang/String;Ljava/util/List;JIIIIIILjava/lang/Object;)Ldev/evo/elasticmagic/qf/PageFilterResult;
+	public final fun component9 ()I
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/util/List;JIIIII)Ldev/evo/elasticmagic/qf/PageFilterResult;
+	public static synthetic fun copy$default (Ldev/evo/elasticmagic/qf/PageFilterResult;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;JIIIIIILjava/lang/Object;)Ldev/evo/elasticmagic/qf/PageFilterResult;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getFrom ()I
 	public final fun getHits ()Ljava/util/List;
 	public fun getName ()Ljava/lang/String;
 	public final fun getPage ()I
+	public fun getParamName ()Ljava/lang/String;
 	public final fun getPerPage ()I
 	public final fun getSize ()I
 	public final fun getTotalHits ()J
@@ -249,11 +422,25 @@ public final class dev/evo/elasticmagic/qf/PageFilterResult : dev/evo/elasticmag
 	public fun toString ()Ljava/lang/String;
 }
 
+public final class dev/evo/elasticmagic/qf/PreparedAttrBoolFacetFilter : dev/evo/elasticmagic/qf/PreparedFilter {
+	public static final field Companion Ldev/evo/elasticmagic/qf/PreparedAttrBoolFacetFilter$Companion;
+	public static final field DEFAULT_FULL_AGG_SIZE I
+	public fun <init> (Ldev/evo/elasticmagic/qf/AttrBoolFacetFilter;Ljava/lang/String;Ljava/lang/String;Ldev/evo/elasticmagic/query/QueryExpression;Ljava/util/Map;)V
+	public fun apply (Ldev/evo/elasticmagic/SearchQuery;Ljava/util/List;)V
+	public final fun getFilter ()Ldev/evo/elasticmagic/qf/AttrBoolFacetFilter;
+	public final fun getSelectedValues ()Ljava/util/Map;
+	public fun processResult (Ldev/evo/elasticmagic/SearchQueryResult;)Ldev/evo/elasticmagic/qf/AttrBoolFacetFilterResult;
+	public synthetic fun processResult (Ldev/evo/elasticmagic/SearchQueryResult;)Ldev/evo/elasticmagic/qf/FilterResult;
+}
+
+public final class dev/evo/elasticmagic/qf/PreparedAttrBoolFacetFilter$Companion {
+}
+
 public final class dev/evo/elasticmagic/qf/PreparedAttrFacetFilter : dev/evo/elasticmagic/qf/PreparedFilter {
 	public static final field Companion Ldev/evo/elasticmagic/qf/PreparedAttrFacetFilter$Companion;
 	public static final field DEFAULT_ATTR_AGG_SIZE I
 	public static final field DEFAULT_FULL_AGG_SIZE I
-	public fun <init> (Ldev/evo/elasticmagic/qf/AttrFacetFilter;Ljava/lang/String;Ldev/evo/elasticmagic/query/QueryExpression;Ljava/util/Map;)V
+	public fun <init> (Ldev/evo/elasticmagic/qf/AttrFacetFilter;Ljava/lang/String;Ljava/lang/String;Ldev/evo/elasticmagic/query/QueryExpression;Ljava/util/Map;)V
 	public fun apply (Ldev/evo/elasticmagic/SearchQuery;Ljava/util/List;)V
 	public final fun getFilter ()Ldev/evo/elasticmagic/qf/AttrFacetFilter;
 	public final fun getSelectedValues ()Ljava/util/Map;
@@ -264,8 +451,22 @@ public final class dev/evo/elasticmagic/qf/PreparedAttrFacetFilter : dev/evo/ela
 public final class dev/evo/elasticmagic/qf/PreparedAttrFacetFilter$Companion {
 }
 
+public final class dev/evo/elasticmagic/qf/PreparedAttrRangeFacetFilter : dev/evo/elasticmagic/qf/PreparedFilter {
+	public static final field Companion Ldev/evo/elasticmagic/qf/PreparedAttrRangeFacetFilter$Companion;
+	public static final field DEFAULT_ATTRS_AGG_SIZE I
+	public fun <init> (Ldev/evo/elasticmagic/qf/AttrRangeFacetFilter;Ljava/lang/String;Ljava/lang/String;Ldev/evo/elasticmagic/query/QueryExpression;Ljava/util/Map;)V
+	public fun apply (Ldev/evo/elasticmagic/SearchQuery;Ljava/util/List;)V
+	public final fun getFilter ()Ldev/evo/elasticmagic/qf/AttrRangeFacetFilter;
+	public final fun getSelectedValues ()Ljava/util/Map;
+	public fun processResult (Ldev/evo/elasticmagic/SearchQueryResult;)Ldev/evo/elasticmagic/qf/AttrRangeFacetFilterResult;
+	public synthetic fun processResult (Ldev/evo/elasticmagic/SearchQueryResult;)Ldev/evo/elasticmagic/qf/FilterResult;
+}
+
+public final class dev/evo/elasticmagic/qf/PreparedAttrRangeFacetFilter$Companion {
+}
+
 public final class dev/evo/elasticmagic/qf/PreparedFacetFilter : dev/evo/elasticmagic/qf/PreparedFilter {
-	public fun <init> (Ldev/evo/elasticmagic/qf/FacetFilter;Ljava/lang/String;Ldev/evo/elasticmagic/query/QueryExpression;Ljava/util/List;)V
+	public fun <init> (Ldev/evo/elasticmagic/qf/FacetFilter;Ljava/lang/String;Ljava/lang/String;Ldev/evo/elasticmagic/query/QueryExpression;Ljava/util/List;)V
 	public fun apply (Ldev/evo/elasticmagic/SearchQuery;Ljava/util/List;)V
 	public final fun getFilter ()Ldev/evo/elasticmagic/qf/FacetFilter;
 	public final fun getSelectedValues ()Ljava/util/List;
@@ -274,7 +475,7 @@ public final class dev/evo/elasticmagic/qf/PreparedFacetFilter : dev/evo/elastic
 }
 
 public final class dev/evo/elasticmagic/qf/PreparedFacetRangeFilter : dev/evo/elasticmagic/qf/PreparedFilter {
-	public fun <init> (Ldev/evo/elasticmagic/qf/FacetRangeFilter;Ljava/lang/String;Ldev/evo/elasticmagic/query/QueryExpression;Ljava/lang/Object;Ljava/lang/Object;)V
+	public fun <init> (Ldev/evo/elasticmagic/qf/FacetRangeFilter;Ljava/lang/String;Ljava/lang/String;Ldev/evo/elasticmagic/query/QueryExpression;Ljava/lang/Object;Ljava/lang/Object;)V
 	public fun apply (Ldev/evo/elasticmagic/SearchQuery;Ljava/util/List;)V
 	public final fun getFilter ()Ldev/evo/elasticmagic/qf/FacetRangeFilter;
 	public final fun getFrom ()Ljava/lang/Object;
@@ -284,15 +485,28 @@ public final class dev/evo/elasticmagic/qf/PreparedFacetRangeFilter : dev/evo/el
 }
 
 public abstract class dev/evo/elasticmagic/qf/PreparedFilter {
-	public fun <init> (Ljava/lang/String;Ldev/evo/elasticmagic/query/QueryExpression;)V
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ldev/evo/elasticmagic/query/QueryExpression;)V
 	public abstract fun apply (Ldev/evo/elasticmagic/SearchQuery;Ljava/util/List;)V
 	public final fun getFacetFilterExpr ()Ldev/evo/elasticmagic/query/QueryExpression;
 	public final fun getName ()Ljava/lang/String;
+	public final fun getParamName ()Ljava/lang/String;
 	public abstract fun processResult (Ldev/evo/elasticmagic/SearchQueryResult;)Ldev/evo/elasticmagic/qf/FilterResult;
 }
 
+public final class dev/evo/elasticmagic/qf/PreparedPageFilter : dev/evo/elasticmagic/qf/PreparedFilter {
+	public fun <init> (Ldev/evo/elasticmagic/qf/PageFilter;Ljava/lang/String;Ljava/lang/String;IIII)V
+	public fun apply (Ldev/evo/elasticmagic/SearchQuery;Ljava/util/List;)V
+	public final fun getFilter ()Ldev/evo/elasticmagic/qf/PageFilter;
+	public final fun getFrom ()I
+	public final fun getPage ()I
+	public final fun getPerPage ()I
+	public final fun getSize ()I
+	public synthetic fun processResult (Ldev/evo/elasticmagic/SearchQueryResult;)Ldev/evo/elasticmagic/qf/FilterResult;
+	public fun processResult (Ldev/evo/elasticmagic/SearchQueryResult;)Ldev/evo/elasticmagic/qf/PageFilterResult;
+}
+
 public final class dev/evo/elasticmagic/qf/PreparedSortFilter : dev/evo/elasticmagic/qf/PreparedFilter {
-	public fun <init> (Ldev/evo/elasticmagic/qf/SortFilter;Ljava/lang/String;Ldev/evo/elasticmagic/qf/SortFilterValue;)V
+	public fun <init> (Ldev/evo/elasticmagic/qf/SortFilter;Ljava/lang/String;Ljava/lang/String;Ldev/evo/elasticmagic/qf/SortFilterValue;)V
 	public fun apply (Ldev/evo/elasticmagic/SearchQuery;Ljava/util/List;)V
 	public final fun getFilter ()Ldev/evo/elasticmagic/qf/SortFilter;
 	public final fun getSelectedValue ()Ldev/evo/elasticmagic/qf/SortFilterValue;
@@ -316,6 +530,10 @@ public class dev/evo/elasticmagic/qf/QueryFilters : java/lang/Iterable, kotlin/j
 	public fun iterator ()Ljava/util/Iterator;
 }
 
+public final class dev/evo/elasticmagic/qf/QueryFiltersKt {
+	public static final fun unwrapFilterAgg (Ldev/evo/elasticmagic/AggAwareResult;Ljava/lang/String;)Ldev/evo/elasticmagic/AggAwareResult;
+}
+
 public final class dev/evo/elasticmagic/qf/QueryFiltersResult : java/lang/Iterable, kotlin/jvm/internal/markers/KMappedMarker {
 	public fun <init> (Ldev/evo/elasticmagic/util/OrderedMap;)V
 	public final fun get (Ldev/evo/elasticmagic/qf/BoundFilter;)Ldev/evo/elasticmagic/qf/FilterResult;
@@ -327,8 +545,8 @@ public final class dev/evo/elasticmagic/qf/SortFilter : dev/evo/elasticmagic/qf/
 	public fun <init> ([Ldev/evo/elasticmagic/qf/SortFilterValue;Ljava/lang/String;)V
 	public synthetic fun <init> ([Ldev/evo/elasticmagic/qf/SortFilterValue;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun getValues ()Ljava/util/List;
-	public synthetic fun prepare (Ljava/lang/String;Ljava/util/Map;)Ldev/evo/elasticmagic/qf/PreparedFilter;
-	public fun prepare (Ljava/lang/String;Ljava/util/Map;)Ldev/evo/elasticmagic/qf/PreparedSortFilter;
+	public synthetic fun prepare (Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;)Ldev/evo/elasticmagic/qf/PreparedFilter;
+	public fun prepare (Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;)Ldev/evo/elasticmagic/qf/PreparedSortFilter;
 }
 
 public final class dev/evo/elasticmagic/qf/SortFilter$Companion {
@@ -337,13 +555,15 @@ public final class dev/evo/elasticmagic/qf/SortFilter$Companion {
 }
 
 public final class dev/evo/elasticmagic/qf/SortFilterResult : dev/evo/elasticmagic/qf/FilterResult, java/lang/Iterable, kotlin/jvm/internal/markers/KMappedMarker {
-	public fun <init> (Ljava/lang/String;Ljava/util/List;)V
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/util/List;)V
 	public final fun component1 ()Ljava/lang/String;
-	public final fun component2 ()Ljava/util/List;
-	public final fun copy (Ljava/lang/String;Ljava/util/List;)Ldev/evo/elasticmagic/qf/SortFilterResult;
-	public static synthetic fun copy$default (Ldev/evo/elasticmagic/qf/SortFilterResult;Ljava/lang/String;Ljava/util/List;ILjava/lang/Object;)Ldev/evo/elasticmagic/qf/SortFilterResult;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/util/List;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/util/List;)Ldev/evo/elasticmagic/qf/SortFilterResult;
+	public static synthetic fun copy$default (Ldev/evo/elasticmagic/qf/SortFilterResult;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;ILjava/lang/Object;)Ldev/evo/elasticmagic/qf/SortFilterResult;
 	public fun equals (Ljava/lang/Object;)Z
 	public fun getName ()Ljava/lang/String;
+	public fun getParamName ()Ljava/lang/String;
 	public final fun getValues ()Ljava/util/List;
 	public fun hashCode ()I
 	public fun iterator ()Ljava/util/Iterator;

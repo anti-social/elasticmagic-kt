@@ -1,7 +1,11 @@
 package dev.evo.elasticmagic.qf
 
+import dev.evo.elasticmagic.AggAwareResult
 import dev.evo.elasticmagic.SearchQuery
 import dev.evo.elasticmagic.SearchQueryResult
+import dev.evo.elasticmagic.aggs.AggregationResult
+import dev.evo.elasticmagic.aggs.FilterAggResult
+import dev.evo.elasticmagic.query.Bool
 import dev.evo.elasticmagic.query.QueryExpression
 import dev.evo.elasticmagic.util.OrderedMap
 
@@ -80,12 +84,14 @@ class QueryFiltersResult(
 }
 
 abstract class Filter<C: PreparedFilter<R>, R: FilterResult>(private val name: String?) {
-    abstract fun prepare(name: String, params: QueryFilterParams): C
+    abstract fun prepare(name: String, paramName: String, params: QueryFilterParams): C
+
+    fun prepare(name: String, params: QueryFilterParams): C = prepare(name, name, params)
 
     operator fun provideDelegate(
         thisRef: QueryFilters, property: KProperty<*>
     ): ReadOnlyProperty<QueryFilters, BoundFilter<C, R>> {
-        val boundFilter = BoundFilter(name ?: property.name, this)
+        val boundFilter = BoundFilter(property.name, name ?: property.name, this)
         thisRef.addFilter(boundFilter)
         return ReadOnlyProperty { _, _ ->
             boundFilter
@@ -95,6 +101,7 @@ abstract class Filter<C: PreparedFilter<R>, R: FilterResult>(private val name: S
 
 abstract class PreparedFilter<R: FilterResult>(
     val name: String,
+    val paramName: String,
     val facetFilterExpr: QueryExpression?,
 ) {
     abstract fun apply(
@@ -109,10 +116,35 @@ abstract class PreparedFilter<R: FilterResult>(
 
 interface FilterResult {
     val name: String
+    val paramName: String
 }
 
-class BoundFilter<C: PreparedFilter<R>, R: FilterResult>(val name: String, val filter: Filter<C, R>) {
+class BoundFilter<C: PreparedFilter<R>, R: FilterResult>(
+    val name: String,
+    val paramName: String,
+    val filter: Filter<C, R>
+) {
     fun prepare(params: QueryFilterParams): C {
-        return filter.prepare(name, params)
+        return filter.prepare(name, paramName, params)
+    }
+}
+
+fun AggAwareResult.unwrapFilterAgg(filterAggName: String): AggAwareResult {
+    return aggIfExists<FilterAggResult>(filterAggName) ?: this
+}
+
+inline fun <reified T : AggregationResult> AggAwareResult.facetAgg(aggName: String): T {
+    val filterAggName = "$aggName.filter"
+    return unwrapFilterAgg(filterAggName).agg<T>(aggName)
+}
+
+internal fun maybeWrapBool(
+    boolFactory: (List<QueryExpression>) -> Bool,
+    expressions: List<QueryExpression>
+): QueryExpression {
+    return if (expressions.size == 1) {
+        expressions[0]
+    } else {
+        boolFactory(expressions)
     }
 }

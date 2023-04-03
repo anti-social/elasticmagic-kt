@@ -94,6 +94,10 @@ interface FieldOperations<T> : Named, FieldFormat, BoostedField, Sort {
         return Terms(this, terms)
     }
 
+    fun oneOf(vararg terms: T & Any): QueryExpression {
+        return Terms(this, terms.toList())
+    }
+
     fun range(
         gt: T? = null, gte: T? = null, lt: T? = null, lte: T? = null, boost: Float? = null
     ): Range<T> = Range(this, gt = gt, gte = gte, lt = lt, lte = lte, boost = boost)

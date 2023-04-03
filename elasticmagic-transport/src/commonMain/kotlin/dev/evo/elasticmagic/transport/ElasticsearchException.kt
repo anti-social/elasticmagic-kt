@@ -19,7 +19,7 @@ open class ElasticsearchException(msg: String) : Exception(msg) {
         open val isRetriable = false
 
         companion object {
-            private const val MAX_TEXT_ERROR_LENGTH = 1024
+            private const val MAX_TEXT_ERROR_LENGTH = 4096
 
             private fun trimText(text: String) =
                 text.slice(0 until text.length.coerceAtMost(MAX_TEXT_ERROR_LENGTH))
@@ -40,16 +40,17 @@ open class ElasticsearchException(msg: String) : Exception(msg) {
 
         override fun toString(): String {
             val reason = when (error) {
-                is TransportError.Structured -> {
-                    val rootCause = error.rootCauses.getOrNull(0)
-                    buildString {
-                        if (rootCause != null) {
-                            append(rootCause.reason)
-                        } else {
-                            append(error.reason)
-                        }
-                    }
-                }
+                // is TransportError.Structured -> {
+                //     val rootCause = error.rootCauses.getOrNull(0)
+                //     buildString {
+                //         if (rootCause != null) {
+                //             append(rootCause.reason)
+                //         } else {
+                //             append(error.reason)
+                //         }
+                //     }
+                // }
+                is TransportError.Structured -> trimText(error.toString())
                 is TransportError.Simple -> trimText(error.error)
             }
             return "${this::class.simpleName}(${statusCode}, \"${reason}\")"

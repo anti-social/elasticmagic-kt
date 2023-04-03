@@ -1,14 +1,11 @@
 package dev.evo.elasticmagic.qf
 
-import dev.evo.elasticmagic.AggAwareResult
 import dev.evo.elasticmagic.SearchQuery
 import dev.evo.elasticmagic.SearchQueryResult
 import dev.evo.elasticmagic.aggs.Aggregation
 import dev.evo.elasticmagic.aggs.FilterAgg
-import dev.evo.elasticmagic.aggs.FilterAggResult
 import dev.evo.elasticmagic.aggs.ScriptedMetricAgg
 import dev.evo.elasticmagic.aggs.ScriptedMetricAggResult
-import dev.evo.elasticmagic.aggs.SingleBucketAggResult
 import dev.evo.elasticmagic.aggs.TermsAgg
 import dev.evo.elasticmagic.aggs.TermsAggResult
 import dev.evo.elasticmagic.query.Bool
@@ -17,7 +14,7 @@ import dev.evo.elasticmagic.query.QueryExpression
 import dev.evo.elasticmagic.query.Script
 import dev.evo.elasticmagic.types.IntType
 import dev.evo.elasticmagic.types.LongType
-import dev.evo.elasticmagic.types.ListType
+import dev.evo.elasticmagic.types.RequiredListType
 
 fun encodeAttrWithValue(attrId: Int, valueId: Int): Long {
     return (attrId.toLong() shl Int.SIZE_BITS) or valueId.toLong()
@@ -25,17 +22,6 @@ fun encodeAttrWithValue(attrId: Int, valueId: Int): Long {
 
 fun decodeAttrAndValue(attrValue: Long): Pair<Int, Int> {
     return (attrValue ushr Int.SIZE_BITS).toInt() to attrValue.toInt()
-}
-
-internal fun maybeWrapBool(
-    boolFactory: (List<QueryExpression>) -> Bool,
-    expressions: List<QueryExpression>
-): QueryExpression {
-    return if (expressions.size == 1) {
-        expressions[0]
-    } else {
-        boolFactory(expressions)
-    }
 }
 
 /**
@@ -68,14 +54,14 @@ class AttrFacetFilter(
      *   - `mapOf(listOf("attrs", "1") to listOf("12", "13"))`
      *   - `mapOf(listOf("attrs", "2", "all") to listOf("101", "102"))
      */
-    override fun prepare(name: String, params: QueryFilterParams): PreparedAttrFacetFilter {
+    override fun prepare(name: String, paramName: String, params: QueryFilterParams): PreparedAttrFacetFilter {
         val selectedValues = params.asSequence()
             .mapNotNull { (keys, values) ->
                 @Suppress("MagicNumber")
                 when {
                     keys.isEmpty() -> null
                     values.isEmpty() -> null
-                    keys[0] != name -> null
+                    keys[0] != paramName -> null
                     keys.size == 2 || keys.size == 3 -> {
                         val mode = when {
                             keys.size == 2 -> FacetFilterMode.UNION
@@ -103,22 +89,21 @@ class AttrFacetFilter(
             else -> Bool.filter(facetFilters)
         }
 
-        return PreparedAttrFacetFilter(this, name, facetFilterExpr, selectedValues)
+        return PreparedAttrFacetFilter(this, name, paramName, facetFilterExpr, selectedValues)
     }
 }
 
 class PreparedAttrFacetFilter(
     val filter: AttrFacetFilter,
     name: String,
+    paramName: String,
     facetFilterExpr: QueryExpression?,
     val selectedValues: Map<Int, AttrFacetFilter.SelectedValues>,
-) : PreparedFilter<AttrFacetFilterResult>(name, facetFilterExpr) {
+) : PreparedFilter<AttrFacetFilterResult>(name, paramName, facetFilterExpr) {
+    private val otherFilterAggName = "qf:$name.filter"
     private val fullAggName = "qf:$name.full"
     private val filterFullAggName = "qf:$name.full.filter"
-    private val filterAggName = "qf:$name.filter"
-    private val attrAggNameRe = "qf:${Regex.escape(name)}\\.(\\d+)".toRegex()
     private fun attrAggName(attrId: Int) = "qf:$name.$attrId"
-    private val filterAttrAggNameRe = "qf:${Regex.escape(name)}\\.(\\d+)\\.filter".toRegex()
     private fun filterAttrAggName(attrId: Int) = "qf:$name.$attrId.filter"
 
     companion object {
@@ -134,10 +119,11 @@ class PreparedAttrFacetFilter(
             }
             for (v in doc[params.attrsField]) {
                 def attrId = (int) (v >>> 32);
-                def value = (int) v;
                 if (attrId != params.attrId) {
                     continue;
                 }
+
+                def value = (int) v;
                 state.buckets.compute(
                     value,
                     (_, docCount) -> {
@@ -235,7 +221,7 @@ class PreparedAttrFacetFilter(
                     }
                 }
             val attrAgg = ScriptedMetricAgg(
-                ListType(LongType),
+                RequiredListType(LongType),
                 initScript = Script.Source(SELECTED_ATTR_INIT_SCRIPT),
                 mapScript = Script.Source(SELECTED_ATTR_MAP_SCRIPT),
                 combineScript = Script.Source(SELECTED_ATTR_COMBINE_SCRIPT),
@@ -260,7 +246,7 @@ class PreparedAttrFacetFilter(
 
         val aggs = if (otherFacetFilterExpressions.isNotEmpty()) {
             mutableMapOf(
-                filterAggName to FilterAgg(
+                otherFilterAggName to FilterAgg(
                     Bool.filter(otherFacetFilterExpressions),
                     aggs = attrAggs
                 )
@@ -277,15 +263,11 @@ class PreparedAttrFacetFilter(
     }
 
     override fun processResult(searchQueryResult: SearchQueryResult<*>): AttrFacetFilterResult {
-        var aggResult = searchQueryResult as AggAwareResult
-        if (aggResult.aggs.containsKey(filterAggName)) {
-            aggResult = aggResult.agg<SingleBucketAggResult>(filterAggName)
-        }
-
         val facetValues = mutableMapOf<Int, MutableList<AttrFacetValue>>()
 
-        val fullAgg = (aggResult.aggIfExists<FilterAggResult>(filterFullAggName) ?: aggResult)
-            .agg<TermsAggResult<Long>>(fullAggName)
+        val aggsResult = searchQueryResult.unwrapFilterAgg(otherFilterAggName)
+
+        val fullAgg = aggsResult.facetAgg<TermsAggResult<Long>>(fullAggName)
         for (bucket in fullAgg.buckets) {
             val (attrId, valueId) = decodeAttrAndValue(bucket.key)
             val values = selectedValues[attrId]
@@ -296,20 +278,14 @@ class PreparedAttrFacetFilter(
                 .add(AttrFacetValue(valueId, bucket.docCount))
         }
 
-        for ((aggName, agg) in aggResult.aggs) {
-            val filteredAttrIdMatch = filterAttrAggNameRe.matchEntire(aggName)
-            val (attrId, attrAgg) = if (filteredAttrIdMatch != null) {
-                val attrId = filteredAttrIdMatch.groups[1]?.value?.toInt() ?: continue
-                val attrAgg = (agg as FilterAggResult).agg<ScriptedMetricAggResult<List<Long>>>(attrAggName(attrId))
-                attrId to attrAgg
-            } else {
-                val attrIdMatch = attrAggNameRe.matchEntire(aggName) ?: continue
-                val attrId = attrIdMatch.groups[1]?.value?.toInt() ?: continue
-                attrId to (agg as ScriptedMetricAggResult<List<Long>>)
+        for ((attrId, selectedAttrValues) in selectedValues) {
+            if (selectedAttrValues.mode == FacetFilterMode.INTERSECT) {
+                continue
             }
-            facetValues[attrId] = attrAgg.value
-                .map {entry ->
-                    val (docCount, valueId) = decodeAttrAndValue(entry)
+            val attrAgg = aggsResult.facetAgg<ScriptedMetricAggResult<*>>(attrAggName(attrId))
+            facetValues[attrId] = (attrAgg.value as List<*>)
+                .map { entry ->
+                    val (docCount, valueId) = decodeAttrAndValue(entry as Long)
                     AttrFacetValue(valueId, docCount.toLong())
                 }
                 // Sort by count descending and then by value ascending
@@ -321,6 +297,7 @@ class PreparedAttrFacetFilter(
 
         return AttrFacetFilterResult(
             name,
+            paramName,
             facets = facetValues.mapValues { (attrId, values) ->
                 AttrFacet(attrId, values)
             }
@@ -330,6 +307,7 @@ class PreparedAttrFacetFilter(
 
 data class AttrFacetFilterResult(
     override val name: String,
+    override val paramName: String,
     val facets: Map<Int, AttrFacet>
 ) : FilterResult, Iterable<Map.Entry<Int, AttrFacet>> by facets.entries
 
