@@ -334,8 +334,8 @@ class PreparedAttrRangeFacetFilter(
 
         internal val SINGLE_ATTR_INIT_SCRIPT = """
             state.count = 0L;
-            state.min = Float.POSITIVE_INFINITY;
-            state.max = Float.NEGATIVE_INFINITY;
+            state.min = null;
+            state.max = null;
         """.trimIndent()
         internal val SINGLE_ATTR_MAP_SCRIPT = """
             if (doc[params.attrsField].size() == 0) {
@@ -350,9 +350,9 @@ class PreparedAttrRangeFacetFilter(
                 foundAttr = true;
                 int valueBits = (int) (v & 0xffffffffL);
                 float value = Float.intBitsToFloat(valueBits);
-                if (value < state.min) {
+                if (state.min == null || value < state.min) {
                     state.min = value;
-                } else if (value > state.max) {
+                } else if (state.max == null || value > state.max) {
                     state.max = value;
                 }
             }
@@ -361,24 +361,27 @@ class PreparedAttrRangeFacetFilter(
             }
         """.trimIndent()
         internal val SINGLE_ATTR_COMBINE_SCRIPT = """
+            state.attrId = params.attrId;
             return state;
         """.trimIndent()
         internal val SINGLE_ATTR_REDUCE_SCRIPT = """
+            Integer attrId = null;
             long count = 0L;
             Float min = null;
             Float max = null;
             for (state in states) {
+                attrId = state.attrId;
                 count += state.count;
-                if (min == null || state.min < min) {
+                if (state.min != null && (min == null || state.min < min)) {
                     min = state.min;
                 }
-                if (max == null || state.max > max) {
+                if (state.min != null && (max == null || state.max > max)) {
                     max = state.max;
                 }
             }
 
             def result = new HashMap();
-            result.put("attr_id", params.attrId);
+            result.put("attr_id", attrId);
             result.put("count", count);
             result.put("min", min);
             result.put("max", max);
@@ -495,8 +498,8 @@ object AttrRangeFacetType : SimpleFieldType<AttrRangeFacet>() {
         return AttrRangeFacet(
             attrId = v.int("attr_id"),
             count = v.long("count"),
-            min = v.float("min"),
-            max = v.float("max"),
+            min = v.floatOrNull("min"),
+            max = v.floatOrNull("max"),
         )
     }
 }
@@ -510,6 +513,6 @@ data class AttrRangeFacetFilterResult(
 data class AttrRangeFacet(
     val attrId: Int,
     val count: Long,
-    val min: Float,
-    val max: Float,
+    val min: Float?,
+    val max: Float?,
 )

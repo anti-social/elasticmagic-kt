@@ -11,6 +11,7 @@ import dev.evo.elasticmagic.doc.list
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.booleans.shouldBeFalse
 import io.kotest.matchers.booleans.shouldBeTrue
+import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.nulls.shouldNotBeNull
 
 import kotlin.test.Test
@@ -286,7 +287,7 @@ class AttrFacetFilterTests : ElasticsearchTestBase() {
     @Test
     @Suppress("CyclomaticComplexMethod")
     fun facet() = runTestWithSerdes {
-        withFixtures(ItemDoc, FIXTURES, cleanup = false) {
+        withFixtures(ItemDoc, FIXTURES) {
             var searchQuery = SearchQuery()
             searchQuery.execute(index).totalHits shouldBe 8
 
@@ -550,6 +551,51 @@ class AttrFacetFilterTests : ElasticsearchTestBase() {
                         facet.count shouldBe 2
                         facet.min shouldBe 3700F
                         facet.max shouldBe 4500F
+                    }
+            }
+
+            searchQuery = SearchQuery()
+            ItemQueryFilters.apply(
+                searchQuery,
+                mapOf(
+                    listOf("attr", "2") to listOf("5"),
+                    listOf("attr", "5", "gte") to listOf("6.5"),
+                )
+            ).let { appliedFilters ->
+                val searchResult = searchQuery.execute(index)
+                searchResult.totalHits shouldBe 0
+
+                val qfResult = appliedFilters.processResult(searchResult)
+
+                val selectAttrsFilter = qfResult[ItemQueryFilters.selectAttrs]
+                selectAttrsFilter.name shouldBe "selectAttrs"
+                selectAttrsFilter.paramName shouldBe "attr"
+                selectAttrsFilter.facets.size shouldBe 1
+
+                val processorFacet = selectAttrsFilter
+                    .facets[Processor.ATTR_ID]
+                    .shouldNotBeNull()
+                processorFacet.values.size shouldBe 4
+                processorFacet.iterator().let { values ->
+                    values.get() shouldBe AttrFacetValue(Processor.Snapdragon.valueId, 1)
+                    values.get() shouldBe AttrFacetValue(Processor.Mediatek.valueId, 1)
+                    values.get() shouldBe AttrFacetValue(Processor.Exinos.valueId, 1)
+                    values.get() shouldBe AttrFacetValue(Processor.Tensor.valueId, 1)
+                }
+
+                val rangeAttrsFilter = qfResult[ItemQueryFilters.rangeAttrs]
+                rangeAttrsFilter.name shouldBe "rangeAttrs"
+                rangeAttrsFilter.paramName shouldBe "attr"
+                rangeAttrsFilter.facets.size shouldBe 1
+
+                rangeAttrsFilter
+                    .facets[DisplaySize.ATTR_ID]
+                    .shouldNotBeNull()
+                    .let { facet ->
+                        facet.attrId shouldBe DisplaySize.ATTR_ID
+                        facet.count shouldBe 0
+                        facet.min.shouldBeNull()
+                        facet.max.shouldBeNull()
                     }
             }
 
