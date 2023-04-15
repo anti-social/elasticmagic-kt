@@ -60,7 +60,6 @@ class AttrFacetFilter(
                 @Suppress("MagicNumber")
                 when {
                     keys.isEmpty() -> null
-                    values.isEmpty() -> null
                     keys[0] != paramName -> null
                     keys.size == 2 || keys.size == 3 -> {
                         val mode = when {
@@ -70,10 +69,11 @@ class AttrFacetFilter(
                             else -> null
                         }
                         val attrId = IntType.deserializeTermOrNull(keys[1])
-                        if (mode == null || attrId == null) {
+                        val parsedValues = values.mapNotNull(IntType::deserializeTermOrNull)
+                        if (mode == null || attrId == null || parsedValues.isEmpty()) {
                             null
                         } else {
-                            attrId to SelectedValues(attrId, values.mapNotNull(IntType::deserializeTermOrNull), mode)
+                            attrId to SelectedValues(attrId, parsedValues, mode)
                         }
                     }
                     else -> null

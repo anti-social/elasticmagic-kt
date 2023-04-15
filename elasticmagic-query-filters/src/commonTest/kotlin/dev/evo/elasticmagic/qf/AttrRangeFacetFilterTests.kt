@@ -76,6 +76,52 @@ class AttrRangeFacetFilterTests : BaseCompilerTest<SearchQueryCompiler>(::Search
     }
 
     @Test
+    fun ignoreParams() = testWithCompiler {
+        val filter = AttrRangeFacetFilter(ProductDoc.rangeAttrs)
+
+        val ctx = filter.prepare(
+            "attrs",
+            "a",
+            mapOf(
+                emptyList<String>() to listOf("1.0"),
+                listOf("a", "1", "gte") to emptyList(),
+                listOf("aaa", "1", "gte") to listOf("2.0"),
+                listOf("a", "color", "gte") to listOf("3.0"),
+                listOf("a", "1", "lte") to listOf("one"),
+                listOf("a", "1", "lt") to listOf("1.0"),
+                listOf("a", "1", "lte", "") to listOf("2"),
+            )
+        )
+        val sq = SearchQuery()
+        ctx.apply(sq, emptyList())
+
+        compile(sq).body shouldContainExactly mapOf(
+            "aggs" to mapOf(
+                "qf:attrs.full" to mapOf(
+                    "scripted_metric" to mapOf(
+                        "init_script" to mapOf(
+                            "source" to PreparedAttrRangeFacetFilter.ATTRS_INIT_SCRIPT
+                        ),
+                        "map_script" to mapOf(
+                            "source" to PreparedAttrRangeFacetFilter.ATTRS_MAP_SCRIPT
+                        ),
+                        "combine_script" to mapOf(
+                            "source" to PreparedAttrRangeFacetFilter.ATTRS_COMBINE_SCRIPT
+                        ),
+                        "reduce_script" to mapOf(
+                            "source" to PreparedAttrRangeFacetFilter.ATTRS_REDUCE_SCRIPT
+                        ),
+                        "params" to mapOf(
+                            "attrsField" to "range_attrs",
+                            "size" to 100,
+                        )
+                    )
+                )
+            )
+        )
+    }
+
+    @Test
     fun otherFacetFilterExpressions() = testWithCompiler {
         val filter = AttrRangeFacetFilter(ProductDoc.rangeAttrs)
 
@@ -225,28 +271,42 @@ class AttrRangeFacetFilterTests : BaseCompilerTest<SearchQueryCompiler>(::Search
     fun selectedMultiple() = testWithCompiler {
         val filter = AttrRangeFacetFilter(ProductDoc.rangeAttrs)
 
-        val ctx = filter.prepare(
+        var ctx = filter.prepare(
             "attrs",
             mapOf(
-                listOf("attrs", "1", "gte") to listOf("1"),
+                listOf("attrs", "1", "lte") to listOf("1"),
                 listOf("attrs", "2", "gte") to listOf("-1"),
                 listOf("attrs", "2", "lte") to listOf("1"),
             )
         )
-        val sq = SearchQuery()
+        var sq = SearchQuery()
         ctx.apply(sq, emptyList())
 
-        compile(sq).body shouldContainExactly mapOf(
+        val expectedBody = mapOf(
             "aggs" to mapOf(
                 "qf:attrs.full.filter" to mapOf(
                     "filter" to mapOf(
                         "bool" to mapOf(
                             "filter" to listOf(
                                 mapOf(
-                                    "range" to mapOf(
-                                        "range_attrs" to mapOf(
-                                            "gte" to 0x00000001_3f800000L,
-                                            "lte" to 0x00000001_7f800000L
+                                    "bool" to mapOf(
+                                        "should" to listOf(
+                                            mapOf(
+                                                "range" to mapOf(
+                                                    "range_attrs" to mapOf(
+                                                        "gte" to 0x00000001_00000000L,
+                                                        "lte" to 0x00000001_3f800000L
+                                                    )
+                                                )
+                                            ),
+                                            mapOf(
+                                                "range" to mapOf(
+                                                    "range_attrs" to mapOf(
+                                                        "gte" to 0x00000001_80000000L,
+                                                        "lte" to 0x00000001_ff800000L
+                                                    )
+                                                )
+                                            )
                                         )
                                     )
                                 ),
@@ -346,10 +406,24 @@ class AttrRangeFacetFilterTests : BaseCompilerTest<SearchQueryCompiler>(::Search
                 ),
                 "qf:attrs.2.filter" to mapOf(
                     "filter" to mapOf(
-                        "range" to mapOf(
-                            "range_attrs" to mapOf(
-                                "gte" to 0x00000001_3f800000L,
-                                "lte" to 0x00000001_7f800000L
+                        "bool" to mapOf(
+                            "should" to listOf(
+                                mapOf(
+                                    "range" to mapOf(
+                                        "range_attrs" to mapOf(
+                                            "gte" to 0x00000001_00000000L,
+                                            "lte" to 0x00000001_3f800000L
+                                        )
+                                    )
+                                ),
+                                mapOf(
+                                    "range" to mapOf(
+                                        "range_attrs" to mapOf(
+                                            "gte" to 0x00000001_80000000L,
+                                            "lte" to 0x00000001_ff800000L
+                                        )
+                                    )
+                                )
                             )
                         )
                     ),
@@ -381,10 +455,24 @@ class AttrRangeFacetFilterTests : BaseCompilerTest<SearchQueryCompiler>(::Search
                 "bool" to mapOf(
                     "filter" to listOf(
                         mapOf(
-                            "range" to mapOf(
-                                "range_attrs" to mapOf(
-                                    "gte" to 0x00000001_3f800000L,
-                                    "lte" to 0x00000001_7f800000L
+                            "bool" to mapOf(
+                                "should" to listOf(
+                                    mapOf(
+                                        "range" to mapOf(
+                                            "range_attrs" to mapOf(
+                                                "gte" to 0x00000001_00000000L,
+                                                "lte" to 0x00000001_3f800000L
+                                            )
+                                        )
+                                    ),
+                                    mapOf(
+                                        "range" to mapOf(
+                                            "range_attrs" to mapOf(
+                                                "gte" to 0x00000001_80000000L,
+                                                "lte" to 0x00000001_ff800000L
+                                            )
+                                        )
+                                    )
                                 )
                             )
                         ),
@@ -414,5 +502,20 @@ class AttrRangeFacetFilterTests : BaseCompilerTest<SearchQueryCompiler>(::Search
                 )
             )
         )
+
+        compile(sq).body shouldContainExactly expectedBody
+
+        ctx = filter.prepare(
+            "attrs",
+            mapOf(
+                listOf("attrs", "1", "lte") to listOf("1"),
+                listOf("attrs", "2", "lte") to listOf("1"),
+                listOf("attrs", "2", "gte") to listOf("-1"),
+            )
+        )
+        sq = SearchQuery()
+        ctx.apply(sq, emptyList())
+
+        compile(sq).body shouldContainExactly expectedBody
     }
 }

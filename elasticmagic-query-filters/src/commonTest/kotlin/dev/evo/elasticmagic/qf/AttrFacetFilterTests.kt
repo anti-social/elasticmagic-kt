@@ -74,6 +74,38 @@ class AttrFacetFilterTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQuery
     }
 
     @Test
+    fun ignoreParams() = testWithCompiler {
+        val filter = AttrFacetFilter(ProductDoc.attrs)
+
+        val ctx = filter.prepare(
+            "attrs",
+            "a",
+            mapOf(
+                emptyList<String>() to listOf("1"),
+                listOf("a", "1", "any") to emptyList(),
+                listOf("aaa", "1",) to listOf("2"),
+                listOf("a", "1", "one") to listOf("2"),
+                listOf("a", "color") to listOf("2"),
+                listOf("a", "1") to listOf("blue"),
+                listOf("a", "1", "any", "") to listOf("2"),
+            )
+        )
+        val sq = SearchQuery()
+        ctx.apply(sq, emptyList())
+
+        compile(sq).body shouldContainExactly mapOf(
+            "aggs" to mapOf(
+                "qf:attrs.full" to mapOf(
+                    "terms" to mapOf(
+                        "field" to "attrs",
+                        "size" to 10_000,
+                    )
+                )
+            )
+        )
+    }
+
+    @Test
     fun selectedSingle() = testWithCompiler {
         val filter = AttrFacetFilter(ProductDoc.attrs)
 
