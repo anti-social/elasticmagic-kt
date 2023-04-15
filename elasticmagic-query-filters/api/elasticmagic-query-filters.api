@@ -133,31 +133,33 @@ public final class dev/evo/elasticmagic/qf/AttrFacetFilterResult : dev/evo/elast
 }
 
 public final class dev/evo/elasticmagic/qf/AttrFacetValue {
-	public fun <init> (IJ)V
+	public fun <init> (IJZ)V
 	public final fun component1 ()I
 	public final fun component2 ()J
-	public final fun copy (IJ)Ldev/evo/elasticmagic/qf/AttrFacetValue;
-	public static synthetic fun copy$default (Ldev/evo/elasticmagic/qf/AttrFacetValue;IJILjava/lang/Object;)Ldev/evo/elasticmagic/qf/AttrFacetValue;
+	public final fun component3 ()Z
+	public final fun copy (IJZ)Ldev/evo/elasticmagic/qf/AttrFacetValue;
+	public static synthetic fun copy$default (Ldev/evo/elasticmagic/qf/AttrFacetValue;IJZILjava/lang/Object;)Ldev/evo/elasticmagic/qf/AttrFacetValue;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getCount ()J
+	public final fun getSelected ()Z
 	public final fun getValue ()I
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
 
 public final class dev/evo/elasticmagic/qf/AttrRangeFacet {
-	public fun <init> (IJFF)V
+	public fun <init> (IJLjava/lang/Float;Ljava/lang/Float;)V
 	public final fun component1 ()I
 	public final fun component2 ()J
-	public final fun component3 ()F
-	public final fun component4 ()F
-	public final fun copy (IJFF)Ldev/evo/elasticmagic/qf/AttrRangeFacet;
-	public static synthetic fun copy$default (Ldev/evo/elasticmagic/qf/AttrRangeFacet;IJFFILjava/lang/Object;)Ldev/evo/elasticmagic/qf/AttrRangeFacet;
+	public final fun component3 ()Ljava/lang/Float;
+	public final fun component4 ()Ljava/lang/Float;
+	public final fun copy (IJLjava/lang/Float;Ljava/lang/Float;)Ldev/evo/elasticmagic/qf/AttrRangeFacet;
+	public static synthetic fun copy$default (Ldev/evo/elasticmagic/qf/AttrRangeFacet;IJLjava/lang/Float;Ljava/lang/Float;ILjava/lang/Object;)Ldev/evo/elasticmagic/qf/AttrRangeFacet;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getAttrId ()I
 	public final fun getCount ()J
-	public final fun getMax ()F
-	public final fun getMin ()F
+	public final fun getMax ()Ljava/lang/Float;
+	public final fun getMin ()Ljava/lang/Float;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }

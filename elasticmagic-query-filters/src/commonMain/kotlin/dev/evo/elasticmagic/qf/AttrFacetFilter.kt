@@ -275,7 +275,7 @@ class PreparedAttrFacetFilter(
                 continue
             }
             facetValues.getOrPut(attrId, ::mutableListOf)
-                .add(AttrFacetValue(valueId, bucket.docCount))
+                .add(AttrFacetValue(valueId, bucket.docCount, false))
         }
 
         for ((attrId, selectedAttrValues) in selectedValues) {
@@ -286,7 +286,7 @@ class PreparedAttrFacetFilter(
             facetValues[attrId] = (attrAgg.value as List<*>)
                 .map { entry ->
                     val (docCount, valueId) = decodeAttrAndValue(entry as Long)
-                    AttrFacetValue(valueId, docCount.toLong())
+                    AttrFacetValue(valueId, docCount.toLong(), valueId in selectedAttrValues.valueIds)
                 }
                 // Sort by count descending and then by value ascending
                 .sortedByDescending { fv ->
@@ -313,10 +313,11 @@ data class AttrFacetFilterResult(
 
 data class AttrFacet(
     val attrId: Int,
-    val values: List<AttrFacetValue>
+    val values: List<AttrFacetValue>,
 ) : Iterable<AttrFacetValue> by values
 
 data class AttrFacetValue(
     val value: Int,
     val count: Long,
+    val selected: Boolean,
 )
