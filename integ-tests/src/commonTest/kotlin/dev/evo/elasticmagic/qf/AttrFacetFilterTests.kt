@@ -414,10 +414,10 @@ class AttrFacetFilterTests : ElasticsearchTestBase() {
                     .shouldNotBeNull()
                 manufacturerFacet.values.size shouldBe 4
                 manufacturerFacet.iterator().let { values ->
-                    values.get() shouldBe AttrFacetValue(Manufacturer.Samsung.valueId, 3)
-                    values.get() shouldBe AttrFacetValue(Manufacturer.Xiaomi.valueId, 3)
-                    values.get() shouldBe AttrFacetValue(Manufacturer.Motorola.valueId, 1)
-                    values.get() shouldBe AttrFacetValue(Manufacturer.Google.valueId, 1)
+                    values.get() shouldBe AttrFacetValue(Manufacturer.Samsung.valueId, 3, true)
+                    values.get() shouldBe AttrFacetValue(Manufacturer.Xiaomi.valueId, 3, false)
+                    values.get() shouldBe AttrFacetValue(Manufacturer.Motorola.valueId, 1, false)
+                    values.get() shouldBe AttrFacetValue(Manufacturer.Google.valueId, 1, false)
                 }
 
                 val processorFacet = selectAttrsFilter
@@ -425,8 +425,8 @@ class AttrFacetFilterTests : ElasticsearchTestBase() {
                     .shouldNotBeNull()
                 processorFacet.values.size shouldBe 2
                 processorFacet.iterator().let { values ->
-                    values.get() shouldBe AttrFacetValue(Processor.Exinos.valueId, 2)
-                    values.get() shouldBe AttrFacetValue(Processor.Snapdragon.valueId, 1)
+                    values.get() shouldBe AttrFacetValue(Processor.Exinos.valueId, 2, false)
+                    values.get() shouldBe AttrFacetValue(Processor.Snapdragon.valueId, 1, false)
                 }
 
                 val ramFacet = selectAttrsFilter
@@ -434,8 +434,8 @@ class AttrFacetFilterTests : ElasticsearchTestBase() {
                     .shouldNotBeNull()
                 ramFacet.values.size shouldBe 2
                 ramFacet.iterator().let { values ->
-                    values.get() shouldBe AttrFacetValue(8, 2)
-                    values.get() shouldBe AttrFacetValue(12, 1)
+                    values.get() shouldBe AttrFacetValue(8, 2, false)
+                    values.get() shouldBe AttrFacetValue(12, 1, false)
                 }
 
                 val connectivityFacet = selectAttrsFilter
@@ -443,9 +443,9 @@ class AttrFacetFilterTests : ElasticsearchTestBase() {
                     .shouldNotBeNull()
                 connectivityFacet.values.size shouldBe 3
                 connectivityFacet.iterator().let { values ->
-                    values.get() shouldBe AttrFacetValue(Connectivity.WIFI_802_11_AC.valueId, 3)
-                    values.get() shouldBe AttrFacetValue(Connectivity.NFC.valueId, 3)
-                    values.get() shouldBe AttrFacetValue(Connectivity.WIFI_802_11_AX.valueId, 2)
+                    values.get() shouldBe AttrFacetValue(Connectivity.WIFI_802_11_AC.valueId, 3, false)
+                    values.get() shouldBe AttrFacetValue(Connectivity.NFC.valueId, 3, false)
+                    values.get() shouldBe AttrFacetValue(Connectivity.WIFI_802_11_AX.valueId, 2, false)
                 }
 
                 val rangeAttrsFilter = qfResult[ItemQueryFilters.rangeAttrs]
@@ -496,9 +496,9 @@ class AttrFacetFilterTests : ElasticsearchTestBase() {
                     .shouldNotBeNull()
                 manufacturerFacet.values.size shouldBe 3
                 manufacturerFacet.iterator().let { values ->
-                    values.get() shouldBe AttrFacetValue(Manufacturer.Samsung.valueId, 1)
-                    values.get() shouldBe AttrFacetValue(Manufacturer.Motorola.valueId, 1)
-                    values.get() shouldBe AttrFacetValue(Manufacturer.Google.valueId, 1)
+                    values.get() shouldBe AttrFacetValue(Manufacturer.Samsung.valueId, 1, true)
+                    values.get() shouldBe AttrFacetValue(Manufacturer.Motorola.valueId, 1, true)
+                    values.get() shouldBe AttrFacetValue(Manufacturer.Google.valueId, 1, false)
                 }
 
                 val processorFacet = selectAttrsFilter
@@ -506,7 +506,7 @@ class AttrFacetFilterTests : ElasticsearchTestBase() {
                     .shouldNotBeNull()
                 processorFacet.values.size shouldBe 1
                 processorFacet.iterator().let { values ->
-                    values.get() shouldBe AttrFacetValue(Processor.Snapdragon.valueId, 2)
+                    values.get() shouldBe AttrFacetValue(Processor.Snapdragon.valueId, 2, false)
                 }
 
                 val ramFacet = selectAttrsFilter
@@ -514,8 +514,8 @@ class AttrFacetFilterTests : ElasticsearchTestBase() {
                     .shouldNotBeNull()
                 ramFacet.values.size shouldBe 2
                 ramFacet.iterator().let { values ->
-                    values.get() shouldBe AttrFacetValue(8, 2)
-                    values.get() shouldBe AttrFacetValue(12, 2)
+                    values.get() shouldBe AttrFacetValue(8, 2, false)
+                    values.get() shouldBe AttrFacetValue(12, 2, true)
                 }
 
                 val connectivityFacet = selectAttrsFilter
@@ -523,9 +523,9 @@ class AttrFacetFilterTests : ElasticsearchTestBase() {
                     .shouldNotBeNull()
                 connectivityFacet.values.size shouldBe 3
                 connectivityFacet.iterator().let { values ->
-                    values.get() shouldBe AttrFacetValue(Connectivity.WIFI_802_11_AC.valueId, 2)
-                    values.get() shouldBe AttrFacetValue(Connectivity.WIFI_802_11_AX.valueId, 2)
-                    values.get() shouldBe AttrFacetValue(Connectivity.NFC.valueId, 2)
+                    values.get() shouldBe AttrFacetValue(Connectivity.WIFI_802_11_AC.valueId, 2, false)
+                    values.get() shouldBe AttrFacetValue(Connectivity.WIFI_802_11_AX.valueId, 2, false)
+                    values.get() shouldBe AttrFacetValue(Connectivity.NFC.valueId, 2, false)
                 }
 
                 val rangeAttrsFilter = qfResult[ItemQueryFilters.rangeAttrs]
@@ -577,10 +577,11 @@ class AttrFacetFilterTests : ElasticsearchTestBase() {
                     .shouldNotBeNull()
                 processorFacet.values.size shouldBe 4
                 processorFacet.iterator().let { values ->
-                    values.get() shouldBe AttrFacetValue(Processor.Snapdragon.valueId, 1)
-                    values.get() shouldBe AttrFacetValue(Processor.Mediatek.valueId, 1)
-                    values.get() shouldBe AttrFacetValue(Processor.Exinos.valueId, 1)
-                    values.get() shouldBe AttrFacetValue(Processor.Tensor.valueId, 1)
+                    values.get() shouldBe AttrFacetValue(Processor.Snapdragon.valueId, 1, false)
+                    values.get() shouldBe AttrFacetValue(Processor.Mediatek.valueId, 1, false)
+                    values.get() shouldBe AttrFacetValue(Processor.Exinos.valueId, 1, false)
+                    values.get() shouldBe AttrFacetValue(Processor.Tensor.valueId, 1, false)
+                    // values.get() shouldBe AttrFacetValue(5, 0, true)
                 }
 
                 val rangeAttrsFilter = qfResult[ItemQueryFilters.rangeAttrs]
@@ -623,8 +624,8 @@ class AttrFacetFilterTests : ElasticsearchTestBase() {
                     .shouldNotBeNull()
                 manufacturerFacet.values.size shouldBe 3
                 manufacturerFacet.iterator().let { values ->
-                    values.get() shouldBe AttrFacetValue(Manufacturer.Samsung.valueId, 1)
-                    values.get() shouldBe AttrFacetValue(Manufacturer.Motorola.valueId, 1)
+                    values.get() shouldBe AttrFacetValue(Manufacturer.Samsung.valueId, 1, false)
+                    values.get() shouldBe AttrFacetValue(Manufacturer.Motorola.valueId, 1, false)
                 }
 
                 val processorFacet = selectAttrsFilter
@@ -632,9 +633,9 @@ class AttrFacetFilterTests : ElasticsearchTestBase() {
                     .shouldNotBeNull()
                 processorFacet.values.size shouldBe 3
                 processorFacet.iterator().let { values ->
-                    values.get() shouldBe AttrFacetValue(Processor.Snapdragon.valueId, 2)
-                    values.get() shouldBe AttrFacetValue(Processor.Mediatek.valueId, 1)
-                    values.get() shouldBe AttrFacetValue(Processor.Exinos.valueId, 1)
+                    values.get() shouldBe AttrFacetValue(Processor.Snapdragon.valueId, 2, true)
+                    values.get() shouldBe AttrFacetValue(Processor.Mediatek.valueId, 1, false)
+                    values.get() shouldBe AttrFacetValue(Processor.Exinos.valueId, 1, true)
                 }
 
                 val ramFacet = selectAttrsFilter
@@ -642,9 +643,9 @@ class AttrFacetFilterTests : ElasticsearchTestBase() {
                     .shouldNotBeNull()
                 ramFacet.values.size shouldBe 3
                 ramFacet.iterator().let { values ->
-                    values.get() shouldBe AttrFacetValue(6, 1)
-                    values.get() shouldBe AttrFacetValue(8, 1)
-                    values.get() shouldBe AttrFacetValue(12, 1)
+                    values.get() shouldBe AttrFacetValue(6, 1, false)
+                    values.get() shouldBe AttrFacetValue(8, 1, false)
+                    values.get() shouldBe AttrFacetValue(12, 1, false)
                 }
 
                 val connectivityFacet = selectAttrsFilter
@@ -652,10 +653,10 @@ class AttrFacetFilterTests : ElasticsearchTestBase() {
                     .shouldNotBeNull()
                 connectivityFacet.values.size shouldBe 4
                 connectivityFacet.iterator().let { values ->
-                    values.get() shouldBe AttrFacetValue(Connectivity.WIFI_802_11_AC.valueId, 3)
-                    values.get() shouldBe AttrFacetValue(Connectivity.NFC.valueId, 3)
-                    values.get() shouldBe AttrFacetValue(Connectivity.WIFI_802_11_AX.valueId, 2)
-                    values.get() shouldBe AttrFacetValue(Connectivity.INFRARED.valueId, 1)
+                    values.get() shouldBe AttrFacetValue(Connectivity.WIFI_802_11_AC.valueId, 3, false)
+                    values.get() shouldBe AttrFacetValue(Connectivity.NFC.valueId, 3, false)
+                    values.get() shouldBe AttrFacetValue(Connectivity.WIFI_802_11_AX.valueId, 2, false)
+                    values.get() shouldBe AttrFacetValue(Connectivity.INFRARED.valueId, 1, false)
                 }
 
                 val rangeAttrsFilter = qfResult[ItemQueryFilters.rangeAttrs]
@@ -705,7 +706,7 @@ class AttrFacetFilterTests : ElasticsearchTestBase() {
                     .shouldNotBeNull()
                 manufacturerFacet.values.size shouldBe 1
                 manufacturerFacet.iterator().let { values ->
-                    values.get() shouldBe AttrFacetValue(Manufacturer.Xiaomi.valueId, 2)
+                    values.get() shouldBe AttrFacetValue(Manufacturer.Xiaomi.valueId, 2, false)
                 }
 
                 val processorFacet = selectAttrsFilter
@@ -713,8 +714,8 @@ class AttrFacetFilterTests : ElasticsearchTestBase() {
                     .shouldNotBeNull()
                 processorFacet.values.size shouldBe 2
                 processorFacet.iterator().let { values ->
-                    values.get() shouldBe AttrFacetValue(Processor.Snapdragon.valueId, 1)
-                    values.get() shouldBe AttrFacetValue(Processor.Mediatek.valueId, 1)
+                    values.get() shouldBe AttrFacetValue(Processor.Snapdragon.valueId, 1, false)
+                    values.get() shouldBe AttrFacetValue(Processor.Mediatek.valueId, 1, false)
                 }
 
                 val ramFacet = selectAttrsFilter
@@ -722,7 +723,7 @@ class AttrFacetFilterTests : ElasticsearchTestBase() {
                     .shouldNotBeNull()
                 ramFacet.values.size shouldBe 1
                 ramFacet.iterator().let { values ->
-                    values.get() shouldBe AttrFacetValue(8, 2)
+                    values.get() shouldBe AttrFacetValue(8, 2, false)
                 }
 
                 val connectivityFacet = selectAttrsFilter
@@ -730,10 +731,10 @@ class AttrFacetFilterTests : ElasticsearchTestBase() {
                     .shouldNotBeNull()
                 connectivityFacet.values.size shouldBe 4
                 connectivityFacet.iterator().let { values ->
-                    values.get() shouldBe AttrFacetValue(Connectivity.WIFI_802_11_AC.valueId, 2)
-                    values.get() shouldBe AttrFacetValue(Connectivity.WIFI_802_11_AX.valueId, 2)
-                    values.get() shouldBe AttrFacetValue(Connectivity.NFC.valueId, 2)
-                    values.get() shouldBe AttrFacetValue(Connectivity.INFRARED.valueId, 2)
+                    values.get() shouldBe AttrFacetValue(Connectivity.WIFI_802_11_AC.valueId, 2, false)
+                    values.get() shouldBe AttrFacetValue(Connectivity.WIFI_802_11_AX.valueId, 2, false)
+                    values.get() shouldBe AttrFacetValue(Connectivity.NFC.valueId, 2, false)
+                    values.get() shouldBe AttrFacetValue(Connectivity.INFRARED.valueId, 2, false)
 
                 val rangeAttrsFilter = qfResult[ItemQueryFilters.rangeAttrs]
                 rangeAttrsFilter.name shouldBe "rangeAttrs"
