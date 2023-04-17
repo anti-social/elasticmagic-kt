@@ -618,6 +618,44 @@ internal class SourceType<V: BaseDocSource>(
 }
 
 /**
+ * Serializes/deserializes [type] into list of values.
+ * Might be used in aggregations.
+ */
+class SimpleListType<V>(val type: SimpleFieldType<V>) : SimpleFieldType<List<V & Any>>() {
+    override val name get() = type.name
+    override val termType = type.termType
+
+    override fun serialize(v: List<V & Any>): Any {
+        return v.map(type::serialize)
+    }
+
+    override fun deserialize(v: Any, valueFactory: (() -> List<V & Any>)?): List<V & Any> {
+        return when (v) {
+            is List<*> -> {
+                v.map {
+                    if (it != null) {
+                        type.deserialize(it)
+                    } else {
+                        deErr(null, type.name)
+                    }
+                }
+            }
+            is Deserializer.ArrayCtx -> {
+                buildList {
+                    v.forEach { w ->
+                        if (w == null) {
+                            deErr(null, type.name)
+                        }
+                        add(type.deserialize(w))
+                    }
+                }
+            }
+            else -> listOf(type.deserialize(v))
+        }
+    }
+}
+
+/**
  * Serializes/deserializes [type] into list of optional values.
  * Used by [dev.evo.elasticmagic.doc.DocSource].
  */
@@ -712,7 +750,7 @@ class RequiredListType<V, T>(val type: FieldType<V, T>) : FieldType<MutableList<
     }
 
     override fun deserializeTerm(v: Any): T & Any {
-        throw IllegalStateException("RequiredListType.deserializeTerm: unreachable")
+        throw IllegalStateException("Unreachable: ${this::class}::deserializeTerm")
     }
 }
 

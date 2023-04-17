@@ -1805,18 +1805,19 @@ public final class dev/evo/elasticmagic/aggs/RangeBucket : dev/evo/elasticmagic/
 }
 
 public final class dev/evo/elasticmagic/aggs/ScriptedMetricAgg : dev/evo/elasticmagic/aggs/MetricAggregation {
-	public fun <init> (Ldev/evo/elasticmagic/types/FieldType;Ldev/evo/elasticmagic/query/Script;Ldev/evo/elasticmagic/query/Script;Ldev/evo/elasticmagic/query/Script;Ldev/evo/elasticmagic/query/Script;Ljava/util/Map;)V
-	public synthetic fun <init> (Ldev/evo/elasticmagic/types/FieldType;Ldev/evo/elasticmagic/query/Script;Ldev/evo/elasticmagic/query/Script;Ldev/evo/elasticmagic/query/Script;Ldev/evo/elasticmagic/query/Script;Ljava/util/Map;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public static final field Companion Ldev/evo/elasticmagic/aggs/ScriptedMetricAgg$Companion;
+	public fun <init> (Lkotlin/jvm/functions/Function1;Ldev/evo/elasticmagic/query/Script;Ldev/evo/elasticmagic/query/Script;Ldev/evo/elasticmagic/query/Script;Ldev/evo/elasticmagic/query/Script;Ljava/util/Map;)V
+	public synthetic fun <init> (Lkotlin/jvm/functions/Function1;Ldev/evo/elasticmagic/query/Script;Ldev/evo/elasticmagic/query/Script;Ldev/evo/elasticmagic/query/Script;Ldev/evo/elasticmagic/query/Script;Ljava/util/Map;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun clone ()Ldev/evo/elasticmagic/aggs/ScriptedMetricAgg;
 	public synthetic fun clone ()Ldev/evo/elasticmagic/query/Expression;
-	public final fun component1 ()Ldev/evo/elasticmagic/types/FieldType;
+	public final fun component1 ()Lkotlin/jvm/functions/Function1;
 	public final fun component2 ()Ldev/evo/elasticmagic/query/Script;
 	public final fun component3 ()Ldev/evo/elasticmagic/query/Script;
 	public final fun component4 ()Ldev/evo/elasticmagic/query/Script;
 	public final fun component5 ()Ldev/evo/elasticmagic/query/Script;
 	public final fun component6 ()Ljava/util/Map;
-	public final fun copy (Ldev/evo/elasticmagic/types/FieldType;Ldev/evo/elasticmagic/query/Script;Ldev/evo/elasticmagic/query/Script;Ldev/evo/elasticmagic/query/Script;Ldev/evo/elasticmagic/query/Script;Ljava/util/Map;)Ldev/evo/elasticmagic/aggs/ScriptedMetricAgg;
-	public static synthetic fun copy$default (Ldev/evo/elasticmagic/aggs/ScriptedMetricAgg;Ldev/evo/elasticmagic/types/FieldType;Ldev/evo/elasticmagic/query/Script;Ldev/evo/elasticmagic/query/Script;Ldev/evo/elasticmagic/query/Script;Ldev/evo/elasticmagic/query/Script;Ljava/util/Map;ILjava/lang/Object;)Ldev/evo/elasticmagic/aggs/ScriptedMetricAgg;
+	public final fun copy (Lkotlin/jvm/functions/Function1;Ldev/evo/elasticmagic/query/Script;Ldev/evo/elasticmagic/query/Script;Ldev/evo/elasticmagic/query/Script;Ldev/evo/elasticmagic/query/Script;Ljava/util/Map;)Ldev/evo/elasticmagic/aggs/ScriptedMetricAgg;
+	public static synthetic fun copy$default (Ldev/evo/elasticmagic/aggs/ScriptedMetricAgg;Lkotlin/jvm/functions/Function1;Ldev/evo/elasticmagic/query/Script;Ldev/evo/elasticmagic/query/Script;Ldev/evo/elasticmagic/query/Script;Ldev/evo/elasticmagic/query/Script;Ljava/util/Map;ILjava/lang/Object;)Ldev/evo/elasticmagic/aggs/ScriptedMetricAgg;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getCombineScript ()Ldev/evo/elasticmagic/query/Script;
 	public final fun getInitScript ()Ldev/evo/elasticmagic/query/Script;
@@ -1824,12 +1825,17 @@ public final class dev/evo/elasticmagic/aggs/ScriptedMetricAgg : dev/evo/elastic
 	public fun getName ()Ljava/lang/String;
 	public final fun getParams ()Ljava/util/Map;
 	public final fun getReduceScript ()Ldev/evo/elasticmagic/query/Script;
-	public final fun getValueType ()Ldev/evo/elasticmagic/types/FieldType;
+	public final fun getResultProcessor ()Lkotlin/jvm/functions/Function1;
 	public fun hashCode ()I
 	public synthetic fun processResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;)Ldev/evo/elasticmagic/aggs/AggregationResult;
 	public fun processResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;)Ldev/evo/elasticmagic/aggs/ScriptedMetricAggResult;
 	public fun toString ()Ljava/lang/String;
 	public fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
+}
+
+public final class dev/evo/elasticmagic/aggs/ScriptedMetricAgg$Companion {
+	public final fun invoke (Ldev/evo/elasticmagic/types/FieldType;Ldev/evo/elasticmagic/query/Script;Ldev/evo/elasticmagic/query/Script;Ldev/evo/elasticmagic/query/Script;Ldev/evo/elasticmagic/query/Script;Ljava/util/Map;)Ldev/evo/elasticmagic/aggs/ScriptedMetricAgg;
+	public static synthetic fun invoke$default (Ldev/evo/elasticmagic/aggs/ScriptedMetricAgg$Companion;Ldev/evo/elasticmagic/types/FieldType;Ldev/evo/elasticmagic/query/Script;Ldev/evo/elasticmagic/query/Script;Ldev/evo/elasticmagic/query/Script;Ldev/evo/elasticmagic/query/Script;Ljava/util/Map;ILjava/lang/Object;)Ldev/evo/elasticmagic/aggs/ScriptedMetricAgg;
 }
 
 public final class dev/evo/elasticmagic/aggs/ScriptedMetricAggResult : dev/evo/elasticmagic/aggs/AggregationResult {
@@ -4517,6 +4523,17 @@ public abstract class dev/evo/elasticmagic/types/SimpleFieldType : dev/evo/elast
 	public fun deserializeTerm (Ljava/lang/Object;)Ljava/lang/Object;
 	public fun serialize (Ljava/lang/Object;)Ljava/lang/Object;
 	public fun serializeTerm (Ljava/lang/Object;)Ljava/lang/Object;
+}
+
+public final class dev/evo/elasticmagic/types/SimpleListType : dev/evo/elasticmagic/types/SimpleFieldType {
+	public fun <init> (Ldev/evo/elasticmagic/types/SimpleFieldType;)V
+	public synthetic fun deserialize (Ljava/lang/Object;Lkotlin/jvm/functions/Function0;)Ljava/lang/Object;
+	public fun deserialize (Ljava/lang/Object;Lkotlin/jvm/functions/Function0;)Ljava/util/List;
+	public fun getName ()Ljava/lang/String;
+	public fun getTermType ()Lkotlin/reflect/KClass;
+	public final fun getType ()Ldev/evo/elasticmagic/types/SimpleFieldType;
+	public synthetic fun serialize (Ljava/lang/Object;)Ljava/lang/Object;
+	public fun serialize (Ljava/util/List;)Ljava/lang/Object;
 }
 
 public abstract class dev/evo/elasticmagic/types/StringType : dev/evo/elasticmagic/types/SimpleFieldType {

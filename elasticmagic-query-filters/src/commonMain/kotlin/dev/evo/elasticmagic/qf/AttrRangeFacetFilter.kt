@@ -15,7 +15,7 @@ import dev.evo.elasticmagic.serde.Deserializer
 import dev.evo.elasticmagic.types.deErr
 import dev.evo.elasticmagic.types.FloatType
 import dev.evo.elasticmagic.types.IntType
-import dev.evo.elasticmagic.types.RequiredListType
+import dev.evo.elasticmagic.types.SimpleListType
 import dev.evo.elasticmagic.types.SimpleFieldType
 
 private const val INT_MASK: Long = 0x00000000_ffffffffL
@@ -428,7 +428,7 @@ class PreparedAttrRangeFacetFilter(
         }
 
         val fullAttrsAgg = ScriptedMetricAgg(
-            RequiredListType(AttrRangeFacetType),
+            SimpleListType(AttrRangeFacetType),
             initScript = Script.Source(ATTRS_INIT_SCRIPT),
             mapScript = Script.Source(ATTRS_MAP_SCRIPT),
             combineScript = Script.Source(ATTRS_COMBINE_SCRIPT),
