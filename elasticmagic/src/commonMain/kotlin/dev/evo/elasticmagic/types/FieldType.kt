@@ -479,7 +479,7 @@ class EnumFieldType<V: Enum<V>>(
     private val valueToEnumValue = enumValues.associateBy(fieldValue::get)
 
     override fun serialize(v: V): Any {
-        return fieldValue.get(v) ?: throw IllegalStateException("Unreachable")
+        return fieldValue.get(v) ?: throw IllegalStateException("Unreachable: ${this::class}::serialize")
     }
 
     override fun deserialize(v: Any, valueFactory: (() -> V)?): V {
@@ -550,12 +550,12 @@ open class ObjectType<V: BaseDocSource> : FieldType<V, Nothing> {
     override val name = "object"
     override val termType = Nothing::class
 
-    override fun serializeTerm(v: Nothing): Nothing {
-        throw IllegalStateException("Unreachable")
-    }
-
     override fun serialize(v: V): Map<String, Any?> {
         return v.toSource()
+    }
+
+    override fun serializeTerm(v: Nothing): Nothing {
+        throw IllegalStateException("Unreachable: ${this::class}::serializeTerm")
     }
 
     override fun deserialize(v: Any, valueFactory: (() -> V)?): V {
@@ -575,7 +575,7 @@ open class ObjectType<V: BaseDocSource> : FieldType<V, Nothing> {
     }
 
     override fun deserializeTerm(v: Any): Nothing {
-        throw IllegalStateException("Unreachable")
+        throw IllegalStateException("Unreachable: ${this::class}::deserializeTerm")
     }
 }
 
@@ -609,11 +609,11 @@ internal class SourceType<V: BaseDocSource>(
     }
 
     override fun serializeTerm(v: Nothing): Nothing {
-        throw IllegalStateException("Unreachable")
+        throw IllegalStateException("Unreachable: ${this::class}::serializeTerm")
     }
 
     override fun deserializeTerm(v: Any): Nothing {
-        throw IllegalStateException("Unreachable")
+        throw IllegalStateException("Unreachable: ${this::class}::deserializeTerm")
     }
 }
 
@@ -666,7 +666,7 @@ class OptionalListType<V, T>(val type: FieldType<V, T>) : FieldType<MutableList<
     override fun serializeTerm(v: T & Any): Any = serErr(v)
 
     override fun deserializeTerm(v: Any): T & Any {
-        throw IllegalStateException("Unreachable")
+        throw IllegalStateException("Unimplemented: ${this::class}::deserializeTerm")
     }
 }
 
@@ -752,10 +752,10 @@ internal object DynDocSourceFieldType : FieldType<DynDocSource, Nothing> {
     }
 
     override fun serializeTerm(v: Nothing): Nothing {
-        throw IllegalStateException("Unreachable")
+        throw IllegalStateException("Unreachable: ${this::class}::serializeTerm")
     }
 
     override fun deserializeTerm(v: Any): Nothing {
-        throw IllegalStateException("Unreachable")
+        throw IllegalStateException("Unreachable: ${this::class}::deserializeTerm")
     }
 }
