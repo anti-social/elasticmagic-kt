@@ -126,8 +126,9 @@ class AttrRangeFacetFilter(
                         encodeRangeAttrWithValue(attrId, 0.0F),
                         encodeRangeAttrWithValue(attrId, -0.0F),
                     )
-                    gte > lte -> field.eq(
-                        encodeRangeAttrWithValue(-1, Float.NaN),
+                    gte > lte -> Bool.filter(
+                        Gte(attrId, gte).filterExpression(field),
+                        Lte(attrId, lte).filterExpression(field),
                     )
                     gte == 0.0F -> Bool.should(
                         field.eq(encodeRangeAttrWithValue(attrId, -0.0F)),
