@@ -373,7 +373,7 @@ data class ExtendedStatsAggResult(
 }
 
 data class ScriptedMetricAgg<T>(
-    val valueType: FieldType<T, *>,
+    val resultProcessor: (Deserializer.ObjectCtx) -> T,
     val initScript: Script? = null,
     val mapScript: Script,
     val combineScript: Script? = null,
@@ -381,6 +381,26 @@ data class ScriptedMetricAgg<T>(
     val params: Params = Params(),
 ) : MetricAggregation<ScriptedMetricAggResult<T>>() {
     override val name = "scripted_metric"
+
+    companion object {
+        operator fun <T> invoke(
+            valueType: FieldType<*, T>,
+            initScript: Script? = null,
+            mapScript: Script,
+            combineScript: Script? = null,
+            reduceScript: Script? = null,
+            params: Params = Params(),
+        ): ScriptedMetricAgg<T> {
+            return ScriptedMetricAgg(
+                { obj -> valueType.deserializeTerm(obj.any("value")) },
+                initScript = initScript,
+                mapScript = mapScript,
+                combineScript = combineScript,
+                reduceScript = reduceScript,
+                params = params,
+            )
+        }
+    }
 
     override fun clone() = copy()
 
@@ -409,7 +429,7 @@ data class ScriptedMetricAgg<T>(
     }
 
     override fun processResult(obj: Deserializer.ObjectCtx): ScriptedMetricAggResult<T> {
-        return ScriptedMetricAggResult(valueType.deserialize(obj.any("value")))
+        return ScriptedMetricAggResult(resultProcessor(obj))
     }
 }
 

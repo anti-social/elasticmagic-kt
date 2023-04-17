@@ -14,7 +14,7 @@ import dev.evo.elasticmagic.query.QueryExpression
 import dev.evo.elasticmagic.query.Script
 import dev.evo.elasticmagic.types.BooleanType
 import dev.evo.elasticmagic.types.IntType
-import dev.evo.elasticmagic.types.RequiredListType
+import dev.evo.elasticmagic.types.SimpleListType
 
 fun encodeBoolAttrWithValue(attrId: Int, value: Boolean): Long {
     return (attrId.toLong() shl 1) or (if (value) 1L else 0L)
@@ -156,7 +156,7 @@ class PreparedAttrBoolFacetFilter(
                     }
                 }
             val attrAgg = ScriptedMetricAgg(
-                RequiredListType(IntType),
+                SimpleListType(IntType),
                 initScript = Script.Source(SELECTED_ATTR_INIT_SCRIPT),
                 mapScript = Script.Source(SELECTED_ATTR_MAP_SCRIPT),
                 combineScript = Script.Source(SELECTED_ATTR_COMBINE_SCRIPT),

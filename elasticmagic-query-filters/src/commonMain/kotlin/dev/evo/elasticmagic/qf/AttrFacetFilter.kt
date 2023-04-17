@@ -14,7 +14,7 @@ import dev.evo.elasticmagic.query.QueryExpression
 import dev.evo.elasticmagic.query.Script
 import dev.evo.elasticmagic.types.IntType
 import dev.evo.elasticmagic.types.LongType
-import dev.evo.elasticmagic.types.RequiredListType
+import dev.evo.elasticmagic.types.SimpleListType
 
 fun encodeAttrWithValue(attrId: Int, valueId: Int): Long {
     return (attrId.toLong() shl Int.SIZE_BITS) or valueId.toLong()
@@ -221,7 +221,7 @@ class PreparedAttrFacetFilter(
                     }
                 }
             val attrAgg = ScriptedMetricAgg(
-                RequiredListType(LongType),
+                SimpleListType(LongType),
                 initScript = Script.Source(SELECTED_ATTR_INIT_SCRIPT),
                 mapScript = Script.Source(SELECTED_ATTR_MAP_SCRIPT),
                 combineScript = Script.Source(SELECTED_ATTR_COMBINE_SCRIPT),
