@@ -34,7 +34,7 @@ class AttrRangeFacetFilterTests : ElasticsearchTestBase() {
             Float.POSITIVE_INFINITY,
             Float.NaN,
         )
-        private val FIXTURES = listOf(1, ATTR_ID, Int.MAX_VALUE)
+        private val FIXTURES = listOf(1, ATTR_ID, Int.MAX_VALUE, -1, Int.MIN_VALUE)
             .flatMap { attrId ->
                 VALUES.map { v ->
                     DynDocSource {
@@ -57,7 +57,7 @@ class AttrRangeFacetFilterTests : ElasticsearchTestBase() {
     fun rangeQueries() = runTestWithSerdes {
         withFixtures(ItemDoc, FIXTURES, cleanup = false) {
             var searchQuery = SearchQuery()
-            searchQuery.execute(index).totalHits shouldBe 33
+            searchQuery.execute(index).totalHits shouldBe 55
 
             testRangeFiltering(
                 SelectedValue.Gte(ATTR_ID, Float.NEGATIVE_INFINITY),
