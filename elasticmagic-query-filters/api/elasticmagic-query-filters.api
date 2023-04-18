@@ -271,10 +271,10 @@ public final class dev/evo/elasticmagic/qf/FacetFilter : dev/evo/elasticmagic/qf
 }
 
 public final class dev/evo/elasticmagic/qf/FacetFilter$Companion {
-	public final fun invoke (Ldev/evo/elasticmagic/doc/MappingField;Ljava/lang/String;Ldev/evo/elasticmagic/qf/FacetFilterMode;)Ldev/evo/elasticmagic/qf/FacetFilter;
-	public final fun invoke (Ldev/evo/elasticmagic/doc/MappingField;Ljava/lang/String;Ldev/evo/elasticmagic/qf/FacetFilterMode;Lkotlin/jvm/functions/Function1;)Ldev/evo/elasticmagic/qf/FacetFilter;
-	public static synthetic fun invoke$default (Ldev/evo/elasticmagic/qf/FacetFilter$Companion;Ldev/evo/elasticmagic/doc/MappingField;Ljava/lang/String;Ldev/evo/elasticmagic/qf/FacetFilterMode;ILjava/lang/Object;)Ldev/evo/elasticmagic/qf/FacetFilter;
-	public static synthetic fun invoke$default (Ldev/evo/elasticmagic/qf/FacetFilter$Companion;Ldev/evo/elasticmagic/doc/MappingField;Ljava/lang/String;Ldev/evo/elasticmagic/qf/FacetFilterMode;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Ldev/evo/elasticmagic/qf/FacetFilter;
+	public final fun invoke (Ldev/evo/elasticmagic/query/FieldOperations;Ljava/lang/String;Ldev/evo/elasticmagic/qf/FacetFilterMode;)Ldev/evo/elasticmagic/qf/FacetFilter;
+	public final fun invoke (Ldev/evo/elasticmagic/query/FieldOperations;Ljava/lang/String;Ldev/evo/elasticmagic/qf/FacetFilterMode;Lkotlin/jvm/functions/Function1;)Ldev/evo/elasticmagic/qf/FacetFilter;
+	public static synthetic fun invoke$default (Ldev/evo/elasticmagic/qf/FacetFilter$Companion;Ldev/evo/elasticmagic/query/FieldOperations;Ljava/lang/String;Ldev/evo/elasticmagic/qf/FacetFilterMode;ILjava/lang/Object;)Ldev/evo/elasticmagic/qf/FacetFilter;
+	public static synthetic fun invoke$default (Ldev/evo/elasticmagic/qf/FacetFilter$Companion;Ldev/evo/elasticmagic/query/FieldOperations;Ljava/lang/String;Ldev/evo/elasticmagic/qf/FacetFilterMode;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Ldev/evo/elasticmagic/qf/FacetFilter;
 }
 
 public final class dev/evo/elasticmagic/qf/FacetFilterMode : java/lang/Enum {

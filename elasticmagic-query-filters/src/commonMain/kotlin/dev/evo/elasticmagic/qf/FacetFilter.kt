@@ -9,7 +9,6 @@ import dev.evo.elasticmagic.aggs.SingleBucketAggResult
 import dev.evo.elasticmagic.aggs.TermBucket
 import dev.evo.elasticmagic.aggs.TermsAgg
 import dev.evo.elasticmagic.aggs.TermsAggResult
-import dev.evo.elasticmagic.doc.MappingField
 import dev.evo.elasticmagic.query.Bool
 import dev.evo.elasticmagic.query.FieldOperations
 import dev.evo.elasticmagic.query.QueryExpression
@@ -74,7 +73,7 @@ class FacetFilter<T, V>(
          * A shortcut to create a [FacetFilter] without a custom terms aggregation.
          */
         operator fun <T> invoke(
-            field: MappingField<T>,
+            field: FieldOperations<T>,
             name: String? = null,
             mode: FacetFilterMode = FacetFilterMode.UNION,
         ): FacetFilter<T, T> {
@@ -88,7 +87,7 @@ class FacetFilter<T, V>(
          * @param termsAggFactory - factory that creates terms aggregation for a [FacetFilter.field]
          */
         operator fun <T> invoke(
-            field: MappingField<T>,
+            field: FieldOperations<T>,
             name: String? = null,
             mode: FacetFilterMode = FacetFilterMode.UNION,
             termsAggFactory: (FieldOperations<T>) -> TermsAgg<T>
