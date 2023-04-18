@@ -189,6 +189,10 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
         this.filters += filters
     }
 
+    fun filter(filters: List<QueryExpression>): T = self {
+        this.filters += filters
+    }
+
     /**
      * Clears the existing filters.
      */
@@ -201,13 +205,27 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
      * Filter expressions in the post filter will be applied after the aggregations are
      * calculated. Useful for building faceted filtering.
      *
-     * @param filters query filters which will be appended to the existing post filters.
+     * @param filters that will be appended to the existing post filters.
      *
      * @sample samples.code.SearchQuery.postFilter
      *
      * @see <https://www.elastic.co/guide/en/elasticsearch/reference/current/filter-search-results.html#post-filter>
      */
     fun postFilter(vararg filters: QueryExpression): T = self {
+        this.postFilters += filters
+    }
+
+    /**
+     * Filter expressions in the post filter will be applied after the aggregations are
+     * calculated. Useful for building faceted filtering.
+     *
+     * @param filters that will be appended to the existing post filters.
+     *
+     * @sample samples.code.SearchQuery.postFilter
+     *
+     * @see <https://www.elastic.co/guide/en/elasticsearch/reference/current/filter-search-results.html#post-filter>
+     */
+    fun postFilter(filters: List<QueryExpression>): T = self {
         this.postFilters += filters
     }
 
@@ -266,6 +284,10 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
      * @see <https://www.elastic.co/guide/en/elasticsearch/reference/current/filter-search-results.html#rescore>
      */
     fun rescore(vararg rescores: Rescore): T = self {
+        this.rescores += rescores
+    }
+
+    fun rescore(rescores: List<Rescore>): T = self {
         this.rescores += rescores
     }
 
@@ -384,73 +406,213 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
         this.source = null
     }
 
+    /**
+     * Adds [fields] to the search query retrieval fields list.
+     *
+     * @see <https://www.elastic.co/guide/en/elasticsearch/reference/current/search-fields.html#search-fields-param>
+     */
     fun fields(vararg fields: FieldFormat): T = self {
         this.fields += fields
     }
 
+    /**
+     * Adds [fields] to the search query retrieval fields list.
+     *
+     * @see <https://www.elastic.co/guide/en/elasticsearch/reference/current/search-fields.html#search-fields-param>
+     */
+    fun fields(fields: List<FieldFormat>): T = self {
+        this.fields += fields
+    }
+
+    /**
+     * Clears current search query retrieval fields.
+     *
+     * @see <https://www.elastic.co/guide/en/elasticsearch/reference/current/search-fields.html#search-fields-param>
+     */
     @Suppress("UNUSED_PARAMETER")
     fun fields(clear: SearchQuery.CLEAR): T = self {
         fields.clear()
     }
 
+    /**
+     * Adds [fields] to the search query doc value fields list.
+     *
+     * @see <https://www.elastic.co/guide/en/elasticsearch/reference/current/search-fields.html#docvalue-fields>
+     */
     fun docvalueFields(vararg fields: FieldFormat): T = self {
         docvalueFields += fields
     }
 
+    /**
+     * Adds [fields] to the search query doc value fields list.
+     *
+     * @see <https://www.elastic.co/guide/en/elasticsearch/reference/current/search-fields.html#docvalue-fields>
+     */
+    fun docvalueFields(fields: List<FieldFormat>): T = self {
+        docvalueFields += fields
+    }
+
+    /**
+     * Clears current search query doc value fields.
+     *
+     * @see <https://www.elastic.co/guide/en/elasticsearch/reference/current/search-fields.html#docvalue-fields>
+     */
     @Suppress("UNUSED_PARAMETER")
     fun docvalueFields(clear: SearchQuery.CLEAR): T = self {
         docvalueFields.clear()
     }
 
+    /**
+     * Adds [fields] to the search query stored fields list.
+     *
+     * @see <https://www.elastic.co/guide/en/elasticsearch/reference/current/search-fields.html#stored-fields>
+     */
     fun storedFields(vararg fields: FieldOperations<*>): T = self {
         storedFields += fields
     }
 
+    /**
+     * Adds [fields] to the search query stored fields list.
+     *
+     * @see <https://www.elastic.co/guide/en/elasticsearch/reference/current/search-fields.html#stored-fields>
+     */
+    fun storedFields(fields: List<FieldOperations<*>>): T = self {
+        storedFields += fields
+    }
+
+    /**
+     * Clears current search query stored fields.
+     *
+     * @see <https://www.elastic.co/guide/en/elasticsearch/reference/current/search-fields.html#stored-fields>
+     */
     @Suppress("UNUSED_PARAMETER")
     fun storedFields(clear: SearchQuery.CLEAR): T = self {
         storedFields.clear()
     }
 
+    /**
+     * Adds [fields] to the search query script fields list.
+     *
+     * @see <https://www.elastic.co/guide/en/elasticsearch/reference/current/search-fields.html#script-fields>
+     */
     fun scriptFields(vararg fields: Pair<String, Script>): T = self {
         scriptFields += fields
     }
 
+    /**
+     * Adds [fields] to the search query script fields list.
+     *
+     * @see <https://www.elastic.co/guide/en/elasticsearch/reference/current/search-fields.html#script-fields>
+     */
+    fun scriptFields(fields: Map<String, Script>): T = self {
+        scriptFields += fields
+    }
+
+    /**
+     * Clears current search query stored fields.
+     *
+     * @see <https://www.elastic.co/guide/en/elasticsearch/reference/current/search-fields.html#script-fields>
+     */
     @Suppress("UNUSED_PARAMETER")
     fun scriptFields(clear: SearchQuery.CLEAR): T = self {
         scriptFields.clear()
     }
 
+    /**
+     * Adds [fields] to the search query runtime fields list.
+     *
+     * @since Elasticsearch 7.11
+     *
+     * @see <https://www.elastic.co/guide/en/elasticsearch/reference/current/runtime-search-request.html>
+     */
     fun runtimeMappings(vararg fields: BoundRuntimeField<*>): T = self {
         fields.associateByTo(runtimeMappings, BoundRuntimeField<*>::getFieldName)
     }
 
+    /**
+     * Adds [fields] to the search query runtime fields list.
+     *
+     * @since Elasticsearch 7.11
+     *
+     * @see <https://www.elastic.co/guide/en/elasticsearch/reference/current/runtime-search-request.html>
+     */
+    fun runtimeMappings(fields: List<BoundRuntimeField<*>>): T = self {
+        fields.associateByTo(runtimeMappings, BoundRuntimeField<*>::getFieldName)
+    }
+
+    /**
+     * Clears current search query runtime fields.
+     *
+     * @since Elasticsearch 7.11
+     *
+     * @see <https://www.elastic.co/guide/en/elasticsearch/reference/current/runtime-search-request.html>
+     */
     @Suppress("UNUSED_PARAMETER")
     fun runtimeMappings(clear: SearchQuery.CLEAR): T = self {
         runtimeMappings.clear()
     }
 
+    /**
+     * Sets a maximum number of hits in a search result.
+     *
+     * @see <https://www.elastic.co/guide/en/elasticsearch/reference/current/paginate-search-results.html#paginate-search-results>
+     */
     fun size(size: Int?): T = self {
         this.size = size
     }
 
+    /**
+     * Sets a number of hits to skip in a search result.
+     *
+     * @see <https://www.elastic.co/guide/en/elasticsearch/reference/current/paginate-search-results.html#paginate-search-results>
+     */
     fun from(from: Int?): T = self {
         this.from = from
     }
 
+    /**
+     * Sets a maximum number of matched documents per shard after which the query should be terminated.
+     *
+     * @see <https://www.elastic.co/guide/en/elasticsearch/reference/8.7/search-your-data.html#quickly-check-for-matching-docs>
+     */
     fun terminateAfter(terminateAfter: Int?): T = self {
         this.terminateAfter = terminateAfter
     }
 
+    /**
+     * Adds [extensions] to the search query extensions list.
+     *
+     * @see [SearchExt]
+     */
     fun ext(vararg extensions: SearchExt): T = self {
         this.extensions += extensions
     }
 
+    /**
+     * Adds [extensions] to the search query extensions list.
+     *
+     * @see [SearchExt]
+     */
+    fun ext(extensions: List<SearchExt>): T = self {
+        this.extensions += extensions
+    }
+
+    /**
+     * Clears current search query extensions.
+     *
+     * @see [SearchExt]
+     */
     @Suppress("UNUSED_PARAMETER")
     fun ext(clear: SearchQuery.CLEAR): T = self {
         this.extensions.clear()
     }
 
-    fun searchParams(vararg params: Pair<String, Any?>): T = self {
+    /**
+     * Updates search parameters.
+     *
+     * @see <https://www.elastic.co/guide/en/elasticsearch/reference/current/search-search.html#search-search-api-query-params>
+     */
+    fun searchParams(params: Map<String, Any?>): T = self {
         for ((key, rawValue) in params) {
             val value = if (rawValue is ToValue<*>) {
                 rawValue.toValue()
@@ -461,30 +623,66 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
         }
     }
 
+    /**
+     * Updates search parameters.
+     *
+     * @see <https://www.elastic.co/guide/en/elasticsearch/reference/current/search-search.html#search-search-api-query-params>
+     */
+    fun searchParams(vararg params: Pair<String, Any?>): T = searchParams(params.toMap())
+
+    /**
+     * Updates search type of the search query.
+     *
+     * @see <https://www.elastic.co/guide/en/elasticsearch/reference/current/search-search.html#search-type>
+     */
     fun searchType(searchType: SearchType?): T = self {
         params.putNotNullOrRemove("search_type", searchType)
     }
 
+    /**
+     * Updates search type of the search query.
+     *
+     * @see <https://www.elastic.co/guide/en/elasticsearch/reference/current/search-search.html#search-type>
+     */
     fun routing(routing: String?): T = self {
         params.putNotNullOrRemove("routing", routing)
     }
 
+    /**
+     * Sets a routing parameter of the search query. A search request will be send to a specific shard.
+     *
+     * @see <https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-routing-field.html#_searching_with_custom_routing>
+     */
     fun routing(routing: Long?): T = self {
         params.putNotNullOrRemove("routing", routing)
     }
 
+    /**
+     * Enables/disables a request cache of the search query.
+     */
     fun requestCache(requestCache: Boolean?): T = self {
         params.putNotNullOrRemove("request_cache", requestCache)
     }
 
-    fun stats(stats: String?): T = self {
-        params.putNotNullOrRemove("stats", stats)
+    /**
+     * Marks the search query with a [tag] so it is possible to collect search query statistics by tags.
+     */
+    fun stats(tag: String?): T = self {
+        params.putNotNullOrRemove("stats", tag)
     }
 
+    /**
+     * Enables/disables a document version to be returned within a hit.
+     */
     fun version(version: Boolean?): T = self {
         params.putNotNullOrRemove("version", version)
     }
 
+    /**
+     * Specifies if a sequence number and a primary term should be returned within a hit.
+     *
+     * @see <https://www.elastic.co/guide/en/elasticsearch/reference/current/optimistic-concurrency-control.html>
+     */
     fun seqNoPrimaryTerm(seqNoPrimaryTerm: Boolean?): T = self {
         params.putNotNullOrRemove("seq_no_primary_term", seqNoPrimaryTerm)
     }
@@ -609,10 +807,18 @@ open class SearchQuery<S: BaseDocSource>(
         return SearchQuery(docSourceFactory)
     }
 
+    /**
+     * Executes the search query using an [index].
+     */
     suspend fun execute(index: ElasticsearchIndex, params: Params? = null): SearchQueryResult<S> {
         return index.search(prepareSearch(params))
     }
 
+    /**
+     * Retrieves a number of hits for the search query using an [index].
+     *
+     * @see <https://www.elastic.co/guide/en/elasticsearch/reference/current/search-count.html>
+     */
     suspend fun count(index: ElasticsearchIndex, params: Params? = null): CountResult {
         return index.count(prepareCount(params))
     }

@@ -23,12 +23,16 @@ public abstract class dev/evo/elasticmagic/BaseSearchQuery {
 	public final fun aggs ([Lkotlin/Pair;)Ldev/evo/elasticmagic/BaseSearchQuery;
 	public final fun clone ()Ldev/evo/elasticmagic/BaseSearchQuery;
 	public final fun docvalueFields (Ldev/evo/elasticmagic/SearchQuery$CLEAR;)Ldev/evo/elasticmagic/BaseSearchQuery;
+	public final fun docvalueFields (Ljava/util/List;)Ldev/evo/elasticmagic/BaseSearchQuery;
 	public final fun docvalueFields ([Ldev/evo/elasticmagic/query/FieldFormat;)Ldev/evo/elasticmagic/BaseSearchQuery;
 	public final fun ext (Ldev/evo/elasticmagic/SearchQuery$CLEAR;)Ldev/evo/elasticmagic/BaseSearchQuery;
+	public final fun ext (Ljava/util/List;)Ldev/evo/elasticmagic/BaseSearchQuery;
 	public final fun ext ([Ldev/evo/elasticmagic/query/SearchExt;)Ldev/evo/elasticmagic/BaseSearchQuery;
 	public final fun fields (Ldev/evo/elasticmagic/SearchQuery$CLEAR;)Ldev/evo/elasticmagic/BaseSearchQuery;
+	public final fun fields (Ljava/util/List;)Ldev/evo/elasticmagic/BaseSearchQuery;
 	public final fun fields ([Ldev/evo/elasticmagic/query/FieldFormat;)Ldev/evo/elasticmagic/BaseSearchQuery;
 	public final fun filter (Ldev/evo/elasticmagic/SearchQuery$CLEAR;)Ldev/evo/elasticmagic/BaseSearchQuery;
+	public final fun filter (Ljava/util/List;)Ldev/evo/elasticmagic/BaseSearchQuery;
 	public final fun filter ([Ldev/evo/elasticmagic/query/QueryExpression;)Ldev/evo/elasticmagic/BaseSearchQuery;
 	public final fun findNode (Ldev/evo/elasticmagic/query/NodeHandle;)Ldev/evo/elasticmagic/query/QueryExpressionNode;
 	public final fun from (Ljava/lang/Integer;)Ldev/evo/elasticmagic/BaseSearchQuery;
@@ -55,6 +59,7 @@ public abstract class dev/evo/elasticmagic/BaseSearchQuery {
 	protected final fun getTrackTotalHits ()Ljava/lang/Boolean;
 	protected abstract fun new (Lkotlin/jvm/functions/Function1;)Ldev/evo/elasticmagic/BaseSearchQuery;
 	public final fun postFilter (Ldev/evo/elasticmagic/SearchQuery$CLEAR;)Ldev/evo/elasticmagic/BaseSearchQuery;
+	public final fun postFilter (Ljava/util/List;)Ldev/evo/elasticmagic/BaseSearchQuery;
 	public final fun postFilter ([Ldev/evo/elasticmagic/query/QueryExpression;)Ldev/evo/elasticmagic/BaseSearchQuery;
 	public final fun prepareCount (Ljava/util/Map;)Ldev/evo/elasticmagic/SearchQuery$Count;
 	public static synthetic fun prepareCount$default (Ldev/evo/elasticmagic/BaseSearchQuery;Ljava/util/Map;ILjava/lang/Object;)Ldev/evo/elasticmagic/SearchQuery$Count;
@@ -67,14 +72,18 @@ public abstract class dev/evo/elasticmagic/BaseSearchQuery {
 	public final fun query (Ldev/evo/elasticmagic/query/QueryExpression;)Ldev/evo/elasticmagic/BaseSearchQuery;
 	public final fun requestCache (Ljava/lang/Boolean;)Ldev/evo/elasticmagic/BaseSearchQuery;
 	public final fun rescore (Ldev/evo/elasticmagic/SearchQuery$CLEAR;)Ldev/evo/elasticmagic/BaseSearchQuery;
+	public final fun rescore (Ljava/util/List;)Ldev/evo/elasticmagic/BaseSearchQuery;
 	public final fun rescore ([Ldev/evo/elasticmagic/query/Rescore;)Ldev/evo/elasticmagic/BaseSearchQuery;
 	public final fun rewriteQuery (Ldev/evo/elasticmagic/query/QueryExpressionNode;)V
 	public final fun routing (Ljava/lang/Long;)Ldev/evo/elasticmagic/BaseSearchQuery;
 	public final fun routing (Ljava/lang/String;)Ldev/evo/elasticmagic/BaseSearchQuery;
 	public final fun runtimeMappings (Ldev/evo/elasticmagic/SearchQuery$CLEAR;)Ldev/evo/elasticmagic/BaseSearchQuery;
+	public final fun runtimeMappings (Ljava/util/List;)Ldev/evo/elasticmagic/BaseSearchQuery;
 	public final fun runtimeMappings ([Ldev/evo/elasticmagic/doc/BoundRuntimeField;)Ldev/evo/elasticmagic/BaseSearchQuery;
 	public final fun scriptFields (Ldev/evo/elasticmagic/SearchQuery$CLEAR;)Ldev/evo/elasticmagic/BaseSearchQuery;
+	public final fun scriptFields (Ljava/util/Map;)Ldev/evo/elasticmagic/BaseSearchQuery;
 	public final fun scriptFields ([Lkotlin/Pair;)Ldev/evo/elasticmagic/BaseSearchQuery;
+	public final fun searchParams (Ljava/util/Map;)Ldev/evo/elasticmagic/BaseSearchQuery;
 	public final fun searchParams ([Lkotlin/Pair;)Ldev/evo/elasticmagic/BaseSearchQuery;
 	public final fun searchType (Ldev/evo/elasticmagic/SearchType;)Ldev/evo/elasticmagic/BaseSearchQuery;
 	public final fun self ()Ldev/evo/elasticmagic/BaseSearchQuery;
@@ -99,6 +108,7 @@ public abstract class dev/evo/elasticmagic/BaseSearchQuery {
 	public static synthetic fun source$default (Ldev/evo/elasticmagic/BaseSearchQuery;Ljava/util/List;Ljava/util/List;ILjava/lang/Object;)Ldev/evo/elasticmagic/BaseSearchQuery;
 	public final fun stats (Ljava/lang/String;)Ldev/evo/elasticmagic/BaseSearchQuery;
 	public final fun storedFields (Ldev/evo/elasticmagic/SearchQuery$CLEAR;)Ldev/evo/elasticmagic/BaseSearchQuery;
+	public final fun storedFields (Ljava/util/List;)Ldev/evo/elasticmagic/BaseSearchQuery;
 	public final fun storedFields ([Ldev/evo/elasticmagic/query/FieldOperations;)Ldev/evo/elasticmagic/BaseSearchQuery;
 	public final fun terminateAfter (Ljava/lang/Integer;)Ldev/evo/elasticmagic/BaseSearchQuery;
 	public final fun trackScores (Ljava/lang/Boolean;)Ldev/evo/elasticmagic/BaseSearchQuery;

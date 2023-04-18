@@ -133,4 +133,9 @@ data class QueryExpressionNode<T: QueryExpression>(
     }
 }
 
+/**
+ * Represents a search extension that can be implemented as an Elasticsearch plugin.
+ *
+ * @see <https://github.com/elastic/elasticsearch/blob/main/server/src/main/java/org/elasticsearch/search/SearchExtBuilder.java>
+ */
 interface SearchExt : NamedExpression

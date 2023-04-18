@@ -184,7 +184,7 @@ class SearchQueryCompilerTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQ
             )
         }
 
-        query.aggs(
+        query.aggs(mapOf(
             "date_created_hist" to DateHistogramAgg(
                 AnyField("date_created"),
                 interval = DateHistogramAgg.Interval.Fixed(FixedInterval.Hours(2)),
@@ -194,7 +194,7 @@ class SearchQueryCompilerTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQ
                     )
                 )
             )
-        )
+        ))
         compile(query).let { compiled ->
             compiled.body shouldContainExactly mapOf(
                 "aggs" to mapOf(
@@ -237,7 +237,7 @@ class SearchQueryCompilerTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQ
         val query = SearchQuery()
             .filter(userDoc.status.eq(0))
             .filter(userDoc.rank.gte(90.0F))
-            .filter(userDoc.opinionsCount.gt(5))
+            .filter(listOf(userDoc.opinionsCount.gt(5)))
 
         val compiled = compile(query)
         compiled.body shouldContainExactly mapOf(
@@ -402,7 +402,7 @@ class SearchQueryCompilerTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQ
             )
         )
 
-        query.postFilter(AnyField("rank").lt(8.5))
+        query.postFilter(listOf(AnyField("rank").lt(8.5)))
         compile(query).body shouldContainExactly mapOf(
             "post_filter" to mapOf(
                 "bool" to mapOf(
@@ -455,7 +455,7 @@ class SearchQueryCompilerTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQ
             )
         )
 
-        query.rescore(
+        query.rescore(listOf(
             QueryRescore(
                 FunctionScore(
                     functions = listOf(
@@ -471,7 +471,7 @@ class SearchQueryCompilerTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQ
                 ),
                 scoreMode = QueryRescore.ScoreMode.MULTIPLY,
             )
-        )
+        ))
         compile(query).body shouldContainExactly mapOf(
             "rescore" to listOf(
                 mapOf(
@@ -517,7 +517,8 @@ class SearchQueryCompilerTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQ
     @Test
     fun sort_fieldSimplified() = testWithCompiler {
         val query = SearchQuery()
-            .sort(AnyField("popularity"), Sort(AnyField("id")))
+            .sort(AnyField("popularity"))
+            .sort(listOf(Sort(AnyField("id"))))
         compile(query).body shouldContainExactly mapOf(
             "sort" to listOf("popularity", "id")
         )
@@ -683,7 +684,7 @@ class SearchQueryCompilerTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQ
 
         compile(
             SearchQuery()
-                .fields(FieldFormat(AnyField("date_created"), "epoch_millis"))
+                .fields(listOf(FieldFormat(AnyField("date_created"), "epoch_millis")))
         ).body shouldContainExactly mapOf(
             "fields" to listOf(mapOf("field" to "date_created", "format" to "epoch_millis"))
         )
@@ -699,7 +700,7 @@ class SearchQueryCompilerTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQ
             "docvalue_fields" to listOf("rank", "opinion.rating")
         )
 
-        query.docvalueFields(AnyField("date_created").format("YYYY"))
+        query.docvalueFields(listOf(AnyField("date_created").format("YYYY")))
         compile(query).body shouldContainExactly mapOf(
             "docvalue_fields" to listOf(
                 "rank",
@@ -719,7 +720,9 @@ class SearchQueryCompilerTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQ
         val query = SearchQuery().storedFields(*arrayOf())
         compile(query).body shouldContainExactly emptyMap()
 
-        query.storedFields(AnyField("rank"), AnyField("opinion.rating"))
+        query
+            .storedFields(AnyField("rank"))
+            .storedFields(listOf(AnyField("opinion.rating")))
         compile(query).body shouldContainExactly mapOf(
             "stored_fields" to listOf("rank", "opinion.rating")
         )
@@ -740,6 +743,19 @@ class SearchQueryCompilerTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQ
                 "weighted_rank" to mapOf(
                     "script" to mapOf(
                         "source" to "doc['rank'].value * doc['weight'].value"
+                    )
+                )
+            )
+        )
+
+        query.scriptFields(
+            mapOf("weighted_rank" to Script.Source("doc['popularity'].value * doc['rank'].value")),
+        )
+        compile(query).body shouldContainExactly mapOf(
+            "script_fields" to mapOf(
+                "weighted_rank" to mapOf(
+                    "script" to mapOf(
+                        "source" to "doc['popularity'].value * doc['rank'].value"
                     )
                 )
             )
@@ -788,6 +804,41 @@ class SearchQueryCompilerTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQ
             )
         )
 
+        query.runtimeMappings(listOf(
+            BoundRuntimeField(
+                "attr_ids", LongType,
+                Script.Source(
+                    "emit(doc[attr_id].value >>> 32)",
+                ),
+                RootFieldSet
+            )
+        ))
+        compile(query).body shouldContainExactly mapOf(
+            "runtime_mappings" to mapOf(
+                "day_of_week" to mapOf(
+                    "type" to "keyword",
+                    "script" to mapOf(
+                        "source" to """
+                            emit(
+                                doc[params.timestamp_field].value
+                                    .dayOfWeekEnum
+                                    .getDisplayName(TextStyle.FULL, Locale.ROOT)
+                            )
+                        """.trimIndent(),
+                        "params" to mapOf(
+                            "timestamp_field" to "@timestamp",
+                        )
+                    )
+                ),
+                "attr_ids" to mapOf(
+                    "type" to "long",
+                    "script" to mapOf(
+                        "source" to "emit(doc[attr_id].value >>> 32)"
+                    )
+                )
+            )
+        )
+
         compile(query.runtimeMappings(SearchQuery.CLEAR)).body shouldContainExactly emptyMap()
     }
 
@@ -797,11 +848,13 @@ class SearchQueryCompilerTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQ
             .size(100)
             .from(200)
 
-        val compiled = compile(query)
-        compiled.body shouldContainExactly mapOf(
+        compile(query).body shouldContainExactly mapOf(
             "size" to 100,
             "from" to 200,
         )
+
+        query.size(null).from(null)
+        compile(query).body shouldContainExactly emptyMap()
     }
 
     @Test
@@ -812,6 +865,9 @@ class SearchQueryCompilerTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQ
         compiled.body shouldContainExactly mapOf(
             "terminate_after" to 10_000,
         )
+
+        query.terminateAfter(null)
+        compile(query).body shouldContainExactly emptyMap()
     }
 
     @Test
@@ -1187,7 +1243,7 @@ class SearchQueryCompilerTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQ
             val field: FieldOperations<*>,
             val windowSize: Int,
             val shardSize: Int,
-            val sort: Sort,
+            val sort: Sort? = null,
         ) : SearchExt {
             override val name = "collapse"
 
@@ -1197,8 +1253,10 @@ class SearchQueryCompilerTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQ
                 ctx.field("field", field.getQualifiedFieldName())
                 ctx.field("window_size", windowSize)
                 ctx.field("shard_size", shardSize)
-                ctx.array("sort") {
-                    compiler.visit(this, listOf(sort))
+                if (sort != null) {
+                    ctx.array("sort") {
+                        compiler.visit(this, listOf(sort))
+                    }
                 }
             }
         }
@@ -1224,6 +1282,19 @@ class SearchQueryCompilerTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQ
                             )
                         )
                     )
+                )
+            )
+        )
+
+        query.ext(
+            listOf(CollapseExtension(carDoc.model, windowSize = 5_000, shardSize = 1000))
+        )
+        compile(query).body shouldContainExactly mapOf(
+            "ext" to mapOf(
+                "collapse" to mapOf(
+                    "field" to "model",
+                    "window_size" to 5000,
+                    "shard_size" to 1000,
                 )
             )
         )
