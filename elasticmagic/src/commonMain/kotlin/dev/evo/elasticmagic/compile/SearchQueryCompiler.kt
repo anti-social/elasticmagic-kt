@@ -33,7 +33,10 @@ import dev.evo.elasticmagic.transport.BulkRequest
 import dev.evo.elasticmagic.transport.ApiRequest
 import dev.evo.elasticmagic.transport.Method
 import dev.evo.elasticmagic.transport.Parameters
+import dev.evo.elasticmagic.BulkError
 import dev.evo.elasticmagic.BulkScrollFailure
+import dev.evo.elasticmagic.UpdateByQueryPartialResult
+import dev.evo.elasticmagic.DeleteByQueryPartialResult
 
 abstract class BaseSearchQueryCompiler(
     features: ElasticsearchFeatures,
@@ -318,9 +321,54 @@ class CountQueryCompiler(
     }
 }
 
-class UpdateByQueryCompiler(
+open class BaseUpdateByQueryCompiler(
     features: ElasticsearchFeatures,
 ) : BaseSearchQueryCompiler(features) {
+    fun processPartialResult(ctx: Deserializer.ObjectCtx): UpdateByQueryPartialResult {
+        return UpdateByQueryPartialResult(
+            total = ctx.long("total"),
+            updated = ctx.long("updated"),
+            created = ctx.long("created"),
+            deleted = ctx.long("deleted"),
+            batches = ctx.int("batches"),
+            versionConflicts = ctx.long("version_conflicts"),
+            noops = ctx.long("noops"),
+            retries = ctx.obj("retries").let { retries ->
+                BulkScrollRetries(
+                    search = retries.long("search"),
+                    bulk = retries.long("bulk"),
+                )
+            },
+            throttledMillis = ctx.long("throttled_millis"),
+            requestsPerSecond = ctx.float("requests_per_second"),
+            throttledUntilMillis = ctx.long("throttled_until_millis"),
+        )
+    }
+
+    fun processBulkScrollFailure(ctx: Deserializer.ObjectCtx): BulkScrollFailure {
+        return BulkScrollFailure(
+            id = ctx.string("id"),
+            index = ctx.string("index"),
+            type = ctx.stringOrNull("type"),
+            status = ctx.int("status"),
+            cause = processBulkError(ctx.obj("cause")),
+        )
+    }
+
+    fun processBulkError(ctx: Deserializer.ObjectCtx): BulkError {
+        return BulkError(
+            type = ctx.string("type"),
+            reason = ctx.string("reason"),
+            index = ctx.string("index"),
+            indexUuid = ctx.string("index_uuid"),
+            shard = ctx.intOrNull("shard"),
+        )
+    }
+}
+
+class UpdateByQueryCompiler(
+    features: ElasticsearchFeatures,
+) : BaseUpdateByQueryCompiler(features) {
     private val apiEndpoint = "_update_by_query"
 
     fun visit(ctx: ObjectCtx, updateByQuery: WithIndex<SearchQuery.Update>) {
@@ -345,38 +393,41 @@ class UpdateByQueryCompiler(
             body = body,
             serde = serde,
             processResponse = { resp ->
-                val content = resp.content
-                UpdateByQueryResult(
-                    took = content.long("took"),
-                    timedOut = content.boolean("timed_out"),
-                    total = content.long("total"),
-                    updated = content.long("updated"),
-                    deleted = content.long("deleted"),
-                    batches = content.int("batches"),
-                    versionConflicts = content.long("version_conflicts"),
-                    noops = content.long("noops"),
-                    retries = content.obj("retries").let { retries ->
-                        BulkScrollRetries(
-                            search = retries.long("search"),
-                            bulk = retries.long("bulk"),
-                        )
-                    },
-                    throttledMillis = content.long("throttled_millis"),
-                    requestsPerSecond = content.float("requests_per_second"),
-                    throttledUntilMillis = content.long("throttled_until_millis"),
-                    failures = buildList {
-                        content.array("failures").forEachObj { failure ->
-                            add(BulkScrollFailure.create(failure))
-                        }
-                    }
+                processResult(resp.content)
+            }
+        )
+    }
+
+    fun processResult(ctx: Deserializer.ObjectCtx): UpdateByQueryResult {
+        return UpdateByQueryResult(
+            took = ctx.long("took"),
+            timedOut = ctx.boolean("timed_out"),
+            total = ctx.long("total"),
+            updated = ctx.long("updated"),
+            deleted = ctx.long("deleted"),
+            batches = ctx.int("batches"),
+            versionConflicts = ctx.long("version_conflicts"),
+            noops = ctx.long("noops"),
+            retries = ctx.obj("retries").let { retries ->
+                BulkScrollRetries(
+                    search = retries.long("search"),
+                    bulk = retries.long("bulk"),
                 )
+            },
+            throttledMillis = ctx.long("throttled_millis"),
+            requestsPerSecond = ctx.float("requests_per_second"),
+            throttledUntilMillis = ctx.long("throttled_until_millis"),
+            failures = buildList {
+                ctx.array("failures").forEachObj { failure ->
+                    add(processBulkScrollFailure(failure))
+                }
             }
         )
     }
 
     fun compileAsync(
         serde: Serde, updateByQuery: WithIndex<SearchQuery.Update>
-    ): ApiRequest<AsyncResult> {
+    ): ApiRequest<AsyncResult<UpdateByQueryPartialResult, UpdateByQueryResult>> {
         val body = serde.serializer.obj {
             visit(this, updateByQuery)
         }
@@ -388,7 +439,11 @@ class UpdateByQueryCompiler(
             body = body,
             serde = serde,
             processResponse = { resp ->
-                AsyncResult(resp.content.string("task"))
+                AsyncResult(
+                    resp.content.string("task"),
+                    ::processPartialResult,
+                    ::processResult
+                )
             }
         )
     }
@@ -396,7 +451,7 @@ class UpdateByQueryCompiler(
 
 class DeleteByQueryCompiler(
     features: ElasticsearchFeatures,
-) : BaseSearchQueryCompiler(features) {
+) : BaseUpdateByQueryCompiler(features) {
     private val apiEndpoint = "_delete_by_query"
 
     fun visit(ctx: ObjectCtx, deleteByQuery: WithIndex<SearchQuery.Delete>) {
@@ -416,37 +471,40 @@ class DeleteByQueryCompiler(
             body = body,
             serde = serde,
             processResponse = { resp ->
-                val content = resp.content
-                DeleteByQueryResult(
-                    took = content.long("took"),
-                    timedOut = content.boolean("timed_out"),
-                    total = content.long("total"),
-                    deleted = content.long("deleted"),
-                    batches = content.int("batches"),
-                    versionConflicts = content.long("version_conflicts"),
-                    noops = content.long("noops"),
-                    retries = content.obj("retries").let { retries ->
-                        BulkScrollRetries(
-                            search = retries.long("search"),
-                            bulk = retries.long("bulk"),
-                        )
-                    },
-                    throttledMillis = content.long("throttled_millis"),
-                    requestsPerSecond = content.float("requests_per_second"),
-                    throttledUntilMillis = content.long("throttled_until_millis"),
-                    failures = buildList {
-                        content.array("failures").forEachObj { failure ->
-                            add(BulkScrollFailure.create(failure))
-                        }
-                    }
+                processResult(resp.content)
+            }
+        )
+    }
+
+    fun processResult(ctx: Deserializer.ObjectCtx): DeleteByQueryResult {
+        return DeleteByQueryResult(
+            took = ctx.long("took"),
+            timedOut = ctx.boolean("timed_out"),
+            total = ctx.long("total"),
+            deleted = ctx.long("deleted"),
+            batches = ctx.int("batches"),
+            versionConflicts = ctx.long("version_conflicts"),
+            noops = ctx.long("noops"),
+            retries = ctx.obj("retries").let { retries ->
+                BulkScrollRetries(
+                    search = retries.long("search"),
+                    bulk = retries.long("bulk"),
                 )
+            },
+            throttledMillis = ctx.long("throttled_millis"),
+            requestsPerSecond = ctx.float("requests_per_second"),
+            throttledUntilMillis = ctx.long("throttled_until_millis"),
+            failures = buildList {
+                ctx.array("failures").forEachObj { failure ->
+                    add(processBulkScrollFailure(failure))
+                }
             }
         )
     }
 
     fun compileAsync(
         serde: Serde, deleteByQuery: WithIndex<SearchQuery.Delete>
-    ): ApiRequest<AsyncResult> {
+    ): ApiRequest<AsyncResult<DeleteByQueryPartialResult, DeleteByQueryResult>> {
         val body = serde.serializer.obj {
             visit(this, deleteByQuery)
         }
@@ -458,7 +516,11 @@ class DeleteByQueryCompiler(
             body = body,
             serde = serde,
             processResponse = { resp ->
-                AsyncResult(resp.content.string("task"))
+                AsyncResult(
+                    resp.content.string("task"),
+                    ::processPartialResult,
+                    ::processResult,
+                )
             }
         )
     }

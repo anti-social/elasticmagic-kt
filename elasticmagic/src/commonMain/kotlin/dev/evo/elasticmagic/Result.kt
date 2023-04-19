@@ -2,9 +2,9 @@ package dev.evo.elasticmagic
 
 import dev.evo.elasticmagic.aggs.AggregationResult
 import dev.evo.elasticmagic.bulk.ActionMeta
+import dev.evo.elasticmagic.bulk.IdActionMeta
 import dev.evo.elasticmagic.doc.BaseDocSource
 import dev.evo.elasticmagic.doc.BoundField
-import dev.evo.elasticmagic.bulk.IdActionMeta
 import dev.evo.elasticmagic.query.FieldOperations
 import dev.evo.elasticmagic.serde.Deserializer
 
@@ -105,8 +105,18 @@ data class CountResult(
     val count: Long,
 )
 
-data class AsyncResult(
-    val task: String
+data class UpdateByQueryPartialResult(
+    val total: Long,
+    val updated: Long,
+    val created: Long,
+    val deleted: Long,
+    val batches: Int,
+    val versionConflicts: Long,
+    val noops: Long,
+    val retries: BulkScrollRetries,
+    val throttledMillis: Long,
+    val requestsPerSecond: Float,
+    val throttledUntilMillis: Long,
 )
 
 data class UpdateByQueryResult(
@@ -124,6 +134,8 @@ data class UpdateByQueryResult(
     val throttledUntilMillis: Long,
     val failures: List<BulkScrollFailure>,
 )
+
+typealias DeleteByQueryPartialResult = UpdateByQueryPartialResult
 
 data class DeleteByQueryResult(
     val took: Long,
@@ -151,19 +163,35 @@ data class BulkScrollFailure(
     val id: String,
     val status: Int,
     val cause: BulkError,
+)
+
+data class AsyncResult<P, T>(
+    val task: String,
+    val createStatus: (Deserializer.ObjectCtx) -> P,
+    val createResponse: (Deserializer.ObjectCtx) -> T,
 ) {
-    companion object {
-        fun create(ctx: Deserializer.ObjectCtx): BulkScrollFailure {
-            return BulkScrollFailure(
-                id = ctx.string("id"),
-                index = ctx.string("index"),
-                type = ctx.stringOrNull("type"),
-                status = ctx.int("status"),
-                cause = BulkError.create(ctx.obj("cause"))
-            )
-        }
+    suspend fun wait(cluster: ElasticsearchCluster): TaskResult<P, T> {
+        return cluster.waitAsyncResult(this)
     }
 }
+
+data class TaskResult<P, T>(
+    val completed: Boolean,
+    val task: TaskInfo<P>,
+    val response: T,
+)
+
+data class TaskInfo<T>(
+    val node: String,
+    val id: Long,
+    val type: String,
+    val action: String,
+    val status: T,
+    val description: String,
+    val startTimeInMillis: Long,
+    val runningTimeInNanos: Long,
+    val cancellable: Boolean
+)
 
 data class CreateIndexResult(
     val acknowledged: Boolean,
@@ -231,18 +259,6 @@ data class BulkError(
     val index: String,
     val indexUuid: String,
     val shard: Int?,
-) {
-    companion object {
-        fun create(ctx: Deserializer.ObjectCtx): BulkError {
-            return BulkError(
-                type = ctx.string("type"),
-                reason = ctx.string("reason"),
-                index = ctx.string("index"),
-                indexUuid = ctx.string("index_uuid"),
-                shard = ctx.intOrNull("shard"),
-            )
-        }
-    }
-}
+)
 
 data class PingResult(val statusCode: Int, val responseTimeMs: Long)
