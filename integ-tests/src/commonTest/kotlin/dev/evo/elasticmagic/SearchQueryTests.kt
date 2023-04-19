@@ -29,6 +29,8 @@ import dev.evo.elasticmagic.types.KeywordType
 
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.booleans.shouldBeTrue
+import io.kotest.matchers.booleans.shouldBeFalse
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.nulls.shouldNotBeNull
@@ -724,7 +726,7 @@ class SearchQueryTests : ElasticsearchTestBase() {
     }
 
     @Test
-    fun updateByQuery() = runTestWithSerdes() {
+    fun updateByQuery() = runTestWithSerdes {
         withFixtures(OrderDoc, listOf(
             karlssonsJam, karlssonsBestDonuts, karlssonsJustDonuts, littleBrotherDogStuff
         )) {
@@ -795,25 +797,49 @@ class SearchQueryTests : ElasticsearchTestBase() {
         )) {
             SearchQuery()
                 .filter(OrderDoc.status eq OrderStatus.ACCEPTED)
-                .count(index).let { res ->
-                    res.count shouldBe 1
-                }
-
-            val result = SearchQuery()
+                .count(index)
+                .count shouldBe 1
+            SearchQuery()
                 .filter(OrderDoc.status eq OrderStatus.NEW)
+                .count(index)
+                .count shouldBe 3
+
+            val asyncResult = SearchQuery()
                 .updateAsync(
                     index,
                     Script.Source(
-                        "ctx._source.status = params.new_status",
+                        """
+                            if (ctx._source.user.id == 2) {
+                                ctx.op = "noop";
+                            } else {
+                                ctx._source.status = params.new_status;
+                            }
+                        """.trimIndent(),
                         params = Params(
-                            "new_status" to OrderStatus.ACCEPTED
+                            "new_status" to OrderStatus.CANCELLED
                         )
                     ),
                     refresh = Refresh.TRUE
                 )
 
-            result.task shouldHaveMinLength 1
-            // TODO: Implement task API and check task result
+            asyncResult.task shouldHaveMinLength 1
+
+            val taskResult = asyncResult.wait(cluster)
+            taskResult.completed.shouldBeTrue()
+            taskResult.task.action shouldBe "indices:data/write/update/byquery"
+            val partialResp = taskResult.task.status
+            partialResp.total shouldBe 4
+            partialResp.updated shouldBe 3
+            partialResp.deleted shouldBe 0
+            partialResp.noops shouldBe 1
+            partialResp.versionConflicts shouldBe 0
+            val resp = taskResult.response
+            resp.timedOut.shouldBeFalse()
+            resp.total shouldBe 4
+            resp.updated shouldBe 3
+            resp.deleted shouldBe 0
+            resp.noops shouldBe 1
+            resp.versionConflicts shouldBe 0
         }
     }
 
@@ -841,13 +867,27 @@ class SearchQueryTests : ElasticsearchTestBase() {
         withFixtures(OrderDoc, listOf(
             karlssonsJam, karlssonsBestDonuts, karlssonsJustDonuts, littleBrotherDogStuff
         )) {
-            val result = SearchQuery()
+            val asyncResult = SearchQuery()
                 .filter(OrderDoc.status eq OrderStatus.NEW)
                 .docvalueFields(OrderDoc.status)
                 .deleteAsync(index, refresh = Refresh.TRUE)
 
-            result.task shouldHaveMinLength 1
-            // TODO: Implement task API and check task result
+            asyncResult.task shouldHaveMinLength 1
+
+            val taskResult = asyncResult.wait(cluster)
+            taskResult.completed.shouldBeTrue()
+            taskResult.task.action shouldBe "indices:data/write/delete/byquery"
+            val partialResp = taskResult.task.status
+            partialResp.total shouldBe 3
+            partialResp.deleted shouldBe 3
+            partialResp.noops shouldBe 0
+            partialResp.versionConflicts shouldBe 0
+            val resp = taskResult.response
+            resp.timedOut.shouldBeFalse()
+            resp.total shouldBe 3
+            resp.deleted shouldBe 3
+            resp.noops shouldBe 0
+            resp.versionConflicts shouldBe 0
         }
     }
 }
