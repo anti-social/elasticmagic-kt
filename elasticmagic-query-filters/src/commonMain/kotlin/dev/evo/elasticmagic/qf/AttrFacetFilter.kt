@@ -33,11 +33,11 @@ class AttrFacetFilter(
     name: String? = null
 ) : Filter<PreparedAttrFacetFilter, AttrFacetFilterResult>(name) {
 
-    data class SelectedValues(val attrId: Int, val valueIds: List<Int>, val mode: FacetFilterMode) {
+    data class SelectedValues(val attrId: Int, val valueIds: List<Int>, val mode: FilterMode) {
         fun filterExpression(field: FieldOperations<Long>): QueryExpression {
             return if (valueIds.size == 1) {
                 field eq encodeAttrWithValue(attrId, valueIds[0])
-            } else if (mode == FacetFilterMode.UNION){
+            } else if (mode == FilterMode.UNION) {
                 field oneOf valueIds.map { v -> encodeAttrWithValue(attrId, v) }
             } else {
                 Bool.filter(valueIds.map { v -> field eq encodeAttrWithValue(attrId, v) })
@@ -56,19 +56,19 @@ class AttrFacetFilter(
      */
     override fun prepare(name: String, paramName: String, params: QueryFilterParams): PreparedAttrFacetFilter {
         val selectedValues = params.asSequence()
-            .mapNotNull { (key, values) ->
+            .mapNotNull { (keys, values) ->
                 @Suppress("MagicNumber")
                 when {
-                    key.isEmpty() -> null
-                    key[0] != paramName -> null
-                    key.size == 2 || key.size == 3 -> {
+                    keys.isEmpty() -> null
+                    keys[0] != paramName -> null
+                    keys.size == 2 || keys.size == 3 -> {
                         val mode = when {
-                            key.size == 2 -> FacetFilterMode.UNION
-                            key.size == 3 && key[2] == "any" -> FacetFilterMode.UNION
-                            key.size == 3 && key[2] == "all" -> FacetFilterMode.INTERSECT
+                            keys.size == 2 -> FilterMode.UNION
+                            keys.size == 3 && keys[2] == "any" -> FilterMode.UNION
+                            keys.size == 3 && keys[2] == "all" -> FilterMode.INTERSECT
                             else -> null
                         }
-                        val attrId = IntType.deserializeTermOrNull(key[1])
+                        val attrId = IntType.deserializeTermOrNull(keys[1])
                         val parsedValues = values.mapNotNull(IntType::deserializeTermOrNull)
                         if (mode == null || attrId == null || parsedValues.isEmpty()) {
                             null
@@ -209,12 +209,12 @@ class PreparedAttrFacetFilter(
         for ((attrId, selectedAttrValues) in selectedValues) {
             // For an intersect mode we don't need a dedicated aggregation:
             // values and counts will be taken from a common aggregation
-            if (selectedAttrValues.mode == FacetFilterMode.INTERSECT) {
+            if (selectedAttrValues.mode == FilterMode.INTERSECT) {
                 continue
             }
             val otherAttrFacetFilterExpressions = selectedValues
                 .mapNotNull { (a, w) ->
-                    if (w.mode == FacetFilterMode.INTERSECT || a != attrId) {
+                    if (w.mode == FilterMode.INTERSECT || a != attrId) {
                         w.filterExpression(filter.field)
                     } else {
                         null
@@ -271,7 +271,7 @@ class PreparedAttrFacetFilter(
         for (bucket in fullAgg.buckets) {
             val (attrId, valueId) = decodeAttrAndValue(bucket.key)
             val values = selectedValues[attrId]
-            if (values != null && values.mode != FacetFilterMode.INTERSECT) {
+            if (values != null && values.mode != FilterMode.INTERSECT) {
                 continue
             }
             facetValues.getOrPut(attrId, ::mutableListOf)
@@ -279,7 +279,7 @@ class PreparedAttrFacetFilter(
         }
 
         for ((attrId, selectedAttrValues) in selectedValues) {
-            if (selectedAttrValues.mode == FacetFilterMode.INTERSECT) {
+            if (selectedAttrValues.mode == FilterMode.INTERSECT) {
                 continue
             }
             val attrAgg = aggsResult.facetAgg<ScriptedMetricAggResult<*>>(attrAggName(attrId))

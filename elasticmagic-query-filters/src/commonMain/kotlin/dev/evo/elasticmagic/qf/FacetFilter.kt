@@ -15,9 +15,9 @@ import dev.evo.elasticmagic.query.QueryExpression
 import dev.evo.elasticmagic.util.OrderedMap
 
 /**
- * [FacetFilterMode] determines a way how values should be filtered.
+ * [FilterMode] determines a way how values should be filtered.
  */
-enum class FacetFilterMode {
+enum class FilterMode {
     /**
      * 2 or more selected values are combined with *OR* operator.
      * Most of the facet filters should use this mode. For example, you are buying car wheels
@@ -42,8 +42,8 @@ enum class FacetFilterMode {
             1 -> field.eq(filterValues[0])
             else -> {
                 when (this) {
-                    FacetFilterMode.UNION -> field.oneOf(filterValues)
-                    FacetFilterMode.INTERSECT -> Bool.filter(filterValues.map { field eq it })
+                    UNION -> field.oneOf(filterValues)
+                    INTERSECT -> Bool.filter(filterValues.map { field eq it })
                 }
 
             }
@@ -57,14 +57,14 @@ enum class FacetFilterMode {
  *
  * @param field - field where values are stored
  * @param name - optional filter name. If omitted, name of a property will be used
- * @param mode - mode to use when combining selected values. See [FacetFilterMode]
+ * @param mode - mode to use when combining selected values. See [FilterMode]
  * @param termsAgg - terms aggregation for the [FacetFilter].
  *   Can be used to change aggregation arguments: [TermsAgg.size], [TermsAgg.minDocCount] and others
  */
 class FacetFilter<T, V>(
     val field: FieldOperations<V>,
     name: String? = null,
-    val mode: FacetFilterMode = FacetFilterMode.UNION,
+    val mode: FilterMode = FilterMode.UNION,
     val termsAgg: TermsAgg<T>
 ) : Filter<PreparedFacetFilter<T>, FacetFilterResult<T>>(name) {
 
@@ -75,7 +75,7 @@ class FacetFilter<T, V>(
         operator fun <T> invoke(
             field: FieldOperations<T>,
             name: String? = null,
-            mode: FacetFilterMode = FacetFilterMode.UNION,
+            mode: FilterMode = FilterMode.UNION,
         ): FacetFilter<T, T> {
             return FacetFilter(field, name = name, mode = mode, termsAgg = TermsAgg(field))
         }
@@ -89,7 +89,7 @@ class FacetFilter<T, V>(
         operator fun <T> invoke(
             field: FieldOperations<T>,
             name: String? = null,
-            mode: FacetFilterMode = FacetFilterMode.UNION,
+            mode: FilterMode = FilterMode.UNION,
             termsAggFactory: (FieldOperations<T>) -> TermsAgg<T>
         ): FacetFilter<T, T> {
             return FacetFilter(field, name = name, mode = mode, termsAgg = termsAggFactory(field))
@@ -135,7 +135,7 @@ class PreparedFacetFilter<T>(
         otherFacetFilterExpressions: List<QueryExpression>
     ) {
         val aggs = if (otherFacetFilterExpressions.isNotEmpty()) {
-            val aggFilters = if (filter.mode == FacetFilterMode.INTERSECT && facetFilterExpr != null) {
+            val aggFilters = if (filter.mode == FilterMode.INTERSECT && facetFilterExpr != null) {
                 otherFacetFilterExpressions + listOf(facetFilterExpr)
             } else {
                 otherFacetFilterExpressions
@@ -207,7 +207,7 @@ class PreparedFacetFilter<T>(
 data class FacetFilterResult<T>(
     override val name: String,
     override val paramName: String,
-    val mode: FacetFilterMode,
+    val mode: FilterMode,
     val values: List<FacetFilterValue<T>>,
     val selected: Boolean,
 ) : FilterResult, Iterable<FacetFilterValue<T>> by values

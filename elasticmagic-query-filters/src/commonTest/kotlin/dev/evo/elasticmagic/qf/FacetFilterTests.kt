@@ -176,7 +176,7 @@ class FacetFilterTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQueryComp
 
     @Test
     fun intersectMode() = testWithCompiler {
-        val filter = FacetFilter(BikeDocument.manufacturer, mode = FacetFilterMode.INTERSECT)
+        val filter = FacetFilter(BikeDocument.manufacturer, mode = FilterMode.INTERSECT)
 
         val ctx = filter.prepare(
             "manufacturer", mapOf(
