@@ -27,7 +27,7 @@ class FacetRangeFilter<T>(
     val field: FieldOperations<T>,
     name: String? = null,
     val aggs: Map<String, Aggregation<*>> = emptyMap(),
-) : Filter<PreparedFacetRangeFilter<T>, FacetRangeFilterResult<T>>(name) {
+) : Filter<FacetRangeFilterResult<T>>(name) {
 
     /**
      * Parses [params] and prepares the [FacetRangeFilter] for applying.

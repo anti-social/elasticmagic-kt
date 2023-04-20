@@ -8,18 +8,17 @@ import dev.evo.elasticmagic.aggs.FilterAggResult
 import dev.evo.elasticmagic.query.Bool
 import dev.evo.elasticmagic.query.QueryExpression
 import dev.evo.elasticmagic.util.OrderedMap
-
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 
-open class QueryFilters : Iterable<BoundFilter<*, *>> {
-    private val filters = OrderedMap<String, BoundFilter<*, *>>()
+open class QueryFilters : Iterable<BoundFilter<*>> {
+    private val filters = OrderedMap<String, BoundFilter<*>>()
 
-    fun addFilter(filter: BoundFilter<*, *>) {
+    fun addFilter(filter: BoundFilter<*>) {
         filters[filter.name] = filter
     }
 
-    override fun iterator(): Iterator<BoundFilter<*, *>> {
+    override fun iterator(): Iterator<BoundFilter<*>> {
         return filters.values.iterator()
     }
 
@@ -56,7 +55,7 @@ open class QueryFilters : Iterable<BoundFilter<*, *>> {
 }
 
 class AppliedQueryFilters(
-    private val queryFilters: OrderedMap<String, BoundFilter<*, *>>,
+    private val queryFilters: OrderedMap<String, BoundFilter<*>>,
     private val preparedFilters: Map<String, PreparedFilter<*>>
 ) {
     fun processResult(searchQueryResult: SearchQueryResult<*>): QueryFiltersResult {
@@ -73,7 +72,7 @@ class AppliedQueryFilters(
 class QueryFiltersResult(
     private val results: OrderedMap<String, FilterResult>
 ) : Iterable<FilterResult> {
-    operator fun <R: FilterResult> get(filter: BoundFilter<*, R>): R {
+    operator fun <R : FilterResult> get(filter: BoundFilter<R>): R {
         @Suppress("UNCHECKED_CAST")
         return results[filter.name] as R
     }
@@ -83,14 +82,14 @@ class QueryFiltersResult(
     }
 }
 
-abstract class Filter<C: PreparedFilter<R>, R: FilterResult>(private val name: String?) {
-    abstract fun prepare(name: String, paramName: String, params: QueryFilterParams): C
+abstract class Filter<R : FilterResult>(private val name: String?) {
+    abstract fun prepare(name: String, paramName: String, params: QueryFilterParams): PreparedFilter<R>
 
-    fun prepare(name: String, params: QueryFilterParams): C = prepare(name, name, params)
+    fun prepare(name: String, params: QueryFilterParams): PreparedFilter<R> = prepare(name, name, params)
 
     operator fun provideDelegate(
         thisRef: QueryFilters, property: KProperty<*>
-    ): ReadOnlyProperty<QueryFilters, BoundFilter<C, R>> {
+    ): ReadOnlyProperty<QueryFilters, BoundFilter<R>> {
         val boundFilter = BoundFilter(property.name, name ?: property.name, this)
         thisRef.addFilter(boundFilter)
         return ReadOnlyProperty { _, _ ->
@@ -99,7 +98,7 @@ abstract class Filter<C: PreparedFilter<R>, R: FilterResult>(private val name: S
     }
 }
 
-abstract class PreparedFilter<R: FilterResult>(
+abstract class PreparedFilter<T : FilterResult>(
     val name: String,
     val paramName: String,
     val facetFilterExpr: QueryExpression?,
@@ -111,7 +110,7 @@ abstract class PreparedFilter<R: FilterResult>(
 
     abstract fun processResult(
         searchQueryResult: SearchQueryResult<*>
-    ): R
+    ): T
 }
 
 interface FilterResult {
@@ -119,12 +118,12 @@ interface FilterResult {
     val paramName: String
 }
 
-class BoundFilter<C: PreparedFilter<R>, R: FilterResult>(
+class BoundFilter<R : FilterResult>(
     val name: String,
     val paramName: String,
-    val filter: Filter<C, R>
+    val filter: Filter<R>
 ) {
-    fun prepare(params: QueryFilterParams): C {
+    fun prepare(params: QueryFilterParams): PreparedFilter<R> {
         return filter.prepare(name, paramName, params)
     }
 }

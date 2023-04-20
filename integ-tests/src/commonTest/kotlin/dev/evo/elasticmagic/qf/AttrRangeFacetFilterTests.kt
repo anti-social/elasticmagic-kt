@@ -56,7 +56,7 @@ class AttrRangeFacetFilterTests : ElasticsearchTestBase() {
     @Test
     fun rangeQueries() = runTestWithSerdes {
         withFixtures(ItemDoc, FIXTURES, cleanup = false) {
-            var searchQuery = SearchQuery()
+            val searchQuery = SearchQuery()
             searchQuery.execute(index).totalHits shouldBe 55
 
             testRangeFiltering(

@@ -19,11 +19,9 @@ class PageFilter(
     val availablePageSizes: List<Int> = DEFAULT_AVAILABLE_PAGE_SIZES,
     defaultPageSize: Int? = null,
     val maxHits: Int = DEFAULT_MAX_HITS,
-) : Filter<PreparedPageFilter, PageFilterResult>(name) {
+) : Filter<PageFilterResult>(name) {
     init {
-        if (availablePageSizes.isEmpty()) {
-            throw IllegalArgumentException("availablePageSizes argument should not be empty")
-        }
+        require(availablePageSizes.isNotEmpty()) { "availablePageSizes argument should not be empty" }
     }
 
     val defaultPageSize = defaultPageSize ?: availablePageSizes[0]

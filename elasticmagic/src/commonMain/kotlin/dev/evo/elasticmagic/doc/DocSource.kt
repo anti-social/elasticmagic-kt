@@ -202,7 +202,7 @@ open class DocSource : BaseDocSource() {
             }
     }
 
-    fun <V: BaseDocSource> SubDocument.source(sourceFactory: () -> V): OptionalListableValueDelegate<V> {
+    fun <V : BaseDocSource> SubDocument.source(sourceFactory: () -> V): OptionalListableValueDelegate<V> {
         val fieldType = getFieldType()
         return OptionalListableValueDelegate(
             getFieldName(), SourceType(fieldType, sourceFactory)
@@ -326,8 +326,7 @@ open class DocSource : BaseDocSource() {
         fieldType: FieldType<V & Any, *>,
     ) :
         FieldValueProperty<V>(fieldName, fieldType, FieldValue()),
-        ReadWriteProperty<DocSource, V?>
-    {
+        ReadWriteProperty<DocSource, V?> {
         override val isInitialized get() = fieldValue.isInitialized
 
         override val value get() = fieldValue.value
@@ -359,18 +358,19 @@ open class DocSource : BaseDocSource() {
         val defaultValue: () -> V & Any,
     ) :
         FieldValueProperty<V>(fieldName, fieldType, FieldValue()),
-        ReadWriteProperty<DocSource, V>
-    {
+        ReadWriteProperty<DocSource, V> {
         override val isInitialized = true
 
-        override val value get(): V & Any {
-            return when (val v = fieldValue.value) {
-                null -> {
-                    defaultValue().also(fieldValue::value::set)
+        override val value
+            get(): V & Any {
+                return when (val v = fieldValue.value) {
+                    null -> {
+                        defaultValue().also(fieldValue::value::set)
+                    }
+
+                    else -> v
                 }
-                else -> v
             }
-        }
 
         override fun serialize(): Any {
             return type.serialize(value)
@@ -396,8 +396,7 @@ open class DocSource : BaseDocSource() {
         fieldType: FieldType<V & Any, *>,
     ) :
         FieldValueProperty<V>(fieldName, fieldType, FieldValue()),
-        ReadWriteProperty<DocSource, V>
-    {
+        ReadWriteProperty<DocSource, V> {
         override val isInitialized get() = fieldValue.isInitialized
 
         override fun checkRequired() {
@@ -406,20 +405,18 @@ open class DocSource : BaseDocSource() {
             }
         }
 
-        override val value get(): V & Any {
-            return fieldValue.value ?: error("Field [$name] is required")
-        }
+        override val value
+            get(): V & Any {
+                return fieldValue.value ?: error("Field [$name] is required")
+            }
 
         override fun serialize(): Any {
             return type.serialize(value)
         }
 
         override fun deserialize(value: Any?) {
-            fieldValue.value = if (value != null) {
-                type.deserialize(value)
-            } else {
-                throw IllegalArgumentException("Value cannot be null for required field [$name]")
-            }
+            require(value != null) { "Value cannot be null for required field [$name]" }
+            fieldValue.value = type.deserialize(value)
         }
 
         override fun getValue(thisRef: DocSource, property: KProperty<*>): V = value
@@ -496,6 +493,7 @@ class DynDocSource private constructor(
                 is List<*> -> throw IllegalArgumentException(
                     "Cannot traverse through a list value: ${currentFieldName(path, ix)}"
                 )
+
                 else -> throw IllegalArgumentException(
                     "Expected sub document for field: ${currentFieldName(path, ix)}"
                 )
@@ -520,6 +518,7 @@ class DynDocSource private constructor(
                 is List<*> -> throw IllegalArgumentException(
                     "Cannot traverse through a list value: ${currentFieldName(path, ix)}"
                 )
+
                 else -> throw IllegalArgumentException(
                     "Expected sub document for field: ${currentFieldName(path, ix)}"
                 )
@@ -563,6 +562,7 @@ class DynDocSource private constructor(
                         )
                     }
                 }
+
                 is DynDocSource -> {
                     if (source.size > 1) {
                         throw IllegalArgumentException(
@@ -572,6 +572,7 @@ class DynDocSource private constructor(
                     }
                     source = fieldValue.source
                 }
+
                 else -> throw IllegalArgumentException(
                     "Expected sub document for field: ${currentFieldName(prefix, ix)}"
                 )
@@ -596,7 +597,7 @@ class DynDocSource private constructor(
         return get(field.getBoundField())
     }
 
-    operator fun <V: SubDocument> get(subDoc: V): DynDocSource? {
+    operator fun <V : SubDocument> get(subDoc: V): DynDocSource? {
         val path = checkPathStartsWithPrefix(
             subDoc.getQualifiedFieldName().split('.')
         )
@@ -619,7 +620,7 @@ class DynDocSource private constructor(
         set(field.getBoundField(), value)
     }
 
-    operator fun <V: SubDocument> set(subDoc: V, value: DynDocSource?) {
+    operator fun <V : SubDocument> set(subDoc: V, value: DynDocSource?) {
         val path = checkPathStartsWithPrefix(
             subDoc.getQualifiedFieldName().split('.')
         )

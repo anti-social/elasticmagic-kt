@@ -66,7 +66,7 @@ class FacetFilter<T, V>(
     name: String? = null,
     val mode: FilterMode = FilterMode.UNION,
     val termsAgg: TermsAgg<T>
-) : Filter<PreparedFacetFilter<T>, FacetFilterResult<T>>(name) {
+) : Filter<FacetFilterResult<T>>(name) {
 
     companion object {
         /**

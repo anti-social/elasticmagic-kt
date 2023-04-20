@@ -27,7 +27,7 @@ fun encodeRangeAttrWithValue(attrId: Int, value: Float): Long {
 class AttrRangeFacetFilter(
     val field: FieldOperations<Long>,
     name: String? = null
-) : Filter<PreparedAttrRangeFacetFilter, AttrRangeFacetFilterResult>(name) {
+) : Filter<AttrRangeFacetFilterResult>(name) {
 
     /**
      * 

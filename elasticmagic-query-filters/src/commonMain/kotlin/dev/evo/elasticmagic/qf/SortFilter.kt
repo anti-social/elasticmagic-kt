@@ -15,11 +15,9 @@ import dev.evo.elasticmagic.types.KeywordType
 class SortFilter(
     vararg sortValues: SortFilterValue,
     name: String? = null,
-) : Filter<PreparedSortFilter, SortFilterResult>(name) {
+) : Filter<SortFilterResult>(name) {
     init {
-        if (sortValues.isEmpty()) {
-            throw IllegalArgumentException("Expected at least one sort value")
-        }
+        require(sortValues.isNotEmpty()) { "Expected at least one sort value" }
     }
 
     companion object {

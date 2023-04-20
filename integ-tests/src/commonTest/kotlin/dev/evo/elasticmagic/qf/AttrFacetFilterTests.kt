@@ -736,30 +736,30 @@ class AttrFacetFilterTests : ElasticsearchTestBase() {
                     values.get() shouldBe AttrFacetValue(Connectivity.NFC.valueId, 2, false)
                     values.get() shouldBe AttrFacetValue(Connectivity.INFRARED.valueId, 2, false)
 
-                val rangeAttrsFilter = qfResult[ItemQueryFilters.rangeAttrs]
-                rangeAttrsFilter.name shouldBe "rangeAttrs"
-                rangeAttrsFilter.paramName shouldBe "attr"
-                rangeAttrsFilter.facets.size shouldBe 2
+                    val rangeAttrsFilter = qfResult[ItemQueryFilters.rangeAttrs]
+                    rangeAttrsFilter.name shouldBe "rangeAttrs"
+                    rangeAttrsFilter.paramName shouldBe "attr"
+                    rangeAttrsFilter.facets.size shouldBe 2
 
-                rangeAttrsFilter
-                    .facets[DisplaySize.ATTR_ID]
-                    .shouldNotBeNull()
-                    .let { facet ->
-                        facet.attrId shouldBe DisplaySize.ATTR_ID
-                        facet.count shouldBe 2
-                        facet.min shouldBe 6.28F
-                        facet.max shouldBe 6.67F
-                    }
+                    rangeAttrsFilter
+                        .facets[DisplaySize.ATTR_ID]
+                        .shouldNotBeNull()
+                        .let { facet ->
+                            facet.attrId shouldBe DisplaySize.ATTR_ID
+                            facet.count shouldBe 2
+                            facet.min shouldBe 6.28F
+                            facet.max shouldBe 6.67F
+                        }
 
-                rangeAttrsFilter
-                    .facets[BatteryCapacity.ATTR_ID]
-                    .shouldNotBeNull()
-                    .let { facet ->
-                        facet.attrId shouldBe BatteryCapacity.ATTR_ID
-                        facet.count shouldBe 2
-                        facet.min shouldBe 4500F
-                        facet.max shouldBe 5000F
-                    }
+                    rangeAttrsFilter
+                        .facets[BatteryCapacity.ATTR_ID]
+                        .shouldNotBeNull()
+                        .let { facet ->
+                            facet.attrId shouldBe BatteryCapacity.ATTR_ID
+                            facet.count shouldBe 2
+                            facet.min shouldBe 4500F
+                            facet.max shouldBe 5000F
+                        }
                 }
             }
         }

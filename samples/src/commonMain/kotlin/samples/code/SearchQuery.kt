@@ -1,4 +1,4 @@
-package samples.code.SearchQuery
+package samples.code
 
 import dev.evo.elasticmagic.SearchQuery
 import dev.evo.elasticmagic.aggs.HistogramAgg
