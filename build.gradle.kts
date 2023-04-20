@@ -126,11 +126,6 @@ subprojects {
                     }
                 }
                 exceptionFormat = TestExceptionFormat.FULL
-                if (!project.hasProperty("showFullStackTrace")) {
-                    stackTraceFilters = setOf(
-                        TestStackTraceFilter.ENTRY_POINT
-                    )
-                }
             }
         }
 
