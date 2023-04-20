@@ -856,7 +856,7 @@ open class SearchQuery<S: BaseDocSource>(
         maxDocs: Int? = null,
         scrollSize: Int? = null,
         params: Params? = null,
-    ): AsyncResult<DeleteByQueryPartialResult, DeleteByQueryResult> {
+    ): AsyncResult<DeleteByQueryPartialResult, DeleteByQueryResult?> {
         return index.deleteByQueryAsync(
             prepareDelete(
                 Params(
@@ -906,7 +906,7 @@ open class SearchQuery<S: BaseDocSource>(
         maxDocs: Int? = null,
         scrollSize: Int? = null,
         params: Params? = null,
-    ): AsyncResult<UpdateByQueryPartialResult, UpdateByQueryResult> {
+    ): AsyncResult<UpdateByQueryPartialResult, UpdateByQueryResult?> {
         return index.updateByQueryAsync(
             prepareUpdate(
                 script,

@@ -111,26 +111,22 @@ class ElasticsearchCluster(
 
     suspend fun <P, T> checkAsyncResult(
         task: AsyncResult<P, T>,
-    ): TaskResult<P, T?> {
+    ): TaskResult<P, T> {
         return checkAsyncResult(
-            AsyncResult(
-                task.task,
-                task.createStatus,
-                createResponse = { ctx ->
-                    ctx.objOrNull("response")?.let(task.createResponse)
-                }
-            ),
+            task,
             waitForCompletion = false,
         )
     }
 
     suspend fun <P, T> waitAsyncResult(
         task: AsyncResult<P, T>,
-    ): TaskResult<P, T> {
+    ): TaskResult<P, T & Any> {
         return checkAsyncResult(
-            task.copy(
+            AsyncResult(
+                task.task,
+                task.createStatus,
                 createResponse = { ctx ->
-                    task.createResponse(ctx.obj("response"))
+                    task.createResponse(ctx) ?: error("Missing [response] key in a task result")
                 }
             ),
             waitForCompletion = true,
@@ -160,7 +156,7 @@ class ElasticsearchCluster(
                             id = taskCtx.long("id"),
                             type = taskCtx.string("type"),
                             action = taskCtx.string("action"),
-                            status = task.createStatus(taskCtx.obj("status")),
+                            status = task.createStatus(ctx),
                             description = taskCtx.string("description"),
                             startTimeInMillis = taskCtx.long("start_time_in_millis"),
                             runningTimeInNanos = taskCtx.long("running_time_in_nanos"),
@@ -325,7 +321,7 @@ class ElasticsearchIndex(
 
     suspend fun updateByQueryAsync(
         searchQuery: SearchQuery.Update,
-    ): AsyncResult<UpdateByQueryPartialResult, UpdateByQueryResult> {
+    ): AsyncResult<UpdateByQueryPartialResult, UpdateByQueryResult?> {
         val compiled = cluster.getCompilers().updateByQuery.compileAsync(
             cluster.apiSerde, searchQuery.withIndex(name)
         )
@@ -343,7 +339,7 @@ class ElasticsearchIndex(
 
     suspend fun deleteByQueryAsync(
         searchQuery: SearchQuery.Delete,
-    ): AsyncResult<DeleteByQueryPartialResult, DeleteByQueryResult> {
+    ): AsyncResult<DeleteByQueryPartialResult, DeleteByQueryResult?> {
         val compiled = cluster.getCompilers().deleteByQuery.compileAsync(
             cluster.apiSerde, searchQuery.withIndex(name)
         )
