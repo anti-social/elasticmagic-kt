@@ -7,7 +7,7 @@ open class SimpleQueryFilter(
     name: String? = null,
     val values: List<SimpleQueryValue> = emptyList(),
     private val mode: FilterMode = FilterMode.UNION,
-) : Filter<PreparedSimpleFilter, BaseFilterResult>(name) {
+) : Filter<BaseFilterResult>(name) {
 
     override fun prepare(name: String, paramName: String, params: QueryFilterParams): PreparedSimpleFilter {
         val filterValues = params.getOrElse(listOf(paramName)) { null } ?: return PreparedSimpleFilter(

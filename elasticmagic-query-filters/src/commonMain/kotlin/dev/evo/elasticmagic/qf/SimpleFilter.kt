@@ -10,7 +10,7 @@ open class SimpleFilter<T>(
     val field: FieldOperations<T>,
     name: String? = null,
     val mode: FilterMode = FilterMode.UNION,
-) : Filter<PreparedSimpleFilter, BaseFilterResult>(name) {
+) : Filter<BaseFilterResult>(name) {
 
     override fun prepare(name: String, paramName: String, params: QueryFilterParams): PreparedSimpleFilter {
         println("SimpleFilter.prepare: name=$name, paramName=$paramName, params=$params")

@@ -31,7 +31,7 @@ fun decodeBoolAttrAndValue(attrValue: Long): Pair<Int, Boolean> {
 class AttrBoolFacetFilter(
     val field: FieldOperations<Long>,
     name: String? = null
-) : Filter<PreparedAttrBoolFacetFilter, AttrBoolFacetFilterResult>(name) {
+) : Filter<AttrBoolFacetFilterResult>(name) {
 
     data class SelectedValues(val attrId: Int, val values: List<Boolean>) {
         fun filterExpression(field: FieldOperations<Long>): QueryExpression {
@@ -72,6 +72,7 @@ class AttrBoolFacetFilter(
                             null
                         }
                     }
+
                     else -> null
                 }
             }

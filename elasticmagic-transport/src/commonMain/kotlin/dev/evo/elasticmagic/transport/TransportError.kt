@@ -4,6 +4,7 @@ import dev.evo.elasticmagic.serde.Deserializer
 import dev.evo.elasticmagic.serde.DeserializationException
 import dev.evo.elasticmagic.serde.forEach
 import dev.evo.elasticmagic.serde.toMap
+import kotlin.reflect.KFunction1
 
 data class ErrorReason(
     val type: String,
@@ -123,30 +124,10 @@ sealed class TransportError {
                 val phase = data.stringOrNull("phase")
                 val grouped = data.booleanOrNull("grouped")
                 val rootCausesIter = data.arrayOrNull("root_cause")?.iterator()
-                val rootCauses = mutableListOf<ErrorCause>()
-                if (rootCausesIter != null) {
-                    while (rootCausesIter.hasNext()) {
-                        val rootCauseData = rootCausesIter.objOrNull()
-                        if (rootCauseData != null) {
-                            val rootCause = ErrorCause.parse(rootCauseData)
-                            if (rootCause != null) {
-                                rootCauses.add(rootCause)
-                            }
-                        }
-                    }
-                }
+                val rootCauses = parseArray(rootCausesIter, ErrorCause::parse)
+
                 val failedShardsIter = data.arrayOrNull("failed_shards")?.iterator()
-                val failedShards = mutableListOf<FailedShard>()
-                if (failedShardsIter != null) {
-                    while (failedShardsIter.hasNext()) {
-                        val failedShardData = failedShardsIter.objOrNull()
-                        if (failedShardData != null) {
-                            FailedShard.parse(failedShardData)?.also {
-                                failedShards.add(it)
-                            }
-                        }
-                    }
-                }
+                val failedShards = parseArray(failedShardsIter, FailedShard::parse)
                 val causedBy = data.objOrNull("caused_by")?.run(ErrorReason::parse)
                 return Structured(
                     type = cause.type,
@@ -159,6 +140,21 @@ sealed class TransportError {
                     failedShards = failedShards,
                     causedBy = causedBy,
                 )
+            }
+
+            private fun <T> parseArray(
+                iterator: Deserializer.ArrayIterator?,
+                parser: KFunction1<Deserializer.ObjectCtx, T?>
+            ): List<T> {
+                val result = mutableListOf<T>()
+                if (iterator != null) {
+                    while (iterator.hasNext()) {
+                        iterator.objOrNull()?.also { objCtx ->
+                            parser(objCtx)?.also(result::add)
+                        }
+                    }
+                }
+                return result
             }
         }
     }

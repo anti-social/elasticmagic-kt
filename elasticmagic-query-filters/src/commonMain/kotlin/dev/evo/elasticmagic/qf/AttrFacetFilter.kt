@@ -31,7 +31,7 @@ fun decodeAttrAndValue(attrValue: Long): Pair<Int, Int> {
 class AttrFacetFilter(
     val field: FieldOperations<Long>,
     name: String? = null
-) : Filter<PreparedAttrFacetFilter, AttrFacetFilterResult>(name) {
+) : Filter<AttrFacetFilterResult>(name) {
 
     data class SelectedValues(val attrId: Int, val valueIds: List<Int>, val mode: FilterMode) {
         fun filterExpression(field: FieldOperations<Long>): QueryExpression {
