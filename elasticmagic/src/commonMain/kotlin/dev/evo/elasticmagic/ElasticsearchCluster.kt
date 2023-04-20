@@ -109,15 +109,44 @@ class ElasticsearchCluster(
         return PingResult(statusCode, responseTime.inWholeMilliseconds)
     }
 
+    suspend fun <P, T> checkAsyncResult(
+        task: AsyncResult<P, T>,
+    ): TaskResult<P, T?> {
+        return checkAsyncResult(
+            AsyncResult(
+                task.task,
+                task.createStatus,
+                createResponse = { ctx ->
+                    ctx.objOrNull("response")?.let(task.createResponse)
+                }
+            ),
+            waitForCompletion = false,
+        )
+    }
+
     suspend fun <P, T> waitAsyncResult(
         task: AsyncResult<P, T>,
+    ): TaskResult<P, T> {
+        return checkAsyncResult(
+            task.copy(
+                createResponse = { ctx ->
+                    task.createResponse(ctx.obj("response"))
+                }
+            ),
+            waitForCompletion = true,
+        )
+    }
+
+    private suspend fun <P, T> checkAsyncResult(
+        task: AsyncResult<P, T>,
+        waitForCompletion: Boolean,
     ): TaskResult<P, T> {
         return transport.request(
             ApiRequest(
                 method = Method.GET,
                 path = "_tasks/${task.task}",
                 parameters = Parameters(
-                    "wait_for_completion" to true,
+                    "wait_for_completion" to waitForCompletion,
                 ),
                 body = null,
                 serde = apiSerde,
@@ -137,7 +166,7 @@ class ElasticsearchCluster(
                             runningTimeInNanos = taskCtx.long("running_time_in_nanos"),
                             cancellable = taskCtx.boolean("cancellable"),
                         ),
-                        response = task.createResponse(ctx.obj("response")),
+                        response = task.createResponse(ctx),
                     )
                 }
             )

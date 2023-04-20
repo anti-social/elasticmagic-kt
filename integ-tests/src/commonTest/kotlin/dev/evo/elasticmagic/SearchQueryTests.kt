@@ -824,6 +824,13 @@ class SearchQueryTests : ElasticsearchTestBase() {
 
             asyncResult.task shouldHaveMinLength 1
 
+            val taskCheck = asyncResult.check(cluster)
+            if (taskCheck.completed) {
+                taskCheck.response.shouldNotBeNull()
+            } else {
+                taskCheck.response.shouldBeNull()
+            }
+
             val taskResult = asyncResult.wait(cluster)
             taskResult.completed.shouldBeTrue()
             taskResult.task.action shouldBe "indices:data/write/update/byquery"
@@ -873,6 +880,13 @@ class SearchQueryTests : ElasticsearchTestBase() {
                 .deleteAsync(index, refresh = Refresh.TRUE)
 
             asyncResult.task shouldHaveMinLength 1
+
+            val taskCheck = asyncResult.check(cluster)
+            if (taskCheck.completed) {
+                taskCheck.response.shouldNotBeNull()
+            } else {
+                taskCheck.response.shouldBeNull()
+            }
 
             val taskResult = asyncResult.wait(cluster)
             taskResult.completed.shouldBeTrue()

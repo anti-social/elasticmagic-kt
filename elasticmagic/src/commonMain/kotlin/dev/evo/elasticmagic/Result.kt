@@ -170,6 +170,10 @@ data class AsyncResult<P, T>(
     val createStatus: (Deserializer.ObjectCtx) -> P,
     val createResponse: (Deserializer.ObjectCtx) -> T,
 ) {
+    suspend fun check(cluster: ElasticsearchCluster): TaskResult<P, T?> {
+        return cluster.checkAsyncResult(this)
+    }
+
     suspend fun wait(cluster: ElasticsearchCluster): TaskResult<P, T> {
         return cluster.waitAsyncResult(this)
     }
