@@ -13,11 +13,7 @@ open class SimpleFilter<T>(
 ) : Filter<BaseFilterResult>(name) {
 
     override fun prepare(name: String, paramName: String, params: QueryFilterParams): PreparedSimpleFilter {
-        println("SimpleFilter.prepare: name=$name, paramName=$paramName, params=$params")
-        println(field.getFieldType())
         val filterValues = params.decodeValues(paramName, field.getFieldType())
-
-        println("SimpleFilter.prepare: filterValues=$filterValues")
         return PreparedSimpleFilter(
             name,
             paramName,
