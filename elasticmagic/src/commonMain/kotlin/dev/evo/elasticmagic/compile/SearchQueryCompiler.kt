@@ -427,7 +427,7 @@ class UpdateByQueryCompiler(
 
     fun compileAsync(
         serde: Serde, updateByQuery: WithIndex<SearchQuery.Update>
-    ): ApiRequest<AsyncResult<UpdateByQueryPartialResult, UpdateByQueryResult>> {
+    ): ApiRequest<AsyncResult<UpdateByQueryPartialResult, UpdateByQueryResult?>> {
         val body = serde.serializer.obj {
             visit(this, updateByQuery)
         }
@@ -441,8 +441,8 @@ class UpdateByQueryCompiler(
             processResponse = { resp ->
                 AsyncResult(
                     resp.content.string("task"),
-                    ::processPartialResult,
-                    ::processResult
+                    { ctx -> processPartialResult(ctx.obj("task").obj("status")) },
+                    { ctx -> ctx.objOrNull("response")?.let(::processResult) },
                 )
             }
         )
@@ -504,7 +504,7 @@ class DeleteByQueryCompiler(
 
     fun compileAsync(
         serde: Serde, deleteByQuery: WithIndex<SearchQuery.Delete>
-    ): ApiRequest<AsyncResult<DeleteByQueryPartialResult, DeleteByQueryResult>> {
+    ): ApiRequest<AsyncResult<DeleteByQueryPartialResult, DeleteByQueryResult?>> {
         val body = serde.serializer.obj {
             visit(this, deleteByQuery)
         }
@@ -518,8 +518,8 @@ class DeleteByQueryCompiler(
             processResponse = { resp ->
                 AsyncResult(
                     resp.content.string("task"),
-                    ::processPartialResult,
-                    ::processResult,
+                    { ctx -> processPartialResult(ctx.obj("task").obj("status")) },
+                    { ctx -> ctx.objOrNull("response")?.let(::processResult) },
                 )
             }
         )
