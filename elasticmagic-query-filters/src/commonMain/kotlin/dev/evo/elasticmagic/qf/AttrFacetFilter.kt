@@ -56,19 +56,19 @@ class AttrFacetFilter(
      */
     override fun prepare(name: String, paramName: String, params: QueryFilterParams): PreparedAttrFacetFilter {
         val selectedValues = params.asSequence()
-            .mapNotNull { (keys, values) ->
+            .mapNotNull { (key, values) ->
                 @Suppress("MagicNumber")
                 when {
-                    keys.isEmpty() -> null
-                    keys[0] != paramName -> null
-                    keys.size == 2 || keys.size == 3 -> {
+                    key.isEmpty() -> null
+                    key[0] != paramName -> null
+                    key.size == 2 || key.size == 3 -> {
                         val mode = when {
-                            keys.size == 2 -> FacetFilterMode.UNION
-                            keys.size == 3 && keys[2] == "any" -> FacetFilterMode.UNION
-                            keys.size == 3 && keys[2] == "all" -> FacetFilterMode.INTERSECT
+                            key.size == 2 -> FacetFilterMode.UNION
+                            key.size == 3 && key[2] == "any" -> FacetFilterMode.UNION
+                            key.size == 3 && key[2] == "all" -> FacetFilterMode.INTERSECT
                             else -> null
                         }
-                        val attrId = IntType.deserializeTermOrNull(keys[1])
+                        val attrId = IntType.deserializeTermOrNull(key[1])
                         val parsedValues = values.mapNotNull(IntType::deserializeTermOrNull)
                         if (mode == null || attrId == null || parsedValues.isEmpty()) {
                             null

@@ -169,16 +169,16 @@ class AttrRangeFacetFilter(
 
     override fun prepare(name: String, paramName: String, params: QueryFilterParams): PreparedAttrRangeFacetFilter {
         val selectedValues = buildMap<_, SelectedValue> {
-            for ((keys, values) in params) {
+            for ((key, values) in params) {
                 @Suppress("MagicNumber")
                 when {
-                    keys.isEmpty() -> {}
+                    key.isEmpty() -> {}
                     values.isEmpty() -> {}
-                    keys[0] != paramName -> {}
-                    keys.size == 3 -> {
-                        val attrId = IntType.deserializeTermOrNull(keys[1]) ?: continue
+                    key[0] != paramName -> {}
+                    key.size == 3 -> {
+                        val attrId = IntType.deserializeTermOrNull(key[1]) ?: continue
                         val value = FloatType.deserializeTermOrNull(values.last()) ?: continue
-                        when (keys[2]){
+                        when (key[2]){
                             "gte" -> {
                                 val selectedValue = getOrPut(attrId) { SelectedValue.Gte(attrId, value) }
                                 if (selectedValue is SelectedValue.Lte) {

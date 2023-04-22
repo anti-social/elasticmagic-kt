@@ -49,18 +49,18 @@ class AttrBoolFacetFilter(
      * @param name - name of the filter
      * @param params - parameters that should be applied to a search query.
      *   Examples:
-     *   - `mapOf(listOf("attrs", "1") to listOf("12", "13"))`
-     *   - `mapOf(listOf("attrs", "2", "all") to listOf("101", "102"))
+     *   - `mapOf(listOf("attrs", "1") to listOf("true"))`
+     *   - `mapOf(listOf("attrs", "2") to listOf("false"))`
      */
     override fun prepare(name: String, paramName: String, params: QueryFilterParams): PreparedAttrBoolFacetFilter {
         val selectedValues = params.asSequence()
-            .mapNotNull { (keys, values) ->
+            .mapNotNull { (key, values) ->
                 @Suppress("MagicNumber")
                 when {
-                    keys.isEmpty() -> null
-                    keys[0] != paramName -> null
-                    keys.size == 2 -> {
-                        val attrId = IntType.deserializeTermOrNull(keys[1])
+                    key.isEmpty() -> null
+                    key[0] != paramName -> null
+                    key.size == 2 -> {
+                        val attrId = IntType.deserializeTermOrNull(key[1])
                         if (attrId != null) {
                             val parsedValues = values.mapNotNull(BooleanType::deserializeTermOrNull)
                             if (parsedValues.isNotEmpty()) {
