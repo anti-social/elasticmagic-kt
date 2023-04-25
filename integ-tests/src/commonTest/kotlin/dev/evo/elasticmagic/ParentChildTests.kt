@@ -11,8 +11,8 @@ import dev.evo.elasticmagic.doc.Document
 import dev.evo.elasticmagic.doc.MetaFields
 import dev.evo.elasticmagic.query.HasChild
 import dev.evo.elasticmagic.query.HasParent
-import dev.evo.elasticmagic.query.MatchAll
 import dev.evo.elasticmagic.query.match
+import dev.evo.elasticmagic.query.MatchAll
 import dev.evo.elasticmagic.types.Join
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.shouldBe
@@ -107,8 +107,9 @@ class ParentChildTests : ElasticsearchTestBase() {
         )
         withFixtures(listOf(QuestionDoc, AnswerDoc), docSources) {
             val sourceFactory = DocSourceFactory.byJoin(
-                "question" to ::QuestionDocSource,
-                "answer" to ::AnswerDocSource
+                KnowledgeDoc.join,
+                "question" to DocSourceFactory.FromSource(::QuestionDocSource),
+                "answer" to DocSourceFactory.FromSource(::AnswerDocSource),
             )
             SearchQuery(sourceFactory).execute(index).let { searchResult ->
                 searchResult.hits.toSet() shouldContainExactly setOf(

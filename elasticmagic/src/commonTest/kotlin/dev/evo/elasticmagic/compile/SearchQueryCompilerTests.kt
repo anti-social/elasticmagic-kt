@@ -50,7 +50,7 @@ class AnyField(name: String) : BoundField<Any, Any>(
             get() = throw IllegalStateException("Fake field type cannot be used in mapping")
         override val termType = Any::class
 
-        override fun deserialize(v: Any, valueFactory: (() -> Any)?) = v
+        override fun deserialize(v: Any) = v
     },
     Params(),
     RootFieldSet
@@ -63,7 +63,7 @@ class StringField(name: String) : BoundField<String, String>(
             get() = throw IllegalStateException("Fake field type cannot be used in mapping")
         override val termType = String::class
 
-        override fun deserialize(v: Any, valueFactory: (() -> String)?) = v.toString()
+        override fun deserialize(v: Any) = v.toString()
     },
     Params(),
     RootFieldSet

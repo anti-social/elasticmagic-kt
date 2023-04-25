@@ -1,6 +1,8 @@
 package dev.evo.elasticmagic.doc
 
 import dev.evo.elasticmagic.serde.Deserializer
+import dev.evo.elasticmagic.serde.forEach
+import dev.evo.elasticmagic.serde.StdDeserializer
 import dev.evo.elasticmagic.types.AnyFieldType
 import dev.evo.elasticmagic.types.DynDocSourceFieldType
 import dev.evo.elasticmagic.types.FieldType
@@ -12,51 +14,60 @@ import dev.evo.elasticmagic.types.SourceType
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
-typealias RawSource = Map<*, *>
-
-fun emptySource(): Map<Nothing, Nothing> = emptyMap()
-
-@Suppress("UnnecessaryAbstractClass")
-abstract class BaseDocSource {
-    abstract fun toSource(): Map<String, Any?>
-
-    abstract fun fromSource(rawSource: RawSource)
+interface ToSource {
+    fun toSource(): Map<String, Any?>
 }
 
-object DocSourceFactory {
-    fun byJoin(
-        vararg sourceFactories: Pair<String, () -> DocSource>
-    ): (Deserializer.ObjectCtx) -> DocSource {
-        val sourceFactoriesMap = sourceFactories.toMap()
-        val joinFieldName = sourceFactories
-            .map { (_, sourceFactory) -> sourceFactory() }
-            .fold(null) { curJoinFieldName: String?, docSource ->
-                if (curJoinFieldName == null) {
-                    docSource.getJoinFieldName()
-                } else {
-                    val joinFieldName = docSource.getJoinFieldName()
-                        ?: throw IllegalArgumentException(
-                            "Missing join field"
-                        )
-                    if (curJoinFieldName != joinFieldName) {
-                        throw IllegalArgumentException(
-                            "Document sources have different join fields: " +
-                                    "'$curJoinFieldName' and '$joinFieldName'"
-                        )
-                    }
-                    curJoinFieldName
+abstract class BaseDocSource : ToSource {
+    abstract fun fromSource(src: Deserializer.ObjectCtx)
+
+    internal fun fromSource(src: Map<*, *>) {
+        fromSource(StdDeserializer.ObjectCtx(src))
+    }
+}
+
+sealed class DocSourceFactory<out S: ToSource> private constructor() {
+    class FromHit<S: ToSource>(
+        val create: (Deserializer.ObjectCtx) -> S
+    ) : DocSourceFactory<S>()
+
+    class FromSource<S: ToSource>(
+        val create: (Deserializer.ObjectCtx) -> S
+    ) : DocSourceFactory<S>() {
+        companion object {
+            operator fun <S: BaseDocSource> invoke(factory: () -> S): FromSource<S> {
+                return FromSource { src ->
+                    factory().apply { fromSource(src) }
                 }
             }
-        require(joinFieldName != null) {
-            "Missing join field"
+        }
+    }
+
+    companion object {
+        fun <S: ToSource> byJoin(
+            joinField: BoundJoinField,
+            vararg docSourceFactories: Pair<String, DocSourceFactory.FromSource<S>>
+        ): FromSource<S> {
+            val docSourceFactoriesMap = docSourceFactories.toMap()
+            return FromSource { src ->
+                val joinValue = resolveJoinValue(joinField, src)
+                val factory = docSourceFactoriesMap[joinValue]
+                    ?: throw IllegalArgumentException("No source factory for '${joinValue}' join value")
+                factory.create(src)
+            }
         }
 
-        return { obj ->
-            val sourceObj = obj.obj("_source")
-            val joinName = sourceObj.objOrNull(joinFieldName)?.string("name")
-                ?: sourceObj.string(joinFieldName)
-            sourceFactoriesMap[joinName]?.invoke()
-                ?: throw IllegalStateException("No source factory for '$joinName' type")
+        private fun resolveJoinValue(joinField: BoundJoinField, src: Deserializer.ObjectCtx): String {
+            var joinValue: Any = src
+            for (fieldName in joinField.getPath()) {
+                if (joinValue !is Deserializer.ObjectCtx) {
+                    throw IllegalArgumentException(
+                        "An intermediate value to a join field value must be an object"
+                    )
+                }
+                joinValue = joinValue.any(fieldName)
+            }
+            return joinField.getFieldType().deserialize(joinValue).name
         }
     }
 }
@@ -101,10 +112,10 @@ open class DocSource : BaseDocSource() {
         return source
     }
 
-    override fun fromSource(rawSource: RawSource) {
+    override fun fromSource(src: Deserializer.ObjectCtx) {
         clearSource()
-        for ((fieldName, rawValue) in rawSource) {
-            setFieldValue(fieldName as String, rawValue)
+        src.forEach { name, value ->
+            setFieldValue(name, value)
         }
         fieldProps.forEach(FieldValueProperty<*>::checkRequired)
     }
@@ -202,7 +213,9 @@ open class DocSource : BaseDocSource() {
             }
     }
 
-    fun <V : BaseDocSource> SubDocument.source(sourceFactory: () -> V): OptionalListableValueDelegate<V> {
+    fun <V : BaseDocSource> SubDocument.source(
+        sourceFactory: () -> V
+    ): OptionalListableValueDelegate<V> {
         val fieldType = getFieldType()
         return OptionalListableValueDelegate(
             getFieldName(), SourceType(fieldType, sourceFactory)
@@ -426,19 +439,17 @@ open class DocSource : BaseDocSource() {
     }
 }
 
-class DynDocSource private constructor(
-    rawSource: RawSource = emptyMap<Any?, Any?>(),
+class DynDocSource constructor(
+    src: Deserializer.ObjectCtx? = null,
     private var prefix: List<String> = emptyList(),
 ) : BaseDocSource() {
     private var source: MutableMap<String, Any?> = mutableMapOf()
 
     init {
-        fromSource(rawSource)
+        if (src != null) {
+            fromSource(src)
+        }
     }
-
-    constructor() : this(emptyMap<Any?, Any?>())
-
-    constructor(rawSource: RawSource) : this(rawSource, prefix = emptyList())
 
     constructor(setup: (DynDocSource) -> Unit) : this() {
         setup(this)
@@ -456,8 +467,14 @@ class DynDocSource private constructor(
 
         fun deserialize(fieldName: String, value: Any?, prefix: List<String>): Any? {
             return when (value) {
-                is Map<*, *> -> DynDocSource(value, prefix = prefix + listOf(fieldName))
-                is List<*> -> value.map { deserialize(fieldName, it, prefix) }
+                is Deserializer.ObjectCtx -> DynDocSource(value, prefix = prefix + listOf(fieldName))
+                is Deserializer.ArrayCtx -> {
+                    buildList {
+                        value.forEach { v ->
+                            add(deserialize(fieldName, v, prefix))
+                        }
+                    }
+                }
                 null -> null
                 else -> value
             }
@@ -472,10 +489,10 @@ class DynDocSource private constructor(
         return rawSource
     }
 
-    override fun fromSource(rawSource: RawSource) {
+    override fun fromSource(src: Deserializer.ObjectCtx) {
         clearSource()
-        for ((fieldName, fieldValue) in rawSource) {
-            source[fieldName as String] = DynSourceSerde.deserialize(fieldName, fieldValue, prefix)
+        src.forEach { name, value ->
+            source[name] = DynSourceSerde.deserialize(name, value, prefix)
         }
     }
 

@@ -3,7 +3,7 @@ package dev.evo.elasticmagic
 import dev.evo.elasticmagic.aggs.AggregationResult
 import dev.evo.elasticmagic.bulk.ActionMeta
 import dev.evo.elasticmagic.bulk.IdActionMeta
-import dev.evo.elasticmagic.doc.BaseDocSource
+import dev.evo.elasticmagic.doc.ToSource
 import dev.evo.elasticmagic.doc.BoundField
 import dev.evo.elasticmagic.query.FieldOperations
 import dev.evo.elasticmagic.serde.Deserializer
@@ -20,7 +20,7 @@ abstract class AggAwareResult {
     }
 }
 
-data class SearchQueryResult<S : BaseDocSource>(
+data class SearchQueryResult<S : ToSource>(
     val rawResult: Map<String, Any?>?,
     val took: Long,
     val timedOut: Boolean,
@@ -33,15 +33,15 @@ data class SearchQueryResult<S : BaseDocSource>(
 
 data class MultiSearchQueryResult(
     val took: Long?,
-    val responses: List<SearchQueryResult<BaseDocSource>>
+    val responses: List<SearchQueryResult<ToSource>>
 ) {
-    inline fun <reified S : BaseDocSource> get(ix: Int): SearchQueryResult<S> {
+    inline fun <reified S : ToSource> get(ix: Int): SearchQueryResult<S> {
         @Suppress("UNCHECKED_CAST")
         return responses[ix] as SearchQueryResult<S>
     }
 }
 
-data class SearchHit<S : BaseDocSource>(
+data class SearchHit<S : ToSource>(
     val index: String,
     val type: String,
     override val id: String,

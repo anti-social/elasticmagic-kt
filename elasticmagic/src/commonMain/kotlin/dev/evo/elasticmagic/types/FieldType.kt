@@ -63,13 +63,9 @@ interface FieldType<V, T> {
      * Deserializes field value from Elasticsearch.
      *
      * @param v is a value from Elasticsearch response.
-     * @param valueFactory is a function that produces an instance of [V].
      * Required for [ObjectType.deserialize] to create a document source.
      */
-    fun deserialize(
-        v: Any,
-        valueFactory: (() -> V)? = null
-    ): V & Any
+    fun deserialize(v: Any): V & Any
 
     /**
      * Serializes term value to Elasticsearch.
@@ -110,7 +106,7 @@ object ByteType : NumberType<Byte>() {
 
     override fun serialize(v: Byte) = v.toInt()
 
-    override fun deserialize(v: Any, valueFactory: (() -> Byte)?): Byte {
+    override fun deserialize(v: Any): Byte {
         val w = when (v) {
             is Int -> v.toLong()
             else -> v
@@ -141,7 +137,7 @@ object ShortType : NumberType<Short>() {
 
     override fun serialize(v: Short) = v.toInt()
 
-    override fun deserialize(v: Any, valueFactory: (() -> Short)?): Short {
+    override fun deserialize(v: Any): Short {
         val w = when (v) {
             is Int -> v.toLong()
             else -> v
@@ -170,7 +166,7 @@ object IntType : NumberType<Int>() {
     override val name = "integer"
     override val termType = Int::class
 
-    override fun deserialize(v: Any, valueFactory: (() -> Int)?) = when(v) {
+    override fun deserialize(v: Any) = when(v) {
         is Int -> v
         is Long -> {
             if (v > Int.MAX_VALUE || v < Int.MIN_VALUE) {
@@ -194,7 +190,7 @@ object LongType : NumberType<Long>() {
     override val name = "long"
     override val termType = Long::class
 
-    override fun deserialize(v: Any, valueFactory: (() -> Long)?) = when(v) {
+    override fun deserialize(v: Any) = when(v) {
         is Int -> v.toLong()
         is Long -> v
         is String -> try {
@@ -213,7 +209,7 @@ object FloatType : NumberType<Float>() {
     override val name = "float"
     override val termType = Float::class
 
-    override fun deserialize(v: Any, valueFactory: (() -> Float)?) = when(v) {
+    override fun deserialize(v: Any) = when(v) {
         is Int -> v.toFloat()
         is Long -> v.toFloat()
         is Float -> v
@@ -234,7 +230,7 @@ object DoubleType : NumberType<Double>() {
     override val name = "double"
     override val termType = Double::class
 
-    override fun deserialize(v: Any, valueFactory: (() -> Double)?) = when(v) {
+    override fun deserialize(v: Any) = when(v) {
         is Int -> v.toDouble()
         is Long -> v.toDouble()
         is Float -> v.toDouble()
@@ -257,7 +253,7 @@ object BooleanType : SimpleFieldType<Boolean>() {
     override val name = "boolean"
     override val termType = Boolean::class
 
-    override fun deserialize(v: Any, valueFactory: (() -> Boolean)?) = when(v) {
+    override fun deserialize(v: Any) = when(v) {
         is Boolean -> v
         "true" -> true
         "false" -> false
@@ -282,7 +278,7 @@ object BooleanType : SimpleFieldType<Boolean>() {
 abstract class StringType : SimpleFieldType<String>() {
     override val termType = String::class
 
-    override fun deserialize(v: Any, valueFactory: (() -> String)?): String {
+    override fun deserialize(v: Any): String {
         return v.toString()
     }
 }
@@ -397,7 +393,7 @@ abstract class RangeType<V>(private val type: FieldType<V, V>) : FieldType<Range
         )
     }
 
-    override fun deserialize(v: Any, valueFactory: (() -> Range<V>)?): Range<V> = when (v) {
+    override fun deserialize(v: Any): Range<V> = when (v) {
         is Map<*, *> -> {
             val gt = v["gt"]?.let(type::deserialize)
             val gte = v["gte"]?.let(type::deserialize)
@@ -482,7 +478,7 @@ class EnumFieldType<V: Enum<V>>(
         return fieldValue.get(v) ?: throw IllegalStateException("Unreachable: ${this::class}::serialize")
     }
 
-    override fun deserialize(v: Any, valueFactory: (() -> V)?): V {
+    override fun deserialize(v: Any): V {
         if (v::class == termType) {
             @Suppress("UNCHECKED_CAST")
             return v as V
@@ -522,12 +518,17 @@ object JoinType : FieldType<Join, String> {
         return v.name
     }
 
-    override fun deserialize(v: Any, valueFactory: (() -> Join)?): Join {
+    override fun deserialize(v: Any): Join {
         return when (v) {
             is String -> Join(v, null)
             is Map<*, *> -> {
                 val name = v["name"] as String
                 val parent = v["parent"] as String?
+                Join(name, parent)
+            }
+            is Deserializer.ObjectCtx -> {
+                val name = v.string("name")
+                val parent = v.stringOrNull("parent")
                 Join(name, parent)
             }
             else -> deErr(v, "Join")
@@ -546,11 +547,11 @@ object JoinType : FieldType<Join, String> {
  *
  * See: <https://www.elastic.co/guide/en/elasticsearch/reference/current/object.html>
  */
-open class ObjectType<V: BaseDocSource> : FieldType<V, Nothing> {
+open class ObjectType : FieldType<BaseDocSource, Nothing> {
     override val name = "object"
     override val termType = Nothing::class
 
-    override fun serialize(v: V): Map<String, Any?> {
+    override fun serialize(v: BaseDocSource): Map<String, Any?> {
         return v.toSource()
     }
 
@@ -558,20 +559,8 @@ open class ObjectType<V: BaseDocSource> : FieldType<V, Nothing> {
         throw IllegalStateException("Unreachable: ${this::class}::serializeTerm")
     }
 
-    override fun deserialize(v: Any, valueFactory: (() -> V)?): V {
-        requireNotNull(valueFactory) {
-            "valueFactory argument must be passed"
-        }
-        return when (v) {
-            is Map<*, *> -> {
-                valueFactory().apply {
-                    fromSource(v)
-                }
-            }
-            else -> throw IllegalArgumentException(
-                "Expected Map class but was: ${v::class}"
-            )
-        }
+    override fun deserialize(v: Any): BaseDocSource {
+        throw IllegalStateException("Unreachable: ${this::class}::deserialize")
     }
 
     override fun deserializeTerm(v: Any): Nothing {
@@ -584,7 +573,7 @@ open class ObjectType<V: BaseDocSource> : FieldType<V, Nothing> {
  *
  * See: <https://www.elastic.co/guide/en/elasticsearch/reference/current/nested.html>
  */
-class NestedType<V: BaseDocSource> : ObjectType<V>() {
+class NestedType : ObjectType() {
     override val name = "nested"
 }
 
@@ -603,9 +592,22 @@ internal class SourceType<V: BaseDocSource>(
         return type.serialize(v)
     }
 
-    override fun deserialize(v: Any, valueFactory: (() -> V)?): V {
-        @Suppress("UNCHECKED_CAST")
-        return type.deserialize(v, sourceFactory) as V
+    override fun deserialize(v: Any): V {
+        return when (v) {
+            is Deserializer.ObjectCtx -> {
+                sourceFactory().apply {
+                    fromSource(v)
+                }
+            }
+            is Map<*, *> -> {
+                sourceFactory().apply {
+                    fromSource(v)
+                }
+            }
+            else -> throw IllegalArgumentException(
+                "Expected Map class but was: ${v::class}"
+            )
+        }
     }
 
     override fun serializeTerm(v: Nothing): Nothing {
@@ -629,7 +631,7 @@ class SimpleListType<V>(val type: SimpleFieldType<V>) : SimpleFieldType<List<V &
         return v.map(type::serialize)
     }
 
-    override fun deserialize(v: Any, valueFactory: (() -> List<V & Any>)?): List<V & Any> {
+    override fun deserialize(v: Any): List<V & Any> {
         return when (v) {
             is List<*> -> {
                 v.map {
@@ -673,7 +675,7 @@ class OptionalListType<V, T>(val type: FieldType<V, T>) : FieldType<MutableList<
         }
     }
 
-    override fun deserialize(v: Any, valueFactory: (() -> MutableList<V?>)?): MutableList<V?> {
+    override fun deserialize(v: Any): MutableList<V?> {
         return when (v) {
             is List<*> -> {
                 v.map {
@@ -722,7 +724,7 @@ class RequiredListType<V, T>(val type: FieldType<V, T>) : FieldType<MutableList<
         return v.map(type::serialize)
     }
 
-    override fun deserialize(v: Any, valueFactory: (() -> MutableList<V & Any>)?): MutableList<V & Any> {
+    override fun deserialize(v: Any): MutableList<V & Any> {
         return when (v) {
             is List<*> -> {
                 v.map {
@@ -763,7 +765,7 @@ internal object AnyFieldType : FieldType<Any, Any> {
         get() = throw IllegalStateException("Should not be used in mappings")
     override val termType = Any::class
 
-    override fun deserialize(v: Any, valueFactory: (() -> Any)?): Any {
+    override fun deserialize(v: Any): Any {
         return v
     }
 
@@ -780,7 +782,7 @@ internal object DynDocSourceFieldType : FieldType<DynDocSource, Nothing> {
         get() = throw IllegalStateException("Should not be used in mappings")
     override val termType = Nothing::class
 
-    override fun deserialize(v: Any, valueFactory: (() -> DynDocSource)?): DynDocSource {
+    override fun deserialize(v: Any): DynDocSource {
         return when (v) {
             is DynDocSource -> v
             else -> throw IllegalArgumentException(

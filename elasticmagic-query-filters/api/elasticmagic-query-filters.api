@@ -248,8 +248,8 @@ public final class dev/evo/elasticmagic/qf/AttrRangeFacetFilterResult : dev/evo/
 
 public final class dev/evo/elasticmagic/qf/AttrRangeFacetType : dev/evo/elasticmagic/types/SimpleFieldType {
 	public static final field INSTANCE Ldev/evo/elasticmagic/qf/AttrRangeFacetType;
-	public fun deserialize (Ljava/lang/Object;Lkotlin/jvm/functions/Function0;)Ldev/evo/elasticmagic/qf/AttrRangeFacet;
-	public synthetic fun deserialize (Ljava/lang/Object;Lkotlin/jvm/functions/Function0;)Ljava/lang/Object;
+	public fun deserialize (Ljava/lang/Object;)Ldev/evo/elasticmagic/qf/AttrRangeFacet;
+	public synthetic fun deserialize (Ljava/lang/Object;)Ljava/lang/Object;
 	public synthetic fun getName ()Ljava/lang/String;
 	public fun getName ()Ljava/lang/Void;
 	public fun getTermType ()Lkotlin/reflect/KClass;

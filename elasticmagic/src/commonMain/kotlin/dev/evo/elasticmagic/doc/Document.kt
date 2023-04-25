@@ -69,6 +69,9 @@ open class BoundField<V, T>(
 
     fun getParent(): FieldSet = parent
 
+    fun getPath(): List<String> {
+        return getQualifiedFieldName().split(".")
+    }
 
     override fun equals(other: Any?): Boolean {
         if (other !is BoundField<*, *>) {
@@ -618,7 +621,7 @@ abstract class SubDocument(
 
     class UnboundSubDocument<T: SubDocument>(
         private val name: String?,
-        internal val type: ObjectType<BaseDocSource>,
+        internal val type: ObjectType,
         internal val params: Params,
         internal val subDocumentFactory: (DocSourceField) -> T,
     ) {
