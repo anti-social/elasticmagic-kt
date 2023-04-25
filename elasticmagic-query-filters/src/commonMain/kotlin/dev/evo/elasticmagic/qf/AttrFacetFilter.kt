@@ -24,6 +24,35 @@ fun decodeAttrAndValue(attrValue: Long): Pair<Int, Int> {
     return (attrValue ushr Int.SIZE_BITS).toInt() to attrValue.toInt()
 }
 
+fun getAttrFacetSelectedValues(
+    params: QueryFilterParams,
+    paramName: String
+): Sequence<Pair<Int, AttrFacetFilter.SelectedValues>> = params.asSequence()
+    .mapNotNull { (keys, values) ->
+        @Suppress("MagicNumber")
+        when {
+            keys.isEmpty() -> null
+            keys[0] != paramName -> null
+            keys.size == 2 || keys.size == 3 -> {
+                val mode = when {
+                    keys.size == 2 -> FilterMode.UNION
+                    keys.size == 3 && keys[2] == "any" -> FilterMode.UNION
+                    keys.size == 3 && keys[2] == "all" -> FilterMode.INTERSECT
+                    else -> null
+                }
+                val attrId = IntType.deserializeTermOrNull(keys[1])
+                val parsedValues = values.mapNotNull(IntType::deserializeTermOrNull)
+                if (mode == null || attrId == null || parsedValues.isEmpty()) {
+                    null
+                } else {
+                    attrId to AttrFacetFilter.SelectedValues(attrId, parsedValues, mode)
+                }
+            }
+
+            else -> null
+        }
+    }
+
 /**
  * Facet fiter for attribute values. An attribute value is a pair of 2
  * 32-bit values attribute id and value id combined as a single 64-bit field.
@@ -55,31 +84,8 @@ class AttrFacetFilter(
      *   - `mapOf(listOf("attrs", "2", "all") to listOf("101", "102"))
      */
     override fun prepare(name: String, paramName: String, params: QueryFilterParams): PreparedAttrFacetFilter {
-        val selectedValues = params.asSequence()
-            .mapNotNull { (keys, values) ->
-                @Suppress("MagicNumber")
-                when {
-                    keys.isEmpty() -> null
-                    keys[0] != paramName -> null
-                    keys.size == 2 || keys.size == 3 -> {
-                        val mode = when {
-                            keys.size == 2 -> FilterMode.UNION
-                            keys.size == 3 && keys[2] == "any" -> FilterMode.UNION
-                            keys.size == 3 && keys[2] == "all" -> FilterMode.INTERSECT
-                            else -> null
-                        }
-                        val attrId = IntType.deserializeTermOrNull(keys[1])
-                        val parsedValues = values.mapNotNull(IntType::deserializeTermOrNull)
-                        if (mode == null || attrId == null || parsedValues.isEmpty()) {
-                            null
-                        } else {
-                            attrId to SelectedValues(attrId, parsedValues, mode)
-                        }
-                    }
-                    else -> null
-                }
-            }
-            .toMap()
+        val selectedValues = getAttrFacetSelectedValues(params, paramName).toMap()
+
         val facetFilters = selectedValues.values.map { w ->
             w.filterExpression(field)
         }
@@ -136,6 +142,7 @@ class PreparedAttrFacetFilter(
                 );
             }
         """.trimIndent()
+
         // Entries are longs where higher 32 bits is a number of documents
         // and lower 32 bits is a value (bucket key). This trick allows
         // to sort entries by number of documents and select `params.size * 1.5 + 10` top entries.
