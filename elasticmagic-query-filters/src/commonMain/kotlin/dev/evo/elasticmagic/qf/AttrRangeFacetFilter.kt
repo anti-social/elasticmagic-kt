@@ -24,13 +24,55 @@ fun encodeRangeAttrWithValue(attrId: Int, value: Float): Long {
     return (attrId.toLong() shl Int.SIZE_BITS) or (value.toBits().toLong() and INT_MASK)
 }
 
+
+fun getAttrRangeFacetSelectedValues(params: QueryFilterParams, paramName: String) =
+    buildMap<_, AttrRangeFacetFilter.SelectedValue> {
+        for ((keys, values) in params) {
+            @Suppress("MagicNumber")
+            when {
+                keys.isEmpty() -> {}
+                values.isEmpty() -> {}
+                keys[0] != paramName -> {}
+                keys.size == 3 -> {
+                    val attrId = IntType.deserializeTermOrNull(keys[1]) ?: continue
+                    val value = FloatType.deserializeTermOrNull(values.last()) ?: continue
+                    when (keys[2]) {
+                        "gte" -> {
+                            val selectedValue =
+                                getOrPut(attrId) { AttrRangeFacetFilter.SelectedValue.Gte(attrId, value) }
+                            if (selectedValue is AttrRangeFacetFilter.SelectedValue.Lte) {
+                                put(attrId, selectedValue.gte(value))
+                            } else {
+                                put(attrId, selectedValue)
+                            }
+                        }
+
+                        "lte" -> {
+                            val selectedValue =
+                                getOrPut(attrId) { AttrRangeFacetFilter.SelectedValue.Lte(attrId, value) }
+                            if (selectedValue is AttrRangeFacetFilter.SelectedValue.Gte) {
+                                put(attrId, selectedValue.lte(value))
+                            } else {
+                                put(attrId, selectedValue)
+                            }
+                        }
+
+                        else -> {}
+                    }
+                }
+
+                else -> {}
+            }
+        }
+    }
+
 class AttrRangeFacetFilter(
     val field: FieldOperations<Long>,
     name: String? = null
 ) : Filter<AttrRangeFacetFilterResult>(name) {
 
     /**
-     * 
+     *
      *             -Inf                 +0.0
      *    0x{attr_id}_ff800000 0x{attr_id}_00000000
      *                       | |
@@ -168,40 +210,7 @@ class AttrRangeFacetFilter(
     }
 
     override fun prepare(name: String, paramName: String, params: QueryFilterParams): PreparedAttrRangeFacetFilter {
-        val selectedValues = buildMap<_, SelectedValue> {
-            for ((key, values) in params) {
-                @Suppress("MagicNumber")
-                when {
-                    key.isEmpty() -> {}
-                    values.isEmpty() -> {}
-                    key[0] != paramName -> {}
-                    key.size == 3 -> {
-                        val attrId = IntType.deserializeTermOrNull(key[1]) ?: continue
-                        val value = FloatType.deserializeTermOrNull(values.last()) ?: continue
-                        when (key[2]){
-                            "gte" -> {
-                                val selectedValue = getOrPut(attrId) { SelectedValue.Gte(attrId, value) }
-                                if (selectedValue is SelectedValue.Lte) {
-                                    put(attrId, selectedValue.gte(value))
-                                } else {
-                                    put(attrId, selectedValue)
-                                }
-                            }
-                            "lte" -> {
-                                val selectedValue = getOrPut(attrId) { SelectedValue.Lte(attrId, value) }
-                                if (selectedValue is SelectedValue.Gte) {
-                                    put(attrId, selectedValue.lte(value))
-                                } else {
-                                    put(attrId, selectedValue)
-                                }
-                            }
-                            else -> {}
-                        }
-                    }
-                    else -> {}
-                }
-            }
-        }
+        val selectedValues = getAttrRangeFacetSelectedValues(params, paramName)
 
         val facetFilters = selectedValues.values.map { w ->
             w.filterExpression(field)
@@ -389,7 +398,7 @@ class PreparedAttrRangeFacetFilter(
             return result;
         """.trimIndent()
     }
-    
+
     override fun apply(
         searchQuery: SearchQuery<*>,
         otherFacetFilterExpressions: List<QueryExpression>

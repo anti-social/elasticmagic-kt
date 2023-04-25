@@ -24,6 +24,34 @@ fun decodeBoolAttrAndValue(attrValue: Long): Pair<Int, Boolean> {
     return (attrValue ushr 1).toInt() to (attrValue and 1L == 1L)
 }
 
+fun getAttrBoolSelectedValue(
+    params: QueryFilterParams,
+    paramName: String
+) = params.asSequence()
+    .mapNotNull { (keys, values) ->
+        @Suppress("MagicNumber")
+        when {
+            keys.isEmpty() -> null
+            keys[0] != paramName -> null
+            keys.size == 2 -> {
+                val attrId = IntType.deserializeTermOrNull(keys[1])
+                if (attrId != null) {
+                    val parsedValues = values.mapNotNull(BooleanType::deserializeTermOrNull)
+                    if (parsedValues.isNotEmpty()) {
+                        attrId to AttrBoolFacetFilter.SelectedValues(attrId, parsedValues)
+                    } else {
+                        null
+                    }
+                } else {
+                    null
+                }
+            }
+
+            else -> null
+        }
+    }
+    .toMap()
+
 /**
  * Facet fiter for attribute values. An attribute value is a pair of 2
  * 32-bit values attribute id and value id combined as a single 64-bit field.
@@ -53,30 +81,7 @@ class AttrBoolFacetFilter(
      *   - `mapOf(listOf("attrs", "2") to listOf("false"))`
      */
     override fun prepare(name: String, paramName: String, params: QueryFilterParams): PreparedAttrBoolFacetFilter {
-        val selectedValues = params.asSequence()
-            .mapNotNull { (key, values) ->
-                @Suppress("MagicNumber")
-                when {
-                    key.isEmpty() -> null
-                    key[0] != paramName -> null
-                    key.size == 2 -> {
-                        val attrId = IntType.deserializeTermOrNull(key[1])
-                        if (attrId != null) {
-                            val parsedValues = values.mapNotNull(BooleanType::deserializeTermOrNull)
-                            if (parsedValues.isNotEmpty()) {
-                                attrId to SelectedValues(attrId, parsedValues)
-                            } else {
-                                null
-                            }
-                        } else {
-                            null
-                        }
-                    }
-
-                    else -> null
-                }
-            }
-            .toMap()
+        val selectedValues = getAttrBoolSelectedValue(params, paramName)
         val facetFilters = selectedValues.values.map { w ->
             w.filterExpression(field)
         }

@@ -6,17 +6,18 @@ import dev.evo.elasticmagic.query.Bool
 import dev.evo.elasticmagic.query.FieldOperations
 import dev.evo.elasticmagic.query.QueryExpression
 
+
 /**
- * Fiter for attribute values. An attribute value is a pair of 2
+ * Facet fiter for attribute values. An attribute value is a pair of 2
  * 32-bit values attribute id and value id combined as a single 64-bit field.
  */
-class AttrBoolExpressionFilter(
+class AttrFacetExpression(
     val field: FieldOperations<Long>,
     name: String? = null
 ) : Filter<BaseFilterResult>(name) {
 
     /**
-     * Parses [params] and prepares the [AttrBoolExpressionFilter] for applying.
+     * Parses [params] and prepares the [AttrFacetFilter] for applying.
      *
      * @param name - name of the filter
      * @param params - parameters that should be applied to a search query.
@@ -24,12 +25,10 @@ class AttrBoolExpressionFilter(
      *   - `mapOf(listOf("attrs", "1") to listOf("12", "13"))`
      *   - `mapOf(listOf("attrs", "2", "all") to listOf("101", "102"))
      */
-    override fun prepare(name: String, paramName: String, params: QueryFilterParams): PreparedAttrBoolExpressionFilter {
-        val facetFilters = getAttrBoolSelectedValue(params, paramName)
-            .values
-            .map {
-                it.filterExpression(field)
-            }
+    override fun prepare(name: String, paramName: String, params: QueryFilterParams): PreparedAttrExpressionFilter {
+        val facetFilters = getAttrFacetSelectedValues(params, paramName).map {
+            it.second.filterExpression(field)
+        }.toList()
 
         val facetFilterExpr = when (facetFilters.size) {
             0 -> null
@@ -37,12 +36,14 @@ class AttrBoolExpressionFilter(
             else -> Bool.filter(facetFilters)
         }
 
-        return PreparedAttrBoolExpressionFilter(this, name, paramName, facetFilterExpr)
+        return PreparedAttrExpressionFilter(this, name, paramName, facetFilterExpr)
     }
+
+
 }
 
-class PreparedAttrBoolExpressionFilter(
-    val filter: AttrBoolExpressionFilter,
+class PreparedAttrExpressionFilter(
+    val filter: AttrFacetExpression,
     name: String,
     paramName: String,
     facetFilterExpr: QueryExpression?,
@@ -64,4 +65,3 @@ class PreparedAttrBoolExpressionFilter(
         )
     }
 }
-
