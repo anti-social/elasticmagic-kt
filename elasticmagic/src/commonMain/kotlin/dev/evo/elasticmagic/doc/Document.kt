@@ -530,7 +530,7 @@ abstract class BaseDocument : FieldSet() {
 
     fun <T: SubDocument> `object`(
         name: String?,
-        factory: (DocSourceField) -> T,
+        factory: (ObjectBoundField) -> T,
         enabled: Boolean? = null,
         dynamic: Dynamic? = null,
         params: Params = Params(),
@@ -545,7 +545,7 @@ abstract class BaseDocument : FieldSet() {
     }
 
     fun <T: SubDocument> `object`(
-        factory: (DocSourceField) -> T,
+        factory: (ObjectBoundField) -> T,
         enabled: Boolean? = null,
         dynamic: Dynamic? = null,
         params: Params = Params(),
@@ -555,7 +555,7 @@ abstract class BaseDocument : FieldSet() {
 
     fun <T: SubDocument> obj(
         name: String?,
-        factory: (DocSourceField) -> T,
+        factory: (ObjectBoundField) -> T,
         enabled: Boolean? = null,
         dynamic: Dynamic? = null,
         params: Params = Params(),
@@ -564,7 +564,7 @@ abstract class BaseDocument : FieldSet() {
     }
 
     fun <T: SubDocument> obj(
-        factory: (DocSourceField) -> T,
+        factory: (ObjectBoundField) -> T,
         enabled: Boolean? = null,
         dynamic: Dynamic? = null,
         params: Params = Params(),
@@ -574,7 +574,7 @@ abstract class BaseDocument : FieldSet() {
 
     fun <T: SubDocument> nested(
         name: String?,
-        factory: (DocSourceField) -> T,
+        factory: (ObjectBoundField) -> T,
         dynamic: Dynamic? = null,
         params: Params = Params()
     ): SubDocument.UnboundSubDocument<T> {
@@ -587,7 +587,7 @@ abstract class BaseDocument : FieldSet() {
     }
 
     fun <T: SubDocument> nested(
-        factory: (DocSourceField) -> T,
+        factory: (ObjectBoundField) -> T,
         dynamic: Dynamic? = null,
         params: Params = Params()
     ): SubDocument.UnboundSubDocument<T> {
@@ -595,27 +595,27 @@ abstract class BaseDocument : FieldSet() {
     }
 }
 
-typealias DocSourceField = BoundField<BaseDocSource, Nothing>
+typealias ObjectBoundField = BoundField<Nothing, Nothing>
 
 /**
  * Represents Elasticsearch sub-document.
  */
 @Suppress("UnnecessaryAbstractClass")
 abstract class SubDocument(
-    private val field: DocSourceField,
+    private val field: ObjectBoundField,
     dynamic: Dynamic? = null,
 ) : BaseDocument(), FieldOperations<Nothing> {
     val options: MappingOptions = MappingOptions(
         dynamic = dynamic,
     )
 
-    fun getBoundField(): DocSourceField = field
+    fun getBoundField(): ObjectBoundField = field
 
     override fun getFieldName(): String = field.getFieldName()
 
     override fun getQualifiedFieldName(): String = field.getQualifiedFieldName()
 
-    override fun getFieldType(): FieldType<BaseDocSource, Nothing> = field.getFieldType()
+    override fun getFieldType(): FieldType<Nothing, Nothing> = field.getFieldType()
 
     fun getParent(): FieldSet = field.getParent()
 
@@ -623,7 +623,7 @@ abstract class SubDocument(
         private val name: String?,
         internal val type: ObjectType,
         internal val params: Params,
-        internal val subDocumentFactory: (DocSourceField) -> T,
+        internal val subDocumentFactory: (ObjectBoundField) -> T,
     ) {
         operator fun provideDelegate(
             thisRef: BaseDocument, prop: KProperty<*>

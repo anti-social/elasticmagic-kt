@@ -547,19 +547,19 @@ object JoinType : FieldType<Join, String> {
  *
  * See: <https://www.elastic.co/guide/en/elasticsearch/reference/current/object.html>
  */
-open class ObjectType : FieldType<BaseDocSource, Nothing> {
+open class ObjectType : FieldType<Nothing, Nothing> {
     override val name = "object"
     override val termType = Nothing::class
 
-    override fun serialize(v: BaseDocSource): Map<String, Any?> {
-        return v.toSource()
+    override fun serialize(v: Nothing): Map<String, Any?> {
+        throw IllegalStateException("Unreachable: ${this::class}::serialize")
     }
 
     override fun serializeTerm(v: Nothing): Nothing {
         throw IllegalStateException("Unreachable: ${this::class}::serializeTerm")
     }
 
-    override fun deserialize(v: Any): BaseDocSource {
+    override fun deserialize(v: Any): Nothing {
         throw IllegalStateException("Unreachable: ${this::class}::deserialize")
     }
 
@@ -582,14 +582,14 @@ class NestedType : ObjectType() {
  * Used by [dev.evo.elasticmagic.doc.DocSource].
  */
 internal class SourceType<V: BaseDocSource>(
-    val type: FieldType<BaseDocSource, Nothing>,
+    val type: FieldType<Nothing, Nothing>,
     private val sourceFactory: () -> V
 ) : FieldType<V, Nothing> {
     override val name = type.name
     override val termType = Nothing::class
 
     override fun serialize(v: V): Any {
-        return type.serialize(v)
+        return v.toSource()
     }
 
     override fun deserialize(v: Any): V {

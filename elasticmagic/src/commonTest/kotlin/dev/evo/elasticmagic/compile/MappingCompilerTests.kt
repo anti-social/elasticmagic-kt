@@ -3,7 +3,7 @@ package dev.evo.elasticmagic.compile
 import dev.evo.elasticmagic.BaseTest
 import dev.evo.elasticmagic.Params
 import dev.evo.elasticmagic.doc.BoundField
-import dev.evo.elasticmagic.doc.DocSourceField
+import dev.evo.elasticmagic.doc.ObjectBoundField
 import dev.evo.elasticmagic.doc.Document
 import dev.evo.elasticmagic.doc.Dynamic
 import dev.evo.elasticmagic.types.KeywordType
@@ -104,11 +104,11 @@ class MappingCompilerTests : BaseTest() {
 
     @Test
     fun subDocument() {
-        class OpinionDoc(field: DocSourceField) : SubDocument(field) {
+        class OpinionDoc(field: ObjectBoundField) : SubDocument(field) {
             val count by int()
         }
 
-        class CompanyDoc(field: DocSourceField) : SubDocument(field) {
+        class CompanyDoc(field: ObjectBoundField) : SubDocument(field) {
             val name by text(analyzer = "standard")
             val opinion by obj(
                 ::OpinionDoc, dynamic = Dynamic.TRUE, params = Params("enabled" to false)
@@ -292,7 +292,7 @@ class MappingCompilerTests : BaseTest() {
 
     @Test
     fun dynamicTemplates_subDocument() {
-        class UserDoc(field: DocSourceField) : SubDocument(field) {
+        class UserDoc(field: ObjectBoundField) : SubDocument(field) {
             val id by keyword()
             val firstName by text("first_name", analyzer="en")
             val lastName by text("last_name", analyzer="en")

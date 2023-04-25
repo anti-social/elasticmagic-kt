@@ -9,10 +9,9 @@ import dev.evo.elasticmagic.aggs.NestedAgg
 import dev.evo.elasticmagic.aggs.SingleBucketAggResult
 import dev.evo.elasticmagic.aggs.TermsAgg
 import dev.evo.elasticmagic.aggs.TermsAggResult
-import dev.evo.elasticmagic.doc.BaseDocSource
-import dev.evo.elasticmagic.doc.BoundField
 import dev.evo.elasticmagic.doc.DocSource
 import dev.evo.elasticmagic.doc.Document
+import dev.evo.elasticmagic.doc.ObjectBoundField
 import dev.evo.elasticmagic.bulk.DocSourceAndMeta
 import dev.evo.elasticmagic.bulk.withActionMeta
 import dev.evo.elasticmagic.doc.DynDocSource
@@ -54,14 +53,14 @@ enum class OrderStatus(val id: Int) : ToValue<Int> {
 }
 
 object OrderDoc : Document() {
-    class User(field: BoundField<BaseDocSource, Nothing>) : SubDocument(field) {
+    class User(field: ObjectBoundField) : SubDocument(field) {
         val id by int()
         val name by text()
         val phone by keyword()
         val rating by float()
     }
 
-    class CartItem(field: BoundField<BaseDocSource, Nothing>) : SubDocument(field) {
+    class CartItem(field: ObjectBoundField) : SubDocument(field) {
         val productId by long("product_id")
         val productName by text("product_name")
         val productPrice by float("product_price")

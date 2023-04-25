@@ -7,14 +7,14 @@ import dev.evo.elasticmagic.aggs.DateHistogramAgg
 import dev.evo.elasticmagic.aggs.FixedInterval
 import dev.evo.elasticmagic.aggs.MinAgg
 import dev.evo.elasticmagic.aggs.TermsAgg
-import dev.evo.elasticmagic.doc.BaseDocSource
 import dev.evo.elasticmagic.doc.BoundField
 import dev.evo.elasticmagic.doc.BoundRuntimeField
 import dev.evo.elasticmagic.doc.Document
 import dev.evo.elasticmagic.doc.RootFieldSet
 import dev.evo.elasticmagic.types.SimpleFieldType
-import dev.evo.elasticmagic.doc.SubDocument
 import dev.evo.elasticmagic.doc.datetime
+import dev.evo.elasticmagic.doc.ObjectBoundField
+import dev.evo.elasticmagic.doc.SubDocument
 import dev.evo.elasticmagic.query.Bool
 import dev.evo.elasticmagic.query.DisMax
 import dev.evo.elasticmagic.query.FieldFormat
@@ -271,11 +271,11 @@ class SearchQueryCompilerTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQ
 
     @Test
     fun filter() = testWithCompiler {
-        class OpinionDoc(field: BoundField<BaseDocSource, Nothing>) : SubDocument(field) {
+        class OpinionDoc(field: ObjectBoundField) : SubDocument(field) {
             val count by int()
         }
 
-        class CompanyDoc(field: BoundField<BaseDocSource, Nothing>) : SubDocument(field) {
+        class CompanyDoc(field: ObjectBoundField) : SubDocument(field) {
             val name by text()
             val opinion by obj(::OpinionDoc)
         }

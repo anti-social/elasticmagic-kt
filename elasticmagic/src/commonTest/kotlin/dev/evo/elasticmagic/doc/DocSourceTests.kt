@@ -15,11 +15,11 @@ import kotlin.test.Test
 
 class DocSourceTests {
     object OrderDoc : Document() {
-        class UserOpinionDoc(field: DocSourceField) : SubDocument(field) {
+        class UserOpinionDoc(field: ObjectBoundField) : SubDocument(field) {
             val rating by float("rank")
         }
 
-        class UserDoc(field: DocSourceField) : SubDocument(field) {
+        class UserDoc(field: ObjectBoundField) : SubDocument(field) {
             val id by int()
             val opinion by obj(::UserOpinionDoc)
         }

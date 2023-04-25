@@ -4613,14 +4613,14 @@ public abstract class dev/evo/elasticmagic/types/NumberType : dev/evo/elasticmag
 
 public class dev/evo/elasticmagic/types/ObjectType : dev/evo/elasticmagic/types/FieldType {
 	public fun <init> ()V
-	public fun deserialize (Ljava/lang/Object;)Ldev/evo/elasticmagic/doc/BaseDocSource;
 	public synthetic fun deserialize (Ljava/lang/Object;)Ljava/lang/Object;
+	public fun deserialize (Ljava/lang/Object;)Ljava/lang/Void;
 	public synthetic fun deserializeTerm (Ljava/lang/Object;)Ljava/lang/Object;
 	public fun deserializeTerm (Ljava/lang/Object;)Ljava/lang/Void;
 	public fun getName ()Ljava/lang/String;
 	public fun getTermType ()Lkotlin/reflect/KClass;
-	public fun serialize (Ldev/evo/elasticmagic/doc/BaseDocSource;)Ljava/util/Map;
 	public synthetic fun serialize (Ljava/lang/Object;)Ljava/lang/Object;
+	public fun serialize (Ljava/lang/Void;)Ljava/util/Map;
 	public synthetic fun serializeTerm (Ljava/lang/Object;)Ljava/lang/Object;
 	public fun serializeTerm (Ljava/lang/Void;)Ljava/lang/Void;
 }
