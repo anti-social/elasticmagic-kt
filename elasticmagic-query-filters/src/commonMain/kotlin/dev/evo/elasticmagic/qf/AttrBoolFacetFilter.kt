@@ -24,7 +24,7 @@ fun decodeBoolAttrAndValue(attrValue: Long): Pair<Int, Boolean> {
     return (attrValue ushr 1).toInt() to (attrValue and 1L == 1L)
 }
 
-fun getAttrBoolSelectedValue(
+private fun getAttrBoolSelectedValue(
     params: QueryFilterParams,
     paramName: String
 ) = params.asSequence()
@@ -239,6 +239,52 @@ class PreparedAttrBoolFacetFilter(
             facets = facets.mapValues { (attrId, values) ->
                 AttrBoolFacet(attrId, values)
             }
+        )
+    }
+}
+
+class AttrBoolExpressionFilter(
+    val field: FieldOperations<Long>,
+    name: String? = null
+) : Filter<BaseFilterResult>(name) {
+
+    override fun prepare(name: String, paramName: String, params: QueryFilterParams): PreparedAttrBoolExpressionFilter {
+        val facetFilters = getAttrBoolSelectedValue(params, paramName)
+            .values
+            .map {
+                it.filterExpression(field)
+            }
+
+        val facetFilterExpr = when (facetFilters.size) {
+            0 -> null
+            1 -> facetFilters[0]
+            else -> Bool.filter(facetFilters)
+        }
+
+        return PreparedAttrBoolExpressionFilter(this, name, paramName, facetFilterExpr)
+    }
+}
+
+class PreparedAttrBoolExpressionFilter(
+    val filter: AttrBoolExpressionFilter,
+    name: String,
+    paramName: String,
+    facetFilterExpr: QueryExpression?,
+) : PreparedFilter<BaseFilterResult>(name, paramName, facetFilterExpr) {
+
+    override fun apply(
+        searchQuery: SearchQuery<*>,
+        otherFacetFilterExpressions: List<QueryExpression>
+    ) {
+        if (facetFilterExpr != null) {
+            searchQuery.filter(facetFilterExpr)
+        }
+    }
+
+    override fun processResult(searchQueryResult: SearchQueryResult<*>): BaseFilterResult {
+        return BaseFilterResult(
+            name,
+            paramName
         )
     }
 }

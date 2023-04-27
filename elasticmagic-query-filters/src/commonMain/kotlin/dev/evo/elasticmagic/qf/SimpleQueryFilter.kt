@@ -28,8 +28,8 @@ open class SimpleQueryFilter(
             0 -> null
             else -> {
                 when (mode) {
-                    FilterMode.UNION -> Bool.should(expression)
-                    FilterMode.INTERSECT -> Bool.must(expression)
+                    FilterMode.UNION -> maybeWrapBool(Bool::should, expression)
+                    FilterMode.INTERSECT -> maybeWrapBool(Bool::must, expression)
                 }
             }
         }

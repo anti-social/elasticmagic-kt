@@ -24,7 +24,7 @@ fun decodeAttrAndValue(attrValue: Long): Pair<Int, Int> {
     return (attrValue ushr Int.SIZE_BITS).toInt() to attrValue.toInt()
 }
 
-fun getAttrFacetSelectedValues(
+private fun getAttrSelectedValues(
     params: QueryFilterParams,
     paramName: String
 ): Sequence<Pair<Int, AttrFacetFilter.SelectedValues>> = params.asSequence()
@@ -84,7 +84,7 @@ class AttrFacetFilter(
      *   - `mapOf(listOf("attrs", "2", "all") to listOf("101", "102"))
      */
     override fun prepare(name: String, paramName: String, params: QueryFilterParams): PreparedAttrFacetFilter {
-        val selectedValues = getAttrFacetSelectedValues(params, paramName).toMap()
+        val selectedValues = getAttrSelectedValues(params, paramName).toMap()
 
         val facetFilters = selectedValues.values.map { w ->
             w.filterExpression(field)
@@ -161,6 +161,7 @@ class PreparedAttrFacetFilter(
             }
             return queue.toArray();
         """.trimIndent()
+
         // Merge entries from all shards and then select `params.size` top entries.
         // Finally move entries into array and return them as a result of an aggregation.
         // When processing the result we should decompose entries into a bucket key and a count.
@@ -308,6 +309,50 @@ class PreparedAttrFacetFilter(
             facets = facetValues.mapValues { (attrId, values) ->
                 AttrFacet(attrId, values)
             }
+        )
+    }
+}
+
+class AttrFacetExpression(
+    val field: FieldOperations<Long>,
+    name: String? = null
+) : Filter<BaseFilterResult>(name) {
+
+    override fun prepare(name: String, paramName: String, params: QueryFilterParams): PreparedAttrExpressionFilter {
+        val facetFilters = getAttrSelectedValues(params, paramName).map {
+            it.second.filterExpression(field)
+        }.toList()
+
+        val facetFilterExpr = when (facetFilters.size) {
+            0 -> null
+            1 -> facetFilters[0]
+            else -> Bool.filter(facetFilters)
+        }
+
+        return PreparedAttrExpressionFilter(this, name, paramName, facetFilterExpr)
+    }
+}
+
+class PreparedAttrExpressionFilter(
+    val filter: AttrFacetExpression,
+    name: String,
+    paramName: String,
+    facetFilterExpr: QueryExpression?,
+) : PreparedFilter<BaseFilterResult>(name, paramName, facetFilterExpr) {
+
+    override fun apply(
+        searchQuery: SearchQuery<*>,
+        otherFacetFilterExpressions: List<QueryExpression>
+    ) {
+        if (facetFilterExpr != null) {
+            searchQuery.filter(facetFilterExpr)
+        }
+    }
+
+    override fun processResult(searchQueryResult: SearchQueryResult<*>): BaseFilterResult {
+        return BaseFilterResult(
+            name,
+            paramName
         )
     }
 }

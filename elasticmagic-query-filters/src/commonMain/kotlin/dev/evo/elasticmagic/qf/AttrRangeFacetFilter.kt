@@ -24,8 +24,7 @@ fun encodeRangeAttrWithValue(attrId: Int, value: Float): Long {
     return (attrId.toLong() shl Int.SIZE_BITS) or (value.toBits().toLong() and INT_MASK)
 }
 
-
-fun getAttrRangeFacetSelectedValues(params: QueryFilterParams, paramName: String) =
+private fun getAttrRangeFacetSelectedValues(params: QueryFilterParams, paramName: String) =
     buildMap<_, AttrRangeFacetFilter.SelectedValue> {
         for ((keys, values) in params) {
             @Suppress("MagicNumber")
@@ -111,10 +110,12 @@ class AttrRangeFacetFilter(
                             lte = encodeRangeAttrWithValue(attrId, Float.POSITIVE_INFINITY)
                         )
                     )
+
                     gte > 0.0F -> field.range(
                         gte = encodeRangeAttrWithValue(attrId, gte),
                         lte = encodeRangeAttrWithValue(attrId, Float.POSITIVE_INFINITY)
                     )
+
                     else -> Bool.should(
                         field.range(
                             gte = encodeRangeAttrWithValue(attrId, -0.0F),
@@ -143,10 +144,12 @@ class AttrRangeFacetFilter(
                             lte = encodeRangeAttrWithValue(attrId, Float.NEGATIVE_INFINITY),
                         )
                     )
+
                     lte < 0.0F -> field.range(
                         gte = encodeRangeAttrWithValue(attrId, lte),
                         lte = encodeRangeAttrWithValue(attrId, Float.NEGATIVE_INFINITY)
                     )
+
                     else -> Bool.should(
                         field.range(
                             gte = encodeRangeAttrWithValue(attrId, 0.0F),
@@ -168,10 +171,12 @@ class AttrRangeFacetFilter(
                         encodeRangeAttrWithValue(attrId, 0.0F),
                         encodeRangeAttrWithValue(attrId, -0.0F),
                     )
+
                     gte > lte -> Bool.filter(
                         Gte(attrId, gte).filterExpression(field),
                         Lte(attrId, lte).filterExpression(field),
                     )
+
                     gte == 0.0F -> Bool.should(
                         field.eq(encodeRangeAttrWithValue(attrId, -0.0F)),
                         field.range(
@@ -179,6 +184,7 @@ class AttrRangeFacetFilter(
                             lte = encodeRangeAttrWithValue(attrId, lte)
                         ),
                     )
+
                     lte == 0.0F -> Bool.should(
                         field.eq(encodeRangeAttrWithValue(attrId, 0.0F)),
                         field.range(
@@ -186,14 +192,17 @@ class AttrRangeFacetFilter(
                             lte = encodeRangeAttrWithValue(attrId, gte)
                         ),
                     )
+
                     gte > 0.0F && lte > 0.0F -> field.range(
                         gte = encodeRangeAttrWithValue(attrId, gte),
                         lte = encodeRangeAttrWithValue(attrId, lte)
                     )
+
                     gte < 0.0F && lte < 0.0F -> field.range(
                         gte = encodeRangeAttrWithValue(attrId, lte),
                         lte = encodeRangeAttrWithValue(attrId, gte)
                     )
+
                     else -> Bool.should(
                         field.range(
                             gte = encodeRangeAttrWithValue(attrId, 0.0F),
@@ -510,6 +519,55 @@ object AttrRangeFacetType : SimpleFieldType<AttrRangeFacet>() {
             count = v.long("count"),
             min = v.floatOrNull("min"),
             max = v.floatOrNull("max"),
+        )
+    }
+}
+
+class AttrRangeExpressionFilter(
+    val field: FieldOperations<Long>,
+    name: String? = null
+) : Filter<BaseFilterResult>(name) {
+
+    override fun prepare(
+        name: String,
+        paramName: String,
+        params: QueryFilterParams
+    ): PreparedAttrRangeExpressionFilter {
+        val facetFilters = getAttrRangeFacetSelectedValues(params, paramName)
+            .values.map { w ->
+                w.filterExpression(field)
+            }
+
+        val facetFilterExpr = when (facetFilters.size) {
+            0 -> null
+            1 -> facetFilters[0]
+            else -> Bool.filter(facetFilters)
+        }
+
+        return PreparedAttrRangeExpressionFilter(this, name, paramName, facetFilterExpr)
+    }
+}
+
+class PreparedAttrRangeExpressionFilter(
+    val filter: AttrRangeExpressionFilter,
+    name: String,
+    paramName: String,
+    facetFilterExpr: QueryExpression?,
+) : PreparedFilter<BaseFilterResult>(name, paramName, facetFilterExpr) {
+
+    override fun apply(
+        searchQuery: SearchQuery<*>,
+        otherFacetFilterExpressions: List<QueryExpression>
+    ) {
+        if (facetFilterExpr != null) {
+            searchQuery.filter(facetFilterExpr)
+        }
+    }
+
+    override fun processResult(searchQueryResult: SearchQueryResult<*>): BaseFilterResult {
+        return BaseFilterResult(
+            name,
+            paramName
         )
     }
 }
