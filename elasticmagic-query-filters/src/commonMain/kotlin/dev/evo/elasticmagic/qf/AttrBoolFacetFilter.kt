@@ -243,7 +243,7 @@ class PreparedAttrBoolFacetFilter(
     }
 }
 
-class AttrBoolExpressionFilter(
+class AttrBoolSimpleFilter(
     val field: FieldOperations<Long>,
     name: String? = null
 ) : Filter<BaseFilterResult>(name) {
@@ -255,22 +255,22 @@ class AttrBoolExpressionFilter(
                 it.filterExpression(field)
             }
 
-        val facetFilterExpr = when (facetFilters.size) {
+        val filterExpr = when (facetFilters.size) {
             0 -> null
             1 -> facetFilters[0]
             else -> Bool.filter(facetFilters)
         }
 
-        return PreparedAttrBoolExpressionFilter(this, name, paramName, facetFilterExpr)
+        return PreparedAttrBoolExpressionFilter(this, name, paramName, filterExpr)
     }
 }
 
 class PreparedAttrBoolExpressionFilter(
-    val filter: AttrBoolExpressionFilter,
+    val filter: AttrBoolSimpleFilter,
     name: String,
     paramName: String,
-    facetFilterExpr: QueryExpression?,
-) : PreparedFilter<BaseFilterResult>(name, paramName, facetFilterExpr) {
+    filterExpr: QueryExpression?,
+) : PreparedFilter<BaseFilterResult>(name, paramName, filterExpr) {
 
     override fun apply(
         searchQuery: SearchQuery<*>,

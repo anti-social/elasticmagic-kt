@@ -34,8 +34,8 @@ open class BaseFilterResult(
 class PreparedSimpleFilter(
     name: String,
     paramName: String,
-    facetFilterExpr: QueryExpression?,
-) : PreparedFilter<BaseFilterResult>(name, paramName, facetFilterExpr) {
+    filterExpr: QueryExpression?,
+) : PreparedFilter<BaseFilterResult>(name, paramName, filterExpr) {
     override fun apply(searchQuery: SearchQuery<*>, otherFacetFilterExpressions: List<QueryExpression>) {
         if (facetFilterExpr != null) {
             searchQuery.filter(facetFilterExpr)

@@ -523,7 +523,7 @@ object AttrRangeFacetType : SimpleFieldType<AttrRangeFacet>() {
     }
 }
 
-class AttrRangeExpressionFilter(
+class AttrRangeSimpleFilter(
     val field: FieldOperations<Long>,
     name: String? = null
 ) : Filter<BaseFilterResult>(name) {
@@ -538,22 +538,22 @@ class AttrRangeExpressionFilter(
                 w.filterExpression(field)
             }
 
-        val facetFilterExpr = when (facetFilters.size) {
+        val filterExpr = when (facetFilters.size) {
             0 -> null
             1 -> facetFilters[0]
             else -> Bool.filter(facetFilters)
         }
 
-        return PreparedAttrRangeExpressionFilter(this, name, paramName, facetFilterExpr)
+        return PreparedAttrRangeExpressionFilter(this, name, paramName, filterExpr)
     }
 }
 
 class PreparedAttrRangeExpressionFilter(
-    val filter: AttrRangeExpressionFilter,
+    val filter: AttrRangeSimpleFilter,
     name: String,
     paramName: String,
-    facetFilterExpr: QueryExpression?,
-) : PreparedFilter<BaseFilterResult>(name, paramName, facetFilterExpr) {
+    filterExpr: QueryExpression?,
+) : PreparedFilter<BaseFilterResult>(name, paramName, filterExpr) {
 
     override fun apply(
         searchQuery: SearchQuery<*>,

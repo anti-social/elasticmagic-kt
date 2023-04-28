@@ -9,13 +9,13 @@ import io.kotest.matchers.maps.shouldContainExactly
 
 import kotlin.test.Test
 
-class AttrBoolExpressionTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQueryCompiler) {
+class AttrBoolSimpleFilterTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQueryCompiler) {
     object ProductDoc : Document() {
         val attrs by long()
     }
 
     object AttrsQueryFilters : QueryFilters() {
-        val attrsBool by AttrBoolExpressionFilter(ProductDoc.attrs, "a")
+        val attrsBool by AttrBoolSimpleFilter(ProductDoc.attrs, "a")
     }
 
 
