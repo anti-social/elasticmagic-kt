@@ -5,7 +5,7 @@ import dev.evo.elasticmagic.SearchQuery
 import io.kotest.matchers.shouldBe
 import kotlin.test.Test
 
-class AttrSimpleFiltersTests : ElasticsearchTestBase() {
+class AttrSimpleFiltersTest : ElasticsearchTestBase() {
     override val indexName = "attr-simple-filter"
 
     object ItemQueryFilters : QueryFilters() {
