@@ -78,6 +78,20 @@ class AttrSimpleFiltersTest : ElasticsearchTestBase() {
             ).let {
                 val searchResult = searchQuery.execute(index)
                 searchResult.totalHits shouldBe 2
+
+                val qfResult = it.processResult(searchResult)
+                qfResult[ItemQueryFilters.selectAttrs].let { filter ->
+                    filter.name shouldBe "selectAttrs"
+                    filter.paramName shouldBe "attr"
+                }
+                qfResult[ItemQueryFilters.boolAttrs].let { filter ->
+                    filter.name shouldBe "boolAttrs"
+                    filter.paramName shouldBe "attr"
+                }
+                qfResult[ItemQueryFilters.rangeAttrs].let { filter ->
+                    filter.name shouldBe "rangeAttrs"
+                    filter.paramName shouldBe "attr"
+                }
             }
         }
     }
