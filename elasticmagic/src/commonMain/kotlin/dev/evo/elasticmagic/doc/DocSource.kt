@@ -361,13 +361,11 @@ open class DocSource : BaseDocSource() {
         ReadWriteProperty<DocSource, V> {
         override val isInitialized = true
 
-        override val value
-            get(): V & Any {
+        override val value get(): V & Any {
                 return when (val v = fieldValue.value) {
                     null -> {
                         defaultValue().also(fieldValue::value::set)
                     }
-
                     else -> v
                 }
             }
@@ -396,7 +394,8 @@ open class DocSource : BaseDocSource() {
         fieldType: FieldType<V & Any, *>,
     ) :
         FieldValueProperty<V>(fieldName, fieldType, FieldValue()),
-        ReadWriteProperty<DocSource, V> {
+        ReadWriteProperty<DocSource, V>
+    {
         override val isInitialized get() = fieldValue.isInitialized
 
         override fun checkRequired() {
@@ -518,7 +517,6 @@ class DynDocSource private constructor(
                 is List<*> -> throw IllegalArgumentException(
                     "Cannot traverse through a list value: ${currentFieldName(path, ix)}"
                 )
-
                 else -> throw IllegalArgumentException(
                     "Expected sub document for field: ${currentFieldName(path, ix)}"
                 )
@@ -562,7 +560,6 @@ class DynDocSource private constructor(
                         )
                     }
                 }
-
                 is DynDocSource -> {
                     if (source.size > 1) {
                         throw IllegalArgumentException(
@@ -572,7 +569,6 @@ class DynDocSource private constructor(
                     }
                     source = fieldValue.source
                 }
-
                 else -> throw IllegalArgumentException(
                     "Expected sub document for field: ${currentFieldName(prefix, ix)}"
                 )
