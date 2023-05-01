@@ -10,6 +10,8 @@ import dev.evo.elasticmagic.doc.Document
 import dev.evo.elasticmagic.bulk.IdActionMeta
 import dev.evo.elasticmagic.types.Join
 import dev.evo.elasticmagic.doc.MetaFields
+import dev.evo.elasticmagic.query.HasParent
+import dev.evo.elasticmagic.query.match
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.shouldBe
 
@@ -142,6 +144,15 @@ class ParentChildTests : ElasticsearchTestBase() {
                 .let { searchResult ->
                     val parentsAgg = searchResult.agg<TermsAggResult<String>>("parents")
                     parentsAgg.buckets shouldBe listOf(TermBucket("q~1", docCount = 3))
+                }
+
+            QuestionDoc.meta
+
+            SearchQuery(sourceFactory)
+                .filter(HasParent(QuestionDoc.text.match("What"), "question"))
+                .execute(index)
+                .let { searchResult ->
+                    println(searchResult)
                 }
         }
     }

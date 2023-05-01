@@ -9,6 +9,7 @@ import dev.evo.elasticmagic.doc.Document
 import dev.evo.elasticmagic.doc.SubDocument
 import dev.evo.elasticmagic.doc.date
 import dev.evo.elasticmagic.serde.Serializer
+import dev.evo.elasticmagic.types.Join
 
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
@@ -40,6 +41,12 @@ abstract class BaseExpressionTest : BaseTest() {
         clone shouldBe expression
     }
 
+
+    protected class YearDoc(field: BoundField<BaseDocSource, Nothing>) : SubDocument(field) {
+        val year by int()
+        val join by join(relations = mapOf("year" to listOf("movie")))
+    }
+
     protected class StarDoc(field: BoundField<BaseDocSource, Nothing>) : SubDocument(field) {
         val name by text()
         val rank by float()
@@ -55,5 +62,6 @@ abstract class BaseExpressionTest : BaseTest() {
         val releaseDate by date("release_date")
         val name by text()
         val description by text()
+        val join by join(relations = mapOf("year" to listOf("movie")))
     }
 }
