@@ -15,6 +15,15 @@ class SimpleFilterTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQueryCom
     }
 
     @Test
+    fun emptyFilter() = testWithCompiler {
+
+        val sq = SearchQuery()
+        BikeQueryFilters.apply(sq, mapOf(listOf("price") to listOf()))
+
+        compile(sq).body shouldContainExactly mapOf()
+    }
+
+    @Test
     fun intersectFilter() = testWithCompiler {
 
         val sq = SearchQuery()

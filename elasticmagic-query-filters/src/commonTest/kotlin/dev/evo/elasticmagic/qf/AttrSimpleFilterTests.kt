@@ -18,9 +18,8 @@ class AttrSimpleFilterTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQuer
         val attrsBool by AttrSimpleFilter(ProductDoc.attrs, "a")
     }
 
-
     @Test
-    fun default() = testWithCompiler {
+    fun unionTest() = testWithCompiler {
         val sq = SearchQuery()
         AttrsQueryFilters.apply(sq, mapOf(listOf("a", "1") to listOf("12", "13")))
 
@@ -60,6 +59,5 @@ class AttrSimpleFilterTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQuer
                 )
             )
         )
-
     }
 }

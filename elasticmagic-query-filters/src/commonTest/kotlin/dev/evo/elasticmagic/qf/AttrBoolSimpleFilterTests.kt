@@ -20,6 +20,14 @@ class AttrBoolSimpleFilterTests : BaseCompilerTest<SearchQueryCompiler>(::Search
 
 
     @Test
+    fun empty() = testWithCompiler {
+        val sq = SearchQuery()
+        AttrsQueryFilters.apply(sq, mapOf(listOf("a", "1") to listOf()))
+
+        compile(sq).body shouldContainExactly mapOf()
+    }
+
+    @Test
     fun default() = testWithCompiler {
         val sq = SearchQuery()
         AttrsQueryFilters.apply(sq, mapOf(listOf("a", "1") to listOf("true", "false")))
