@@ -39,11 +39,6 @@ public final class dev/evo/elasticmagic/qf/AttrBoolFacetFilter$SelectedValues {
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class dev/evo/elasticmagic/qf/AttrBoolFacetFilterKt {
-	public static final fun decodeBoolAttrAndValue (J)Lkotlin/Pair;
-	public static final fun encodeBoolAttrWithValue (IZ)J
-}
-
 public final class dev/evo/elasticmagic/qf/AttrBoolFacetFilterResult : dev/evo/elasticmagic/qf/FilterResult, java/lang/Iterable, kotlin/jvm/internal/markers/KMappedMarker {
 	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;)V
 	public final fun component1 ()Ljava/lang/String;
@@ -71,6 +66,11 @@ public final class dev/evo/elasticmagic/qf/AttrBoolFacetValue {
 	public final fun getValue ()Z
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/evo/elasticmagic/qf/AttrBoolFilterKt {
+	public static final fun decodeBoolAttrAndValue (J)Lkotlin/Pair;
+	public static final fun encodeBoolAttrWithValue (IZ)J
 }
 
 public final class dev/evo/elasticmagic/qf/AttrBoolSimpleFilter : dev/evo/elasticmagic/qf/Filter {
@@ -119,11 +119,6 @@ public final class dev/evo/elasticmagic/qf/AttrFacetFilter$SelectedValues {
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class dev/evo/elasticmagic/qf/AttrFacetFilterKt {
-	public static final fun decodeAttrAndValue (J)Lkotlin/Pair;
-	public static final fun encodeAttrWithValue (II)J
-}
-
 public final class dev/evo/elasticmagic/qf/AttrFacetFilterResult : dev/evo/elasticmagic/qf/FilterResult, java/lang/Iterable, kotlin/jvm/internal/markers/KMappedMarker {
 	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;)V
 	public final fun component1 ()Ljava/lang/String;
@@ -153,6 +148,11 @@ public final class dev/evo/elasticmagic/qf/AttrFacetValue {
 	public final fun getValue ()I
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/evo/elasticmagic/qf/AttrFilterKt {
+	public static final fun decodeAttrAndValue (J)Lkotlin/Pair;
+	public static final fun encodeAttrWithValue (II)J
 }
 
 public final class dev/evo/elasticmagic/qf/AttrRangeFacet {
@@ -231,10 +231,6 @@ public final class dev/evo/elasticmagic/qf/AttrRangeFacetFilter$SelectedValue$Lt
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class dev/evo/elasticmagic/qf/AttrRangeFacetFilterKt {
-	public static final fun encodeRangeAttrWithValue (IF)J
-}
-
 public final class dev/evo/elasticmagic/qf/AttrRangeFacetFilterResult : dev/evo/elasticmagic/qf/FilterResult {
 	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;)V
 	public final fun component1 ()Ljava/lang/String;
@@ -257,6 +253,10 @@ public final class dev/evo/elasticmagic/qf/AttrRangeFacetType : dev/evo/elasticm
 	public synthetic fun getName ()Ljava/lang/String;
 	public fun getName ()Ljava/lang/Void;
 	public fun getTermType ()Lkotlin/reflect/KClass;
+}
+
+public final class dev/evo/elasticmagic/qf/AttrRangeFilterKt {
+	public static final fun encodeRangeAttrWithValue (IF)J
 }
 
 public final class dev/evo/elasticmagic/qf/AttrRangeSimpleFilter : dev/evo/elasticmagic/qf/Filter {
