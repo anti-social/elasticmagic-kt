@@ -1,6 +1,7 @@
 package dev.evo.elasticmagic.aggs
 
 import dev.evo.elasticmagic.query.Sort
+import dev.evo.elasticmagic.serde.DeserializationException
 
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
@@ -23,7 +24,7 @@ class HistogramTests : TestAggregation() {
                 )
             )
 
-            shouldThrow<IllegalStateException> {
+            shouldThrow<DeserializationException> {
                 process(agg, emptyMap())
             }
             process(
@@ -143,7 +144,7 @@ class HistogramTests : TestAggregation() {
                 )
             )
 
-            shouldThrow<IllegalStateException> {
+            shouldThrow<DeserializationException> {
                 process(agg, emptyMap())
             }
             process(

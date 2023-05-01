@@ -1,5 +1,7 @@
 package dev.evo.elasticmagic.aggs
 
+import dev.evo.elasticmagic.serde.DeserializationException
+
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.maps.shouldContainExactly
@@ -33,7 +35,7 @@ class RangeTests : TestAggregation() {
 
         val agg = RangeAgg(MovieDoc.rating, ranges = emptyList())
 
-        shouldThrow<IllegalStateException> {
+        shouldThrow<DeserializationException> {
             process(agg, emptyMap())
         }
         process(
@@ -124,7 +126,7 @@ class RangeTests : TestAggregation() {
                 )
             )
 
-            shouldThrow<IllegalStateException> {
+            shouldThrow<DeserializationException> {
                 process(agg, emptyMap())
             }
             process(

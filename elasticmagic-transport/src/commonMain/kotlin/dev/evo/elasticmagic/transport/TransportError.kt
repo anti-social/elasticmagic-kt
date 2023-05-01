@@ -189,7 +189,6 @@ sealed class TransportError {
             } catch (e: DeserializationException) {
                 return Simple(error)
             }
-
         }
     }
 }

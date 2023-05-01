@@ -1,7 +1,7 @@
 package dev.evo.elasticmagic.serde.jackson
 
 import com.fasterxml.jackson.core.type.TypeReference
-import com.fasterxml.jackson.dataformat.yaml.JacksonYAMLParseException
+import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper
 
 import dev.evo.elasticmagic.serde.Deserializer
@@ -14,7 +14,7 @@ object YamlDeserializer : StdDeserializer() {
     override fun objFromStringOrNull(data: String): Deserializer.ObjectCtx? {
         return try {
             ObjectCtx(mapper.readValue(data, typeRef))
-        } catch (ex: JacksonYAMLParseException) {
+        } catch (ex: JsonProcessingException) {
             null
         }
     }

@@ -1,8 +1,10 @@
 public final class dev/evo/elasticmagic/serde/DeserializationException : java/lang/Exception {
 	public fun <init> (Ljava/lang/String;Ljava/lang/Exception;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/Exception;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 }
 
 public abstract interface class dev/evo/elasticmagic/serde/Deserializer {
+	public static final field Companion Ldev/evo/elasticmagic/serde/Deserializer$Companion;
 	public abstract fun objFromString (Ljava/lang/String;)Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;
 	public abstract fun objFromStringOrNull (Ljava/lang/String;)Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;
 }
@@ -43,6 +45,10 @@ public final class dev/evo/elasticmagic/serde/Deserializer$ArrayIterator$Default
 	public static fun long (Ldev/evo/elasticmagic/serde/Deserializer$ArrayIterator;)J
 	public static fun obj (Ldev/evo/elasticmagic/serde/Deserializer$ArrayIterator;)Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;
 	public static fun string (Ldev/evo/elasticmagic/serde/Deserializer$ArrayIterator;)Ljava/lang/String;
+}
+
+public final class dev/evo/elasticmagic/serde/Deserializer$Companion {
+	public final fun err (Ljava/lang/String;)Ljava/lang/Void;
 }
 
 public final class dev/evo/elasticmagic/serde/Deserializer$DefaultImpls {

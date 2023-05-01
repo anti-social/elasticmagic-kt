@@ -5,6 +5,7 @@ import dev.evo.elasticmagic.query.FieldOperations
 import dev.evo.elasticmagic.query.Script
 import dev.evo.elasticmagic.serde.platform
 import dev.evo.elasticmagic.serde.Platform
+import dev.evo.elasticmagic.serde.DeserializationException
 
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.data.forAll
@@ -67,7 +68,7 @@ class MetricTests : TestAggregation() {
                 "missing" to 0.0F
             )
         )
-        shouldThrow<IllegalStateException> {
+        shouldThrow<DeserializationException> {
             process(
                 agg,
                 mapOf("value" to null)
@@ -125,7 +126,7 @@ class MetricTests : TestAggregation() {
                     "missing" to 0
                 )
             )
-            shouldThrow<IllegalStateException> {
+            shouldThrow<DeserializationException> {
                 agg.processResult(
                     deserializer.wrapObj(
                         mapOf(
@@ -157,7 +158,7 @@ class MetricTests : TestAggregation() {
                     res.valueAsString.shouldBeNull()
                 }
             } else {
-                shouldThrow<IllegalStateException> {
+                shouldThrow<DeserializationException> {
                     agg.processResult(
                         deserializer.wrapObj(
                             mapOf(
@@ -253,7 +254,7 @@ class MetricTests : TestAggregation() {
                 "missing" to 0.0F,
             )
         )
-        shouldThrow<IllegalStateException> {
+        shouldThrow<DeserializationException> {
             process(agg, emptyMap())
         }
         process(agg, mapOf("count" to 0, "sum" to 0.0)).let { res ->
@@ -305,7 +306,7 @@ class MetricTests : TestAggregation() {
                 "missing" to 0.0F,
             )
         )
-        shouldThrow<IllegalStateException> {
+        shouldThrow<DeserializationException> {
             process(agg, emptyMap<String, Nothing>())
         }
         process(

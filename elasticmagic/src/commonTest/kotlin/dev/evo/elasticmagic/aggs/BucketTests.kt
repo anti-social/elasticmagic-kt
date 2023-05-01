@@ -2,6 +2,7 @@ package dev.evo.elasticmagic.aggs
 
 import dev.evo.elasticmagic.query.Bool
 import dev.evo.elasticmagic.query.MatchAll
+import dev.evo.elasticmagic.serde.DeserializationException
 
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.maps.shouldContainExactly
@@ -17,7 +18,7 @@ class BucketTests : TestAggregation() {
                 "global" to emptyMap<String, Any?>()
             )
 
-            shouldThrow<IllegalStateException> {
+            shouldThrow<DeserializationException> {
                 process(agg, emptyMap())
             }
             process(agg, mapOf("doc_count" to 5)).let { res ->
@@ -62,7 +63,7 @@ class BucketTests : TestAggregation() {
                 )
             )
 
-            shouldThrow<IllegalStateException> {
+            shouldThrow<DeserializationException> {
                 process(agg, emptyMap())
             }
             process(agg, mapOf("doc_count" to 3)).let { res ->
@@ -111,10 +112,10 @@ class BucketTests : TestAggregation() {
                 )
             )
 
-            shouldThrow<IllegalStateException> {
+            shouldThrow<DeserializationException> {
                 process(agg, emptyMap())
             }
-            shouldThrow<IllegalStateException> {
+            shouldThrow<DeserializationException> {
                 process(agg, mapOf("buckets" to emptyList<Nothing>()))
             }
             process(agg, mapOf("buckets" to emptyMap<String, Nothing>())).let { res ->

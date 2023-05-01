@@ -2,6 +2,7 @@ package dev.evo.elasticmagic.aggs
 
 import dev.evo.elasticmagic.query.Script
 import dev.evo.elasticmagic.query.Sort
+import dev.evo.elasticmagic.serde.DeserializationException
 import dev.evo.elasticmagic.types.IntType
 
 import io.kotest.assertions.throwables.shouldThrow
@@ -61,7 +62,7 @@ class TermsTests : TestAggregation() {
         )
 
         val agg = TermsAgg(MovieDoc.genre)
-        shouldThrow<IllegalStateException> {
+        shouldThrow<DeserializationException> {
             process(agg, emptyMap())
         }
         process(
@@ -220,7 +221,7 @@ class TermsTests : TestAggregation() {
         )
 
         val agg = SignificantTermsAgg(MovieDoc.genre)
-        shouldThrow<IllegalStateException> {
+        shouldThrow<DeserializationException> {
             process(agg, emptyMap())
         }
         process(
