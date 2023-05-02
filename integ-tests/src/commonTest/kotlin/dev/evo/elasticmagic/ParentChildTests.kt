@@ -4,17 +4,18 @@ import dev.evo.elasticmagic.aggs.TermBucket
 import dev.evo.elasticmagic.aggs.TermsAgg
 import dev.evo.elasticmagic.aggs.TermsAggResult
 import dev.evo.elasticmagic.bulk.DocSourceAndMeta
+import dev.evo.elasticmagic.bulk.IdActionMeta
 import dev.evo.elasticmagic.doc.DocSource
 import dev.evo.elasticmagic.doc.DocSourceFactory
 import dev.evo.elasticmagic.doc.Document
-import dev.evo.elasticmagic.bulk.IdActionMeta
-import dev.evo.elasticmagic.types.Join
 import dev.evo.elasticmagic.doc.MetaFields
+import dev.evo.elasticmagic.query.HasChild
 import dev.evo.elasticmagic.query.HasParent
+import dev.evo.elasticmagic.query.MatchAll
 import dev.evo.elasticmagic.query.match
+import dev.evo.elasticmagic.types.Join
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.shouldBe
-
 import kotlin.test.Test
 
 open class KnowledgeDoc : Document() {
@@ -152,7 +153,61 @@ class ParentChildTests : ElasticsearchTestBase() {
                 .filter(HasParent(QuestionDoc.text.match("What"), "question"))
                 .execute(index)
                 .let { searchResult ->
-                    println(searchResult)
+                    searchResult.hits.toSet() shouldContainExactly setOf(
+                        SearchHit(
+                            index = index.name,
+                            type = "_doc",
+                            id = "a~1",
+                            routing = "q~1",
+                            score = 0.0F,
+                            source = a1,
+                        ),
+                        SearchHit(
+                            index = index.name,
+                            type = "_doc",
+                            id = "a~2",
+                            routing = "q~1",
+                            score = 0.0F,
+                            source = a2,
+                        ),
+                    )
+                }
+
+            SearchQuery(sourceFactory)
+                .filter(HasParent(QuestionDoc.text.match("Nothing"), "question"))
+                .execute(index)
+                .let { searchResult ->
+                    searchResult.hits.size shouldBe 0
+                }
+
+            SearchQuery(sourceFactory)
+                .filter(HasChild(MatchAll, "answer", minChildren = 1))
+                .execute(index)
+                .let { searchResult ->
+                    searchResult.hits.toSet() shouldContainExactly setOf(
+                        SearchHit(
+                            index = index.name,
+                            type = "_doc",
+                            id = "q~1",
+                            routing = "q~1",
+                            score = 0.0f,
+                            source = q1,
+                        )
+                    )
+                }
+
+            SearchQuery(sourceFactory)
+                .filter(HasChild(MatchAll, "answer", minChildren = 3))
+                .execute(index)
+                .let { searchResult ->
+                    searchResult.hits.size shouldBe 0
+                }
+
+            SearchQuery(sourceFactory)
+                .filter(HasChild(MatchAll, "answer", maxChildren = 1))
+                .execute(index)
+                .let { searchResult ->
+                    searchResult.hits.size shouldBe 0
                 }
         }
     }

@@ -4,15 +4,17 @@ import dev.evo.elasticmagic.Params
 import dev.evo.elasticmagic.compile.BaseSearchQueryCompiler
 import dev.evo.elasticmagic.serde.Serializer
 
-data class HasParent(
+data class HasChild(
     val query: QueryExpression,
-    val parentType: String,
-    val score: Boolean = false,
+    val type: String,
+    val maxChildren: Int? = null,
+    val minChildren: Int? = null,
+    val scoreMode: FunctionScore.ScoreMode? = null,
     val params: Params? = null,
 ) : QueryExpression {
 
     override val name: String
-        get() = "has_parent"
+        get() = "has_child"
 
     override fun clone(): QueryExpression = copy()
 
@@ -21,8 +23,10 @@ data class HasParent(
         ctx: Serializer.ObjectCtx,
         compiler: BaseSearchQueryCompiler
     ) {
-        ctx.field("parent_type", parentType)
-        ctx.fieldIfNotNull("score", score)
+        ctx.field("type", type)
+        ctx.fieldIfNotNull("max_children", maxChildren)
+        ctx.fieldIfNotNull("min_children", minChildren)
+        ctx.fieldIfNotNull("score_mode", scoreMode?.name?.lowercase())
         ctx.fieldIfNotNull("ignore_unmapped", params?.get("ignore_unmapped"))
 
         ctx.obj("query") {
