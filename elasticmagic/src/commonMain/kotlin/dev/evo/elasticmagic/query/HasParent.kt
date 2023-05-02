@@ -6,7 +6,7 @@ import dev.evo.elasticmagic.serde.Serializer
 data class HasParent(
     val query: QueryExpression,
     val parentType: String,
-    val score: Boolean? = false,
+    val score: Boolean? = null,
     val ignoreUnmapped: Boolean? = null
 ) : QueryExpression {
 
