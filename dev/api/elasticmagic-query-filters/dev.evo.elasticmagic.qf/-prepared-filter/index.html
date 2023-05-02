@@ -34,7 +34,7 @@
     <div class="library-name">
 <a href="../../../index.html">
 <span>elasticmagic-kt</span>            </a>    </div>
-    <div>0.0.19-48-gdd6889a
+    <div>0.0.19-59-ga4d9378
     </div>
     <div class="pull-right d-flex">
         <button id="theme-toggle-button"><span id="theme-toggle"></span></button>
@@ -50,7 +50,7 @@
   <div class="breadcrumbs"><a href="../../index.html">elasticmagic-query-filters</a><span class="delimiter">/</span><a href="../index.html">dev.evo.elasticmagic.qf</a><span class="delimiter">/</span><span class="current">PreparedFilter</span></div>
   <div class="cover ">
     <h1 class="cover"><span>Prepared</span><wbr><span><span>Filter</span></span></h1>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">class </span><a href="index.html">PreparedFilter</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="index.html">R</a><span class="token operator"> : </span><a href="../-filter-result/index.html">FilterResult</a><span class="token operator">&gt;</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>name<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>paramName<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>facetFilterExpr<span class="token operator">: </span><a href="../../../elasticmagic/dev.evo.elasticmagic.query/-query-expression/index.html">QueryExpression</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span></div></div></div>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">class </span><a href="index.html">PreparedFilter</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="index.html">T</a><span class="token operator"> : </span><a href="../-filter-result/index.html">FilterResult</a><span class="token operator">&gt;</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>name<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>paramName<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>facetFilterExpr<span class="token operator">: </span><a href="../../../elasticmagic/dev.evo.elasticmagic.query/-query-expression/index.html">QueryExpression</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span></div></div></div>
   </div>
   <div class="tabbedcontent">
     <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="Constructors">Constructors</button><button class="section-tab" data-togglable="Functions">Functions</button><button class="section-tab" data-togglable="Properties">Properties</button><button class="section-tab" data-togglable="Inheritors">Inheritors</button></div>
@@ -98,7 +98,7 @@
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="process-result.html"><span class="token function">processResult</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">searchQueryResult<span class="token operator">: </span><a href="../../../elasticmagic/dev.evo.elasticmagic/-search-query-result/index.html">SearchQueryResult</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">R</a></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="process-result.html"><span class="token function">processResult</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">searchQueryResult<span class="token operator">: </span><a href="../../../elasticmagic/dev.evo.elasticmagic/-search-query-result/index.html">SearchQueryResult</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">T</a></div></div></div>
               </div>
             </div>
           </div>
@@ -163,6 +163,17 @@
             <div></div>
           </div>
         </div>
+<a data-name="1472589692%2FInheritors%2F-1138265262" anchor-label="PreparedAttrBoolExpressionFilter" id="1472589692%2FInheritors%2F-1138265262" data-filterable-set=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain"></a>
+        <div class="table-row" data-filterable-current=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="../-prepared-attr-bool-expression-filter/index.html">PreparedAttrBoolExpressionFilter</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1472589692%2FInheritors%2F-1138265262"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div></div>
+          </div>
+        </div>
 <a data-name="1643705373%2FInheritors%2F-1138265262" anchor-label="PreparedAttrFacetFilter" id="1643705373%2FInheritors%2F-1138265262" data-filterable-set=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain"></a>
         <div class="table-row" data-filterable-current=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain">
           <div class="main-subrow keyValue ">
@@ -174,12 +185,34 @@
             <div></div>
           </div>
         </div>
+<a data-name="1482040774%2FInheritors%2F-1138265262" anchor-label="PreparedAttrExpressionFilter" id="1482040774%2FInheritors%2F-1138265262" data-filterable-set=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain"></a>
+        <div class="table-row" data-filterable-current=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="../-prepared-attr-expression-filter/index.html">PreparedAttrExpressionFilter</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1482040774%2FInheritors%2F-1138265262"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div></div>
+          </div>
+        </div>
 <a data-name="366227876%2FInheritors%2F-1138265262" anchor-label="PreparedAttrRangeFacetFilter" id="366227876%2FInheritors%2F-1138265262" data-filterable-set=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain"></a>
         <div class="table-row" data-filterable-current=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain">
           <div class="main-subrow keyValue ">
             <div class=""><span class="inline-flex">
                 <div><a href="../-prepared-attr-range-facet-filter/index.html">PreparedAttrRangeFacetFilter</a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="366227876%2FInheritors%2F-1138265262"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div></div>
+          </div>
+        </div>
+<a data-name="-749255521%2FInheritors%2F-1138265262" anchor-label="PreparedAttrRangeExpressionFilter" id="-749255521%2FInheritors%2F-1138265262" data-filterable-set=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain"></a>
+        <div class="table-row" data-filterable-current=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="../-prepared-attr-range-expression-filter/index.html">PreparedAttrRangeExpressionFilter</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-749255521%2FInheritors%2F-1138265262"></span>
                   <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                 </span></span></div>
             <div></div>
@@ -213,6 +246,17 @@
             <div class=""><span class="inline-flex">
                 <div><a href="../-prepared-page-filter/index.html">PreparedPageFilter</a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1807776096%2FInheritors%2F-1138265262"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div></div>
+          </div>
+        </div>
+<a data-name="319246429%2FInheritors%2F-1138265262" anchor-label="PreparedSimpleFilter" id="319246429%2FInheritors%2F-1138265262" data-filterable-set=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain"></a>
+        <div class="table-row" data-filterable-current=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="../-prepared-simple-filter/index.html">PreparedSimpleFilter</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="319246429%2FInheritors%2F-1138265262"></span>
                   <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                 </span></span></div>
             <div></div>
