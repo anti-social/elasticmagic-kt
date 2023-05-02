@@ -1,6 +1,5 @@
 package dev.evo.elasticmagic.query
 
-import dev.evo.elasticmagic.Params
 import dev.evo.elasticmagic.compile.BaseSearchQueryCompiler
 import dev.evo.elasticmagic.serde.Serializer
 
@@ -10,7 +9,7 @@ data class HasChild(
     val maxChildren: Int? = null,
     val minChildren: Int? = null,
     val scoreMode: FunctionScore.ScoreMode? = null,
-    val params: Params? = null,
+    val ignoreUnmapped: Boolean? = null
 ) : QueryExpression {
 
     override val name: String
@@ -27,7 +26,7 @@ data class HasChild(
         ctx.fieldIfNotNull("max_children", maxChildren)
         ctx.fieldIfNotNull("min_children", minChildren)
         ctx.fieldIfNotNull("score_mode", scoreMode?.name?.lowercase())
-        ctx.fieldIfNotNull("ignore_unmapped", params?.get("ignore_unmapped"))
+        ctx.fieldIfNotNull("ignore_unmapped", ignoreUnmapped)
 
         ctx.obj("query") {
             compiler.visit(this, query)
