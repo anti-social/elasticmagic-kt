@@ -12,7 +12,6 @@ class HasParentTests : BaseExpressionTest() {
             "year"
         ).compile() shouldContainExactly mapOf(
             "has_parent" to mapOf(
-                "score" to false,
                 "query" to mapOf("term" to mapOf("join" to "1999")),
                 "parent_type" to "year"
             )
