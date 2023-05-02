@@ -61,21 +61,49 @@ class ParentChildTests : ElasticsearchTestBase() {
             join = Join("question")
             text = "What is the answer to life, the universe, and everything?"
         }
-        val a1 = AnswerDocSource().apply {
+        val q1A1 = AnswerDocSource().apply {
             id = 1
             join = Join("answer", "q~1")
             text = "Maybe 50?"
         }
-        val a2 = AnswerDocSource().apply {
+        val q1A2 = AnswerDocSource().apply {
             id = 2
             join = Join("answer", "q~1")
             text = "It's 42."
             accepted = true
         }
+
+        val q2 = QuestionDocSource().apply {
+            id = 2
+            join = Join("question")
+            text = "I cannot think of a question, so I'll just ask you to guess the number I'm thinking of."
+        }
+        val q2A1 = AnswerDocSource().apply {
+            id = 3
+            join = Join("answer", "q~2")
+            text = "8"
+        }
+        val q2A2 = AnswerDocSource().apply {
+            id = 4
+            join = Join("answer", "q~2")
+            text = "11"
+        }
+        val q2A3 = AnswerDocSource().apply {
+            id = 5
+            join = Join("answer", "q~2")
+            text = "17"
+            accepted = true
+        }
+
+
         val docSources = listOf(
             DocSourceAndMeta(IdActionMeta("q~1", routing = "q~1"), q1),
-            DocSourceAndMeta(IdActionMeta("a~1", routing = "q~1"), a1),
-            DocSourceAndMeta(IdActionMeta("a~2", routing = "q~1"), a2),
+            DocSourceAndMeta(IdActionMeta("a~1", routing = "q~1"), q1A1),
+            DocSourceAndMeta(IdActionMeta("a~2", routing = "q~1"), q1A2),
+            DocSourceAndMeta(IdActionMeta("q~2", routing = "q~2"), q2),
+            DocSourceAndMeta(IdActionMeta("a~3", routing = "q~2"), q2A1),
+            DocSourceAndMeta(IdActionMeta("a~4", routing = "q~2"), q2A2),
+            DocSourceAndMeta(IdActionMeta("a~5", routing = "q~2"), q2A3),
         )
         withFixtures(listOf(QuestionDoc, AnswerDoc), docSources) {
             val sourceFactory = DocSourceFactory.byJoin(
@@ -98,7 +126,7 @@ class ParentChildTests : ElasticsearchTestBase() {
                         id = "a~1",
                         routing = "q~1",
                         score = 1.0F,
-                        source = a1,
+                        source = q1A1,
                     ),
                     SearchHit(
                         index = index.name,
@@ -106,7 +134,39 @@ class ParentChildTests : ElasticsearchTestBase() {
                         id = "a~2",
                         routing = "q~1",
                         score = 1.0F,
-                        source = a2,
+                        source = q1A2,
+                    ),
+                    SearchHit(
+                        index = index.name,
+                        type = "_doc",
+                        id = "q~2",
+                        routing = "q~2",
+                        score = 1.0F,
+                        source = q2,
+                    ),
+                    SearchHit(
+                        index = index.name,
+                        type = "_doc",
+                        id = "a~3",
+                        routing = "q~2",
+                        score = 1.0F,
+                        source = q2A1,
+                    ),
+                    SearchHit(
+                        index = index.name,
+                        type = "_doc",
+                        id = "a~4",
+                        routing = "q~2",
+                        score = 1.0F,
+                        source = q2A2,
+                    ),
+                    SearchHit(
+                        index = index.name,
+                        type = "_doc",
+                        id = "a~5",
+                        routing = "q~2",
+                        score = 1.0F,
+                        source = q2A3,
                     ),
                 )
             }
@@ -122,7 +182,7 @@ class ParentChildTests : ElasticsearchTestBase() {
                             id = "a~1",
                             routing = "q~1",
                             score = 0.0F,
-                            source = a1,
+                            source = q1A1,
                         ),
                         SearchHit(
                             index = index.name,
@@ -130,8 +190,32 @@ class ParentChildTests : ElasticsearchTestBase() {
                             id = "a~2",
                             routing = "q~1",
                             score = 0.0F,
-                            source = a2,
+                            source = q1A2,
                         ),
+                        SearchHit(
+                            index = index.name,
+                            type = "_doc",
+                            id = "a~3",
+                            routing = "q~2",
+                            score = 0.0F,
+                            source = q2A1,
+                        ),
+                        SearchHit(
+                            index = index.name,
+                            type = "_doc",
+                            id = "a~4",
+                            routing = "q~2",
+                            score = 0.0F,
+                            source = q2A2,
+                        ),
+                        SearchHit(
+                            index = index.name,
+                            type = "_doc",
+                            id = "a~5",
+                            routing = "q~2",
+                            score = 0.0F,
+                            source = q2A3,
+                        )
                     )
                 }
 
@@ -144,7 +228,10 @@ class ParentChildTests : ElasticsearchTestBase() {
                 .execute(index)
                 .let { searchResult ->
                     val parentsAgg = searchResult.agg<TermsAggResult<String>>("parents")
-                    parentsAgg.buckets shouldBe listOf(TermBucket("q~1", docCount = 3))
+                    parentsAgg.buckets shouldBe listOf(
+                        TermBucket("q~2", docCount = 4),
+                        TermBucket("q~1", docCount = 3)
+                    )
                 }
 
             SearchQuery(sourceFactory)
@@ -158,7 +245,7 @@ class ParentChildTests : ElasticsearchTestBase() {
                             id = "a~1",
                             routing = "q~1",
                             score = 0.0F,
-                            source = a1,
+                            source = q1A1,
                         ),
                         SearchHit(
                             index = index.name,
@@ -166,20 +253,37 @@ class ParentChildTests : ElasticsearchTestBase() {
                             id = "a~2",
                             routing = "q~1",
                             score = 0.0F,
-                            source = a2,
-                        ),
+                            source = q1A2,
+                        )
                     )
                 }
 
             SearchQuery(sourceFactory)
-                .filter(HasParent(QuestionDoc.text.match("Nothing"), "question"))
+                .filter(HasChild(MatchAll, "answer", minChildren = 1))
                 .execute(index)
                 .let { searchResult ->
-                    searchResult.hits.size shouldBe 0
+                    searchResult.hits.toSet() shouldContainExactly setOf(
+                        SearchHit(
+                            index = index.name,
+                            type = "_doc",
+                            id = "q~1",
+                            routing = "q~1",
+                            score = 0.0f,
+                            source = q1,
+                        ),
+                        SearchHit(
+                            index = index.name,
+                            type = "_doc",
+                            id = "q~2",
+                            routing = "q~2",
+                            score = 0.0f,
+                            source = q2,
+                        )
+                    )
                 }
 
             SearchQuery(sourceFactory)
-                .filter(HasChild(MatchAll, "answer", minChildren = 1))
+                .filter(HasChild(MatchAll, "answer", maxChildren = 2))
                 .execute(index)
                 .let { searchResult ->
                     searchResult.hits.toSet() shouldContainExactly setOf(
@@ -198,14 +302,16 @@ class ParentChildTests : ElasticsearchTestBase() {
                 .filter(HasChild(MatchAll, "answer", minChildren = 3))
                 .execute(index)
                 .let { searchResult ->
-                    searchResult.hits.size shouldBe 0
-                }
-
-            SearchQuery(sourceFactory)
-                .filter(HasChild(MatchAll, "answer", maxChildren = 1))
-                .execute(index)
-                .let { searchResult ->
-                    searchResult.hits.size shouldBe 0
+                    searchResult.hits.toSet() shouldContainExactly setOf(
+                        SearchHit(
+                            index = index.name,
+                            type = "_doc",
+                            id = "q~2",
+                            routing = "q~2",
+                            score = 0.0f,
+                            source = q2,
+                        )
+                    )
                 }
         }
     }
