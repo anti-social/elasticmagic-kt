@@ -10,8 +10,7 @@ data class HasParent(
     val ignoreUnmapped: Boolean? = null
 ) : QueryExpression {
 
-    override val name: String
-        get() = "has_parent"
+    override val name: String = "has_parent"
 
     override fun clone(): QueryExpression = copy()
 
