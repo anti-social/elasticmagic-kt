@@ -3,14 +3,8 @@ package dev.evo.elasticmagic.query
 import dev.evo.elasticmagic.BaseTest
 import dev.evo.elasticmagic.compile.ElasticsearchFeatures
 import dev.evo.elasticmagic.compile.SearchQueryCompiler
-import dev.evo.elasticmagic.doc.BaseDocSource
-import dev.evo.elasticmagic.doc.BoundField
-import dev.evo.elasticmagic.doc.Document
-import dev.evo.elasticmagic.doc.SubDocument
-import dev.evo.elasticmagic.doc.date
+import dev.evo.elasticmagic.doc.*
 import dev.evo.elasticmagic.serde.Serializer
-import dev.evo.elasticmagic.types.Join
-
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
 import io.kotest.matchers.types.shouldNotBeSameInstanceAs
