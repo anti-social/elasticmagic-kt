@@ -19,4 +19,23 @@ class HasChildTests : BaseExpressionTest() {
             )
         )
     }
+
+    @Test
+    fun termWithChild() {
+        HasChild(
+            MatchAll,
+            "movie",
+            scoreMode = FunctionScore.ScoreMode.MAX,
+            minChildren = 1,
+            maxChildren = 10
+        ).compile() shouldContainExactly mapOf(
+            "has_child" to mapOf(
+                "query" to mapOf("match_all" to emptyMap<String, Any>()),
+                "type" to "movie",
+                "min_children" to 1,
+                "max_children" to 10,
+                "score_mode" to "max"
+            )
+        )
+    }
 }

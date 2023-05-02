@@ -1,14 +1,13 @@
 package dev.evo.elasticmagic.query
 
-import dev.evo.elasticmagic.Params
 import dev.evo.elasticmagic.compile.BaseSearchQueryCompiler
 import dev.evo.elasticmagic.serde.Serializer
 
 data class HasParent(
     val query: QueryExpression,
     val parentType: String,
-    val score: Boolean = false,
-    val params: Params? = null,
+    val score: Boolean? = false,
+    val ignoreUnmapped: Boolean? = null
 ) : QueryExpression {
 
     override val name: String
@@ -23,7 +22,7 @@ data class HasParent(
     ) {
         ctx.field("parent_type", parentType)
         ctx.fieldIfNotNull("score", score)
-        ctx.fieldIfNotNull("ignore_unmapped", params?.get("ignore_unmapped"))
+        ctx.fieldIfNotNull("ignore_unmapped", ignoreUnmapped)
 
         ctx.obj("query") {
             compiler.visit(this, query)

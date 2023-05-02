@@ -147,8 +147,6 @@ class ParentChildTests : ElasticsearchTestBase() {
                     parentsAgg.buckets shouldBe listOf(TermBucket("q~1", docCount = 3))
                 }
 
-            QuestionDoc.meta
-
             SearchQuery(sourceFactory)
                 .filter(HasParent(QuestionDoc.text.match("What"), "question"))
                 .execute(index)
