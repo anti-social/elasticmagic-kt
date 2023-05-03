@@ -8,21 +8,20 @@ import kotlin.test.Test
 
 class SimpleQueryFilterTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQueryCompiler) {
 
-
     object BikeQueryFilters : QueryFilters() {
-        val price by SimpleQueryFilter(
+        val price by SimpleExpressionsFilter(
             "price",
             values = listOf(
-                SimpleQueryValue("new", BikeDocument.price.gte(1000F)),
-                SimpleQueryValue("used", BikeDocument.price.lte(2000F))
+                ExpressionValue("new", BikeDocument.price.gte(1000F)),
+                ExpressionValue("used", BikeDocument.price.lte(2000F))
             ),
             mode = FilterMode.INTERSECT
         )
-        val priceUnion by SimpleQueryFilter(
+        val priceUnion by SimpleExpressionsFilter(
             "priceUnion",
             values = listOf(
-                SimpleQueryValue("new", BikeDocument.price.gte(4000F)),
-                SimpleQueryValue("used", BikeDocument.price.lte(5000F))
+                ExpressionValue("new", BikeDocument.price.gte(4000F)),
+                ExpressionValue("used", BikeDocument.price.lte(5000F))
             ),
             mode = FilterMode.UNION
         )

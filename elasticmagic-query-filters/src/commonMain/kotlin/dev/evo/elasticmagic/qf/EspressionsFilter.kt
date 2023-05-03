@@ -3,11 +3,11 @@ package dev.evo.elasticmagic.qf
 import dev.evo.elasticmagic.query.Bool
 import dev.evo.elasticmagic.query.QueryExpression
 
-class SimpleQueryValue(val name: String, val expr: QueryExpression, val title: String = "")
+class ExpressionValue(val name: String, val expr: QueryExpression)
 
-open class SimpleQueryFilter(
+open class SimpleExpressionsFilter(
     name: String? = null,
-    val values: List<SimpleQueryValue> = emptyList(),
+    val values: List<ExpressionValue> = emptyList(),
     private val mode: FilterMode = FilterMode.UNION,
 ) : Filter<BaseFilterResult>(name) {
 
