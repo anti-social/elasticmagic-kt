@@ -13,7 +13,7 @@ runs:
     shell: bash
     run: |
       sudo apt-get -y update
-      sudo apt-get -y --no-install-recommends install libcurl4 libcurl4-openssl-dev
+      sudo apt-get -y --no-install-recommends install libcurl4 libcurl4-openssl-dev jq
 
   - name: Set up Java ${{ matrix.java-version }}
     uses: actions/setup-java@v3

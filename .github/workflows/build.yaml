@@ -274,9 +274,15 @@ jobs:
 
     - name: Build docs
       run: |
-        set -eu
+        set -eux
         ./gradlew mkdocsBuild $GRADLE_ARGS
         ./gradlew mkdocsVersionFile $GRADLE_ARGS
+
+    - name: Review generated docs
+      run: |
+        set -eux
+        ls -l build/mkdocs
+        cat build/mkdocs/versions.json | jq
 
     - name: Build API docs
       run: ./gradlew dokkaHtmlMultiModule $GRADLE_ARGS
