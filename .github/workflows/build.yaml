@@ -276,7 +276,7 @@ jobs:
       run: |
         set -eux
         ./gradlew mkdocsBuild $GRADLE_ARGS
-        ./gradlew mkdocsVersionFile $GRADLE_ARGS
+        ./gradlew mkdocsVersionsFile $GRADLE_ARGS
 
     - name: Review generated docs
       run: |
@@ -295,6 +295,12 @@ jobs:
           github.ref == 'refs/heads/docs'
         )
       run: ./gradlew gitPublishCopy $GRADLE_ARGS
+
+    - name: Review publishing docs
+      run: |
+        set -eux
+        ls -l .gradle/gh-pages
+        cat .gradle/gh-pages/versions.json | jq
 
     - name: Publish documentation
       if: |
