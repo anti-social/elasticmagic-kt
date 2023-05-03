@@ -208,6 +208,7 @@ mkdocs {
     strict = false
 
     val isLatest = grgit.branch.current().name == "master" && docsVersion != "dev"
+    println("> Is latest version: $isLatest")
     publish.apply {
         docPath = docsVersion
         rootRedirect = isLatest
