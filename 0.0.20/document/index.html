@@ -1,0 +1,1010 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="Alexandr Koval">
+      
+      
+        <link rel="canonical" href="https://anti-social.github.io/elasticmagic-kt/0.0.20/document/">
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.4.1, mkdocs-material-8.5.7">
+    
+    
+      
+        <title>Document (aka mapping) - elasticmagic</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.20d9efc8.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.cbb835fc.min.css">
+        
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../extra.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="" data-md-color-accent="">
+  
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#document-aka-mapping" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="elasticmagic" class="md-header__button md-logo" aria-label="elasticmagic" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            elasticmagic
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Document (aka mapping)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      <form class="md-header__option" data-md-component="palette">
+        
+          
+          
+          <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="" data-md-color-accent=""  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+          
+            <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 6H7c-3.31 0-6 2.69-6 6s2.69 6 6 6h10c3.31 0 6-2.69 6-6s-2.69-6-6-6zm0 10H7c-2.21 0-4-1.79-4-4s1.79-4 4-4h10c2.21 0 4 1.79 4 4s-1.79 4-4 4zM7 9c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+            </label>
+          
+        
+          
+          
+          <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="" data-md-color-accent=""  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_2">
+          
+            <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3Z"/></svg>
+            </label>
+          
+        
+      </form>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="http://github.com/anti-social/elasticmagic-kt" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    elasticmagic
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="elasticmagic" class="md-nav__button md-logo" aria-label="elasticmagic" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    elasticmagic
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="http://github.com/anti-social/elasticmagic-kt" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    elasticmagic
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2">
+          Guide
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Guide" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          Guide
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Document (aka mapping)
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Document (aka mapping)
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#simple-fields" class="md-nav__link">
+    Simple fields
+  </a>
+  
+    <nav class="md-nav" aria-label="Simple fields">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#general-way" class="md-nav__link">
+    General way
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#using-shortcuts" class="md-nav__link">
+    Using shortcuts
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#enums" class="md-nav__link">
+    Enums
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sub-fields" class="md-nav__link">
+    Sub fields
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#object-fields" class="md-nav__link">
+    Object fields
+  </a>
+  
+    <nav class="md-nav" aria-label="Object fields">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#object" class="md-nav__link">
+    Object
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nested" class="md-nav__link">
+    Nested
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#parent-child-relationship" class="md-nav__link">
+    Parent-child relationship
+  </a>
+  
+    <nav class="md-nav" aria-label="Parent-child relationship">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#join-field" class="md-nav__link">
+    Join field
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#meta-fields" class="md-nav__link">
+    Meta fields
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#merge-multiple-documents" class="md-nav__link">
+    Merge multiple documents
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docsource/" class="md-nav__link">
+        Document source
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../querying/" class="md-nav__link">
+        Querying
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../query-filters/" class="md-nav__link">
+        Query Filters
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api" class="md-nav__link">
+        Api
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#simple-fields" class="md-nav__link">
+    Simple fields
+  </a>
+  
+    <nav class="md-nav" aria-label="Simple fields">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#general-way" class="md-nav__link">
+    General way
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#using-shortcuts" class="md-nav__link">
+    Using shortcuts
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#enums" class="md-nav__link">
+    Enums
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sub-fields" class="md-nav__link">
+    Sub fields
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#object-fields" class="md-nav__link">
+    Object fields
+  </a>
+  
+    <nav class="md-nav" aria-label="Object fields">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#object" class="md-nav__link">
+    Object
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nested" class="md-nav__link">
+    Nested
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#parent-child-relationship" class="md-nav__link">
+    Parent-child relationship
+  </a>
+  
+    <nav class="md-nav" aria-label="Parent-child relationship">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#join-field" class="md-nav__link">
+    Join field
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#meta-fields" class="md-nav__link">
+    Meta fields
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#merge-multiple-documents" class="md-nav__link">
+    Merge multiple documents
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  <a href="http://github.com/anti-social/elasticmagic-kt/edit/master/docs/document.md" title="Edit this page" class="md-content__button md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25Z"/></svg>
+  </a>
+
+
+<h1 id="document-aka-mapping">Document (aka mapping)<a class="headerlink" href="#document-aka-mapping" title="Permanent link">&para;</a></h1>
+<p>Roughly speaking <a href="https://anti-social.github.io/elasticmagic-kt/api/latest/elasticmagic/dev.evo.elasticmagic.doc/-document/index.html">Document</a>
+represents Elasticsearch's mapping. However, it is possible to merge multiple documents into 
+a single mapping.</p>
+<p>It is convenient to describe <code>Document</code> subclasses as singleton objects.</p>
+<p>Read more about 
+<a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-types.html">Elasticsearch mapping types</a></p>
+<h2 id="simple-fields">Simple fields<a class="headerlink" href="#simple-fields" title="Permanent link">&para;</a></h2>
+<h3 id="general-way">General way<a class="headerlink" href="#general-way" title="Permanent link">&para;</a></h3>
+<p>You can use <a href="https://anti-social.github.io/elasticmagic-kt/api/latest/elasticmagic/dev.evo.elasticmagic.doc/-field-set/field.html">field</a>
+method to describe a field in a document:</p>
+<div class="highlight"><pre><span></span><code><span class="k">package</span><span class="w"> </span><span class="nn">samples.document.field</span><span class="w"></span>
+
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.doc.Document</span><span class="w"></span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.types.BooleanType</span><span class="w"></span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.types.IntType</span><span class="w"></span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.types.KeywordType</span><span class="w"></span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.types.TextType</span><span class="w"></span>
+
+<span class="kd">object</span><span class="w"> </span><span class="nc">UserDoc</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Document</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="c1">// It is possible to pass field options via shortcuts like `index`</span><span class="w"></span>
+<span class="w">    </span><span class="c1">// or specifying `params` argument which can include any options (see `about` field below)</span><span class="w"></span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">id</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">field</span><span class="p">(</span><span class="n">IntType</span><span class="p">,</span><span class="w"> </span><span class="n">index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w"> </span><span class="n">store</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">)</span><span class="w"></span>
+
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">login</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">field</span><span class="p">(</span><span class="n">KeywordType</span><span class="p">)</span><span class="w"></span>
+
+<span class="w">    </span><span class="c1">// By default the field name is equal to the property name</span><span class="w"></span>
+<span class="w">    </span><span class="c1">// but that behaviour can be changed</span><span class="w"></span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">isAdmin</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">field</span><span class="p">(</span><span class="s">&quot;is_admin&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">BooleanType</span><span class="p">)</span><span class="w"></span>
+
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">about</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">field</span><span class="p">(</span><span class="n">TextType</span><span class="p">,</span><span class="w"> </span><span class="n">params</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mapOf</span><span class="p">(</span><span class="s">&quot;norms&quot;</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="kc">false</span><span class="p">))</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</code></pre></div>
+<p>Fields can be used when building a search query:</p>
+<div class="highlight"><pre><span></span><code><span class="k">package</span><span class="w"> </span><span class="nn">samples.document.field</span><span class="w"></span>
+
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.SearchQuery</span><span class="w"></span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.query.match</span><span class="w"></span>
+
+<span class="kd">val</span><span class="w"> </span><span class="nv">fakeAdmins</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SearchQuery</span><span class="p">(</span><span class="n">UserDoc</span><span class="p">.</span><span class="na">about</span><span class="p">.</span><span class="na">match</span><span class="p">(</span><span class="s">&quot;fake&quot;</span><span class="p">))</span><span class="w"></span>
+<span class="w">    </span><span class="p">.</span><span class="na">filter</span><span class="p">(</span><span class="n">UserDoc</span><span class="p">.</span><span class="na">isAdmin</span><span class="p">.</span><span class="na">eq</span><span class="p">(</span><span class="kc">true</span><span class="p">))</span><span class="w"></span>
+<span class="w">    </span><span class="p">.</span><span class="na">sort</span><span class="p">(</span><span class="n">UserDoc</span><span class="p">.</span><span class="na">id</span><span class="p">)</span><span class="w"></span>
+</code></pre></div>
+<h3 id="using-shortcuts">Using shortcuts<a class="headerlink" href="#using-shortcuts" title="Permanent link">&para;</a></h3>
+<p>There are some nice shortcuts for popular field types. 
+You don't need to import all those field types:</p>
+<div class="highlight"><pre><span></span><code><span class="k">package</span><span class="w"> </span><span class="nn">samples.document.shortcuts</span><span class="w"></span>
+
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.doc.Document</span><span class="w"></span>
+
+<span class="kd">object</span><span class="w"> </span><span class="nc">UserDoc</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Document</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">id</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">int</span><span class="p">(</span><span class="n">index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w"> </span><span class="n">store</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">login</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">keyword</span><span class="p">()</span><span class="w"></span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">isAdmin</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">boolean</span><span class="p">(</span><span class="s">&quot;is_admin&quot;</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">about</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">text</span><span class="p">(</span><span class="n">norms</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span><span class="p">)</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</code></pre></div>
+<p>Full list of available shortcuts can be found
+<a href="https://anti-social.github.io/elasticmagic-kt/api/latest/elasticmagic/dev.evo.elasticmagic.doc/-base-document/index.html">here</a></p>
+<h3 id="enums">Enums<a class="headerlink" href="#enums" title="Permanent link">&para;</a></h3>
+<p>It is possible to map field values to kotlin enums.
+Use <a href="https://anti-social.github.io/elasticmagic-kt/api/latest/elasticmagic/dev.evo.elasticmagic.doc/enum.html">enum</a>
+extension function for that:</p>
+<div class="highlight"><pre><span></span><code><span class="k">package</span><span class="w"> </span><span class="nn">samples.document.enums</span><span class="w"></span>
+
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.doc.Document</span><span class="w"></span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.doc.enum</span><span class="w"></span>
+
+<span class="kd">enum</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">UserStatus</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">ACTIVE</span><span class="p">,</span><span class="w"> </span><span class="n">LOCKED</span><span class="p">,</span><span class="w"> </span><span class="n">NO_PASSWORD</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+
+<span class="kd">object</span><span class="w"> </span><span class="nc">UserDoc</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Document</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">status</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">keyword</span><span class="p">().</span><span class="na">enum</span><span class="o">&lt;</span><span class="n">UserStatus</span><span class="o">&gt;</span><span class="p">()</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</code></pre></div>
+<p>Now you are able to use enum variants in your search queries:</p>
+<div class="highlight"><pre><span></span><code><span class="k">package</span><span class="w"> </span><span class="nn">samples.document.enums</span><span class="w"></span>
+
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.SearchQuery</span><span class="w"></span>
+
+<span class="kd">val</span><span class="w"> </span><span class="nv">q</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SearchQuery</span><span class="p">()</span><span class="w"></span>
+<span class="w">    </span><span class="p">.</span><span class="na">filter</span><span class="p">(</span><span class="w"></span>
+<span class="w">        </span><span class="n">UserDoc</span><span class="p">.</span><span class="na">status</span><span class="p">.</span><span class="na">eq</span><span class="p">(</span><span class="n">UserStatus</span><span class="p">.</span><span class="na">ACTIVE</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="p">)</span><span class="w"></span>
+</code></pre></div>
+<h3 id="sub-fields">Sub fields<a class="headerlink" href="#sub-fields" title="Permanent link">&para;</a></h3>
+<p>It is possible to define <a href="https://anti-social.github.io/elasticmagic-kt/api/latest/elasticmagic/dev.evo.elasticmagic.doc/-sub-fields/index.html">sub-fields</a>
+for any simple field:</p>
+<div class="highlight"><pre><span></span><code><span class="k">package</span><span class="w"> </span><span class="nn">samples.document.subfields</span><span class="w"></span>
+
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.doc.BoundField</span><span class="w"></span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.doc.Document</span><span class="w"></span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.doc.SubFields</span><span class="w"></span>
+
+<span class="kd">class</span><span class="w"> </span><span class="nc">AboutSubFields</span><span class="p">(</span><span class="n">field</span><span class="p">:</span><span class="w"> </span><span class="n">BoundField</span><span class="o">&lt;</span><span class="kt">String</span><span class="p">,</span><span class="w"> </span><span class="kt">String</span><span class="o">&gt;</span><span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">SubFields</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span><span class="p">(</span><span class="n">field</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">sort</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">keyword</span><span class="p">(</span><span class="n">normalizer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;lowercase&quot;</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">autocomplete</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">text</span><span class="p">(</span><span class="n">analyzer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;autocomplete&quot;</span><span class="p">)</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+
+<span class="kd">object</span><span class="w"> </span><span class="nc">UserDoc</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Document</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">about</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">text</span><span class="p">().</span><span class="na">subFields</span><span class="p">(</span><span class="o">::</span><span class="n">AboutSubFields</span><span class="p">)</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</code></pre></div>
+<p>Sub-fields also can be used in search queries:</p>
+<div class="highlight"><pre><span></span><code><span class="k">package</span><span class="w"> </span><span class="nn">samples.document.subfields</span><span class="w"></span>
+
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.SearchQuery</span><span class="w"></span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.query.match</span><span class="w"></span>
+
+<span class="kd">val</span><span class="w"> </span><span class="nv">maybeNiceUsers</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SearchQuery</span><span class="p">(</span><span class="n">UserDoc</span><span class="p">.</span><span class="na">about</span><span class="p">.</span><span class="na">autocomplete</span><span class="p">.</span><span class="na">match</span><span class="p">(</span><span class="s">&quot;nic&quot;</span><span class="p">))</span><span class="w"></span>
+<span class="w">    </span><span class="p">.</span><span class="na">sort</span><span class="p">(</span><span class="n">UserDoc</span><span class="p">.</span><span class="na">about</span><span class="p">.</span><span class="na">sort</span><span class="p">)</span><span class="w"></span>
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>It is a mistake to use sub-fields twice. Following example will fail at runtime.</p>
+</div>
+<div class="highlight"><pre><span></span><code><span class="k">package</span><span class="w"> </span><span class="nn">samples.document.subfields.mistake</span><span class="w"></span>
+
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.doc.BoundField</span><span class="w"></span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.doc.Document</span><span class="w"></span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.doc.SubFields</span><span class="w"></span>
+
+<span class="kd">class</span><span class="w"> </span><span class="nc">AboutSubFields</span><span class="p">(</span><span class="n">field</span><span class="p">:</span><span class="w"> </span><span class="n">BoundField</span><span class="o">&lt;</span><span class="kt">String</span><span class="p">,</span><span class="w"> </span><span class="kt">String</span><span class="o">&gt;</span><span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">SubFields</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span><span class="p">(</span><span class="n">field</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">sort</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">keyword</span><span class="p">(</span><span class="n">normalizer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;lowercase&quot;</span><span class="p">)</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+
+<span class="kd">object</span><span class="w"> </span><span class="nc">UserDoc</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Document</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">about</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">text</span><span class="p">().</span><span class="na">subFields</span><span class="p">(</span><span class="o">::</span><span class="n">AboutSubFields</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">description</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">text</span><span class="p">().</span><span class="na">subFields</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">about</span><span class="w"> </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+
+<span class="kd">fun</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">println</span><span class="p">(</span><span class="n">UserDoc</span><span class="p">)</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</code></pre></div>
+<details>
+  <summary>Show an error</summary>
+
+<div class="highlight"><pre><span></span><code>Exception in thread &quot;main&quot; java.lang.ExceptionInInitializerError
+        at samples.document.subfields.mistake.MistakeKt.main(Mistake.kt:17)
+        at samples.document.subfields.mistake.MistakeKt.main(Mistake.kt)
+Caused by: java.lang.IllegalStateException: Field [description] has already been initialized as [about]
+        at dev.evo.elasticmagic.SubFields$UnboundSubFields.provideDelegate(Document.kt:363)
+        at samples.document.subfields.mistake.UserDoc.&lt;clinit&gt;(Mistake.kt:13)
+        ... 2 more
+</code></pre></div>
+</details>
+
+<h2 id="object-fields">Object fields<a class="headerlink" href="#object-fields" title="Permanent link">&para;</a></h2>
+<h3 id="object">Object<a class="headerlink" href="#object" title="Permanent link">&para;</a></h3>
+<p>Object type just represents a hierarchical structure. It is similar to sub-fields but every field
+in a sub-document can have its own source value:</p>
+<div class="highlight"><pre><span></span><code><span class="k">package</span><span class="w"> </span><span class="nn">samples.document.`object`</span><span class="w"></span>
+
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.doc.BaseDocSource</span><span class="w"></span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.doc.BoundField</span><span class="w"></span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.doc.Document</span><span class="w"></span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.SearchQuery</span><span class="w"></span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.doc.SubDocument</span><span class="w"></span>
+
+<span class="kd">class</span><span class="w"> </span><span class="nc">GroupDoc</span><span class="p">(</span><span class="n">field</span><span class="p">:</span><span class="w"> </span><span class="n">BoundField</span><span class="o">&lt;</span><span class="n">BaseDocSource</span><span class="p">,</span><span class="w"> </span><span class="n">Nothing</span><span class="o">&gt;</span><span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">SubDocument</span><span class="p">(</span><span class="n">field</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">id</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">int</span><span class="p">()</span><span class="w"></span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">name</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">keyword</span><span class="p">()</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+
+<span class="kd">object</span><span class="w"> </span><span class="nc">UserDoc</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Document</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">groups</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">obj</span><span class="p">(</span><span class="o">::</span><span class="n">GroupDoc</span><span class="p">)</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+
+<span class="kd">val</span><span class="w"> </span><span class="nv">systemUsers</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SearchQuery</span><span class="p">()</span><span class="w"></span>
+<span class="w">    </span><span class="p">.</span><span class="na">filter</span><span class="p">(</span><span class="n">UserDoc</span><span class="p">.</span><span class="na">groups</span><span class="p">.</span><span class="na">name</span><span class="p">.</span><span class="na">eq</span><span class="p">(</span><span class="s">&quot;system&quot;</span><span class="p">))</span><span class="w"></span>
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The same as with the sub-fields sub-document should not be a singleton object. </p>
+</div>
+<p>Read more:</p>
+<ul>
+<li><a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/object.html">Elasticsearch object type</a></li>
+<li><a href="https://anti-social.github.io/elasticmagic-kt/api/latest/elasticmagic/dev.evo.elasticmagic.doc/-base-document/obj.html">Object API</a></li>
+</ul>
+<h3 id="nested">Nested<a class="headerlink" href="#nested" title="Permanent link">&para;</a></h3>
+<p>Using nested type it you can work with sub-documents independently. 
+In the example below we find all users that have a <code>moderator</code> role with both 
+<code>article</code> and <code>order</code> permissions:</p>
+<div class="highlight"><pre><span></span><code><span class="k">package</span><span class="w"> </span><span class="nn">samples.document.nested</span><span class="w"></span>
+
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.doc.BaseDocSource</span><span class="w"></span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.query.Bool</span><span class="w"></span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.doc.BoundField</span><span class="w"></span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.doc.Document</span><span class="w"></span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.query.Nested</span><span class="w"></span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.SearchQuery</span><span class="w"></span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.doc.SubDocument</span><span class="w"></span>
+
+<span class="kd">class</span><span class="w"> </span><span class="nc">RoleDoc</span><span class="p">(</span><span class="n">field</span><span class="p">:</span><span class="w"> </span><span class="n">BoundField</span><span class="o">&lt;</span><span class="n">BaseDocSource</span><span class="p">,</span><span class="w"> </span><span class="n">Nothing</span><span class="o">&gt;</span><span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">SubDocument</span><span class="p">(</span><span class="n">field</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">name</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">keyword</span><span class="p">()</span><span class="w"></span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">permissions</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">keyword</span><span class="p">()</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+
+<span class="kd">object</span><span class="w"> </span><span class="nc">UserDoc</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Document</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">roles</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">nested</span><span class="p">(</span><span class="o">::</span><span class="n">RoleDoc</span><span class="p">)</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+
+<span class="kd">val</span><span class="w"> </span><span class="nv">moderators</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SearchQuery</span><span class="p">()</span><span class="w"></span>
+<span class="w">    </span><span class="p">.</span><span class="na">filter</span><span class="p">(</span><span class="w"></span>
+<span class="w">        </span><span class="n">Nested</span><span class="p">(</span><span class="w"></span>
+<span class="w">            </span><span class="n">UserDoc</span><span class="p">.</span><span class="na">roles</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="n">Bool</span><span class="p">.</span><span class="na">must</span><span class="p">(</span><span class="w"></span>
+<span class="w">                </span><span class="n">UserDoc</span><span class="p">.</span><span class="na">roles</span><span class="p">.</span><span class="na">name</span><span class="p">.</span><span class="na">eq</span><span class="p">(</span><span class="s">&quot;moderator&quot;</span><span class="p">),</span><span class="w"></span>
+<span class="w">                </span><span class="n">UserDoc</span><span class="p">.</span><span class="na">roles</span><span class="p">.</span><span class="na">permissions</span><span class="p">.</span><span class="na">eq</span><span class="p">(</span><span class="s">&quot;article&quot;</span><span class="p">),</span><span class="w"></span>
+<span class="w">                </span><span class="n">UserDoc</span><span class="p">.</span><span class="na">roles</span><span class="p">.</span><span class="na">permissions</span><span class="p">.</span><span class="na">eq</span><span class="p">(</span><span class="s">&quot;order&quot;</span><span class="p">),</span><span class="w"></span>
+<span class="w">            </span><span class="p">)</span><span class="w"></span>
+<span class="w">        </span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="p">)</span><span class="w"></span>
+</code></pre></div>
+<p>If we tried to make it with <code>object</code> type, we would find users that have 
+a <code>moderator</code> role with <code>article</code> permission and <code>view</code> role with <code>order</code> permission.</p>
+<p>Read more:</p>
+<ul>
+<li><a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/nested.html">Elasticsearch nested type</a></li>
+<li><a href="https://anti-social.github.io/elasticmagic-kt/api/latest/elasticmagic/dev.evo.elasticmagic.doc/-base-document/nested.html">Nested API</a></li>
+</ul>
+<h2 id="parent-child-relationship">Parent-child relationship<a class="headerlink" href="#parent-child-relationship" title="Permanent link">&para;</a></h2>
+<p>Parent/child relationship allows you to define a link between documents inside an index.</p>
+<h3 id="join-field">Join field<a class="headerlink" href="#join-field" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="k">package</span><span class="w"> </span><span class="nn">samples.document.join</span><span class="w"></span>
+
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.doc.Document</span><span class="w"></span>
+
+<span class="kd">abstract</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">BaseQADoc</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Document</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">id</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">int</span><span class="p">()</span><span class="w"></span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">content</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">text</span><span class="p">()</span><span class="w"></span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">join</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">join</span><span class="p">(</span><span class="n">relations</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mapOf</span><span class="p">(</span><span class="s">&quot;question&quot;</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">listOf</span><span class="p">(</span><span class="s">&quot;answer&quot;</span><span class="p">)))</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+
+<span class="kd">object</span><span class="w"> </span><span class="nc">QuestionDoc</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">BaseQADoc</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">rating</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">float</span><span class="p">()</span><span class="w"></span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">title</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">text</span><span class="p">()</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+
+<span class="kd">object</span><span class="w"> </span><span class="nc">AnswerDoc</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">BaseQADoc</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">accepted</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">boolean</span><span class="p">()</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</code></pre></div>
+<p>Read more:</p>
+<ul>
+<li><a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/parent-join.html">Elasticsearch join type</a></li>
+<li><a href="https://anti-social.github.io/elasticmagic-kt/api/latest/elasticmagic/dev.evo.elasticmagic.doc/-field-set/join.html">Join API</a></li>
+</ul>
+<h3 id="meta-fields">Meta fields<a class="headerlink" href="#meta-fields" title="Permanent link">&para;</a></h3>
+<p>Elasticsearch mapping has <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-fields.html">metadata fields</a>.
+Some of those fields can be customized. In following example we make a value for <code>_routing</code>
+field required and keep only <code>name</code> field in document source:</p>
+<div class="highlight"><pre><span></span><code><span class="k">package</span><span class="w"> </span><span class="nn">samples.document.meta</span><span class="w"></span>
+
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.doc.Document</span><span class="w"></span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.doc.MetaFields</span><span class="w"></span>
+
+<span class="kd">object</span><span class="w"> </span><span class="nc">ProductDoc</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Document</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">name</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">text</span><span class="p">()</span><span class="w"></span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">companyId</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">int</span><span class="p">()</span><span class="w"></span>
+
+<span class="w">    </span><span class="kd">override</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">meta</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">object</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="nc">MetaFields</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="kd">override</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">routing</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">RoutingField</span><span class="p">(</span><span class="n">required</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">)</span><span class="w"></span>
+<span class="w">        </span><span class="kd">override</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">source</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">SourceField</span><span class="p">(</span><span class="n">includes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">listOf</span><span class="p">(</span><span class="s">&quot;name&quot;</span><span class="p">))</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</code></pre></div>
+<p>Now you must provide the required routing value when indexing documents otherwise Elasticsearch
+will throw <code>routing_missing_exceptions</code>.</p>
+<h3 id="merge-multiple-documents">Merge multiple documents<a class="headerlink" href="#merge-multiple-documents" title="Permanent link">&para;</a></h3>
+<p>To create a mapping for multiple documents you can use
+<a href="https://anti-social.github.io/elasticmagic-kt/api/latest/elasticmagic/dev.evo.elasticmagic.doc/merge-documents.html">mergeDocuments</a>
+function. Documents that are merged should not contradict each other.</p>
+<div class="highlight"><pre><span></span><code><span class="k">package</span><span class="w"> </span><span class="nn">samples.document.join</span><span class="w"></span>
+
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.doc.mergeDocuments</span><span class="w"></span>
+
+<span class="kd">val</span><span class="w"> </span><span class="nv">QAMapping</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mergeDocuments</span><span class="p">(</span><span class="n">QuestionDoc</span><span class="p">,</span><span class="w"> </span><span class="n">AnswerDoc</span><span class="p">)</span><span class="w"></span>
+</code></pre></div>
+<p>Resulting document can be used when creating an index or updating an existing mapping. </p>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+          <a href="#" class="md-top md-icon" data-md-component="top" hidden>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+            Back to top
+          </a>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+    <nav class="md-footer__inner md-grid" aria-label="Footer" >
+      
+        
+        <a href=".." class="md-footer__link md-footer__link--prev" aria-label="Previous: Home" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              Home
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="../docsource/" class="md-footer__link md-footer__link--next" aria-label="Next: Document source" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              Document source
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tracking", "navigation.top"], "search": "../assets/javascripts/workers/search.16e2a7d4.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.8492ddcf.min.js"></script>
+      
+    
+  </body>
+</html>
