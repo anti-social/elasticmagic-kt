@@ -192,14 +192,42 @@ subprojects {
     }
 }
 
-val docsVersion = if ("-\\d+-g.*".toRegex().containsMatchIn(version.toString())) {
-    "dev"
-} else {
-    version.toString()
+data class DocsInfo(
+    val version: String,
+    val elasticmagicVersion: String,
+    val updateLatestAlias: Boolean,
+)
+
+val headCommitMessage = grgit.head().shortMessage
+val gitDescribeEndingRegex = "-\\d+-g.*".toRegex()
+val docsInfo = when {
+    headCommitMessage.contains("[fix docs]") -> {
+        // Trim git describe ending from a version
+        val docsVersion = gitDescribeEndingRegex.replace(version.toString(), "")
+        DocsInfo(
+            version = docsVersion,
+            elasticmagicVersion = docsVersion,
+            updateLatestAlias = headCommitMessage.contains("[latest docs]")
+        )
+    }
+    gitDescribeEndingRegex.containsMatchIn(version.toString()) == true -> {
+        DocsInfo(
+            version = "dev",
+            elasticmagicVersion = version.toString(),
+            updateLatestAlias = false
+        )
+    }
+    else -> {
+        DocsInfo(
+            version = version.toString(),
+            elasticmagicVersion = version.toString(),
+            updateLatestAlias = true
+        )
+    }
 }
 
 tasks.withType<DokkaMultiModuleTask> {
-    outputDirectory.set(buildDir.resolve("mkdocs/$docsVersion/api"))
+    outputDirectory.set(buildDir.resolve("mkdocs/${docsInfo.version}/api"))
 }
 
 mkdocs {
@@ -207,21 +235,20 @@ mkdocs {
     // With strict it will fail because of 'api' directory is missing
     strict = false
 
-    val isLatest = grgit.branch.current().name == "master" && docsVersion != "dev"
-    println("> Is latest version: $isLatest")
+    println(docsInfo)
     publish.apply {
-        docPath = docsVersion
-        rootRedirect = isLatest
+        docPath = docsInfo.version
+        rootRedirect = docsInfo.updateLatestAlias
         generateVersionsFile = true
-        if (isLatest) {
+        if (docsInfo.updateLatestAlias) {
             rootRedirectTo = "latest"
             setVersionAliases("latest")
         }
     }
 
     extras = mapOf(
-        "version" to docsVersion,
-        "elasticmagic_version" to version.toString(),
+        "version" to docsInfo.version,
+        "elasticmagic_version" to docsInfo.elasticmagicVersion,
         "ktor_version" to Versions.ktor,
     )
 }
