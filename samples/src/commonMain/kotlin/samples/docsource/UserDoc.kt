@@ -1,11 +1,10 @@
 package samples.docsource
 
-import dev.evo.elasticmagic.doc.BaseDocSource
-import dev.evo.elasticmagic.doc.BoundField
 import dev.evo.elasticmagic.doc.Document
+import dev.evo.elasticmagic.doc.ObjectBoundField
 import dev.evo.elasticmagic.doc.SubDocument
 
-class RoleDoc(field: BoundField<BaseDocSource, Nothing>) : SubDocument(field) {
+class RoleDoc(field: ObjectBoundField) : SubDocument(field) {
     val name by keyword()
     val permissions by keyword()
 }
