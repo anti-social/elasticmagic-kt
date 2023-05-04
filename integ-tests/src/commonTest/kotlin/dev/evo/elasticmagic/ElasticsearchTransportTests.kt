@@ -25,10 +25,18 @@ class ElasticsearchTransportTests : TestBase() {
 
     @Test
     fun catRequest() = runTest {
-        val nodes = transport.request(CatRequest("nodes", errorSerde = JsonSerde))
+        val nodes = transport.request(
+            CatRequest(
+                "nodes",
+                parameters = mapOf(
+                    "h" to listOf("name,node.role,ip,heap.percent,cpu,master"),
+                ),
+                errorSerde = JsonSerde
+            )
+        )
         nodes.size shouldBe 1
-        nodes[0].size shouldBe 10
-        nodes[0][nodes[0].size - 2] shouldBe "*"
+        nodes[0].size shouldBe 6
+        nodes[0][nodes[0].size - 1] shouldBe "*"
     }
 
     @Test

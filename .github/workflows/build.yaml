@@ -111,15 +111,15 @@ jobs:
           es-url: http://localhost:9200
         - es-distribution: elasticsearch
           es-major-version: 7
-          es-image: elasticsearch:7.17.3
+          es-image: elasticsearch:7.17.10
           es-url: http://localhost:9200
         - es-distribution: elasticsearch
           es-major-version: 8
-          es-image: elasticsearch:8.1.2
+          es-image: elasticsearch:8.7.1
           es-url: https://localhost:9200
         - es-distribution: opensearch
           es-major-version: 2
-          es-image: opensearchproject/opensearch:2.0.1
+          es-image: opensearchproject/opensearch:2.4.0
           es-url: https://localhost:9200
     steps:
     - uses: actions/checkout@v3
