@@ -510,7 +510,7 @@ object AttrRangeFacetType : SimpleFieldType<AttrRangeFacet>() {
         get() = throw IllegalStateException("Should not be used in mappings")
     override val termType = AttrRangeFacet::class
 
-    override fun deserialize(v: Any, valueFactory: (() -> AttrRangeFacet)?): AttrRangeFacet {
+    override fun deserialize(v: Any): AttrRangeFacet {
         if (v !is Deserializer.ObjectCtx) {
             deErr(v, "Object")
         }

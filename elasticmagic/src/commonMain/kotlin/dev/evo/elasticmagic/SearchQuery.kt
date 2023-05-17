@@ -2,7 +2,9 @@ package dev.evo.elasticmagic
 
 import dev.evo.elasticmagic.aggs.Aggregation
 import dev.evo.elasticmagic.doc.BaseDocSource
+import dev.evo.elasticmagic.doc.ToSource
 import dev.evo.elasticmagic.doc.BoundRuntimeField
+import dev.evo.elasticmagic.doc.DocSourceFactory
 import dev.evo.elasticmagic.doc.DynDocSource
 import dev.evo.elasticmagic.query.FieldFormat
 import dev.evo.elasticmagic.query.FieldOperations
@@ -29,8 +31,8 @@ enum class SearchType : ToValue<String> {
  * suspendable or blocking.
  */
 @Suppress("UnnecessaryAbstractClass")
-abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
-    protected val docSourceFactory: (obj: Deserializer.ObjectCtx) -> S,
+abstract class BaseSearchQuery<S: ToSource, T: BaseSearchQuery<S, T>>(
+    protected val docSourceFactory: DocSourceFactory<S>,
     protected var query: QueryExpression? = null,
     params: Params = Params(),
 ) {
@@ -81,7 +83,7 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
         }
     }
 
-    protected abstract fun new(docSourceFactory: (obj: Deserializer.ObjectCtx) -> S): T
+    protected abstract fun new(docSourceFactory: DocSourceFactory<S>): T
 
     /**
      * Clones this search query builder.
@@ -774,8 +776,8 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
 /**
  * An asynchronous version of search query.
  */
-open class SearchQuery<S: BaseDocSource>(
-    docSourceFactory: (obj: Deserializer.ObjectCtx) -> S,
+open class SearchQuery<S: ToSource>(
+    docSourceFactory: DocSourceFactory<S>,
     query: QueryExpression? = null,
     params: Params = Params(),
 ) : BaseSearchQuery<S, SearchQuery<S>>(docSourceFactory, query, params) {
@@ -783,13 +785,25 @@ open class SearchQuery<S: BaseDocSource>(
     object CLEAR
 
     companion object {
+        operator fun <S: ToSource> invoke(
+            docSourceFactory: (Deserializer.ObjectCtx) -> S,
+            query: QueryExpression? = null,
+            params: Params = Params(),
+        ): SearchQuery<S> {
+            return SearchQuery(
+                DocSourceFactory.FromSource(docSourceFactory),
+                query = query,
+                params = params
+            )
+        }
+
         operator fun <S: BaseDocSource> invoke(
             docSourceFactory: () -> S,
             query: QueryExpression? = null,
             params: Params = Params(),
         ): SearchQuery<S> {
             return SearchQuery(
-                { docSourceFactory() },
+                DocSourceFactory.FromSource(docSourceFactory),
                 query = query,
                 params = params
             )
@@ -799,11 +813,15 @@ open class SearchQuery<S: BaseDocSource>(
             query: QueryExpression? = null,
             params: Params = Params(),
         ): SearchQuery<DynDocSource> {
-            return SearchQuery({ DynDocSource() }, query = query, params = params)
+            return SearchQuery(
+                DocSourceFactory.FromSource(::DynDocSource),
+                query = query,
+                params = params
+            )
         }
     }
 
-    override fun new(docSourceFactory: (Deserializer.ObjectCtx) -> S): SearchQuery<S> {
+    override fun new(docSourceFactory: DocSourceFactory<S>): SearchQuery<S> {
         return SearchQuery(docSourceFactory)
     }
 
@@ -925,8 +943,8 @@ open class SearchQuery<S: BaseDocSource>(
      * A prepared search query is a public read-only view to a search query.
      * Mainly it is used to compile a search query.
      */
-    data class Search<out S: BaseDocSource>(
-        val docSourceFactory: (obj: Deserializer.ObjectCtx) -> S,
+    data class Search<out S: ToSource>(
+        val docSourceFactory: DocSourceFactory<S>,
         override val query: QueryExpression?,
         override val filters: List<QueryExpression>,
         override val postFilters: List<QueryExpression>,

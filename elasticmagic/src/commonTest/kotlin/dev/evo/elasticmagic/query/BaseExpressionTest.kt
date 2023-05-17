@@ -3,7 +3,10 @@ package dev.evo.elasticmagic.query
 import dev.evo.elasticmagic.BaseTest
 import dev.evo.elasticmagic.compile.ElasticsearchFeatures
 import dev.evo.elasticmagic.compile.SearchQueryCompiler
-import dev.evo.elasticmagic.doc.*
+import dev.evo.elasticmagic.doc.date
+import dev.evo.elasticmagic.doc.Document
+import dev.evo.elasticmagic.doc.ObjectBoundField
+import dev.evo.elasticmagic.doc.SubDocument
 import dev.evo.elasticmagic.serde.Serializer
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
@@ -35,13 +38,12 @@ abstract class BaseExpressionTest : BaseTest() {
         clone shouldBe expression
     }
 
-
-    protected class YearDoc(field: BoundField<BaseDocSource, Nothing>) : SubDocument(field) {
+    protected class YearDoc(field: ObjectBoundField) : SubDocument(field) {
         val year by int()
         val join by join(relations = mapOf("year" to listOf("movie")))
     }
 
-    protected class StarDoc(field: BoundField<BaseDocSource, Nothing>) : SubDocument(field) {
+    protected class StarDoc(field: ObjectBoundField) : SubDocument(field) {
         val name by text()
         val rank by float()
     }

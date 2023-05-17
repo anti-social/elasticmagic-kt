@@ -79,7 +79,7 @@ class DocumentTests {
         val sort by keyword()
     }
 
-    class UserDoc(field: DocSourceField) : SubDocument(field) {
+    class UserDoc(field: ObjectBoundField) : SubDocument(field) {
         val firstName by text("first_name")
         val lastName by text("last_name")
     }
@@ -191,7 +191,7 @@ class DocumentTests {
                 return "me"
             }
 
-            override fun deserialize(v: Any, valueFactory: (() -> String)?): String {
+            override fun deserialize(v: Any): String {
                 return v.toString()
             }
 
@@ -307,11 +307,11 @@ class DocumentTests {
 
     @Test
     fun testSubDocument() {
-        class OpinionDoc(field: DocSourceField) : SubDocument(field) {
+        class OpinionDoc(field: ObjectBoundField) : SubDocument(field) {
             val count by int()
         }
 
-        class CompanyDoc(field: DocSourceField) : SubDocument(field) {
+        class CompanyDoc(field: ObjectBoundField) : SubDocument(field) {
             val name by text()
             val opinion by obj(::OpinionDoc)
         }
@@ -322,7 +322,7 @@ class DocumentTests {
         }
 
         val userDoc = UserDoc()
-        userDoc.company.getFieldType().shouldBeInstanceOf<ObjectType<*>>()
+        userDoc.company.getFieldType().shouldBeInstanceOf<ObjectType>()
         userDoc.company.getFieldName() shouldBe "company"
         userDoc.company.getQualifiedFieldName() shouldBe "company"
         userDoc.company.name.getFieldName() shouldBe "name"
@@ -342,7 +342,7 @@ class DocumentTests {
 
     @Test
     fun testSubDocument_preventDoubleInitialization() {
-        class CompanyDoc(field: DocSourceField) : SubDocument(field)
+        class CompanyDoc(field: ObjectBoundField) : SubDocument(field)
 
         val myDoc = object : Document() {
             val company by obj(::CompanyDoc)
@@ -364,7 +364,7 @@ class DocumentTests {
             val sort by keyword()
         }
 
-        class OpinionUserDoc(field: DocSourceField) : SubDocument(field) {
+        class OpinionUserDoc(field: ObjectBoundField) : SubDocument(field) {
             val title by text().subFields(::OpinionNameFields)
             val phone by text()
         }
@@ -380,7 +380,7 @@ class DocumentTests {
             val autocomplete by text()
         }
 
-        class AnswerUserDoc(field: DocSourceField) : SubDocument(field) {
+        class AnswerUserDoc(field: ObjectBoundField) : SubDocument(field) {
             val title by text().subFields(::AnswerNameFields)
             val companyId by int()
         }
@@ -502,7 +502,7 @@ class DocumentTests {
 
     @Test
     fun testMergeDocuments_mergeObjectWithNested() {
-        class OpinionDoc(field: DocSourceField) : SubDocument(field) {
+        class OpinionDoc(field: ObjectBoundField) : SubDocument(field) {
             val stars by float()
         }
 
@@ -553,7 +553,7 @@ class DocumentTests {
 
     @Test
     fun testMergeDocuments_subDocumentsWithDifferentFieldParams() {
-        class OpinionDoc(field: DocSourceField) : SubDocument(field) {
+        class OpinionDoc(field: ObjectBoundField) : SubDocument(field) {
             val stars by float()
         }
 
@@ -693,12 +693,12 @@ class DocumentTests {
 
     @Test
     fun testMergeDocuments_differentDynamicTemplates() {
-        class UserOpinionDoc(field: DocSourceField) : SubDocument(field) {
+        class UserOpinionDoc(field: ObjectBoundField) : SubDocument(field) {
             val count by int()
             val rank by float()
         }
 
-        class CompanyOpinionDoc(field: DocSourceField) : SubDocument(field) {
+        class CompanyOpinionDoc(field: ObjectBoundField) : SubDocument(field) {
             val count by int()
             val rank by float()
         }

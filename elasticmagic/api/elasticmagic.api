@@ -22,8 +22,8 @@ public final class dev/evo/elasticmagic/AsyncResult {
 
 public abstract class dev/evo/elasticmagic/BaseSearchQuery {
 	public static final field Companion Ldev/evo/elasticmagic/BaseSearchQuery$Companion;
-	public fun <init> (Lkotlin/jvm/functions/Function1;Ldev/evo/elasticmagic/query/QueryExpression;Ljava/util/Map;)V
-	public synthetic fun <init> (Lkotlin/jvm/functions/Function1;Ldev/evo/elasticmagic/query/QueryExpression;Ljava/util/Map;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Ldev/evo/elasticmagic/doc/DocSourceFactory;Ldev/evo/elasticmagic/query/QueryExpression;Ljava/util/Map;)V
+	public synthetic fun <init> (Ldev/evo/elasticmagic/doc/DocSourceFactory;Ldev/evo/elasticmagic/query/QueryExpression;Ljava/util/Map;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun aggs (Ldev/evo/elasticmagic/SearchQuery$CLEAR;)Ldev/evo/elasticmagic/BaseSearchQuery;
 	public final fun aggs (Ljava/util/Map;)Ldev/evo/elasticmagic/BaseSearchQuery;
 	public final fun aggs ([Lkotlin/Pair;)Ldev/evo/elasticmagic/BaseSearchQuery;
@@ -43,7 +43,7 @@ public abstract class dev/evo/elasticmagic/BaseSearchQuery {
 	public final fun findNode (Ldev/evo/elasticmagic/query/NodeHandle;)Ldev/evo/elasticmagic/query/QueryExpressionNode;
 	public final fun from (Ljava/lang/Integer;)Ldev/evo/elasticmagic/BaseSearchQuery;
 	protected final fun getAggregations ()Ljava/util/Map;
-	protected final fun getDocSourceFactory ()Lkotlin/jvm/functions/Function1;
+	protected final fun getDocSourceFactory ()Ldev/evo/elasticmagic/doc/DocSourceFactory;
 	protected final fun getDocvalueFields ()Ljava/util/List;
 	protected final fun getExtensions ()Ljava/util/List;
 	protected final fun getFields ()Ljava/util/List;
@@ -63,7 +63,7 @@ public abstract class dev/evo/elasticmagic/BaseSearchQuery {
 	protected final fun getTerminateAfter ()Ljava/lang/Integer;
 	protected final fun getTrackScores ()Ljava/lang/Boolean;
 	protected final fun getTrackTotalHits ()Ljava/lang/Boolean;
-	protected abstract fun new (Lkotlin/jvm/functions/Function1;)Ldev/evo/elasticmagic/BaseSearchQuery;
+	protected abstract fun new (Ldev/evo/elasticmagic/doc/DocSourceFactory;)Ldev/evo/elasticmagic/BaseSearchQuery;
 	public final fun postFilter (Ldev/evo/elasticmagic/SearchQuery$CLEAR;)Ldev/evo/elasticmagic/BaseSearchQuery;
 	public final fun postFilter (Ljava/util/List;)Ldev/evo/elasticmagic/BaseSearchQuery;
 	public final fun postFilter ([Ldev/evo/elasticmagic/query/QueryExpression;)Ldev/evo/elasticmagic/BaseSearchQuery;
@@ -443,10 +443,10 @@ public final class dev/evo/elasticmagic/Refresh : java/lang/Enum, dev/evo/elasti
 }
 
 public final class dev/evo/elasticmagic/SearchHit : dev/evo/elasticmagic/bulk/ActionMeta {
-	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Float;Ljava/util/List;Ldev/evo/elasticmagic/doc/BaseDocSource;Ldev/evo/elasticmagic/SearchHit$Fields;)V
-	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Float;Ljava/util/List;Ldev/evo/elasticmagic/doc/BaseDocSource;Ldev/evo/elasticmagic/SearchHit$Fields;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Float;Ljava/util/List;Ldev/evo/elasticmagic/doc/ToSource;Ldev/evo/elasticmagic/SearchHit$Fields;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Float;Ljava/util/List;Ldev/evo/elasticmagic/doc/ToSource;Ldev/evo/elasticmagic/SearchHit$Fields;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Ljava/lang/String;
-	public final fun component10 ()Ldev/evo/elasticmagic/doc/BaseDocSource;
+	public final fun component10 ()Ldev/evo/elasticmagic/doc/ToSource;
 	public final fun component11 ()Ldev/evo/elasticmagic/SearchHit$Fields;
 	public final fun component2 ()Ljava/lang/String;
 	public final fun component3 ()Ljava/lang/String;
@@ -456,8 +456,8 @@ public final class dev/evo/elasticmagic/SearchHit : dev/evo/elasticmagic/bulk/Ac
 	public final fun component7 ()Ljava/lang/Long;
 	public final fun component8 ()Ljava/lang/Float;
 	public final fun component9 ()Ljava/util/List;
-	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Float;Ljava/util/List;Ldev/evo/elasticmagic/doc/BaseDocSource;Ldev/evo/elasticmagic/SearchHit$Fields;)Ldev/evo/elasticmagic/SearchHit;
-	public static synthetic fun copy$default (Ldev/evo/elasticmagic/SearchHit;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Float;Ljava/util/List;Ldev/evo/elasticmagic/doc/BaseDocSource;Ldev/evo/elasticmagic/SearchHit$Fields;ILjava/lang/Object;)Ldev/evo/elasticmagic/SearchHit;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Float;Ljava/util/List;Ldev/evo/elasticmagic/doc/ToSource;Ldev/evo/elasticmagic/SearchHit$Fields;)Ldev/evo/elasticmagic/SearchHit;
+	public static synthetic fun copy$default (Ldev/evo/elasticmagic/SearchHit;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Float;Ljava/util/List;Ldev/evo/elasticmagic/doc/ToSource;Ldev/evo/elasticmagic/SearchHit$Fields;ILjava/lang/Object;)Ldev/evo/elasticmagic/SearchHit;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getFields ()Ldev/evo/elasticmagic/SearchHit$Fields;
 	public fun getId ()Ljava/lang/String;
@@ -467,7 +467,7 @@ public final class dev/evo/elasticmagic/SearchHit : dev/evo/elasticmagic/bulk/Ac
 	public final fun getScore ()Ljava/lang/Float;
 	public fun getSeqNo ()Ljava/lang/Long;
 	public final fun getSort ()Ljava/util/List;
-	public final fun getSource ()Ldev/evo/elasticmagic/doc/BaseDocSource;
+	public final fun getSource ()Ldev/evo/elasticmagic/doc/ToSource;
 	public final fun getType ()Ljava/lang/String;
 	public fun getVersion ()Ljava/lang/Long;
 	public fun hashCode ()I
@@ -486,8 +486,8 @@ public final class dev/evo/elasticmagic/SearchHit$Fields {
 
 public class dev/evo/elasticmagic/SearchQuery : dev/evo/elasticmagic/BaseSearchQuery {
 	public static final field Companion Ldev/evo/elasticmagic/SearchQuery$Companion;
-	public fun <init> (Lkotlin/jvm/functions/Function1;Ldev/evo/elasticmagic/query/QueryExpression;Ljava/util/Map;)V
-	public synthetic fun <init> (Lkotlin/jvm/functions/Function1;Ldev/evo/elasticmagic/query/QueryExpression;Ljava/util/Map;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Ldev/evo/elasticmagic/doc/DocSourceFactory;Ldev/evo/elasticmagic/query/QueryExpression;Ljava/util/Map;)V
+	public synthetic fun <init> (Ldev/evo/elasticmagic/doc/DocSourceFactory;Ldev/evo/elasticmagic/query/QueryExpression;Ljava/util/Map;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun count (Ldev/evo/elasticmagic/ElasticsearchIndex;Ljava/util/Map;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun count$default (Ldev/evo/elasticmagic/SearchQuery;Ldev/evo/elasticmagic/ElasticsearchIndex;Ljava/util/Map;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public final fun delete (Ldev/evo/elasticmagic/ElasticsearchIndex;Ldev/evo/elasticmagic/Refresh;Ldev/evo/elasticmagic/Conflicts;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/util/Map;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
@@ -496,8 +496,8 @@ public class dev/evo/elasticmagic/SearchQuery : dev/evo/elasticmagic/BaseSearchQ
 	public static synthetic fun deleteAsync$default (Ldev/evo/elasticmagic/SearchQuery;Ldev/evo/elasticmagic/ElasticsearchIndex;Ldev/evo/elasticmagic/Refresh;Ldev/evo/elasticmagic/Conflicts;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/util/Map;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public final fun execute (Ldev/evo/elasticmagic/ElasticsearchIndex;Ljava/util/Map;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun execute$default (Ldev/evo/elasticmagic/SearchQuery;Ldev/evo/elasticmagic/ElasticsearchIndex;Ljava/util/Map;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
-	public synthetic fun new (Lkotlin/jvm/functions/Function1;)Ldev/evo/elasticmagic/BaseSearchQuery;
-	protected fun new (Lkotlin/jvm/functions/Function1;)Ldev/evo/elasticmagic/SearchQuery;
+	public synthetic fun new (Ldev/evo/elasticmagic/doc/DocSourceFactory;)Ldev/evo/elasticmagic/BaseSearchQuery;
+	protected fun new (Ldev/evo/elasticmagic/doc/DocSourceFactory;)Ldev/evo/elasticmagic/SearchQuery;
 	public final fun update (Ldev/evo/elasticmagic/ElasticsearchIndex;Ldev/evo/elasticmagic/query/Script;Ldev/evo/elasticmagic/Refresh;Ldev/evo/elasticmagic/Conflicts;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/util/Map;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun update$default (Ldev/evo/elasticmagic/SearchQuery;Ldev/evo/elasticmagic/ElasticsearchIndex;Ldev/evo/elasticmagic/query/Script;Ldev/evo/elasticmagic/Refresh;Ldev/evo/elasticmagic/Conflicts;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/util/Map;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public final fun updateAsync (Ldev/evo/elasticmagic/ElasticsearchIndex;Ldev/evo/elasticmagic/query/Script;Ldev/evo/elasticmagic/Refresh;Ldev/evo/elasticmagic/Conflicts;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/util/Map;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
@@ -511,8 +511,10 @@ public final class dev/evo/elasticmagic/SearchQuery$CLEAR {
 public final class dev/evo/elasticmagic/SearchQuery$Companion {
 	public final fun invoke (Ldev/evo/elasticmagic/query/QueryExpression;Ljava/util/Map;)Ldev/evo/elasticmagic/SearchQuery;
 	public final fun invoke (Lkotlin/jvm/functions/Function0;Ldev/evo/elasticmagic/query/QueryExpression;Ljava/util/Map;)Ldev/evo/elasticmagic/SearchQuery;
+	public final fun invoke (Lkotlin/jvm/functions/Function1;Ldev/evo/elasticmagic/query/QueryExpression;Ljava/util/Map;)Ldev/evo/elasticmagic/SearchQuery;
 	public static synthetic fun invoke$default (Ldev/evo/elasticmagic/SearchQuery$Companion;Ldev/evo/elasticmagic/query/QueryExpression;Ljava/util/Map;ILjava/lang/Object;)Ldev/evo/elasticmagic/SearchQuery;
 	public static synthetic fun invoke$default (Ldev/evo/elasticmagic/SearchQuery$Companion;Lkotlin/jvm/functions/Function0;Ldev/evo/elasticmagic/query/QueryExpression;Ljava/util/Map;ILjava/lang/Object;)Ldev/evo/elasticmagic/SearchQuery;
+	public static synthetic fun invoke$default (Ldev/evo/elasticmagic/SearchQuery$Companion;Lkotlin/jvm/functions/Function1;Ldev/evo/elasticmagic/query/QueryExpression;Ljava/util/Map;ILjava/lang/Object;)Ldev/evo/elasticmagic/SearchQuery;
 }
 
 public final class dev/evo/elasticmagic/SearchQuery$Count : dev/evo/elasticmagic/PreparedSearchQuery {
@@ -565,8 +567,8 @@ public final class dev/evo/elasticmagic/SearchQuery$Delete$Companion {
 
 public final class dev/evo/elasticmagic/SearchQuery$Search : dev/evo/elasticmagic/PreparedSearchQuery {
 	public static final field Companion Ldev/evo/elasticmagic/SearchQuery$Search$Companion;
-	public fun <init> (Lkotlin/jvm/functions/Function1;Ldev/evo/elasticmagic/query/QueryExpression;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/List;Ljava/util/List;Ljava/lang/Boolean;Ljava/lang/Boolean;Ldev/evo/elasticmagic/query/Source;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Map;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/util/List;Ljava/util/Map;)V
-	public final fun component1 ()Lkotlin/jvm/functions/Function1;
+	public fun <init> (Ldev/evo/elasticmagic/doc/DocSourceFactory;Ldev/evo/elasticmagic/query/QueryExpression;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/List;Ljava/util/List;Ljava/lang/Boolean;Ljava/lang/Boolean;Ldev/evo/elasticmagic/query/Source;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Map;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/util/List;Ljava/util/Map;)V
+	public final fun component1 ()Ldev/evo/elasticmagic/doc/DocSourceFactory;
 	public final fun component10 ()Ldev/evo/elasticmagic/query/Source;
 	public final fun component11 ()Ljava/util/List;
 	public final fun component12 ()Ljava/util/List;
@@ -586,11 +588,11 @@ public final class dev/evo/elasticmagic/SearchQuery$Search : dev/evo/elasticmagi
 	public final fun component7 ()Ljava/util/List;
 	public final fun component8 ()Ljava/lang/Boolean;
 	public final fun component9 ()Ljava/lang/Boolean;
-	public final fun copy (Lkotlin/jvm/functions/Function1;Ldev/evo/elasticmagic/query/QueryExpression;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/List;Ljava/util/List;Ljava/lang/Boolean;Ljava/lang/Boolean;Ldev/evo/elasticmagic/query/Source;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Map;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/util/List;Ljava/util/Map;)Ldev/evo/elasticmagic/SearchQuery$Search;
-	public static synthetic fun copy$default (Ldev/evo/elasticmagic/SearchQuery$Search;Lkotlin/jvm/functions/Function1;Ldev/evo/elasticmagic/query/QueryExpression;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/List;Ljava/util/List;Ljava/lang/Boolean;Ljava/lang/Boolean;Ldev/evo/elasticmagic/query/Source;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Map;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/util/List;Ljava/util/Map;ILjava/lang/Object;)Ldev/evo/elasticmagic/SearchQuery$Search;
+	public final fun copy (Ldev/evo/elasticmagic/doc/DocSourceFactory;Ldev/evo/elasticmagic/query/QueryExpression;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/List;Ljava/util/List;Ljava/lang/Boolean;Ljava/lang/Boolean;Ldev/evo/elasticmagic/query/Source;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Map;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/util/List;Ljava/util/Map;)Ldev/evo/elasticmagic/SearchQuery$Search;
+	public static synthetic fun copy$default (Ldev/evo/elasticmagic/SearchQuery$Search;Ldev/evo/elasticmagic/doc/DocSourceFactory;Ldev/evo/elasticmagic/query/QueryExpression;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/List;Ljava/util/List;Ljava/lang/Boolean;Ljava/lang/Boolean;Ldev/evo/elasticmagic/query/Source;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Map;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/util/List;Ljava/util/Map;ILjava/lang/Object;)Ldev/evo/elasticmagic/SearchQuery$Search;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getAggregations ()Ljava/util/Map;
-	public final fun getDocSourceFactory ()Lkotlin/jvm/functions/Function1;
+	public final fun getDocSourceFactory ()Ldev/evo/elasticmagic/doc/DocSourceFactory;
 	public final fun getDocvalueFields ()Ljava/util/List;
 	public final fun getExtensions ()Ljava/util/List;
 	public final fun getFields ()Ljava/util/List;
@@ -2281,10 +2283,10 @@ public final class dev/evo/elasticmagic/bulk/ActionMeta$Companion {
 }
 
 public final class dev/evo/elasticmagic/bulk/ActionsKt {
-	public static final fun withActionMeta (Ldev/evo/elasticmagic/doc/BaseDocSource;Ljava/lang/String;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;)Ldev/evo/elasticmagic/bulk/DocSourceAndMeta;
-	public static final fun withActionMeta (Ldev/evo/elasticmagic/doc/BaseDocSource;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;)Ldev/evo/elasticmagic/bulk/DocSourceAndMeta;
-	public static synthetic fun withActionMeta$default (Ldev/evo/elasticmagic/doc/BaseDocSource;Ljava/lang/String;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;ILjava/lang/Object;)Ldev/evo/elasticmagic/bulk/DocSourceAndMeta;
-	public static synthetic fun withActionMeta$default (Ldev/evo/elasticmagic/doc/BaseDocSource;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;ILjava/lang/Object;)Ldev/evo/elasticmagic/bulk/DocSourceAndMeta;
+	public static final fun withActionMeta (Ldev/evo/elasticmagic/doc/ToSource;Ljava/lang/String;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;)Ldev/evo/elasticmagic/bulk/DocSourceAndMeta;
+	public static final fun withActionMeta (Ldev/evo/elasticmagic/doc/ToSource;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;)Ldev/evo/elasticmagic/bulk/DocSourceAndMeta;
+	public static synthetic fun withActionMeta$default (Ldev/evo/elasticmagic/doc/ToSource;Ljava/lang/String;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;ILjava/lang/Object;)Ldev/evo/elasticmagic/bulk/DocSourceAndMeta;
+	public static synthetic fun withActionMeta$default (Ldev/evo/elasticmagic/doc/ToSource;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;ILjava/lang/Object;)Ldev/evo/elasticmagic/bulk/DocSourceAndMeta;
 }
 
 public final class dev/evo/elasticmagic/bulk/ConcurrencyControl : java/lang/Enum, dev/evo/elasticmagic/ToValue {
@@ -2299,8 +2301,8 @@ public final class dev/evo/elasticmagic/bulk/ConcurrencyControl : java/lang/Enum
 }
 
 public final class dev/evo/elasticmagic/bulk/CreateAction : dev/evo/elasticmagic/bulk/IndexAction {
-	public fun <init> (Ldev/evo/elasticmagic/bulk/ActionMeta;Ldev/evo/elasticmagic/doc/BaseDocSource;Ljava/lang/String;Ldev/evo/elasticmagic/bulk/ConcurrencyControl;)V
-	public synthetic fun <init> (Ldev/evo/elasticmagic/bulk/ActionMeta;Ldev/evo/elasticmagic/doc/BaseDocSource;Ljava/lang/String;Ldev/evo/elasticmagic/bulk/ConcurrencyControl;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Ldev/evo/elasticmagic/bulk/ActionMeta;Ldev/evo/elasticmagic/doc/ToSource;Ljava/lang/String;Ldev/evo/elasticmagic/bulk/ConcurrencyControl;)V
+	public synthetic fun <init> (Ldev/evo/elasticmagic/bulk/ActionMeta;Ldev/evo/elasticmagic/doc/ToSource;Ljava/lang/String;Ldev/evo/elasticmagic/bulk/ConcurrencyControl;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun getName ()Ljava/lang/String;
 }
 
@@ -2316,8 +2318,8 @@ public final class dev/evo/elasticmagic/bulk/DeleteAction : dev/evo/elasticmagic
 }
 
 public final class dev/evo/elasticmagic/bulk/DocSourceAndMeta {
-	public fun <init> (Ldev/evo/elasticmagic/bulk/ActionMeta;Ldev/evo/elasticmagic/doc/BaseDocSource;)V
-	public final fun getDoc ()Ldev/evo/elasticmagic/doc/BaseDocSource;
+	public fun <init> (Ldev/evo/elasticmagic/bulk/ActionMeta;Ldev/evo/elasticmagic/doc/ToSource;)V
+	public final fun getDoc ()Ldev/evo/elasticmagic/doc/ToSource;
 	public final fun getMeta ()Ldev/evo/elasticmagic/bulk/ActionMeta;
 }
 
@@ -2332,13 +2334,13 @@ public final class dev/evo/elasticmagic/bulk/IdActionMeta$Companion {
 }
 
 public class dev/evo/elasticmagic/bulk/IndexAction : dev/evo/elasticmagic/bulk/Action {
-	public fun <init> (Ldev/evo/elasticmagic/bulk/ActionMeta;Ldev/evo/elasticmagic/doc/BaseDocSource;Ldev/evo/elasticmagic/bulk/ConcurrencyControl;Ljava/lang/String;)V
-	public synthetic fun <init> (Ldev/evo/elasticmagic/bulk/ActionMeta;Ldev/evo/elasticmagic/doc/BaseDocSource;Ldev/evo/elasticmagic/bulk/ConcurrencyControl;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Ldev/evo/elasticmagic/bulk/ActionMeta;Ldev/evo/elasticmagic/doc/ToSource;Ldev/evo/elasticmagic/bulk/ConcurrencyControl;Ljava/lang/String;)V
+	public synthetic fun <init> (Ldev/evo/elasticmagic/bulk/ActionMeta;Ldev/evo/elasticmagic/doc/ToSource;Ldev/evo/elasticmagic/bulk/ConcurrencyControl;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun getConcurrencyControl ()Ldev/evo/elasticmagic/bulk/ConcurrencyControl;
 	public fun getMeta ()Ldev/evo/elasticmagic/bulk/ActionMeta;
 	public fun getName ()Ljava/lang/String;
 	public final fun getPipeline ()Ljava/lang/String;
-	public fun getSource ()Ldev/evo/elasticmagic/doc/BaseDocSource;
+	public fun getSource ()Ldev/evo/elasticmagic/doc/ToSource;
 	public synthetic fun getSource ()Ljava/lang/Object;
 }
 
@@ -2355,21 +2357,21 @@ public final class dev/evo/elasticmagic/bulk/UpdateAction : dev/evo/elasticmagic
 }
 
 public abstract class dev/evo/elasticmagic/bulk/UpdateSource {
-	public synthetic fun <init> (Ldev/evo/elasticmagic/doc/BaseDocSource;Ljava/lang/Boolean;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ldev/evo/elasticmagic/doc/ToSource;Ljava/lang/Boolean;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun getDetectNoop ()Ljava/lang/Boolean;
-	public final fun getUpsert ()Ldev/evo/elasticmagic/doc/BaseDocSource;
+	public final fun getUpsert ()Ldev/evo/elasticmagic/doc/ToSource;
 }
 
 public final class dev/evo/elasticmagic/bulk/UpdateSource$WithDoc : dev/evo/elasticmagic/bulk/UpdateSource {
-	public fun <init> (Ldev/evo/elasticmagic/doc/BaseDocSource;Ljava/lang/Boolean;Ldev/evo/elasticmagic/doc/BaseDocSource;Ljava/lang/Boolean;)V
-	public synthetic fun <init> (Ldev/evo/elasticmagic/doc/BaseDocSource;Ljava/lang/Boolean;Ldev/evo/elasticmagic/doc/BaseDocSource;Ljava/lang/Boolean;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public final fun getDoc ()Ldev/evo/elasticmagic/doc/BaseDocSource;
+	public fun <init> (Ldev/evo/elasticmagic/doc/ToSource;Ljava/lang/Boolean;Ldev/evo/elasticmagic/doc/ToSource;Ljava/lang/Boolean;)V
+	public synthetic fun <init> (Ldev/evo/elasticmagic/doc/ToSource;Ljava/lang/Boolean;Ldev/evo/elasticmagic/doc/ToSource;Ljava/lang/Boolean;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun getDoc ()Ldev/evo/elasticmagic/doc/ToSource;
 	public final fun getDocAsUpsert ()Ljava/lang/Boolean;
 }
 
 public final class dev/evo/elasticmagic/bulk/UpdateSource$WithScript : dev/evo/elasticmagic/bulk/UpdateSource {
-	public fun <init> (Ldev/evo/elasticmagic/query/Script;Ljava/lang/Boolean;Ldev/evo/elasticmagic/doc/BaseDocSource;Ljava/lang/Boolean;)V
-	public synthetic fun <init> (Ldev/evo/elasticmagic/query/Script;Ljava/lang/Boolean;Ldev/evo/elasticmagic/doc/BaseDocSource;Ljava/lang/Boolean;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Ldev/evo/elasticmagic/query/Script;Ljava/lang/Boolean;Ldev/evo/elasticmagic/doc/ToSource;Ljava/lang/Boolean;)V
+	public synthetic fun <init> (Ldev/evo/elasticmagic/query/Script;Ljava/lang/Boolean;Ldev/evo/elasticmagic/doc/ToSource;Ljava/lang/Boolean;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun getScript ()Ldev/evo/elasticmagic/query/Script;
 	public final fun getScriptedUpsert ()Ljava/lang/Boolean;
 }
@@ -2578,10 +2580,9 @@ public final class dev/evo/elasticmagic/compile/UpdateMappingCompiler : dev/evo/
 	public final fun processResponse (Ldev/evo/elasticmagic/transport/ApiResponse;)Ldev/evo/elasticmagic/UpdateMappingResult;
 }
 
-public abstract class dev/evo/elasticmagic/doc/BaseDocSource {
+public abstract class dev/evo/elasticmagic/doc/BaseDocSource : dev/evo/elasticmagic/doc/ToSource {
 	public fun <init> ()V
-	public abstract fun fromSource (Ljava/util/Map;)V
-	public abstract fun toSource ()Ljava/util/Map;
+	public abstract fun fromSource (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;)V
 }
 
 public abstract class dev/evo/elasticmagic/doc/BaseDocument : dev/evo/elasticmagic/doc/FieldSet {
@@ -2614,6 +2615,7 @@ public class dev/evo/elasticmagic/doc/BoundField : dev/evo/elasticmagic/doc/Mapp
 	public fun getFieldType ()Ldev/evo/elasticmagic/types/FieldType;
 	public fun getMappingParams ()Ljava/util/Map;
 	public final fun getParent ()Ldev/evo/elasticmagic/doc/FieldSet;
+	public final fun getPath ()Ljava/util/List;
 	public fun getQualifiedFieldName ()Ljava/lang/String;
 	public fun gt (Ljava/lang/Object;)Ldev/evo/elasticmagic/query/Range;
 	public fun gte (Ljava/lang/Object;)Ldev/evo/elasticmagic/query/Range;
@@ -2690,7 +2692,7 @@ public class dev/evo/elasticmagic/doc/DocSource : dev/evo/elasticmagic/doc/BaseD
 	public fun <init> ()V
 	public final fun default (Ldev/evo/elasticmagic/doc/BoundField;Lkotlin/jvm/functions/Function0;)Ldev/evo/elasticmagic/doc/DocSource$OptionalValueDelegateWithDefault;
 	public fun equals (Ljava/lang/Object;)Z
-	public fun fromSource (Ljava/util/Map;)V
+	public fun fromSource (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;)V
 	public final fun getJoinFieldName ()Ljava/lang/String;
 	public fun hashCode ()I
 	public final fun list (Ldev/evo/elasticmagic/doc/BoundField;)Ldev/evo/elasticmagic/doc/DocSource$OptionalValueDelegate;
@@ -2735,13 +2737,30 @@ public class dev/evo/elasticmagic/doc/DocSource$RequiredValueDelegate {
 	public final fun provideDelegate (Ldev/evo/elasticmagic/doc/DocSource;Lkotlin/reflect/KProperty;)Lkotlin/properties/ReadWriteProperty;
 }
 
-public final class dev/evo/elasticmagic/doc/DocSourceFactory {
-	public static final field INSTANCE Ldev/evo/elasticmagic/doc/DocSourceFactory;
-	public final fun byJoin ([Lkotlin/Pair;)Lkotlin/jvm/functions/Function1;
+public abstract class dev/evo/elasticmagic/doc/DocSourceFactory {
+	public static final field Companion Ldev/evo/elasticmagic/doc/DocSourceFactory$Companion;
+}
+
+public final class dev/evo/elasticmagic/doc/DocSourceFactory$Companion {
+	public final fun byJoin (Ldev/evo/elasticmagic/doc/BoundJoinField;[Lkotlin/Pair;)Ldev/evo/elasticmagic/doc/DocSourceFactory$FromSource;
+}
+
+public final class dev/evo/elasticmagic/doc/DocSourceFactory$FromHit : dev/evo/elasticmagic/doc/DocSourceFactory {
+	public fun <init> (Lkotlin/jvm/functions/Function1;)V
+	public final fun getCreate ()Lkotlin/jvm/functions/Function1;
+}
+
+public final class dev/evo/elasticmagic/doc/DocSourceFactory$FromSource : dev/evo/elasticmagic/doc/DocSourceFactory {
+	public static final field Companion Ldev/evo/elasticmagic/doc/DocSourceFactory$FromSource$Companion;
+	public fun <init> (Lkotlin/jvm/functions/Function1;)V
+	public final fun getCreate ()Lkotlin/jvm/functions/Function1;
+}
+
+public final class dev/evo/elasticmagic/doc/DocSourceFactory$FromSource$Companion {
+	public final fun invoke (Lkotlin/jvm/functions/Function0;)Ldev/evo/elasticmagic/doc/DocSourceFactory$FromSource;
 }
 
 public final class dev/evo/elasticmagic/doc/DocSourceKt {
-	public static final fun emptySource ()Ljava/util/Map;
 	public static final fun list (Ldev/evo/elasticmagic/doc/BoundField;)Ldev/evo/elasticmagic/doc/BoundField;
 	public static final fun list (Ldev/evo/elasticmagic/doc/SubDocument;)Ldev/evo/elasticmagic/doc/BoundField;
 }
@@ -2774,11 +2793,11 @@ public final class dev/evo/elasticmagic/doc/DocumentKt {
 
 public final class dev/evo/elasticmagic/doc/DynDocSource : dev/evo/elasticmagic/doc/BaseDocSource {
 	public fun <init> ()V
-	public fun <init> (Ljava/util/Map;)V
-	public synthetic fun <init> (Ljava/util/Map;Ljava/util/List;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;Ljava/util/List;)V
+	public synthetic fun <init> (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;Ljava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun <init> (Lkotlin/jvm/functions/Function1;)V
 	public final fun clearSource ()V
-	public fun fromSource (Ljava/util/Map;)V
+	public fun fromSource (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;)V
 	public final fun get (Ldev/evo/elasticmagic/doc/BoundField;)Ljava/lang/Object;
 	public final fun get (Ldev/evo/elasticmagic/doc/SubDocument;)Ldev/evo/elasticmagic/doc/DynDocSource;
 	public final fun get (Ldev/evo/elasticmagic/doc/SubFields;)Ljava/lang/Object;
@@ -3245,6 +3264,10 @@ public class dev/evo/elasticmagic/doc/SubFields : dev/evo/elasticmagic/doc/Field
 public final class dev/evo/elasticmagic/doc/SubFields$UnboundSubFields {
 	public fun <init> (Ldev/evo/elasticmagic/doc/FieldSet$Field;Lkotlin/jvm/functions/Function1;)V
 	public final fun provideDelegate (Ldev/evo/elasticmagic/doc/BaseDocument;Lkotlin/reflect/KProperty;)Lkotlin/properties/ReadOnlyProperty;
+}
+
+public abstract interface class dev/evo/elasticmagic/doc/ToSource {
+	public abstract fun toSource ()Ljava/util/Map;
 }
 
 public abstract interface class dev/evo/elasticmagic/query/ArrayExpression : dev/evo/elasticmagic/query/Expression {
@@ -4439,8 +4462,8 @@ protected final class dev/evo/elasticmagic/types/BaseDateTimeType$DateTime {
 
 public final class dev/evo/elasticmagic/types/BooleanType : dev/evo/elasticmagic/types/SimpleFieldType {
 	public static final field INSTANCE Ldev/evo/elasticmagic/types/BooleanType;
-	public fun deserialize (Ljava/lang/Object;Lkotlin/jvm/functions/Function0;)Ljava/lang/Boolean;
-	public synthetic fun deserialize (Ljava/lang/Object;Lkotlin/jvm/functions/Function0;)Ljava/lang/Object;
+	public fun deserialize (Ljava/lang/Object;)Ljava/lang/Boolean;
+	public synthetic fun deserialize (Ljava/lang/Object;)Ljava/lang/Object;
 	public fun deserializeTerm (Ljava/lang/Object;)Ljava/lang/Boolean;
 	public synthetic fun deserializeTerm (Ljava/lang/Object;)Ljava/lang/Object;
 	public fun getName ()Ljava/lang/String;
@@ -4449,8 +4472,8 @@ public final class dev/evo/elasticmagic/types/BooleanType : dev/evo/elasticmagic
 
 public final class dev/evo/elasticmagic/types/ByteType : dev/evo/elasticmagic/types/NumberType {
 	public static final field INSTANCE Ldev/evo/elasticmagic/types/ByteType;
-	public fun deserialize (Ljava/lang/Object;Lkotlin/jvm/functions/Function0;)Ljava/lang/Byte;
-	public synthetic fun deserialize (Ljava/lang/Object;Lkotlin/jvm/functions/Function0;)Ljava/lang/Object;
+	public fun deserialize (Ljava/lang/Object;)Ljava/lang/Byte;
+	public synthetic fun deserialize (Ljava/lang/Object;)Ljava/lang/Object;
 	public fun getName ()Ljava/lang/String;
 	public fun getTermType ()Lkotlin/reflect/KClass;
 	public fun serialize (B)Ljava/lang/Integer;
@@ -4463,16 +4486,16 @@ public final class dev/evo/elasticmagic/types/DoubleRangeType : dev/evo/elasticm
 
 public final class dev/evo/elasticmagic/types/DoubleType : dev/evo/elasticmagic/types/NumberType {
 	public static final field INSTANCE Ldev/evo/elasticmagic/types/DoubleType;
-	public fun deserialize (Ljava/lang/Object;Lkotlin/jvm/functions/Function0;)Ljava/lang/Double;
-	public synthetic fun deserialize (Ljava/lang/Object;Lkotlin/jvm/functions/Function0;)Ljava/lang/Object;
+	public fun deserialize (Ljava/lang/Object;)Ljava/lang/Double;
+	public synthetic fun deserialize (Ljava/lang/Object;)Ljava/lang/Object;
 	public fun getName ()Ljava/lang/String;
 	public fun getTermType ()Lkotlin/reflect/KClass;
 }
 
 public final class dev/evo/elasticmagic/types/EnumFieldType : dev/evo/elasticmagic/types/SimpleFieldType {
 	public fun <init> ([Ljava/lang/Enum;Ldev/evo/elasticmagic/types/EnumValue;Ldev/evo/elasticmagic/types/FieldType;Lkotlin/reflect/KClass;)V
-	public fun deserialize (Ljava/lang/Object;Lkotlin/jvm/functions/Function0;)Ljava/lang/Enum;
-	public synthetic fun deserialize (Ljava/lang/Object;Lkotlin/jvm/functions/Function0;)Ljava/lang/Object;
+	public fun deserialize (Ljava/lang/Object;)Ljava/lang/Enum;
+	public synthetic fun deserialize (Ljava/lang/Object;)Ljava/lang/Object;
 	public fun getName ()Ljava/lang/String;
 	public fun getTermType ()Lkotlin/reflect/KClass;
 	public fun serialize (Ljava/lang/Enum;)Ljava/lang/Object;
@@ -4484,7 +4507,7 @@ public abstract interface class dev/evo/elasticmagic/types/EnumValue {
 }
 
 public abstract interface class dev/evo/elasticmagic/types/FieldType {
-	public abstract fun deserialize (Ljava/lang/Object;Lkotlin/jvm/functions/Function0;)Ljava/lang/Object;
+	public abstract fun deserialize (Ljava/lang/Object;)Ljava/lang/Object;
 	public abstract fun deserializeTerm (Ljava/lang/Object;)Ljava/lang/Object;
 	public abstract fun getName ()Ljava/lang/String;
 	public abstract fun getTermType ()Lkotlin/reflect/KClass;
@@ -4493,7 +4516,6 @@ public abstract interface class dev/evo/elasticmagic/types/FieldType {
 }
 
 public final class dev/evo/elasticmagic/types/FieldType$DefaultImpls {
-	public static synthetic fun deserialize$default (Ldev/evo/elasticmagic/types/FieldType;Ljava/lang/Object;Lkotlin/jvm/functions/Function0;ILjava/lang/Object;)Ljava/lang/Object;
 	public static fun serialize (Ldev/evo/elasticmagic/types/FieldType;Ljava/lang/Object;)Ljava/lang/Object;
 	public static fun serializeTerm (Ldev/evo/elasticmagic/types/FieldType;Ljava/lang/Object;)Ljava/lang/Object;
 }
@@ -4511,8 +4533,8 @@ public final class dev/evo/elasticmagic/types/FloatRangeType : dev/evo/elasticma
 
 public final class dev/evo/elasticmagic/types/FloatType : dev/evo/elasticmagic/types/NumberType {
 	public static final field INSTANCE Ldev/evo/elasticmagic/types/FloatType;
-	public fun deserialize (Ljava/lang/Object;Lkotlin/jvm/functions/Function0;)Ljava/lang/Float;
-	public synthetic fun deserialize (Ljava/lang/Object;Lkotlin/jvm/functions/Function0;)Ljava/lang/Object;
+	public fun deserialize (Ljava/lang/Object;)Ljava/lang/Float;
+	public synthetic fun deserialize (Ljava/lang/Object;)Ljava/lang/Object;
 	public fun getName ()Ljava/lang/String;
 	public fun getTermType ()Lkotlin/reflect/KClass;
 }
@@ -4526,8 +4548,8 @@ public final class dev/evo/elasticmagic/types/IntRangeType : dev/evo/elasticmagi
 
 public final class dev/evo/elasticmagic/types/IntType : dev/evo/elasticmagic/types/NumberType {
 	public static final field INSTANCE Ldev/evo/elasticmagic/types/IntType;
-	public fun deserialize (Ljava/lang/Object;Lkotlin/jvm/functions/Function0;)Ljava/lang/Integer;
-	public synthetic fun deserialize (Ljava/lang/Object;Lkotlin/jvm/functions/Function0;)Ljava/lang/Object;
+	public fun deserialize (Ljava/lang/Object;)Ljava/lang/Integer;
+	public synthetic fun deserialize (Ljava/lang/Object;)Ljava/lang/Object;
 	public fun getName ()Ljava/lang/String;
 	public fun getTermType ()Lkotlin/reflect/KClass;
 }
@@ -4548,8 +4570,8 @@ public final class dev/evo/elasticmagic/types/Join {
 
 public final class dev/evo/elasticmagic/types/JoinType : dev/evo/elasticmagic/types/FieldType {
 	public static final field INSTANCE Ldev/evo/elasticmagic/types/JoinType;
-	public fun deserialize (Ljava/lang/Object;Lkotlin/jvm/functions/Function0;)Ldev/evo/elasticmagic/types/Join;
-	public synthetic fun deserialize (Ljava/lang/Object;Lkotlin/jvm/functions/Function0;)Ljava/lang/Object;
+	public fun deserialize (Ljava/lang/Object;)Ldev/evo/elasticmagic/types/Join;
+	public synthetic fun deserialize (Ljava/lang/Object;)Ljava/lang/Object;
 	public synthetic fun deserializeTerm (Ljava/lang/Object;)Ljava/lang/Object;
 	public fun deserializeTerm (Ljava/lang/Object;)Ljava/lang/String;
 	public fun getName ()Ljava/lang/String;
@@ -4574,8 +4596,8 @@ public final class dev/evo/elasticmagic/types/LongRangeType : dev/evo/elasticmag
 
 public final class dev/evo/elasticmagic/types/LongType : dev/evo/elasticmagic/types/NumberType {
 	public static final field INSTANCE Ldev/evo/elasticmagic/types/LongType;
-	public fun deserialize (Ljava/lang/Object;Lkotlin/jvm/functions/Function0;)Ljava/lang/Long;
-	public synthetic fun deserialize (Ljava/lang/Object;Lkotlin/jvm/functions/Function0;)Ljava/lang/Object;
+	public fun deserialize (Ljava/lang/Object;)Ljava/lang/Long;
+	public synthetic fun deserialize (Ljava/lang/Object;)Ljava/lang/Object;
 	public fun getName ()Ljava/lang/String;
 	public fun getTermType ()Lkotlin/reflect/KClass;
 }
@@ -4591,22 +4613,22 @@ public abstract class dev/evo/elasticmagic/types/NumberType : dev/evo/elasticmag
 
 public class dev/evo/elasticmagic/types/ObjectType : dev/evo/elasticmagic/types/FieldType {
 	public fun <init> ()V
-	public fun deserialize (Ljava/lang/Object;Lkotlin/jvm/functions/Function0;)Ldev/evo/elasticmagic/doc/BaseDocSource;
-	public synthetic fun deserialize (Ljava/lang/Object;Lkotlin/jvm/functions/Function0;)Ljava/lang/Object;
+	public synthetic fun deserialize (Ljava/lang/Object;)Ljava/lang/Object;
+	public fun deserialize (Ljava/lang/Object;)Ljava/lang/Void;
 	public synthetic fun deserializeTerm (Ljava/lang/Object;)Ljava/lang/Object;
 	public fun deserializeTerm (Ljava/lang/Object;)Ljava/lang/Void;
 	public fun getName ()Ljava/lang/String;
 	public fun getTermType ()Lkotlin/reflect/KClass;
-	public fun serialize (Ldev/evo/elasticmagic/doc/BaseDocSource;)Ljava/util/Map;
 	public synthetic fun serialize (Ljava/lang/Object;)Ljava/lang/Object;
+	public fun serialize (Ljava/lang/Void;)Ljava/util/Map;
 	public synthetic fun serializeTerm (Ljava/lang/Object;)Ljava/lang/Object;
 	public fun serializeTerm (Ljava/lang/Void;)Ljava/lang/Void;
 }
 
 public final class dev/evo/elasticmagic/types/OptionalListType : dev/evo/elasticmagic/types/FieldType {
 	public fun <init> (Ldev/evo/elasticmagic/types/FieldType;)V
-	public synthetic fun deserialize (Ljava/lang/Object;Lkotlin/jvm/functions/Function0;)Ljava/lang/Object;
-	public fun deserialize (Ljava/lang/Object;Lkotlin/jvm/functions/Function0;)Ljava/util/List;
+	public synthetic fun deserialize (Ljava/lang/Object;)Ljava/lang/Object;
+	public fun deserialize (Ljava/lang/Object;)Ljava/util/List;
 	public fun deserializeTerm (Ljava/lang/Object;)Ljava/lang/Object;
 	public fun getName ()Ljava/lang/String;
 	public fun getTermType ()Lkotlin/reflect/KClass;
@@ -4637,8 +4659,8 @@ public final class dev/evo/elasticmagic/types/Range {
 
 public abstract class dev/evo/elasticmagic/types/RangeType : dev/evo/elasticmagic/types/FieldType {
 	public fun <init> (Ldev/evo/elasticmagic/types/FieldType;)V
-	public fun deserialize (Ljava/lang/Object;Lkotlin/jvm/functions/Function0;)Ldev/evo/elasticmagic/types/Range;
-	public synthetic fun deserialize (Ljava/lang/Object;Lkotlin/jvm/functions/Function0;)Ljava/lang/Object;
+	public fun deserialize (Ljava/lang/Object;)Ldev/evo/elasticmagic/types/Range;
+	public synthetic fun deserialize (Ljava/lang/Object;)Ljava/lang/Object;
 	public fun deserializeTerm (Ljava/lang/Object;)Ljava/lang/Object;
 	public fun getName ()Ljava/lang/String;
 	public fun getTermType ()Lkotlin/reflect/KClass;
@@ -4649,8 +4671,8 @@ public abstract class dev/evo/elasticmagic/types/RangeType : dev/evo/elasticmagi
 
 public final class dev/evo/elasticmagic/types/RequiredListType : dev/evo/elasticmagic/types/FieldType {
 	public fun <init> (Ldev/evo/elasticmagic/types/FieldType;)V
-	public synthetic fun deserialize (Ljava/lang/Object;Lkotlin/jvm/functions/Function0;)Ljava/lang/Object;
-	public fun deserialize (Ljava/lang/Object;Lkotlin/jvm/functions/Function0;)Ljava/util/List;
+	public synthetic fun deserialize (Ljava/lang/Object;)Ljava/lang/Object;
+	public fun deserialize (Ljava/lang/Object;)Ljava/util/List;
 	public fun deserializeTerm (Ljava/lang/Object;)Ljava/lang/Object;
 	public fun getName ()Ljava/lang/String;
 	public fun getTermType ()Lkotlin/reflect/KClass;
@@ -4662,8 +4684,8 @@ public final class dev/evo/elasticmagic/types/RequiredListType : dev/evo/elastic
 
 public final class dev/evo/elasticmagic/types/ShortType : dev/evo/elasticmagic/types/NumberType {
 	public static final field INSTANCE Ldev/evo/elasticmagic/types/ShortType;
-	public synthetic fun deserialize (Ljava/lang/Object;Lkotlin/jvm/functions/Function0;)Ljava/lang/Object;
-	public fun deserialize (Ljava/lang/Object;Lkotlin/jvm/functions/Function0;)Ljava/lang/Short;
+	public synthetic fun deserialize (Ljava/lang/Object;)Ljava/lang/Object;
+	public fun deserialize (Ljava/lang/Object;)Ljava/lang/Short;
 	public fun getName ()Ljava/lang/String;
 	public fun getTermType ()Lkotlin/reflect/KClass;
 	public synthetic fun serialize (Ljava/lang/Object;)Ljava/lang/Object;
@@ -4679,8 +4701,8 @@ public abstract class dev/evo/elasticmagic/types/SimpleFieldType : dev/evo/elast
 
 public final class dev/evo/elasticmagic/types/SimpleListType : dev/evo/elasticmagic/types/SimpleFieldType {
 	public fun <init> (Ldev/evo/elasticmagic/types/SimpleFieldType;)V
-	public synthetic fun deserialize (Ljava/lang/Object;Lkotlin/jvm/functions/Function0;)Ljava/lang/Object;
-	public fun deserialize (Ljava/lang/Object;Lkotlin/jvm/functions/Function0;)Ljava/util/List;
+	public synthetic fun deserialize (Ljava/lang/Object;)Ljava/lang/Object;
+	public fun deserialize (Ljava/lang/Object;)Ljava/util/List;
 	public fun getName ()Ljava/lang/String;
 	public fun getTermType ()Lkotlin/reflect/KClass;
 	public final fun getType ()Ldev/evo/elasticmagic/types/SimpleFieldType;
@@ -4690,8 +4712,8 @@ public final class dev/evo/elasticmagic/types/SimpleListType : dev/evo/elasticma
 
 public abstract class dev/evo/elasticmagic/types/StringType : dev/evo/elasticmagic/types/SimpleFieldType {
 	public fun <init> ()V
-	public synthetic fun deserialize (Ljava/lang/Object;Lkotlin/jvm/functions/Function0;)Ljava/lang/Object;
-	public fun deserialize (Ljava/lang/Object;Lkotlin/jvm/functions/Function0;)Ljava/lang/String;
+	public synthetic fun deserialize (Ljava/lang/Object;)Ljava/lang/Object;
+	public fun deserialize (Ljava/lang/Object;)Ljava/lang/String;
 	public fun getTermType ()Lkotlin/reflect/KClass;
 }
 

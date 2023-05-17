@@ -1,10 +1,9 @@
 package samples.querying
 
 import dev.evo.elasticmagic.SearchQuery
-import dev.evo.elasticmagic.doc.BaseDocSource
-import dev.evo.elasticmagic.doc.BoundField
 import dev.evo.elasticmagic.doc.Document
 import dev.evo.elasticmagic.doc.MappingField
+import dev.evo.elasticmagic.doc.ObjectBoundField
 import dev.evo.elasticmagic.doc.SubDocument
 import dev.evo.elasticmagic.query.Bool
 import dev.evo.elasticmagic.query.DisMax
@@ -15,7 +14,7 @@ import dev.evo.elasticmagic.query.QueryExpressionNode
 
 import kotlin.random.Random
 
-class TranslationDoc(field: BoundField<BaseDocSource, Nothing>) : SubDocument(field) {
+class TranslationDoc(field: ObjectBoundField) : SubDocument(field) {
     val en by text()
     val de by text()
     val ru by text()

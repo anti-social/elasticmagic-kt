@@ -15,8 +15,8 @@ public final class dev/evo/elasticmagic/doc/DateFieldKt {
 
 public final class dev/evo/elasticmagic/doc/DateTimeType : dev/evo/elasticmagic/doc/BaseKotlinxDateTimeType {
 	public static final field INSTANCE Ldev/evo/elasticmagic/doc/DateTimeType;
-	public synthetic fun deserialize (Ljava/lang/Object;Lkotlin/jvm/functions/Function0;)Ljava/lang/Object;
-	public fun deserialize (Ljava/lang/Object;Lkotlin/jvm/functions/Function0;)Lkotlinx/datetime/LocalDateTime;
+	public synthetic fun deserialize (Ljava/lang/Object;)Ljava/lang/Object;
+	public fun deserialize (Ljava/lang/Object;)Lkotlinx/datetime/LocalDateTime;
 	public fun getTermType ()Lkotlin/reflect/KClass;
 	public synthetic fun serialize (Ljava/lang/Object;)Ljava/lang/Object;
 	public fun serialize (Lkotlinx/datetime/LocalDateTime;)Ljava/lang/Object;
@@ -24,8 +24,8 @@ public final class dev/evo/elasticmagic/doc/DateTimeType : dev/evo/elasticmagic/
 
 public final class dev/evo/elasticmagic/doc/DateType : dev/evo/elasticmagic/doc/BaseKotlinxDateTimeType {
 	public static final field INSTANCE Ldev/evo/elasticmagic/doc/DateType;
-	public synthetic fun deserialize (Ljava/lang/Object;Lkotlin/jvm/functions/Function0;)Ljava/lang/Object;
-	public fun deserialize (Ljava/lang/Object;Lkotlin/jvm/functions/Function0;)Lkotlinx/datetime/LocalDate;
+	public synthetic fun deserialize (Ljava/lang/Object;)Ljava/lang/Object;
+	public fun deserialize (Ljava/lang/Object;)Lkotlinx/datetime/LocalDate;
 	public fun getTermType ()Lkotlin/reflect/KClass;
 	public synthetic fun serialize (Ljava/lang/Object;)Ljava/lang/Object;
 	public fun serialize (Lkotlinx/datetime/LocalDate;)Ljava/lang/String;
@@ -33,8 +33,8 @@ public final class dev/evo/elasticmagic/doc/DateType : dev/evo/elasticmagic/doc/
 
 public final class dev/evo/elasticmagic/doc/InstantType : dev/evo/elasticmagic/doc/BaseKotlinxDateTimeType {
 	public static final field INSTANCE Ldev/evo/elasticmagic/doc/InstantType;
-	public synthetic fun deserialize (Ljava/lang/Object;Lkotlin/jvm/functions/Function0;)Ljava/lang/Object;
-	public fun deserialize (Ljava/lang/Object;Lkotlin/jvm/functions/Function0;)Lkotlinx/datetime/Instant;
+	public synthetic fun deserialize (Ljava/lang/Object;)Ljava/lang/Object;
+	public fun deserialize (Ljava/lang/Object;)Lkotlinx/datetime/Instant;
 	public fun getTermType ()Lkotlin/reflect/KClass;
 	public synthetic fun serialize (Ljava/lang/Object;)Ljava/lang/Object;
 	public fun serialize (Lkotlinx/datetime/Instant;)Ljava/lang/String;

@@ -1,5 +1,6 @@
 package dev.evo.elasticmagic.doc
 
+import dev.evo.elasticmagic.serde.Deserializer
 import dev.evo.elasticmagic.types.RequiredListType
 import dev.evo.elasticmagic.types.SourceType
 
@@ -14,11 +15,11 @@ import kotlin.test.Test
 
 class DocSourceTests {
     object OrderDoc : Document() {
-        class UserOpinionDoc(field: DocSourceField) : SubDocument(field) {
+        class UserOpinionDoc(field: ObjectBoundField) : SubDocument(field) {
             val rating by float("rank")
         }
 
-        class UserDoc(field: DocSourceField) : SubDocument(field) {
+        class UserDoc(field: ObjectBoundField) : SubDocument(field) {
             val id by int()
             val opinion by obj(::UserOpinionDoc)
         }
@@ -218,8 +219,8 @@ class DocSourceTests {
                 )
             }
 
-            override fun fromSource(rawSource: RawSource) {
-                id = rawSource["id"]?.let(OrderDoc.user.id.getFieldType()::deserialize)
+            override fun fromSource(src: Deserializer.ObjectCtx) {
+                id = src.anyOrNull("id")?.let(OrderDoc.user.id.getFieldType()::deserialize)
             }
         }
 
@@ -238,14 +239,14 @@ class DocSourceTests {
                 )
             }
 
-            override fun fromSource(rawSource: RawSource) {
-                id = rawSource["id"]
+            override fun fromSource(src: Deserializer.ObjectCtx) {
+                id = src.anyOrNull("id")
                     ?.let(OrderDoc.id.getFieldType()::deserialize)
-                statuses = rawSource["status"]
+                statuses = src.anyOrNull("status")
                     ?.let(RequiredListType(OrderDoc.status.getFieldType())::deserialize)
-                total = rawSource["total"]
+                total = src.anyOrNull("total")
                     ?.let(OrderDoc.total.getFieldType()::deserialize)
-                user = rawSource["user"]
+                user = src.anyOrNull("user")
                     ?.let(SourceType(OrderDoc.user.getFieldType(), ::User)::deserialize)
             }
         }
@@ -289,7 +290,7 @@ class DocSourceTests {
         }
 
         shouldThrow<IllegalStateException> {
-            fullOrder.fromSource(emptySource())
+            fullOrder.fromSource(emptyMap<Nothing, Nothing>())
         }
 
         fullOrder.fromSource(mapOf("id" to 1))
@@ -357,7 +358,7 @@ class DocSourceTests {
         }
 
         shouldThrow<IllegalStateException> {
-            OrderDocSource().fromSource(emptySource())
+            OrderDocSource().fromSource(emptyMap<Nothing, Nothing>())
         }
 
         shouldThrow<IllegalArgumentException> {

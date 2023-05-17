@@ -104,10 +104,10 @@ interface Deserializer {
     }
 }
 
-inline fun Deserializer.ObjectCtx.forEach(block: (String, Any) -> Unit) {
+inline fun Deserializer.ObjectCtx.forEach(block: (String, Any?) -> Unit) {
     val iter = iterator()
     while (iter.hasNext()) {
-        block(iter.key(), iter.any())
+        block(iter.key(), iter.anyOrNull())
     }
 }
 

@@ -53,7 +53,7 @@ object InstantType : BaseKotlinxDateTimeType<Instant>() {
 
     override fun serialize(v: Instant) = v.toString()
 
-    override fun deserialize(v: Any, valueFactory: (() -> Instant)?): Instant = parse(v)
+    override fun deserialize(v: Any): Instant = parse(v)
 }
 
 object DateTimeType : BaseKotlinxDateTimeType<LocalDateTime>() {
@@ -63,7 +63,7 @@ object DateTimeType : BaseKotlinxDateTimeType<LocalDateTime>() {
         return v.toInstant(TimeZone.UTC).toString()
     }
 
-    override fun deserialize(v: Any, valueFactory: (() -> LocalDateTime)?): LocalDateTime {
+    override fun deserialize(v: Any): LocalDateTime {
         return parse(v).toLocalDateTime(TimeZone.UTC)
     }
 
@@ -74,7 +74,7 @@ object DateType : BaseKotlinxDateTimeType<LocalDate>() {
 
     override fun serialize(v: LocalDate) = v.toString()
 
-    override fun deserialize(v: Any, valueFactory: (() -> LocalDate)?): LocalDate {
+    override fun deserialize(v: Any): LocalDate {
         return parse(v).toLocalDateTime(TimeZone.UTC).date
     }
 }

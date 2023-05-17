@@ -6,7 +6,7 @@ import dev.evo.elasticmagic.compile.PreparedBulk
 import dev.evo.elasticmagic.compile.CompilerSet
 import dev.evo.elasticmagic.compile.PreparedCreateIndex
 import dev.evo.elasticmagic.compile.PreparedUpdateMapping
-import dev.evo.elasticmagic.doc.BaseDocSource
+import dev.evo.elasticmagic.doc.ToSource
 import dev.evo.elasticmagic.doc.Document
 import dev.evo.elasticmagic.serde.Serde
 import dev.evo.elasticmagic.transport.BulkRequest
@@ -286,7 +286,7 @@ class ElasticsearchIndex(
 ) {
     val transport: ElasticsearchTransport = cluster.transport
 
-    suspend fun <S : BaseDocSource> search(
+    suspend fun <S : ToSource> search(
         searchQuery: SearchQuery.Search<S>
     ): SearchQueryResult<S> {
         val compiled = cluster.getCompilers().searchQuery.compile<S>(
