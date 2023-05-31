@@ -10,7 +10,6 @@ class SimpleFilterTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQueryCom
 
 
     object BikeQueryFilters : QueryFilters() {
-        val manufacturer by FacetFilter(BikeDocument.manufacturer)
         val price by SimpleFilter(BikeDocument.price, mode = FilterMode.INTERSECT)
         val priceUnion by SimpleFilter(BikeDocument.price, mode = FilterMode.UNION)
     }
@@ -56,7 +55,12 @@ class SimpleFilterTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQueryCom
     fun simpleFilterWithFacetFilter() = testWithCompiler {
 
         val sq = SearchQuery()
-        BikeQueryFilters.apply(
+        val bikeQueryFiltersWithFacetFilter = object : QueryFilters() {
+            val manufacturer by FacetFilter(BikeDocument.manufacturer)
+            val price by SimpleFilter(BikeDocument.price, mode = FilterMode.INTERSECT)
+            val priceUnion by SimpleFilter(BikeDocument.price, mode = FilterMode.UNION)
+        }
+        bikeQueryFiltersWithFacetFilter.apply(
             sq,
             mapOf(
                 listOf("price") to listOf("1.0", "3.0"),
