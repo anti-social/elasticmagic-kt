@@ -77,6 +77,12 @@ class QueryFiltersResult(
         return results[filter.name] as R
     }
 
+    fun <R : FilterResult> get(name: String): R? {
+        if (results[name] == null) return null
+        @Suppress("UNCHECKED_CAST")
+        return results[name] as R?
+    }
+
     override fun iterator(): Iterator<FilterResult> {
         return results.values.iterator()
     }
