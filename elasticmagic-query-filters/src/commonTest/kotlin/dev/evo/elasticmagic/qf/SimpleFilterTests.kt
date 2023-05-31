@@ -10,6 +10,7 @@ class SimpleFilterTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQueryCom
 
 
     object BikeQueryFilters : QueryFilters() {
+        val manufacturer by FacetFilter(BikeDocument.manufacturer)
         val price by SimpleFilter(BikeDocument.price, mode = FilterMode.INTERSECT)
         val priceUnion by SimpleFilter(BikeDocument.price, mode = FilterMode.UNION)
     }
@@ -48,6 +49,46 @@ class SimpleFilterTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQueryCom
                     )
                 )
             )
+        )
+    }
+
+    @Test
+    fun simpleFilterWithFacetFilter() = testWithCompiler {
+
+        val sq = SearchQuery()
+        BikeQueryFilters.apply(
+            sq,
+            mapOf(
+                listOf("price") to listOf("1.0", "3.0"),
+                listOf("manufacturer") to listOf("BMC", "Cube")
+            )
+        )
+
+        compile(sq).body shouldContainExactly mapOf(
+            "post_filter" to mapOf(
+                "terms" to mapOf(
+                    "manufacturer" to listOf(
+                        "BMC",
+                        "Cube"
+                    )
+                )
+            ),
+            "query" to mapOf(
+                "bool" to mapOf(
+                    "filter" to listOf(
+                        mapOf(
+                            "bool" to mapOf(
+                                "filter" to listOf(
+                                    mapOf(
+                                        "term" to mapOf("price" to 1.0F)
+                                    ), mapOf("term" to mapOf("price" to 3.0F))
+                                )
+                            )
+                        )
+                    )
+                )
+            ),
+            "aggs" to mapOf("qf:manufacturer" to mapOf("terms" to mapOf("field" to "manufacturer")))
         )
     }
 
