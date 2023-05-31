@@ -381,6 +381,7 @@ public final class dev/evo/elasticmagic/qf/FacetRangeFilterResult : dev/evo/elas
 
 public abstract class dev/evo/elasticmagic/qf/Filter {
 	public fun <init> (Ljava/lang/String;)V
+	public final fun getName ()Ljava/lang/String;
 	public abstract fun prepare (Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;)Ldev/evo/elasticmagic/qf/PreparedFilter;
 	public final fun prepare (Ljava/lang/String;Ljava/util/Map;)Ldev/evo/elasticmagic/qf/PreparedFilter;
 	public final fun provideDelegate (Ldev/evo/elasticmagic/qf/QueryFilters;Lkotlin/reflect/KProperty;)Lkotlin/properties/ReadOnlyProperty;
