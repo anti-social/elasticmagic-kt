@@ -10,7 +10,6 @@ class SimpleFilterTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQueryCom
 
 
     object BikeQueryFilters : QueryFilters() {
-        val manufacturer by FacetFilter(BikeDocument.manufacturer)
         val price by SimpleFilter(BikeDocument.price, mode = FilterMode.INTERSECT)
         val priceUnion by SimpleFilter(BikeDocument.price, mode = FilterMode.UNION)
     }
