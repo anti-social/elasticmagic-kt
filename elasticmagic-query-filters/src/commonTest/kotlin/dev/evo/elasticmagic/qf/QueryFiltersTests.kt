@@ -108,12 +108,12 @@ class QueryFiltersTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQueryCom
         page.name shouldBe "page"
         page.totalPages shouldBe 46
 
-        val priceFilterByName = filters.get<FacetRangeFilterResult<Float>>("price")
+        val priceFilterByName = filters.get("price") as? FacetRangeFilterResult<*>
         priceFilterByName.shouldNotBeNull()
         priceFilterByName.name shouldBe "price"
         priceFilterByName.count shouldBe 439L
 
-        val nullFilter = filters.get<FacetRangeFilterResult<Int>>("null")
+        val nullFilter = filters.get("null") as? FacetRangeFilterResult<*>
         nullFilter.shouldBeNull()
 
         filters.toList().size shouldBe 4
