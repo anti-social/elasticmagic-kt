@@ -82,7 +82,7 @@ class QueryFiltersResult(
     }
 }
 
-abstract class Filter<R : FilterResult>(private val name: String?) {
+abstract class Filter<R : FilterResult>(val name: String?) {
     abstract fun prepare(name: String, paramName: String, params: QueryFilterParams): PreparedFilter<R>
 
     fun prepare(name: String, params: QueryFilterParams): PreparedFilter<R> = prepare(name, name, params)
