@@ -607,6 +607,7 @@ public final class dev/evo/elasticmagic/qf/QueryFiltersKt {
 public final class dev/evo/elasticmagic/qf/QueryFiltersResult : java/lang/Iterable, kotlin/jvm/internal/markers/KMappedMarker {
 	public fun <init> (Ldev/evo/elasticmagic/util/OrderedMap;)V
 	public final fun get (Ldev/evo/elasticmagic/qf/BoundFilter;)Ldev/evo/elasticmagic/qf/FilterResult;
+	public final fun get (Ljava/lang/String;)Ldev/evo/elasticmagic/qf/FilterResult;
 	public fun iterator ()Ljava/util/Iterator;
 }
 

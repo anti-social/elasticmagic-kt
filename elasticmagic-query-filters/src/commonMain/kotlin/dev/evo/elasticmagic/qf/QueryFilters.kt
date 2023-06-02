@@ -77,6 +77,8 @@ class QueryFiltersResult(
         return results[filter.name] as R
     }
 
+    fun get(name: String): FilterResult? = results[name]
+
     override fun iterator(): Iterator<FilterResult> {
         return results.values.iterator()
     }

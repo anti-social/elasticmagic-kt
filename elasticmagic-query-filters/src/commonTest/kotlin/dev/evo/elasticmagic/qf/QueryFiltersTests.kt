@@ -13,6 +13,8 @@ import dev.evo.elasticmagic.doc.DynDocSource
 
 import io.kotest.matchers.booleans.shouldBeFalse
 import io.kotest.matchers.maps.shouldContainExactly
+import io.kotest.matchers.nulls.shouldBeNull
+import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 
 import kotlin.test.Test
@@ -105,6 +107,14 @@ class QueryFiltersTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQueryCom
         val page = filters[BikeQueryFilters.page]
         page.name shouldBe "page"
         page.totalPages shouldBe 46
+
+        val priceFilterByName = filters.get("price") as? FacetRangeFilterResult<*>
+        priceFilterByName.shouldNotBeNull()
+        priceFilterByName.name shouldBe "price"
+        priceFilterByName.count shouldBe 439L
+
+        val nullFilter = filters.get("null") as? FacetRangeFilterResult<*>
+        nullFilter.shouldBeNull()
 
         filters.toList().size shouldBe 4
     }
