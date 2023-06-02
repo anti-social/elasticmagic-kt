@@ -4021,7 +4021,8 @@ public final class dev/evo/elasticmagic/query/QueryExpressionNode : dev/evo/elas
 	public synthetic fun reduce ()Ldev/evo/elasticmagic/query/Expression;
 	public fun reduce ()Ldev/evo/elasticmagic/query/QueryExpression;
 	public synthetic fun rewrite (Ldev/evo/elasticmagic/query/QueryExpressionNode;)Ldev/evo/elasticmagic/query/Expression;
-	public fun rewrite (Ldev/evo/elasticmagic/query/QueryExpressionNode;)Ldev/evo/elasticmagic/query/QueryExpression;
+	public synthetic fun rewrite (Ldev/evo/elasticmagic/query/QueryExpressionNode;)Ldev/evo/elasticmagic/query/QueryExpression;
+	public fun rewrite (Ldev/evo/elasticmagic/query/QueryExpressionNode;)Ldev/evo/elasticmagic/query/QueryExpressionNode;
 	public fun toString ()Ljava/lang/String;
 	public fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 }

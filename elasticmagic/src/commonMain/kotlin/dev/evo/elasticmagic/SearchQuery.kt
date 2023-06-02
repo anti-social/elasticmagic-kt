@@ -173,6 +173,7 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
         if (query != null) {
             query(query.rewrite(newNode))
         }
+        updateQueryNodes()
     }
 
     /**

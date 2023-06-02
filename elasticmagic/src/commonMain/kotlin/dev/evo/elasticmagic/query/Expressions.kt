@@ -95,7 +95,7 @@ interface QueryExpression : NamedExpression {
     }
 }
 
-data class NodeHandle<T: QueryExpression>(val name: String? = null) {
+data class NodeHandle<T : QueryExpression>(val name: String? = null) {
     override fun equals(other: Any?): Boolean {
         return this === other
     }
@@ -105,7 +105,7 @@ data class NodeHandle<T: QueryExpression>(val name: String? = null) {
     }
 }
 
-data class QueryExpressionNode<T: QueryExpression>(
+data class QueryExpressionNode<T : QueryExpression>(
     val handle: NodeHandle<T>,
     val expression: T,
 ) : QueryExpression {
@@ -117,9 +117,21 @@ data class QueryExpressionNode<T: QueryExpression>(
 
     override fun clone(): QueryExpressionNode<T> = copy()
 
-    override fun rewrite(newNode: QueryExpressionNode<*>): QueryExpression {
+    override fun rewrite(newNode: QueryExpressionNode<*>): QueryExpressionNode<*> {
         if (handle != newNode.handle) {
-            return this
+            val newExpression = expression.rewrite(newNode)
+            // TODO: Consider to add generic type to the QueryExpression class:
+            // QueryExpression<T : QueryExpression<T>> : NamedExpression {
+            //     override fun rewrite(newNode: QueryExpressionNode<*>): QueryExpression<T>
+            // }
+            if (newExpression::class != expression::class) {
+                throw IllegalArgumentException(
+                    "Rewritten expression must be of the same class as ${expression::class}, " +
+                        "but was ${newExpression::class}"
+                )
+            }
+            @Suppress("UNCHECKED_CAST")
+            return QueryExpressionNode(handle, newExpression as T)
         }
         return newNode
     }

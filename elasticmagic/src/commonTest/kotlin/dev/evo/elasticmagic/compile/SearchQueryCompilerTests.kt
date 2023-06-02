@@ -1126,9 +1126,11 @@ class SearchQueryCompilerTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQ
         )
     }
 
+    @Test
     fun queryNodes() = testWithCompiler {
         @Suppress("VariableNaming")
         val BOOL_HANDLE = NodeHandle<Bool>("bool")
+
         @Suppress("VariableNaming")
         val AD_BOOST_HANDLE = NodeHandle<FunctionScore>("ad_boost")
 
@@ -1230,6 +1232,29 @@ class SearchQueryCompilerTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQ
                                 "opinions_positive_percent" to mapOf("gt" to 90.0)
                             )
                         ),
+                    )
+                )
+            )
+        )
+
+        query.queryNode(BOOL_HANDLE) { node ->
+            node.copy(
+                should = node.should.subList(0, 1)
+            )
+        }
+        compiled = compile(query)
+        compiled.body shouldContainExactly mapOf(
+            "query" to mapOf(
+                "function_score" to mapOf(
+                    "functions" to listOf(
+                        mapOf(
+                            "weight" to 1.5F,
+                            "filter" to mapOf(
+                                "match" to mapOf(
+                                    "name" to "test"
+                                )
+                            )
+                        )
                     )
                 )
             )
