@@ -33,6 +33,7 @@ import dev.evo.elasticmagic.query.QueryRescore
 import dev.evo.elasticmagic.query.SearchExt
 import dev.evo.elasticmagic.query.match
 import dev.evo.elasticmagic.serde.Serializer
+import dev.evo.elasticmagic.types.FloatType
 import dev.evo.elasticmagic.types.KeywordType
 import dev.evo.elasticmagic.types.LongType
 
@@ -58,13 +59,14 @@ class AnyField(name: String) : BoundField<Any, Any>(
 
 class StringField(name: String) : BoundField<String, String>(
     name,
-    object : SimpleFieldType<String>() {
-        override val name: String
-            get() = throw IllegalStateException("Fake field type cannot be used in mapping")
-        override val termType = String::class
+    KeywordType,
+    Params(),
+    RootFieldSet
+)
 
-        override fun deserialize(v: Any, valueFactory: (() -> String)?) = v.toString()
-    },
+class FloatField(name: String) : BoundField<Float, Float>(
+    name,
+    FloatType,
     Params(),
     RootFieldSet
 )
@@ -1134,6 +1136,9 @@ class SearchQueryCompilerTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQ
         @Suppress("VariableNaming")
         val AD_BOOST_HANDLE = NodeHandle<FunctionScore>("ad_boost")
 
+        @Suppress("VariableNaming")
+        val BOOST_HANDLE = NodeHandle<FunctionScore>("boost")
+
         val query = SearchQuery(
             QueryExpressionNode(
                 BOOL_HANDLE,
@@ -1141,7 +1146,15 @@ class SearchQueryCompilerTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQ
                     QueryExpressionNode(
                         AD_BOOST_HANDLE,
                         FunctionScore(
-                            functions = emptyList()
+                            QueryExpressionNode(
+                                BOOST_HANDLE,
+                                FunctionScore(
+                                    functions = emptyList()
+                                )
+                            ),
+                            functions = emptyList(),
+                            boostMode = FunctionScore.BoostMode.SUM,
+                            scoreMode = FunctionScore.ScoreMode.SUM,
                         )
                     )
                 )
@@ -1219,7 +1232,65 @@ class SearchQueryCompilerTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQ
                                             )
                                         )
                                     )
-                                )
+                                ),
+                                "boost_mode" to "sum",
+                                "score_mode" to "sum"
+                            )
+                        ),
+                        mapOf(
+                            "range" to mapOf(
+                                "opinions_count" to mapOf("gt" to 4)
+                            )
+                        ),
+                        mapOf(
+                            "range" to mapOf(
+                                "opinions_positive_percent" to mapOf("gt" to 90.0)
+                            )
+                        ),
+                    )
+                )
+            )
+        )
+
+        query.queryNode(BOOST_HANDLE) { node ->
+            node.copy(
+                functions = node.functions + listOf(
+                    FunctionScore.FieldValueFactor(
+                        FloatField("rank"),
+                    )
+                )
+            )
+        }
+        compiled = compile(query)
+        compiled.body shouldContainExactly mapOf(
+            "query" to mapOf(
+                "bool" to mapOf(
+                    "should" to listOf(
+                        mapOf(
+                            "function_score" to mapOf(
+                                "query" to mapOf(
+                                    "function_score" to mapOf(
+                                        "functions" to listOf(
+                                            mapOf(
+                                                "field_value_factor" to mapOf(
+                                                    "field" to "rank"
+                                                )
+                                            )
+                                        )
+                                    )
+                                ),
+                                "functions" to listOf(
+                                    mapOf(
+                                        "weight" to 1.5F,
+                                        "filter" to mapOf(
+                                            "match" to mapOf(
+                                                "name" to "test"
+                                            )
+                                        )
+                                    )
+                                ),
+                                "boost_mode" to "sum",
+                                "score_mode" to "sum"
                             )
                         ),
                         mapOf(
@@ -1246,6 +1317,17 @@ class SearchQueryCompilerTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQ
         compiled.body shouldContainExactly mapOf(
             "query" to mapOf(
                 "function_score" to mapOf(
+                    "query" to mapOf(
+                        "function_score" to mapOf(
+                            "functions" to listOf(
+                                mapOf(
+                                    "field_value_factor" to mapOf(
+                                        "field" to "rank"
+                                    )
+                                )
+                            )
+                        )
+                    ),
                     "functions" to listOf(
                         mapOf(
                             "weight" to 1.5F,
@@ -1255,7 +1337,9 @@ class SearchQueryCompilerTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQ
                                 )
                             )
                         )
-                    )
+                    ),
+                    "boost_mode" to "sum",
+                    "score_mode" to "sum"
                 )
             )
         )

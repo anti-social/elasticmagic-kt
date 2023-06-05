@@ -28,10 +28,19 @@ data class FunctionScore(
     override fun clone() = copy()
 
     override fun children(): Iterator<Expression<*>> = iterator {
+        if (query != null) {
+            yield(query)
+        }
         yieldAll(functions)
     }
 
     override fun rewrite(newNode: QueryExpressionNode<*>): FunctionScore {
+        if (query != null) {
+            val newQuery = query.rewrite(newNode)
+            if (newQuery != query) {
+                return copy(query = newQuery)
+            }
+        }
         replaceNodeInExpressions(functions, { it.rewrite(newNode) }) {
             return copy(functions = it)
         }
@@ -39,8 +48,9 @@ data class FunctionScore(
     }
 
     override fun reduce(): QueryExpression? {
+        val reducedQuery = query?.reduce()
         if (functions.isEmpty() && minScore == null) {
-            return query?.reduce()
+            return reducedQuery
         }
         val reducedFunctions = ArrayList<Function>(functions.size)
         var hasReducedFunctions = false
@@ -51,8 +61,8 @@ data class FunctionScore(
                 hasReducedFunctions = true
             }
         }
-        if (hasReducedFunctions) {
-            return copy(functions = reducedFunctions)
+        if (reducedQuery != query || hasReducedFunctions) {
+            return copy(query = reducedQuery, functions = reducedFunctions)
         }
         return this
     }
@@ -134,29 +144,13 @@ data class FunctionScore(
         }
     }
 
-    data class FieldValueFactor<T> private constructor(
+    data class FieldValueFactor<T: Number>(
         val field: FieldOperations<T>,
         val factor: Float? = null,
         val missing: T? = null,
         val modifier: Modifier? = null,
         override val filter: QueryExpression? = null,
     ) : Function() {
-        companion object {
-            operator fun <T: Number> invoke(
-                field: FieldOperations<T>,
-                factor: Float? = null,
-                missing: T? = null,
-                modifier: Modifier? = null,
-                filter: QueryExpression? = null,
-            ) = FieldValueFactor(
-                field,
-                factor = factor,
-                missing = missing,
-                modifier = modifier,
-                filter = filter,
-            )
-        }
-
         override fun clone() = copy()
 
         override fun copyWithFilter(filter: QueryExpression?) = copy(filter = filter)
