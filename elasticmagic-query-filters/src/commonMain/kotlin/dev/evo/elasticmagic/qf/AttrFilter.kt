@@ -337,15 +337,15 @@ class PreparedAttrExpressionFilter(
     val filter: AttrSimpleFilter,
     name: String,
     paramName: String,
-    filterExpr: QueryExpression?,
-) : PreparedFilter<BaseFilterResult>(name, paramName, filterExpr) {
+    private val filterExpression: QueryExpression?,
+) : PreparedFilter<BaseFilterResult>(name, paramName, null) {
 
     override fun apply(
         searchQuery: SearchQuery<*>,
         otherFacetFilterExpressions: List<QueryExpression>
     ) {
-        if (facetFilterExpr != null) {
-            searchQuery.filter(facetFilterExpr)
+        if (filterExpression != null) {
+            searchQuery.filter(filterExpression)
         }
     }
 
