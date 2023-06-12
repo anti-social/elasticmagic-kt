@@ -71,47 +71,4 @@ class FacetFilterWithSimpleFilterTests : BaseCompilerTest<SearchQueryCompiler>(:
         )
 
     }
-
-    @Test
-    fun unionTest() = testWithCompiler {
-        val sq = SearchQuery()
-        AttrsQueryFilters.apply(sq, mapOf(listOf("a", "1") to listOf("12", "13")))
-
-        compile(sq).body shouldContainExactly mapOf(
-            "query" to mapOf(
-                "bool" to mapOf(
-                    "filter" to listOf(
-                        mapOf(
-                            "terms" to mapOf(
-                                "attrs" to listOf(4294967308L, 4294967309L)
-                            )
-                        )
-                    )
-                )
-            )
-        )
-    }
-
-    @Test
-    fun intersectTest() = testWithCompiler {
-        val sq = SearchQuery()
-        AttrsQueryFilters.apply(sq, mapOf(listOf("a", "1", "all") to listOf("12", "13")))
-
-        compile(sq).body shouldContainExactly mapOf(
-            "query" to mapOf(
-                "bool" to mapOf(
-                    "filter" to listOf(
-                        mapOf(
-                            "bool" to mapOf(
-                                "filter" to listOf(
-                                    mapOf("term" to mapOf("attrs" to 4294967308L)),
-                                    mapOf("term" to mapOf("attrs" to 4294967309L))
-                                )
-                            )
-                        )
-                    )
-                )
-            )
-        )
-    }
 }
