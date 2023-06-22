@@ -274,7 +274,7 @@ class ElasticsearchKtorTransportTests {
             trackers = listOf(
                 {
                     object : Tracker {
-                        override fun onRequest(request: PlainRequest) {
+                        override suspend fun onRequest(request: PlainRequest) {
                             request.method shouldBe Method.GET
                             request.path shouldBe "products/_count"
                             request.contentType shouldBe "application/json"
@@ -283,7 +283,7 @@ class ElasticsearchKtorTransportTests {
                             request.textContent.shouldBeNull()
                         }
 
-                        override fun onResponse(responseResult: Result<PlainResponse>, duration: Duration) {
+                        override suspend fun onResponse(responseResult: Result<PlainResponse>, duration: Duration) {
                             val response = responseResult.getOrThrow()
                             response.shouldBeInstanceOf<PlainResponse>()
                             response.statusCode shouldBe 200
@@ -336,7 +336,7 @@ class ElasticsearchKtorTransportTests {
                             return false
                         }
 
-                        override fun onRequest(request: PlainRequest) {
+                        override suspend fun onRequest(request: PlainRequest) {
                             request.method shouldBe Method.GET
                             request.path shouldBe "products/_search"
                             request.contentType shouldBe "application/json"
@@ -345,7 +345,7 @@ class ElasticsearchKtorTransportTests {
                             request.textContent shouldBe expectedContent
                         }
 
-                        override fun onResponse(responseResult: Result<PlainResponse>, duration: Duration) {
+                        override suspend fun onResponse(responseResult: Result<PlainResponse>, duration: Duration) {
                             val response = responseResult.getOrThrow()
                             response.shouldBeInstanceOf<PlainResponse>()
                             response.statusCode shouldBe 200
@@ -395,12 +395,12 @@ class ElasticsearchKtorTransportTests {
             trackers = listOf(
                 {
                     object : Tracker {
-                        override fun onRequest(request: PlainRequest) {
+                        override suspend fun onRequest(request: PlainRequest) {
                             request.method shouldBe Method.GET
                             request.path shouldBe "products/_count"
                         }
 
-                        override fun onResponse(responseResult: Result<PlainResponse>, duration: Duration) {
+                        override suspend fun onResponse(responseResult: Result<PlainResponse>, duration: Duration) {
                             // Interesting case that leads to VerifyError
                             // responseResult.shouldBeInstanceOf<ResponseResult.Error>()
                             // responseResult.statusCode shouldBe 400

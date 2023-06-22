@@ -411,8 +411,8 @@ public final class dev/evo/elasticmagic/transport/ResponseResult$Ok : dev/evo/el
 }
 
 public abstract interface class dev/evo/elasticmagic/transport/Tracker {
-	public abstract fun onRequest (Ldev/evo/elasticmagic/transport/PlainRequest;)V
-	public abstract fun onResponse-YxnbvcA (Ljava/lang/Object;J)V
+	public abstract fun onRequest (Ldev/evo/elasticmagic/transport/PlainRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun onResponse-XYauLR0 (Ljava/lang/Object;JLkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun requiresTextContent (Ldev/evo/elasticmagic/transport/Request;)Z
 }
 
