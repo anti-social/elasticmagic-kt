@@ -310,9 +310,9 @@ sealed class ResponseResult<T> {
 interface Tracker {
     fun requiresTextContent(request: Request<*, *, *>): Boolean = false
 
-    fun onRequest(request: PlainRequest)
+    suspend fun onRequest(request: PlainRequest)
 
-    fun onResponse(responseResult: Result<PlainResponse>, duration: Duration)
+    suspend fun onResponse(responseResult: Result<PlainResponse>, duration: Duration)
 }
 
 abstract class ElasticsearchTransport(
