@@ -45,13 +45,13 @@ actual val esTransport = ElasticsearchKtorTransport(
             object : Tracker {
                 override fun requiresTextContent(request: Request<*, *, *>) = true
 
-                override fun onRequest(request: PlainRequest) {
+                override suspend fun onRequest(request: PlainRequest) {
                     println(">>>")
                     println("${request.method} ${request.path.ifEmpty { "/" }}")
                     println(request.textContent)
                 }
 
-                override fun onResponse(responseResult: Result<PlainResponse>, duration: Duration) {
+                override suspend fun onResponse(responseResult: Result<PlainResponse>, duration: Duration) {
                     responseResult
                         .onSuccess { response ->
                             println("<<< ${response.statusCode}: ${duration}")

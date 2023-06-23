@@ -34,7 +34,7 @@ abstract class ElasticsearchTestBase : TestBase() {
             object : Tracker {
                 override fun requiresTextContent(request: Request<*, *, *>) = true
 
-                override fun onRequest(request: PlainRequest) {
+                override suspend fun onRequest(request: PlainRequest) {
                     if (!debug.value) {
                         return
                     }
@@ -47,7 +47,7 @@ abstract class ElasticsearchTestBase : TestBase() {
                     println()
                 }
 
-                override fun onResponse(responseResult: Result<PlainResponse>, duration: Duration) {
+                override suspend fun onResponse(responseResult: Result<PlainResponse>, duration: Duration) {
                     if (!debug.value) {
                         return
                     }
