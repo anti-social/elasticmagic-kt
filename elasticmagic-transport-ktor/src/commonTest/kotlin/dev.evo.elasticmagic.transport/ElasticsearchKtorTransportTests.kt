@@ -43,6 +43,7 @@ class ElasticsearchKtorTransportTests {
             "http://example.com:9200",
             MockEngine { request ->
                 request.method shouldBe HttpMethod.Head
+                request.headers["accept-encoding"] shouldBe "gzip,deflate,identity"
                 request.url.encodedPath shouldBe "/products"
                 request.body.contentType.shouldBeNull()
                 request.body.toByteArray().decodeToString().shouldBeEmpty()
@@ -72,6 +73,7 @@ class ElasticsearchKtorTransportTests {
             "http://example.com:9200",
             MockEngine { request ->
                 request.method shouldBe HttpMethod.Put
+                request.headers["accept-encoding"] shouldBe "gzip,deflate,identity"
                 request.url.encodedPath shouldBe "/products/_settings"
                 request.body.contentType shouldBe ContentType.Application.Json
                 request.body.toByteArray().decodeToString() shouldBe """{"index":{"number_of_replicas":2}}"""
@@ -104,99 +106,102 @@ class ElasticsearchKtorTransportTests {
         )
     }
 
-     @Test
-     fun deleteRequest() = runTest {
-         val client = ElasticsearchKtorTransport(
-             "http://example.com:9200",
-             MockEngine { request ->
-                 request.method shouldBe HttpMethod.Delete
-                 request.url.encodedPath shouldBe "/products_v2"
-                 request.body.toByteArray().decodeToString().shouldBeEmpty()
+    @Test
+    fun deleteRequest() = runTest {
+        val client = ElasticsearchKtorTransport(
+            "http://example.com:9200",
+            MockEngine { request ->
+                request.method shouldBe HttpMethod.Delete
+                request.headers["accept-encoding"] shouldBe "gzip,deflate,identity"
+                request.url.encodedPath shouldBe "/products_v2"
+                request.body.toByteArray().decodeToString().shouldBeEmpty()
 
-                 respond(
-                     """{"acknowledge": true}""",
-                     headers = headersOf(
-                         HttpHeaders.ContentType, ContentType.Application.Json.toString()
-                     )
-                 )
-             }
-         )
-         val result = client.request(
-             ApiRequest(
-                 Method.DELETE,
-                 "products_v2",
-                 serde = JsonSerde,
-                 processResponse = { resp -> resp.content.toMap() }
-             )
-         )
-         result shouldContainExactly mapOf(
-             "acknowledge" to true
-         )
-     }
+                respond(
+                    """{"acknowledge": true}""",
+                    headers = headersOf(
+                        HttpHeaders.ContentType, ContentType.Application.Json.toString()
+                    )
+                )
+            }
+        )
+        val result = client.request(
+            ApiRequest(
+                Method.DELETE,
+                "products_v2",
+                serde = JsonSerde,
+                processResponse = { resp -> resp.content.toMap() }
+            )
+        )
+        result shouldContainExactly mapOf(
+            "acknowledge" to true
+        )
+    }
 
-     @Test
-     fun bulkRequest() = runTest {
-         val client = ElasticsearchKtorTransport(
-             "http://example.com:9200",
-             MockEngine { request ->
-                 request.method shouldBe HttpMethod.Post
-                 request.url.encodedPath shouldBe "/_bulk"
-                 request.body.contentType shouldBe ContentType("application", "x-ndjson")
-                 val rawBody = request.body.toByteArray().decodeToString()
-                 JsonDeserializer.objFromStringOrNull(rawBody)
-                     .shouldNotBeNull().toMap() shouldContainExactly mapOf(
-                         "delete" to mapOf(
-                             "_id" to "123",
-                             "_index" to "test",
-                         )
-                     )
-                 val respBody = buildJsonObject {
-                     put("took", 7)
-                     put("errors", false)
-                     putJsonArray("items") {
-                         addJsonObject {
-                             putJsonObject("delete") {
-                                 put("_index", "test")
-                                 put("_type", "_doc")
-                                 put("_id", "123")
-                             }
-                         }
-                     }
-                 }
+    @Test
+    fun bulkRequest() = runTest {
+        val client = ElasticsearchKtorTransport(
+            "http://example.com:9200",
+            MockEngine { request ->
+                request.method shouldBe HttpMethod.Post
+                request.headers["accept-encoding"] shouldBe "gzip,deflate,identity"
+                request.url.encodedPath shouldBe "/_bulk"
+                request.body.contentType shouldBe ContentType("application", "x-ndjson")
+                val rawBody = request.body.toByteArray().decodeToString()
+                JsonDeserializer.objFromStringOrNull(rawBody)
+                    .shouldNotBeNull()
+                    .toMap() shouldContainExactly mapOf(
+                        "delete" to mapOf(
+                            "_id" to "123",
+                            "_index" to "test",
+                        )
+                    )
+                val respBody = buildJsonObject {
+                    put("took", 7)
+                    put("errors", false)
+                    putJsonArray("items") {
+                        addJsonObject {
+                            putJsonObject("delete") {
+                                put("_index", "test")
+                                put("_type", "_doc")
+                                put("_id", "123")
+                            }
+                        }
+                    }
+                }
 
-                 respond(
-                     Json.encodeToString(respBody)
-                 )
-             }
-         )
-         val body = JsonSerializer.obj {
+                respond(
+                    Json.encodeToString(respBody)
+                )
+            }
+        )
+        val body = JsonSerializer.obj {
             obj("delete") {
                 field("_id", "123")
                 field("_index", "test")
             }
         }
-         val result = client.request(
-             BulkRequest(
-                 Method.POST, "_bulk",
-                 body = listOf(body),
-                 serde = JsonSerde,
-                 processResponse = { resp -> resp.content.toMap() }
-             )
-         )
-         result shouldContainExactly mapOf(
-             "took" to 7L,
-             "errors" to false,
-             "items" to listOf(
-                 mapOf(
-                     "delete" to mapOf(
-                         "_index" to "test",
-                         "_type" to "_doc",
-                         "_id" to "123",
-                     )
-                 )
-             )
-         )
-     }
+        val result = client.request(
+            BulkRequest(
+                Method.POST, "_bulk",
+                body = listOf(body),
+                serde = JsonSerde,
+                processResponse = { resp -> resp.content.toMap() }
+            )
+        )
+        result shouldContainExactly mapOf(
+            "took" to 7L,
+            "errors" to false,
+            "items" to listOf(
+                mapOf(
+                    "delete" to mapOf(
+                        "_index" to "test",
+                        "_type" to "_doc",
+                        "_id" to "123",
+                    )
+                )
+            )
+        )
+    }
 
     @Test
     fun catRequest() = runTest {
@@ -204,6 +209,7 @@ class ElasticsearchKtorTransportTests {
             "http://example.com:9200",
             MockEngine { request ->
                 request.method shouldBe HttpMethod.Get
+                request.headers["accept-encoding"] shouldBe "gzip,deflate,identity"
                 request.url.encodedPath shouldBe "/_cat/nodes"
                 request.body.contentType.shouldBeNull()
                 respond(
@@ -231,6 +237,7 @@ class ElasticsearchKtorTransportTests {
             "http://example.com:9200",
             MockEngine { request ->
                 request.method shouldBe HttpMethod.Post
+                request.headers["accept-encoding"] shouldBe "gzip,deflate,identity"
                 request.url.encodedPath shouldBe "/products_v2/_forcemerge"
                 request.body.toByteArray().decodeToString().shouldBeEmpty()
                 respondError(
@@ -258,6 +265,7 @@ class ElasticsearchKtorTransportTests {
             "http://example.com:9200",
             MockEngine { request ->
                 request.method shouldBe HttpMethod.Get
+                request.headers["accept-encoding"] shouldBe "gzip,deflate,identity"
                 request.url.encodedPath shouldBe "/products/_count"
                 request.body.contentType.shouldBeNull()
                 request.body.toByteArray().decodeToString().shouldBeEmpty()
@@ -313,6 +321,7 @@ class ElasticsearchKtorTransportTests {
             "http://example.com:9200",
             MockEngine { request ->
                 request.method shouldBe HttpMethod.Get
+                request.headers["accept-encoding"] shouldBe "gzip,deflate,identity"
                 request.url.encodedPath shouldBe "/products/_search"
                 request.body.contentType shouldBe ContentType.Application.Json
                 request.body.toByteArray().decodeToString() shouldBe expectedContent
