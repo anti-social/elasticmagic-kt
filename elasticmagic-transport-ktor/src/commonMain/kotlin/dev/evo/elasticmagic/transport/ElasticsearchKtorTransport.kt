@@ -30,7 +30,11 @@ class ElasticsearchKtorTransport(
         expectSuccess = false
 
         // Enable compressed response from Elasticsearch
-        install(ContentEncoding)
+        install(ContentEncoding) {
+            gzip()
+            deflate()
+            identity()
+        }
 
         when (val auth = config.auth) {
             is dev.evo.elasticmagic.transport.Auth.Basic -> {
