@@ -11,6 +11,7 @@ import io.kotest.matchers.maps.shouldContainExactly
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.string.shouldBeEmpty
 import io.kotest.matchers.types.shouldBeInstanceOf
 
@@ -351,6 +352,83 @@ class ElasticsearchKtorTransportTests {
                             request.contentType shouldBe "application/json"
                             request.contentEncoding.shouldBeNull()
                             request.content shouldBe expectedContent.encodeToByteArray()
+                            request.textContent shouldBe expectedContent
+                        }
+
+                        override suspend fun onResponse(responseResult: Result<PlainResponse>, duration: Duration) {
+                            val response = responseResult.getOrThrow()
+                            response.shouldBeInstanceOf<PlainResponse>()
+                            response.statusCode shouldBe 200
+                            response.contentType shouldBe "application/json"
+                            response.content shouldBe """{"total_hits": 21}"""
+                            duration shouldBeGreaterThan Duration.ZERO
+                        }
+                    }
+                }
+            )
+        }
+        val result = client.request(
+            ApiRequest(
+                Method.GET,
+                "products/_search",
+                body = JsonSerializer.obj {
+                    obj("query") {
+                        obj("match_all") {}
+                    }
+                },
+                serde = JsonSerde,
+                processResponse = { resp -> resp.content.toMap() }
+            )
+        )
+        result shouldContainExactly mapOf("total_hits" to 21L)
+    }
+
+    @Test
+    fun trackersThatRequireTextContentWithGzipEncoder() = runTest {
+        val expectedContent = """{"query":{"match_all":{}}}"""
+        val client = ElasticsearchKtorTransport(
+            "http://example.com:9200",
+            MockEngine { request ->
+                request.method shouldBe HttpMethod.Get
+                if (isGzipSupported) {
+                    request.headers["content-encoding"] shouldBe "gzip"
+                } else {
+                    request.headers["content-encoding"].shouldBeNull()
+                }
+                request.url.encodedPath shouldBe "/products/_search"
+                request.body.contentType shouldBe ContentType.Application.Json
+
+                respond(
+                    """{"total_hits": 21}""",
+                    headers = headersOf(
+                        HttpHeaders.ContentType,
+                        ContentType.Application.Json.withParameter("charset", "UTF-8").toString()
+                    )
+                )
+            }
+        ) {
+            gzipRequests = true
+            trackers = listOf(
+                {
+                    object : Tracker {
+                        override fun requiresTextContent(request: Request<*, *, *>): Boolean {
+                            if (request.path.endsWith("/_search")) {
+                                return true
+                            }
+                            return false
+                        }
+
+                        override suspend fun onRequest(request: PlainRequest) {
+                            request.method shouldBe Method.GET
+                            request.path shouldBe "products/_search"
+                            request.contentType shouldBe "application/json"
+                            if (isGzipSupported) {
+                                request.contentEncoding shouldBe "gzip"
+                                request.content shouldNotBe expectedContent.encodeToByteArray()
+                            } else {
+                                request.contentEncoding.shouldBeNull()
+                                request.content shouldBe expectedContent.encodeToByteArray()
+                            }
                             request.textContent shouldBe expectedContent
                         }
 
