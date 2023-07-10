@@ -1,7 +1,5 @@
 package dev.evo.elasticmagic.transport
 
-import dev.evo.elasticmagic.serde.platform
-import dev.evo.elasticmagic.serde.Platform
 import dev.evo.elasticmagic.serde.toMap
 import dev.evo.elasticmagic.serde.kotlinx.JsonDeserializer
 import dev.evo.elasticmagic.serde.kotlinx.JsonSerde
@@ -40,11 +38,6 @@ import kotlin.time.Duration
 
 @ExperimentalStdlibApi
 class ElasticsearchKtorTransportTests {
-    private val expectedAcceptEncoding = if (platform == Platform.JVM) {
-        "gzip,deflate,identity"
-    } else {
-        ""
-    }
 
     @Test
     fun headRequest() = runTest {
@@ -52,7 +45,7 @@ class ElasticsearchKtorTransportTests {
             "http://example.com:9200",
             MockEngine { request ->
                 request.method shouldBe HttpMethod.Head
-                request.headers["accept-encoding"] shouldBe expectedAcceptEncoding
+                request.headers["accept-encoding"].shouldBeNull()
                 request.url.encodedPath shouldBe "/products"
                 request.body.contentType.shouldBeNull()
                 request.body.toByteArray().decodeToString().shouldBeEmpty()
@@ -82,7 +75,7 @@ class ElasticsearchKtorTransportTests {
             "http://example.com:9200",
             MockEngine { request ->
                 request.method shouldBe HttpMethod.Put
-                request.headers["accept-encoding"] shouldBe expectedAcceptEncoding
+                request.headers["accept-encoding"].shouldBeNull()
                 request.url.encodedPath shouldBe "/products/_settings"
                 request.body.contentType shouldBe ContentType.Application.Json
                 request.body.toByteArray().decodeToString() shouldBe """{"index":{"number_of_replicas":2}}"""
@@ -121,7 +114,7 @@ class ElasticsearchKtorTransportTests {
             "http://example.com:9200",
             MockEngine { request ->
                 request.method shouldBe HttpMethod.Delete
-                request.headers["accept-encoding"] shouldBe expectedAcceptEncoding
+                request.headers["accept-encoding"].shouldBeNull()
                 request.url.encodedPath shouldBe "/products_v2"
                 request.body.toByteArray().decodeToString().shouldBeEmpty()
 
@@ -152,7 +145,7 @@ class ElasticsearchKtorTransportTests {
             "http://example.com:9200",
             MockEngine { request ->
                 request.method shouldBe HttpMethod.Post
-                request.headers["accept-encoding"] shouldBe expectedAcceptEncoding
+                request.headers["accept-encoding"].shouldBeNull()
                 request.url.encodedPath shouldBe "/_bulk"
                 request.body.contentType shouldBe ContentType("application", "x-ndjson")
                 val rawBody = request.body.toByteArray().decodeToString()
@@ -218,7 +211,7 @@ class ElasticsearchKtorTransportTests {
             "http://example.com:9200",
             MockEngine { request ->
                 request.method shouldBe HttpMethod.Get
-                request.headers["accept-encoding"] shouldBe expectedAcceptEncoding
+                request.headers["accept-encoding"].shouldBeNull()
                 request.url.encodedPath shouldBe "/_cat/nodes"
                 request.body.contentType.shouldBeNull()
                 respond(
@@ -246,7 +239,7 @@ class ElasticsearchKtorTransportTests {
             "http://example.com:9200",
             MockEngine { request ->
                 request.method shouldBe HttpMethod.Post
-                request.headers["accept-encoding"] shouldBe expectedAcceptEncoding
+                request.headers["accept-encoding"].shouldBeNull()
                 request.url.encodedPath shouldBe "/products_v2/_forcemerge"
                 request.body.toByteArray().decodeToString().shouldBeEmpty()
                 respondError(
@@ -274,7 +267,7 @@ class ElasticsearchKtorTransportTests {
             "http://example.com:9200",
             MockEngine { request ->
                 request.method shouldBe HttpMethod.Get
-                request.headers["accept-encoding"] shouldBe expectedAcceptEncoding
+                request.headers["accept-encoding"].shouldBeNull()
                 request.url.encodedPath shouldBe "/products/_count"
                 request.body.contentType.shouldBeNull()
                 request.body.toByteArray().decodeToString().shouldBeEmpty()
@@ -330,7 +323,7 @@ class ElasticsearchKtorTransportTests {
             "http://example.com:9200",
             MockEngine { request ->
                 request.method shouldBe HttpMethod.Get
-                request.headers["accept-encoding"] shouldBe expectedAcceptEncoding
+                request.headers["accept-encoding"].shouldBeNull()
                 request.url.encodedPath shouldBe "/products/_search"
                 request.body.contentType shouldBe ContentType.Application.Json
                 request.body.toByteArray().decodeToString() shouldBe expectedContent
@@ -403,6 +396,7 @@ class ElasticsearchKtorTransportTests {
                 } else {
                     request.headers["content-encoding"].shouldBeNull()
                 }
+                request.headers["accept-encoding"] shouldBe "gzip,deflate,identity"
                 request.url.encodedPath shouldBe "/products/_search"
                 request.body.contentType shouldBe ContentType.Application.Json
 
