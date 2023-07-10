@@ -36,15 +36,15 @@ jobs:
         set -eux
         ./gradlew compileTestKotlinJvm $GRADLE_ARGS
 
-    - name: Compile JS
-      run: |
-        set -eux
-        ./gradlew compileTestKotlinJs $GRADLE_ARGS
-
     - name: Compile native
       run: |
         set -eux
         ./gradlew linkDebugTestNative $GRADLE_ARGS
+
+    - name: Compile JS
+      run: |
+        set -eux
+        ./gradlew compileTestKotlinJs $GRADLE_ARGS
 
     - name: Compile samples
       run: |

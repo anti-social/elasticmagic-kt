@@ -1,9 +1,9 @@
 package dev.evo.elasticmagic.transport
 
+import dev.evo.elasticmagic.serde.toMap
 import dev.evo.elasticmagic.serde.kotlinx.JsonDeserializer
 import dev.evo.elasticmagic.serde.kotlinx.JsonSerde
 import dev.evo.elasticmagic.serde.kotlinx.JsonSerializer
-import dev.evo.elasticmagic.serde.toMap
 
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.comparables.shouldBeGreaterThan
@@ -11,6 +11,7 @@ import io.kotest.matchers.maps.shouldContainExactly
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.string.shouldBeEmpty
 import io.kotest.matchers.types.shouldBeInstanceOf
 
@@ -37,12 +38,14 @@ import kotlin.time.Duration
 
 @ExperimentalStdlibApi
 class ElasticsearchKtorTransportTests {
+
     @Test
     fun headRequest() = runTest {
         val client = ElasticsearchKtorTransport(
             "http://example.com:9200",
             MockEngine { request ->
                 request.method shouldBe HttpMethod.Head
+                request.headers["accept-encoding"].shouldBeNull()
                 request.url.encodedPath shouldBe "/products"
                 request.body.contentType.shouldBeNull()
                 request.body.toByteArray().decodeToString().shouldBeEmpty()
@@ -72,6 +75,7 @@ class ElasticsearchKtorTransportTests {
             "http://example.com:9200",
             MockEngine { request ->
                 request.method shouldBe HttpMethod.Put
+                request.headers["accept-encoding"].shouldBeNull()
                 request.url.encodedPath shouldBe "/products/_settings"
                 request.body.contentType shouldBe ContentType.Application.Json
                 request.body.toByteArray().decodeToString() shouldBe """{"index":{"number_of_replicas":2}}"""
@@ -104,99 +108,102 @@ class ElasticsearchKtorTransportTests {
         )
     }
 
-     @Test
-     fun deleteRequest() = runTest {
-         val client = ElasticsearchKtorTransport(
-             "http://example.com:9200",
-             MockEngine { request ->
-                 request.method shouldBe HttpMethod.Delete
-                 request.url.encodedPath shouldBe "/products_v2"
-                 request.body.toByteArray().decodeToString().shouldBeEmpty()
+    @Test
+    fun deleteRequest() = runTest {
+        val client = ElasticsearchKtorTransport(
+            "http://example.com:9200",
+            MockEngine { request ->
+                request.method shouldBe HttpMethod.Delete
+                request.headers["accept-encoding"].shouldBeNull()
+                request.url.encodedPath shouldBe "/products_v2"
+                request.body.toByteArray().decodeToString().shouldBeEmpty()
 
-                 respond(
-                     """{"acknowledge": true}""",
-                     headers = headersOf(
-                         HttpHeaders.ContentType, ContentType.Application.Json.toString()
-                     )
-                 )
-             }
-         )
-         val result = client.request(
-             ApiRequest(
-                 Method.DELETE,
-                 "products_v2",
-                 serde = JsonSerde,
-                 processResponse = { resp -> resp.content.toMap() }
-             )
-         )
-         result shouldContainExactly mapOf(
-             "acknowledge" to true
-         )
-     }
+                respond(
+                    """{"acknowledge": true}""",
+                    headers = headersOf(
+                        HttpHeaders.ContentType, ContentType.Application.Json.toString()
+                    )
+                )
+            }
+        )
+        val result = client.request(
+            ApiRequest(
+                Method.DELETE,
+                "products_v2",
+                serde = JsonSerde,
+                processResponse = { resp -> resp.content.toMap() }
+            )
+        )
+        result shouldContainExactly mapOf(
+            "acknowledge" to true
+        )
+    }
 
-     @Test
-     fun bulkRequest() = runTest {
-         val client = ElasticsearchKtorTransport(
-             "http://example.com:9200",
-             MockEngine { request ->
-                 request.method shouldBe HttpMethod.Post
-                 request.url.encodedPath shouldBe "/_bulk"
-                 request.body.contentType shouldBe ContentType("application", "x-ndjson")
-                 val rawBody = request.body.toByteArray().decodeToString()
-                 JsonDeserializer.objFromStringOrNull(rawBody)
-                     .shouldNotBeNull().toMap() shouldContainExactly mapOf(
-                         "delete" to mapOf(
-                             "_id" to "123",
-                             "_index" to "test",
-                         )
-                     )
-                 val respBody = buildJsonObject {
-                     put("took", 7)
-                     put("errors", false)
-                     putJsonArray("items") {
-                         addJsonObject {
-                             putJsonObject("delete") {
-                                 put("_index", "test")
-                                 put("_type", "_doc")
-                                 put("_id", "123")
-                             }
-                         }
-                     }
-                 }
+    @Test
+    fun bulkRequest() = runTest {
+        val client = ElasticsearchKtorTransport(
+            "http://example.com:9200",
+            MockEngine { request ->
+                request.method shouldBe HttpMethod.Post
+                request.headers["accept-encoding"].shouldBeNull()
+                request.url.encodedPath shouldBe "/_bulk"
+                request.body.contentType shouldBe ContentType("application", "x-ndjson")
+                val rawBody = request.body.toByteArray().decodeToString()
+                JsonDeserializer.objFromStringOrNull(rawBody)
+                    .shouldNotBeNull()
+                    .toMap() shouldContainExactly mapOf(
+                        "delete" to mapOf(
+                            "_id" to "123",
+                            "_index" to "test",
+                        )
+                    )
+                val respBody = buildJsonObject {
+                    put("took", 7)
+                    put("errors", false)
+                    putJsonArray("items") {
+                        addJsonObject {
+                            putJsonObject("delete") {
+                                put("_index", "test")
+                                put("_type", "_doc")
+                                put("_id", "123")
+                            }
+                        }
+                    }
+                }
 
-                 respond(
-                     Json.encodeToString(respBody)
-                 )
-             }
-         )
-         val body = JsonSerializer.obj {
+                respond(
+                    Json.encodeToString(respBody)
+                )
+            }
+        )
+        val body = JsonSerializer.obj {
             obj("delete") {
                 field("_id", "123")
                 field("_index", "test")
             }
         }
-         val result = client.request(
-             BulkRequest(
-                 Method.POST, "_bulk",
-                 body = listOf(body),
-                 serde = JsonSerde,
-                 processResponse = { resp -> resp.content.toMap() }
-             )
-         )
-         result shouldContainExactly mapOf(
-             "took" to 7L,
-             "errors" to false,
-             "items" to listOf(
-                 mapOf(
-                     "delete" to mapOf(
-                         "_index" to "test",
-                         "_type" to "_doc",
-                         "_id" to "123",
-                     )
-                 )
-             )
-         )
-     }
+        val result = client.request(
+            BulkRequest(
+                Method.POST, "_bulk",
+                body = listOf(body),
+                serde = JsonSerde,
+                processResponse = { resp -> resp.content.toMap() }
+            )
+        )
+        result shouldContainExactly mapOf(
+            "took" to 7L,
+            "errors" to false,
+            "items" to listOf(
+                mapOf(
+                    "delete" to mapOf(
+                        "_index" to "test",
+                        "_type" to "_doc",
+                        "_id" to "123",
+                    )
+                )
+            )
+        )
+    }
 
     @Test
     fun catRequest() = runTest {
@@ -204,6 +211,7 @@ class ElasticsearchKtorTransportTests {
             "http://example.com:9200",
             MockEngine { request ->
                 request.method shouldBe HttpMethod.Get
+                request.headers["accept-encoding"].shouldBeNull()
                 request.url.encodedPath shouldBe "/_cat/nodes"
                 request.body.contentType.shouldBeNull()
                 respond(
@@ -231,6 +239,7 @@ class ElasticsearchKtorTransportTests {
             "http://example.com:9200",
             MockEngine { request ->
                 request.method shouldBe HttpMethod.Post
+                request.headers["accept-encoding"].shouldBeNull()
                 request.url.encodedPath shouldBe "/products_v2/_forcemerge"
                 request.body.toByteArray().decodeToString().shouldBeEmpty()
                 respondError(
@@ -258,6 +267,7 @@ class ElasticsearchKtorTransportTests {
             "http://example.com:9200",
             MockEngine { request ->
                 request.method shouldBe HttpMethod.Get
+                request.headers["accept-encoding"].shouldBeNull()
                 request.url.encodedPath shouldBe "/products/_count"
                 request.body.contentType.shouldBeNull()
                 request.body.toByteArray().decodeToString().shouldBeEmpty()
@@ -313,6 +323,7 @@ class ElasticsearchKtorTransportTests {
             "http://example.com:9200",
             MockEngine { request ->
                 request.method shouldBe HttpMethod.Get
+                request.headers["accept-encoding"].shouldBeNull()
                 request.url.encodedPath shouldBe "/products/_search"
                 request.body.contentType shouldBe ContentType.Application.Json
                 request.body.toByteArray().decodeToString() shouldBe expectedContent
@@ -342,6 +353,84 @@ class ElasticsearchKtorTransportTests {
                             request.contentType shouldBe "application/json"
                             request.contentEncoding.shouldBeNull()
                             request.content shouldBe expectedContent.encodeToByteArray()
+                            request.textContent shouldBe expectedContent
+                        }
+
+                        override suspend fun onResponse(responseResult: Result<PlainResponse>, duration: Duration) {
+                            val response = responseResult.getOrThrow()
+                            response.shouldBeInstanceOf<PlainResponse>()
+                            response.statusCode shouldBe 200
+                            response.contentType shouldBe "application/json"
+                            response.content shouldBe """{"total_hits": 21}"""
+                            duration shouldBeGreaterThan Duration.ZERO
+                        }
+                    }
+                }
+            )
+        }
+        val result = client.request(
+            ApiRequest(
+                Method.GET,
+                "products/_search",
+                body = JsonSerializer.obj {
+                    obj("query") {
+                        obj("match_all") {}
+                    }
+                },
+                serde = JsonSerde,
+                processResponse = { resp -> resp.content.toMap() }
+            )
+        )
+        result shouldContainExactly mapOf("total_hits" to 21L)
+    }
+
+    @Test
+    fun trackersThatRequireTextContentWithGzipEncoder() = runTest {
+        val expectedContent = """{"query":{"match_all":{}}}"""
+        val client = ElasticsearchKtorTransport(
+            "http://example.com:9200",
+            MockEngine { request ->
+                request.method shouldBe HttpMethod.Get
+                if (isGzipSupported) {
+                    request.headers["content-encoding"] shouldBe "gzip"
+                } else {
+                    request.headers["content-encoding"].shouldBeNull()
+                }
+                request.headers["accept-encoding"] shouldBe "gzip,deflate,identity"
+                request.url.encodedPath shouldBe "/products/_search"
+                request.body.contentType shouldBe ContentType.Application.Json
+
+                respond(
+                    """{"total_hits": 21}""",
+                    headers = headersOf(
+                        HttpHeaders.ContentType,
+                        ContentType.Application.Json.withParameter("charset", "UTF-8").toString()
+                    )
+                )
+            }
+        ) {
+            gzipRequests = true
+            trackers = listOf(
+                {
+                    object : Tracker {
+                        override fun requiresTextContent(request: Request<*, *, *>): Boolean {
+                            if (request.path.endsWith("/_search")) {
+                                return true
+                            }
+                            return false
+                        }
+
+                        override suspend fun onRequest(request: PlainRequest) {
+                            request.method shouldBe Method.GET
+                            request.path shouldBe "products/_search"
+                            request.contentType shouldBe "application/json"
+                            if (isGzipSupported) {
+                                request.contentEncoding shouldBe "gzip"
+                                request.content shouldNotBe expectedContent.encodeToByteArray()
+                            } else {
+                                request.contentEncoding.shouldBeNull()
+                                request.content shouldBe expectedContent.encodeToByteArray()
+                            }
                             request.textContent shouldBe expectedContent
                         }
 

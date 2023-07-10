@@ -21,6 +21,7 @@ abstract class ElasticsearchTestBase : TestBase() {
     abstract val indexName: String
 
     protected val debug = atomic(false)
+    // TODO: Also test against a transport with an enabled gzipRequests setting
     protected val transport = ElasticsearchKtorTransport(
         elasticUrl,
         engine = httpEngine,

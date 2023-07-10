@@ -1,13 +1,16 @@
 package dev.evo.elasticmagic
 
 import dev.evo.elasticmagic.serde.kotlinx.JsonSerde
+import dev.evo.elasticmagic.transport.ApiRequest
 import dev.evo.elasticmagic.transport.CatRequest
 import dev.evo.elasticmagic.transport.ElasticsearchException
 import dev.evo.elasticmagic.transport.ElasticsearchKtorTransport
+import dev.evo.elasticmagic.transport.Method
 import dev.evo.elasticmagic.transport.TransportError
 
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.string.shouldContain
 import io.kotest.matchers.types.shouldBeInstanceOf
 
@@ -54,5 +57,32 @@ class ElasticsearchTransportTests : TestBase() {
         error.shouldBeInstanceOf<TransportError.Structured>()
         error.type shouldBe "illegal_argument_exception"
         error.reason shouldContain "unknown_parameter"
+    }
+
+    @Test
+    fun compressedRequest() = runTest {
+        val transport = ElasticsearchKtorTransport(
+            elasticUrl,
+            engine = httpEngine,
+        ) {
+            gzipRequests = true
+            if (elasticAuth != null) {
+                auth = elasticAuth
+            }
+        }
+        val result = transport.request(
+            ApiRequest(
+                Method.POST,
+                "_search",
+                parameters = mapOf("terminate_after" to listOf("1")),
+                body = JsonSerde.serializer.obj {
+                    obj("query") {
+                        obj("match_all") {}
+                    }
+                },
+                serde = JsonSerde
+            )
+        )
+        result.long("took").shouldNotBeNull()
     }
 }

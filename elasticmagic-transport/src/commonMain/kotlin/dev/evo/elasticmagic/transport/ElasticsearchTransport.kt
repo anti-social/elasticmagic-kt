@@ -91,6 +91,10 @@ class PreservingOriginGzipEncoder : BaseGzipEncoder() {
     override fun toByteArray(): ByteArray {
         return gzipEncoder.toByteArray()
     }
+
+    override fun toString(): String {
+        return identEncoder.toString()
+    }
 }
 
 sealed class Auth {
