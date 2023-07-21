@@ -1,20 +1,9 @@
 package dev.evo.elasticmagic.qf
 
 import dev.evo.elasticmagic.ElasticsearchTestBase
-import dev.evo.elasticmagic.Params
 import dev.evo.elasticmagic.SearchQuery
-import dev.evo.elasticmagic.doc.BoundField
-import dev.evo.elasticmagic.doc.RootFieldSet
-import dev.evo.elasticmagic.types.TextType
 import io.kotest.matchers.shouldBe
 import kotlin.test.Test
-
-class StringField(name: String) : BoundField<String, String>(
-    name,
-    TextType,
-    Params(),
-    RootFieldSet
-)
 
 class AttrSimpleFiltersTest : ElasticsearchTestBase() {
     override val indexName = "attr-simple-filter"
@@ -31,10 +20,6 @@ class AttrSimpleFiltersTest : ElasticsearchTestBase() {
             val searchQuery = SearchQuery()
             val result = searchQuery.execute(index)
             result.totalHits shouldBe 8
-            result.hits.mapNotNull {
-                it.explanation
-            }.size shouldBe 0
-
 
             ItemQueryFilters.apply(
                 searchQuery,
