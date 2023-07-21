@@ -4,8 +4,6 @@ import dev.evo.elasticmagic.BaseTest
 import dev.evo.elasticmagic.Params
 import dev.evo.elasticmagic.SearchQuery
 import dev.evo.elasticmagic.withIndex
-import dev.evo.elasticmagic.doc.BaseDocSource
-
 import io.kotest.matchers.types.shouldBeInstanceOf
 
 @Suppress("UnnecessaryAbstractClass")
@@ -35,7 +33,7 @@ abstract class BaseCompilerTest<T: BaseCompiler>(
     )
 
     protected fun SearchQueryCompiler.compile(query: SearchQuery<*>): CompiledSearchQuery {
-        val compiled = this@compile.compile<BaseDocSource>(serde, query.prepareSearch().withIndex("test"))
+        val compiled = this@compile.compile(serde, query.prepareSearch().withIndex("test"))
         return CompiledSearchQuery(
             params = compiled.parameters,
             body = compiled.body.shouldBeInstanceOf<TestSerializer.ObjectCtx>().toMap(),
