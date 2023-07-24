@@ -38,7 +38,7 @@ class ExplanationTest : ElasticsearchTestBase() {
             result.totalHits shouldBe 8
             val explanations = result.hits.mapNotNull { it.explanation }
 
-            explanations.size shouldBe 800
+            explanations.size shouldBe 8
             explanations.map { it.details shouldBe emptyList() }
 
         }
