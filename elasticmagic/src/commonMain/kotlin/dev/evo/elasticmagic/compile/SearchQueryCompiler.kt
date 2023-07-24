@@ -34,8 +34,8 @@ import dev.evo.elasticmagic.serde.forEachObj
 import dev.evo.elasticmagic.serde.toList
 import dev.evo.elasticmagic.serde.toMap
 import dev.evo.elasticmagic.toRequestParameters
-import dev.evo.elasticmagic.transport.BulkRequest
 import dev.evo.elasticmagic.transport.ApiRequest
+import dev.evo.elasticmagic.transport.BulkRequest
 import dev.evo.elasticmagic.transport.Method
 import dev.evo.elasticmagic.transport.Parameters
 
@@ -296,7 +296,10 @@ open class SearchQueryCompiler(
             sort = sort.ifEmpty { null },
             source = source,
             fields = fields,
-            explanation = if (preparedSearchQuery.params.containsKey("explain")) parseExplanation(rawHit.obj("_explanation")) else null,
+            explanation = if (preparedSearchQuery.params.containsKey("explain"))
+                parseExplanation(rawHit.obj("_explanation"))
+            else
+                null,
         )
     }
 

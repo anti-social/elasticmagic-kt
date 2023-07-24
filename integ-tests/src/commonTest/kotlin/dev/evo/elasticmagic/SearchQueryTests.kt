@@ -9,12 +9,12 @@ import dev.evo.elasticmagic.aggs.NestedAgg
 import dev.evo.elasticmagic.aggs.SingleBucketAggResult
 import dev.evo.elasticmagic.aggs.TermsAgg
 import dev.evo.elasticmagic.aggs.TermsAggResult
+import dev.evo.elasticmagic.bulk.DocSourceAndMeta
+import dev.evo.elasticmagic.bulk.withActionMeta
 import dev.evo.elasticmagic.doc.BaseDocSource
 import dev.evo.elasticmagic.doc.BoundField
 import dev.evo.elasticmagic.doc.DocSource
 import dev.evo.elasticmagic.doc.Document
-import dev.evo.elasticmagic.bulk.DocSourceAndMeta
-import dev.evo.elasticmagic.bulk.withActionMeta
 import dev.evo.elasticmagic.doc.DynDocSource
 import dev.evo.elasticmagic.doc.SubDocument
 import dev.evo.elasticmagic.doc.enum
@@ -26,25 +26,22 @@ import dev.evo.elasticmagic.query.Sort
 import dev.evo.elasticmagic.query.match
 import dev.evo.elasticmagic.transport.ElasticsearchException
 import dev.evo.elasticmagic.types.KeywordType
-
 import io.kotest.assertions.throwables.shouldThrow
-import io.kotest.matchers.shouldBe
-import io.kotest.matchers.booleans.shouldBeTrue
 import io.kotest.matchers.booleans.shouldBeFalse
+import io.kotest.matchers.booleans.shouldBeTrue
 import io.kotest.matchers.collections.shouldHaveSize
+import io.kotest.matchers.floats.shouldBeGreaterThan
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.nulls.shouldNotBeNull
-import io.kotest.matchers.floats.shouldBeGreaterThan
+import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldHaveMinLength
 import io.kotest.matchers.types.shouldBeInstanceOf
-
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.toInstant
-
 import kotlin.test.Test
 
 enum class OrderStatus(val id: Int) : ToValue<Int> {
@@ -655,10 +652,10 @@ class SearchQueryTests : ElasticsearchTestBase() {
                 .execute(index)
 
             searchResult.hits.size shouldBe 4
-            searchResult.hits.flatMap { hit -> hit.fields[dayOfWeekField]!! } shouldBe listOf(
+            searchResult.hits.flatMap { hit -> hit.fields[dayOfWeekField] } shouldBe listOf(
                 "Thursday", "Thursday", "Tuesday", "Wednesday"
             )
-            searchResult.hits.flatMap { hit -> hit.fields[statusStrField]!! } shouldBe listOf(
+            searchResult.hits.flatMap { hit -> hit.fields[statusStrField] } shouldBe listOf(
                 "1", "1", "0", "0"
             )
             val daysOfWeekAgg = searchResult.agg<TermsAggResult<String>>("days_of_week")
