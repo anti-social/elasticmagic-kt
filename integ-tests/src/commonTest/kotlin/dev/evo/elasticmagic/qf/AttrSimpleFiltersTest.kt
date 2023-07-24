@@ -18,7 +18,8 @@ class AttrSimpleFiltersTest : ElasticsearchTestBase() {
     fun attrSimpleFilterTest() = runTestWithSerdes {
         withFixtures(ItemDoc, FIXTURES) {
             val searchQuery = SearchQuery()
-            searchQuery.execute(index).totalHits shouldBe 8
+            val result = searchQuery.execute(index)
+            result.totalHits shouldBe 8
 
             ItemQueryFilters.apply(
                 searchQuery,

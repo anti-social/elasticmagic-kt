@@ -41,6 +41,12 @@ data class MultiSearchQueryResult(
     }
 }
 
+data class Explanation(
+    val value: Float,
+    val description: String,
+    val details: List<Explanation> = emptyList(),
+)
+
 data class SearchHit<S : BaseDocSource>(
     val index: String,
     val type: String,
@@ -53,6 +59,7 @@ data class SearchHit<S : BaseDocSource>(
     val sort: List<Any?>? = null,
     val source: S? = null,
     val fields: Fields = Fields(emptyMap()),
+    val explanation: Explanation? = null,
 ) : ActionMeta {
     class Fields(private val fields: Map<String, List<Any>>) {
         /**
@@ -86,7 +93,7 @@ data class SearchHit<S : BaseDocSource>(
          * @throws dev.evo.elasticmagic.types.ValueDeserializationException if the field value
          * cannot be deserialized.
          */
-        operator fun <V> get(field: BoundField<V, *>): List<V>? {
+        operator fun <V> get(field: BoundField<V, *>): List<V> {
             return this[field.getQualifiedFieldName()]
                 .map(field.getFieldType()::deserialize)
         }

@@ -1,9 +1,13 @@
 package dev.evo.elasticmagic.compile
 
 import dev.evo.elasticmagic.AsyncResult
+import dev.evo.elasticmagic.BulkError
+import dev.evo.elasticmagic.BulkScrollFailure
 import dev.evo.elasticmagic.BulkScrollRetries
 import dev.evo.elasticmagic.CountResult
+import dev.evo.elasticmagic.DeleteByQueryPartialResult
 import dev.evo.elasticmagic.DeleteByQueryResult
+import dev.evo.elasticmagic.Explanation
 import dev.evo.elasticmagic.MultiSearchQueryResult
 import dev.evo.elasticmagic.Params
 import dev.evo.elasticmagic.PreparedSearchQuery
@@ -11,6 +15,7 @@ import dev.evo.elasticmagic.SearchHit
 import dev.evo.elasticmagic.SearchQuery
 import dev.evo.elasticmagic.SearchQueryResult
 import dev.evo.elasticmagic.ToValue
+import dev.evo.elasticmagic.UpdateByQueryPartialResult
 import dev.evo.elasticmagic.UpdateByQueryResult
 import dev.evo.elasticmagic.WithIndex
 import dev.evo.elasticmagic.doc.BaseDocSource
@@ -29,20 +34,16 @@ import dev.evo.elasticmagic.serde.forEachObj
 import dev.evo.elasticmagic.serde.toList
 import dev.evo.elasticmagic.serde.toMap
 import dev.evo.elasticmagic.toRequestParameters
-import dev.evo.elasticmagic.transport.BulkRequest
 import dev.evo.elasticmagic.transport.ApiRequest
+import dev.evo.elasticmagic.transport.BulkRequest
 import dev.evo.elasticmagic.transport.Method
 import dev.evo.elasticmagic.transport.Parameters
-import dev.evo.elasticmagic.BulkError
-import dev.evo.elasticmagic.BulkScrollFailure
-import dev.evo.elasticmagic.UpdateByQueryPartialResult
-import dev.evo.elasticmagic.DeleteByQueryPartialResult
 
 abstract class BaseSearchQueryCompiler(
     features: ElasticsearchFeatures,
 ) : BaseCompiler(features) {
 
-    interface Visitable<T: Serializer.Ctx> {
+    interface Visitable<T : Serializer.Ctx> {
         fun accept(ctx: T, compiler: BaseSearchQueryCompiler)
     }
 
@@ -218,7 +219,7 @@ open class SearchQueryCompiler(
         )
     }
 
-    fun <S: BaseDocSource> processResult(
+    fun <S : BaseDocSource> processResult(
         ctx: Deserializer.ObjectCtx,
         preparedSearchQuery: SearchQuery.Search<S>,
     ): SearchQueryResult<S> {
@@ -231,7 +232,7 @@ open class SearchQueryCompiler(
         }
 
         val rawHits = rawHitsData.arrayOrNull("hits")
-        val hits = buildList<SearchHit<S>> {
+        val hits = buildList {
             rawHits?.forEachObj { rawHit ->
                 add(processSearchHit(rawHit, preparedSearchQuery))
             }
@@ -259,7 +260,7 @@ open class SearchQueryCompiler(
         )
     }
 
-    private fun <S: BaseDocSource> processSearchHit(
+    private fun <S : BaseDocSource> processSearchHit(
         rawHit: Deserializer.ObjectCtx,
         preparedSearchQuery: SearchQuery.Search<S>,
     ): SearchHit<S> {
@@ -295,7 +296,23 @@ open class SearchQueryCompiler(
             sort = sort.ifEmpty { null },
             source = source,
             fields = fields,
+            explanation = rawHit.objOrNull("_explanation")?.let(::parseExplanation),
         )
+    }
+
+    private fun parseExplanation(rawHit: Deserializer.ObjectCtx): Explanation {
+        val description = rawHit.string("description")
+        val value = rawHit.float("value")
+        val explanation =
+            rawHit.arrayOrNull("details")?.let {
+                buildList {
+                    it.forEachObj { rawExplanation ->
+                        add(parseExplanation(rawExplanation))
+                    }
+                }
+            }
+
+        return Explanation(value, description, explanation ?: emptyList())
     }
 }
 
