@@ -11,7 +11,7 @@ import io.kotest.matchers.shouldNotBe
 import kotlin.test.Test
 
 class ExplanationTest : ElasticsearchTestBase() {
-    override val indexName = "explanation-test"
+    override val indexName = "explanation"
 
     class StringField(name: String) : BoundField<String, String>(
         name,
@@ -39,8 +39,10 @@ class ExplanationTest : ElasticsearchTestBase() {
             val explanations = result.hits.mapNotNull { it.explanation }
 
             explanations.size shouldBe 8
-            explanations.map { it.details shouldBe emptyList() }
-
+            explanations.map {
+                it.value shouldNotBe 1.0f
+                it.details shouldBe emptyList()
+            }
         }
     }
 
@@ -53,7 +55,10 @@ class ExplanationTest : ElasticsearchTestBase() {
             val explanations = result.hits.mapNotNull { it.explanation }
 
             explanations.size shouldBe 5
-            explanations.map { it.details.size shouldNotBe 0 }
+            explanations.map {
+                it.description shouldBe "sum of:"
+                it.details.size shouldNotBe 0
+            }
 
         }
     }

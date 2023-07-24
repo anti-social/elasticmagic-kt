@@ -296,10 +296,7 @@ open class SearchQueryCompiler(
             sort = sort.ifEmpty { null },
             source = source,
             fields = fields,
-            explanation = if (preparedSearchQuery.params.containsKey("explain"))
-                parseExplanation(rawHit.obj("_explanation"))
-            else
-                null,
+            explanation = rawHit.objOrNull("_explanation")?.let(::parseExplanation),
         )
     }
 
