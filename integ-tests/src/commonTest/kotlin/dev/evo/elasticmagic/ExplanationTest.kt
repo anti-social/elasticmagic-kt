@@ -40,7 +40,7 @@ class ExplanationTest : ElasticsearchTestBase() {
 
             explanations.size shouldBe 8
             explanations.map {
-                it.value shouldNotBe 1.0f
+                it.value shouldBe 1.0f
                 it.details shouldBe emptyList()
             }
         }
