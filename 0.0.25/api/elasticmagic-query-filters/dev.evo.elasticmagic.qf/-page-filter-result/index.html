@@ -1,0 +1,243 @@
+<!doctype html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>PageFilterResult</title>
+<link href="../../../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../../../";</script>    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/jetbrains-mono.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/clipboard.js" async></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
+<body>
+<div class="navigation-wrapper" id="navigation-wrapper">
+    <div id="leftToggler"><span class="icon-toggler"></span></div>
+    <div class="library-name">
+<a href="../../../index.html">
+<span>elasticmagic-kt</span>            </a>    </div>
+    <div>0.0.25
+    </div>
+    <div class="pull-right d-flex">
+        <button id="theme-toggle-button"><span id="theme-toggle"></span></button>
+        <div id="searchBar"></div>
+    </div>
+</div>
+<div id="container">
+    <div id="leftColumn">
+        <div id="sideMenu"></div>
+    </div>
+    <div id="main">
+<div class="main-content" id="content" pageids="elasticmagic-query-filters::dev.evo.elasticmagic.qf/PageFilterResult///PointingToDeclaration//-1138265262">
+  <div class="breadcrumbs"><a href="../../index.html">elasticmagic-query-filters</a><span class="delimiter">/</span><a href="../index.html">dev.evo.elasticmagic.qf</a><span class="delimiter">/</span><span class="current">PageFilterResult</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span>Page</span><wbr><span>Filter</span><wbr><span><span>Result</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="index.html">PageFilterResult</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>name<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>paramName<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>hits<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../../../elasticmagic/dev.evo.elasticmagic/-search-hit/index.html">SearchHit</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token operator">&gt;</span><span class="token operator">&gt;</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>totalHits<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html">Long</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>page<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>perPage<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>totalPages<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>from<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>size<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span> : <a href="../-filter-result/index.html">FilterResult</a>, <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-iterable/index.html">Iterable</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../../../elasticmagic/dev.evo.elasticmagic/-search-hit/index.html">SearchHit</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token operator">&gt;</span><span class="token operator">&gt; </span></div><p class="paragraph"><a href="index.html">PageFilterResult</a> holds result of a <a href="../-page-filter/index.html">PageFilter</a>.</p></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="Constructors">Constructors</button><button class="section-tab" data-togglable="Functions">Functions</button><button class="section-tab" data-togglable="Properties">Properties</button><button class="section-tab" data-togglable="Parameters">Parameters</button></div>
+    <div class="tabs-section-body">
+      <h4 class="">Parameters</h4>
+      <div data-togglable="Parameters">
+        <div class="platform-hinted WithExtraAttributes" data-platform-hinted="data-platform-hinted" data-togglable="Parameters"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain"><div data-togglable="Parameters"><div class="table" data-togglable="Parameters"><div class="table-row" data-filterable-current=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain"><div class="main-subrow keyValue WithExtraAttributes"><div class=""><span class="inline-flex"><div><u><span><span>name</span></span></u></div></span></div><div><div class="title"><div data-togglable="Parameters"><ul><li><p class="paragraph">name of a <a href="../-page-filter/index.html">PageFilter</a></p></li></ul></div></div></div></div></div><div class="table-row" data-filterable-current=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain"><div class="main-subrow keyValue WithExtraAttributes"><div class=""><span class="inline-flex"><div><u><span><span>hits</span></span></u></div></span></div><div><div class="title"><div data-togglable="Parameters"><ul><li><p class="paragraph">list of hits on the current page</p></li></ul></div></div></div></div></div><div class="table-row" data-filterable-current=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain"><div class="main-subrow keyValue WithExtraAttributes"><div class=""><span class="inline-flex"><div><u><span>total</span><wbr><span><span>Hits</span></span></u></div></span></div><div><div class="title"><div data-togglable="Parameters"><ul><li><p class="paragraph">total number of hits</p></li></ul></div></div></div></div></div><div class="table-row" data-filterable-current=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain"><div class="main-subrow keyValue WithExtraAttributes"><div class=""><span class="inline-flex"><div><u><span><span>page</span></span></u></div></span></div><div><div class="title"><div data-togglable="Parameters"><ul><li><p class="paragraph">number of the current page</p></li></ul></div></div></div></div></div><div class="table-row" data-filterable-current=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain"><div class="main-subrow keyValue WithExtraAttributes"><div class=""><span class="inline-flex"><div><u><span>per</span><wbr><span><span>Page</span></span></u></div></span></div><div><div class="title"><div data-togglable="Parameters"><ul><li><p class="paragraph">number of hits per page</p></li></ul></div></div></div></div></div><div class="table-row" data-filterable-current=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain"><div class="main-subrow keyValue WithExtraAttributes"><div class=""><span class="inline-flex"><div><u><span>total</span><wbr><span><span>Pages</span></span></u></div></span></div><div><div class="title"><div data-togglable="Parameters"><ul><li><p class="paragraph">total number of pages</p></li></ul></div></div></div></div></div><div class="table-row" data-filterable-current=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain"><div class="main-subrow keyValue WithExtraAttributes"><div class=""><span class="inline-flex"><div><u><span><span>from</span></span></u></div></span></div><div><div class="title"><div data-togglable="Parameters"><ul><li><p class="paragraph">value applied to <a href="../../../elasticmagic/dev.evo.elasticmagic/-search-query/from.html">SearchQuery.from</a></p></li></ul></div></div></div></div></div><div class="table-row" data-filterable-current=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain"><div class="main-subrow keyValue WithExtraAttributes"><div class=""><span class="inline-flex"><div><u><span><span>size</span></span></u></div></span></div><div><div class="title"><div data-togglable="Parameters"><ul><li><p class="paragraph">value applied to <a href="../../../elasticmagic/dev.evo.elasticmagic/-search-query/size.html">SearchQuery.size</a></p></li></ul></div></div></div></div></div></div></div></div></div>
+      </div>
+      <h2 class="tabbedcontent">Constructors</h2>
+      <div class="table" data-togglable="Constructors"><a data-name="-662547306%2FConstructors%2F-1138265262" anchor-label="PageFilterResult" id="-662547306%2FConstructors%2F-1138265262" data-filterable-set=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain"></a>
+        <div class="table-row" data-filterable-current=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain">
+          <div class="main-subrow keyValue TabbedContent">
+            <div class=""><span class="inline-flex">
+                <div><a href="-page-filter-result.html"><span>Page</span><wbr><span>Filter</span><wbr><span><span>Result</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-662547306%2FConstructors%2F-1138265262"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="-page-filter-result.html"><span class="token function">PageFilterResult</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">name<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">paramName<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">hits<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../../../elasticmagic/dev.evo.elasticmagic/-search-hit/index.html">SearchHit</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token operator">&gt;</span><span class="token operator">&gt;</span><span class="token punctuation">, </span></span><span class="parameter ">totalHits<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html">Long</a><span class="token punctuation">, </span></span><span class="parameter ">page<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">perPage<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">totalPages<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">from<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">size<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <h2 class="">Functions</h2>
+      <div class="table" data-togglable="Functions"><a data-name="-1219409775%2FFunctions%2F-1138265262" anchor-label="iterator" id="-1219409775%2FFunctions%2F-1138265262" data-filterable-set=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain"></a>
+        <div class="table-row" data-filterable-current=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="iterator.html"><span><span>iterator</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1219409775%2FFunctions%2F-1138265262"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">operator override </span><span class="token keyword">fun </span><a href="iterator.html"><span class="token function">iterator</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-iterator/index.html">Iterator</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../../../elasticmagic/dev.evo.elasticmagic/-search-hit/index.html">SearchHit</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token operator">&gt;</span><span class="token operator">&gt;</span></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <h2 class="">Properties</h2>
+      <div class="table" data-togglable="Properties"><a data-name="-1305041451%2FProperties%2F-1138265262" anchor-label="from" id="-1305041451%2FProperties%2F-1138265262" data-filterable-set=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain"></a>
+        <div class="table-row" data-filterable-current=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="from.html"><span><span>from</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1305041451%2FProperties%2F-1138265262"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain"><a data-name="-1305041451%2FProperties%2F-1138265262" anchor-label="from" id="-1305041451%2FProperties%2F-1138265262" data-filterable-set=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="from.html">from</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="-1221954817%2FProperties%2F-1138265262" anchor-label="hits" id="-1221954817%2FProperties%2F-1138265262" data-filterable-set=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain"></a>
+        <div class="table-row" data-filterable-current=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="hits.html"><span><span>hits</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1221954817%2FProperties%2F-1138265262"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain"><a data-name="-1221954817%2FProperties%2F-1138265262" anchor-label="hits" id="-1221954817%2FProperties%2F-1138265262" data-filterable-set=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="hits.html">hits</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../../../elasticmagic/dev.evo.elasticmagic/-search-hit/index.html">SearchHit</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token operator">&gt;</span><span class="token operator">&gt;</span></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="2103939604%2FProperties%2F-1138265262" anchor-label="name" id="2103939604%2FProperties%2F-1138265262" data-filterable-set=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain"></a>
+        <div class="table-row" data-filterable-current=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="name.html"><span><span>name</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2103939604%2FProperties%2F-1138265262"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain"><a data-name="2103939604%2FProperties%2F-1138265262" anchor-label="name" id="2103939604%2FProperties%2F-1138265262" data-filterable-set=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain"></a><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">val </span><a href="name.html">name</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="2015426192%2FProperties%2F-1138265262" anchor-label="page" id="2015426192%2FProperties%2F-1138265262" data-filterable-set=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain"></a>
+        <div class="table-row" data-filterable-current=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="page.html"><span><span>page</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2015426192%2FProperties%2F-1138265262"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain"><a data-name="2015426192%2FProperties%2F-1138265262" anchor-label="page" id="2015426192%2FProperties%2F-1138265262" data-filterable-set=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="page.html">page</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="-295557949%2FProperties%2F-1138265262" anchor-label="paramName" id="-295557949%2FProperties%2F-1138265262" data-filterable-set=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain"></a>
+        <div class="table-row" data-filterable-current=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="param-name.html"><span>param</span><wbr><span><span>Name</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-295557949%2FProperties%2F-1138265262"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain"><a data-name="-295557949%2FProperties%2F-1138265262" anchor-label="paramName" id="-295557949%2FProperties%2F-1138265262" data-filterable-set=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain"></a><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">val </span><a href="param-name.html">paramName</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="-509275601%2FProperties%2F-1138265262" anchor-label="perPage" id="-509275601%2FProperties%2F-1138265262" data-filterable-set=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain"></a>
+        <div class="table-row" data-filterable-current=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="per-page.html"><span>per</span><wbr><span><span>Page</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-509275601%2FProperties%2F-1138265262"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain"><a data-name="-509275601%2FProperties%2F-1138265262" anchor-label="perPage" id="-509275601%2FProperties%2F-1138265262" data-filterable-set=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="per-page.html">perPage</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="-1147331234%2FProperties%2F-1138265262" anchor-label="size" id="-1147331234%2FProperties%2F-1138265262" data-filterable-set=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain"></a>
+        <div class="table-row" data-filterable-current=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="size.html"><span><span>size</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1147331234%2FProperties%2F-1138265262"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain"><a data-name="-1147331234%2FProperties%2F-1138265262" anchor-label="size" id="-1147331234%2FProperties%2F-1138265262" data-filterable-set=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="size.html">size</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="237253207%2FProperties%2F-1138265262" anchor-label="totalHits" id="237253207%2FProperties%2F-1138265262" data-filterable-set=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain"></a>
+        <div class="table-row" data-filterable-current=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="total-hits.html"><span>total</span><wbr><span><span>Hits</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="237253207%2FProperties%2F-1138265262"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain"><a data-name="237253207%2FProperties%2F-1138265262" anchor-label="totalHits" id="237253207%2FProperties%2F-1138265262" data-filterable-set=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="total-hits.html">totalHits</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html">Long</a></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="1905733087%2FProperties%2F-1138265262" anchor-label="totalPages" id="1905733087%2FProperties%2F-1138265262" data-filterable-set=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain"></a>
+        <div class="table-row" data-filterable-current=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="total-pages.html"><span>total</span><wbr><span><span>Pages</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1905733087%2FProperties%2F-1138265262"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain"><a data-name="1905733087%2FProperties%2F-1138265262" anchor-label="totalPages" id="1905733087%2FProperties%2F-1138265262" data-filterable-set=":elasticmagic-query-filters:dokkaHtmlPartial/commonMain"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="total-pages.html">totalPages</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      <div class="footer">
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2023 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+      </div>
+    </div>
+</div>
+
+</body></html>
+
