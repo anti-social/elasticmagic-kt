@@ -83,7 +83,12 @@ class MatchTests : BaseExpressionTest() {
 
     @Test
     fun matchAll() {
-        MatchAll.compile() shouldContainExactly mapOf("match_all" to emptyMap<String, Any>())
+        MatchAll.compile() shouldContainExactly mapOf(
+            "match_all" to emptyMap<String, Any>()
+        )
+        MatchAll(boost = 1.2F).compile() shouldContainExactly mapOf(
+            "match_all" to mapOf("boost" to 1.2F)
+        )
     }
 
     @Test

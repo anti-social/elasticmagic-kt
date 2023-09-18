@@ -109,7 +109,10 @@ data class MatchPhrase(
     }
 }
 
-object MatchAll : QueryExpression {
+abstract class MatchAllQuery : QueryExpression {
+    abstract val boost: Float?
+    abstract val params: Params?
+
     override val name = "match_all"
 
     override fun clone() = this
@@ -117,8 +120,31 @@ object MatchAll : QueryExpression {
     override fun visit(
         ctx: Serializer.ObjectCtx,
         compiler: BaseSearchQueryCompiler
-    ) {}
+    ) {
+        val params = Params(
+            params,
+            "boost" to boost,
+        )
+        if (params.isNotEmpty()) {
+            compiler.visit(ctx, params)
+        }
+    }
 }
+
+data class MatchAll(
+    override val boost: Float? = null,
+    override val params: Params? = null,
+) : MatchAllQuery() {
+
+    // For backward compatibility at source code level.
+    // Previously match all query was defined as:
+    // object MatchAll : QueryExpression { ... }
+    companion object : MatchAllQuery() {
+        override val boost = null
+        override val params = null
+    }
+}
+
 
 /**
  * Represents a multi match query that allows to search in several fields at once.

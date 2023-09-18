@@ -3773,15 +3773,40 @@ public final class dev/evo/elasticmagic/query/Match : dev/evo/elasticmagic/query
 	public fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 }
 
-public final class dev/evo/elasticmagic/query/MatchAll : dev/evo/elasticmagic/query/QueryExpression {
-	public static final field INSTANCE Ldev/evo/elasticmagic/query/MatchAll;
+public final class dev/evo/elasticmagic/query/MatchAll : dev/evo/elasticmagic/query/MatchAllQuery {
+	public static final field Companion Ldev/evo/elasticmagic/query/MatchAll$Companion;
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/Float;Ljava/util/Map;)V
+	public synthetic fun <init> (Ljava/lang/Float;Ljava/util/Map;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/Float;
+	public final fun component2 ()Ljava/util/Map;
+	public final fun copy (Ljava/lang/Float;Ljava/util/Map;)Ldev/evo/elasticmagic/query/MatchAll;
+	public static synthetic fun copy$default (Ldev/evo/elasticmagic/query/MatchAll;Ljava/lang/Float;Ljava/util/Map;ILjava/lang/Object;)Ldev/evo/elasticmagic/query/MatchAll;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getBoost ()Ljava/lang/Float;
+	public fun getParams ()Ljava/util/Map;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/evo/elasticmagic/query/MatchAll$Companion : dev/evo/elasticmagic/query/MatchAllQuery {
+	public synthetic fun getBoost ()Ljava/lang/Float;
+	public fun getBoost ()Ljava/lang/Void;
+	public fun getParams ()Ljava/lang/Void;
+	public synthetic fun getParams ()Ljava/util/Map;
+}
+
+public abstract class dev/evo/elasticmagic/query/MatchAllQuery : dev/evo/elasticmagic/query/QueryExpression {
+	public fun <init> ()V
 	public synthetic fun accept (Ldev/evo/elasticmagic/serde/Serializer$Ctx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 	public fun accept (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 	public fun children ()Ljava/util/Iterator;
 	public synthetic fun clone ()Ldev/evo/elasticmagic/query/Expression;
-	public fun clone ()Ldev/evo/elasticmagic/query/MatchAll;
+	public fun clone ()Ldev/evo/elasticmagic/query/MatchAllQuery;
 	public synthetic fun clone ()Ldev/evo/elasticmagic/query/QueryExpression;
+	public abstract fun getBoost ()Ljava/lang/Float;
 	public fun getName ()Ljava/lang/String;
+	public abstract fun getParams ()Ljava/util/Map;
 	public synthetic fun reduce ()Ldev/evo/elasticmagic/query/Expression;
 	public fun reduce ()Ldev/evo/elasticmagic/query/QueryExpression;
 	public synthetic fun rewrite (Ldev/evo/elasticmagic/query/QueryExpressionNode;)Ldev/evo/elasticmagic/query/Expression;
