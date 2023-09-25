@@ -1,13 +1,22 @@
 package dev.evo.elasticmagic
 
+import dev.evo.elasticmagic.compile.BaseSearchQueryCompiler
 import dev.evo.elasticmagic.doc.Document
 import dev.evo.elasticmagic.query.FunctionScore
 import dev.evo.elasticmagic.query.NodeHandle
 import dev.evo.elasticmagic.query.QueryExpressionNode
-
+import dev.evo.elasticmagic.query.SearchExt
+import dev.evo.elasticmagic.serde.Serializer
 import io.kotest.matchers.shouldBe
-
 import kotlin.test.Test
+
+private data class SimpleExtension(override val name: String) : SearchExt {
+    override fun clone() = copy()
+
+    override fun visit(ctx: Serializer.ObjectCtx, compiler: BaseSearchQueryCompiler) {
+    }
+
+}
 
 class SearchQueryTests {
     @Test
@@ -19,6 +28,8 @@ class SearchQueryTests {
 
         val sq1 = SearchQuery()
             .filter(userDoc.login.eq("root"))
+            .ext(SimpleExtension("test"))
+
         val sq2 = sq1.clone()
             .filter(userDoc.isActive.eq(true))
             .size(1)
@@ -26,10 +37,12 @@ class SearchQueryTests {
         sq1.prepareSearch().let {
             it.size shouldBe null
             it.filters.size shouldBe 1
+            it.extensions.size shouldBe 1
         }
         sq2.prepareSearch().let {
             it.size shouldBe 1
             it.filters.size shouldBe 2
+            it.extensions.size shouldBe 1
         }
     }
 

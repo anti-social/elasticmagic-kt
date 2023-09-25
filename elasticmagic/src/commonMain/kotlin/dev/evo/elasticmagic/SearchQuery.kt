@@ -91,6 +91,7 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
         cloned.query = query?.clone()
         cloned.queryNodes = queryNodes
         cloned.filters.addAll(filters)
+        cloned.extensions.addAll(extensions)
         cloned.postFilters.addAll(postFilters)
         cloned.aggregations.putAll(aggregations)
         cloned.rescores.addAll(rescores)
