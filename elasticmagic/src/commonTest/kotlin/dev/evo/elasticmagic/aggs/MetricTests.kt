@@ -1,12 +1,11 @@
 package dev.evo.elasticmagic.aggs
 
-import dev.evo.elasticmagic.types.FloatType
 import dev.evo.elasticmagic.query.FieldOperations
 import dev.evo.elasticmagic.query.Script
-import dev.evo.elasticmagic.serde.platform
-import dev.evo.elasticmagic.serde.Platform
 import dev.evo.elasticmagic.serde.DeserializationException
-
+import dev.evo.elasticmagic.serde.Platform
+import dev.evo.elasticmagic.serde.platform
+import dev.evo.elasticmagic.types.FloatType
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.data.forAll
 import io.kotest.data.headers
@@ -15,7 +14,6 @@ import io.kotest.data.table
 import io.kotest.matchers.maps.shouldContainExactly
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
-
 import kotlin.test.Test
 
 class MetricTests : TestAggregation() {
@@ -56,6 +54,51 @@ class MetricTests : TestAggregation() {
                 res.value shouldBe 1.1
                 res.valueAsString shouldBe "1.1"
             }
+        }
+    }
+
+    @Test
+    fun percentile() {
+        val agg = PercentilesAgg(
+            MovieDoc.rating,
+            percents = listOf(1.0, 5.0, 25.0, 50.0, 75.0, 95.0, 99.0),
+        )
+        agg.compile() shouldContainExactly mapOf(
+            "percentiles" to mapOf(
+                "field" to "rating",
+                "percents" to listOf(1.0, 5.0, 25.0, 50.0, 75.0, 95.0, 99.0),
+            )
+        )
+        shouldThrow<DeserializationException> {
+            process(
+                agg,
+                mapOf("values" to null)
+            )
+        }
+
+        process(
+            agg,
+            mapOf(
+                "values" to mapOf(
+                    "1.0" to 0.9,
+                    "5.0" to 1.1,
+                    "25.0" to 2.2,
+                    "50.0" to 3.3,
+                    "75.0" to 4.4,
+                    "95.0" to 5.5,
+                    "99.0" to 6.6,
+                ),
+            )
+        ).let { res ->
+            res.values shouldBe mapOf(
+                1.0 to 0.9,
+                5.0 to 1.1,
+                25.0 to 2.2,
+                50.0 to 3.3,
+                75.0 to 4.4,
+                95.0 to 5.5,
+                99.0 to 6.6,
+            )
         }
     }
 
@@ -207,27 +250,33 @@ class MetricTests : TestAggregation() {
             )
         )
         agg.processResult(
-            deserializer.wrapObj(mapOf(
-                "value" to null
-            ))
+            deserializer.wrapObj(
+                mapOf(
+                    "value" to null
+                )
+            )
         ).let { res ->
             res.value.shouldBeNull()
             res.valueAsString.shouldBeNull()
         }
         agg.processResult(
-            deserializer.wrapObj(mapOf(
-                "value" to 2.2,
-                "value_as_string" to "2.2",
-            ))
+            deserializer.wrapObj(
+                mapOf(
+                    "value" to 2.2,
+                    "value_as_string" to "2.2",
+                )
+            )
         ).let { res ->
             res.value shouldBe 2.2
             res.valueAsString shouldBe "2.2"
         }
         agg.processResult(
-            deserializer.wrapObj(mapOf(
-                "value" to 2,
-                "value_as_string" to "2",
-            ))
+            deserializer.wrapObj(
+                mapOf(
+                    "value" to 2,
+                    "value_as_string" to "2",
+                )
+            )
         ).let { res ->
             res.value shouldBe 2.0
             res.valueAsString shouldBe "2"
