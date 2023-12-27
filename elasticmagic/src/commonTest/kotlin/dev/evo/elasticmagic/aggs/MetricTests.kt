@@ -59,25 +59,39 @@ class MetricTests : TestAggregation() {
 
     @Test
     fun percentile() {
-        val agg = PercentilesAgg(
-            MovieDoc.rating,
-            percents = listOf(1.0, 5.0, 25.0, 50.0, 75.0, 95.0, 99.0),
+        val ratingAgg = PercentilesAgg(
+            MovieDoc.rating
         )
-        agg.compile() shouldContainExactly mapOf(
+        ratingAgg.compile() shouldContainExactly mapOf(
             "percentiles" to mapOf(
                 "field" to "rating",
                 "percents" to listOf(1.0, 5.0, 25.0, 50.0, 75.0, 95.0, 99.0),
             )
         )
+
+        val numRatingsAgg = PercentilesAgg(
+            MovieDoc.numRatings,
+            percents = listOf(25.0, 50.0, 75.0, 95.0, 99.0),
+        )
+
+        numRatingsAgg.compile() shouldContainExactly mapOf(
+            "percentiles" to mapOf(
+                "field" to "num_ratings",
+                "percents" to listOf(25.0, 50.0, 75.0, 95.0, 99.0),
+            )
+        )
+
+
+
         shouldThrow<DeserializationException> {
             process(
-                agg,
+                ratingAgg,
                 mapOf("values" to null)
             )
         }
 
         process(
-            agg,
+            ratingAgg,
             mapOf(
                 "values" to mapOf(
                     "1.0" to 0.9,
@@ -98,6 +112,27 @@ class MetricTests : TestAggregation() {
                 75.0 to 4.4,
                 95.0 to 5.5,
                 99.0 to 6.6,
+            )
+        }
+
+        process(
+            numRatingsAgg,
+            mapOf(
+                "values" to mapOf(
+                    "25.0" to 1.0,
+                    "50.0" to 2.0,
+                    "75.0" to 3.0,
+                    "95.0" to 4.0,
+                    "99.0" to 5.0,
+                ),
+            )
+        ).let { res ->
+            res.values shouldBe mapOf(
+                25.0 to 1.0,
+                50.0 to 2.0,
+                75.0 to 3.0,
+                95.0 to 4.0,
+                99.0 to 5.0,
             )
         }
     }
