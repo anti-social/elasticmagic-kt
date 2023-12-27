@@ -130,6 +130,7 @@ data class PercentileAggResult(val values: Map<Double, Double>) : AggregationRes
     }
 }
 
+@Suppress("MagicNumber")
 data class PercentilesAgg(
     val field: FieldOperations<*>,
     val percents: List<Double> = listOf(1.0, 5.0, 25.0, 50.0, 75.0, 95.0, 99.0),
