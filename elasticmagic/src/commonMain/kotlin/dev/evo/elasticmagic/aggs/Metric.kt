@@ -7,10 +7,11 @@ import dev.evo.elasticmagic.query.ObjExpression
 import dev.evo.elasticmagic.query.Script
 import dev.evo.elasticmagic.serde.Deserializer
 import dev.evo.elasticmagic.serde.Serializer
+import dev.evo.elasticmagic.serde.toMap
 import dev.evo.elasticmagic.types.FieldType
 
 @Suppress("UnnecessaryAbstractClass")
-abstract class MetricAggregation<R: AggregationResult> : Aggregation<R>
+abstract class MetricAggregation<R : AggregationResult> : Aggregation<R>
 
 abstract class SingleValueMetricAggResult<T> : AggregationResult {
     abstract val value: T
@@ -59,7 +60,7 @@ data class LongValueAggResult(
     }
 }
 
-abstract class NumericValueAgg<T, R: AggregationResult>(
+abstract class NumericValueAgg<T, R : AggregationResult>(
     private val resultProcessor: (Deserializer.ObjectCtx) -> R
 ) : MetricAggregation<R>() {
     abstract val value: AggValue<T>
@@ -115,6 +116,42 @@ data class MaxAgg<T>(
     )
 
     override fun clone() = copy()
+}
+
+
+data class PercentileAggResult(val values: Map<Double, Double>) : AggregationResult {
+    companion object {
+        operator fun invoke(obj: Deserializer.ObjectCtx): PercentileAggResult {
+            val values = obj.obj("values")
+            return PercentileAggResult(
+                values.toMap().filter { it.value is Double }.map { it.key.toDouble() to it.value as Double }.toMap()
+            )
+        }
+    }
+}
+
+data class PercentilesAgg<T>(
+    val field: FieldOperations<T>,
+    val percents: List<Double> = listOf(1.0, 5.0, 25.0, 50.0, 75.0, 95.0, 99.0),
+) : MetricAggregation<PercentileAggResult>() {
+    override fun processResult(obj: Deserializer.ObjectCtx): PercentileAggResult {
+        return PercentileAggResult(obj)
+    }
+
+    override val name: String
+        get() = "percentiles"
+
+    override fun visit(ctx: Serializer.ObjectCtx, compiler: BaseSearchQueryCompiler) {
+        ctx.field("field", field.getQualifiedFieldName())
+        ctx.array("percents") {
+            percents.forEach {
+                value(it)
+            }
+        }
+    }
+
+    override fun clone() = copy()
+
 }
 
 typealias MaxAggResult = OptionalDoubleValueAggResult
@@ -188,7 +225,7 @@ data class WeightedAvgAgg<T>(
 
 typealias WeightedAvgAggResult = OptionalDoubleValueAggResult
 
-data class SumAgg<T: Number>(
+data class SumAgg<T : Number>(
     override val value: AggValue<T>,
     override val missing: T? = null,
     val format: String? = null,
@@ -363,7 +400,7 @@ data class ExtendedStatsAggResult(
                 sumOfSquares = obj.doubleOrNull("sum_of_squares"),
                 variance = obj.doubleOrNull("variance"),
                 stdDeviation = obj.doubleOrNull("std_deviation"),
-                stdDeviationBounds = ExtendedStatsAggResult.StdDeviationBounds(
+                stdDeviationBounds = StdDeviationBounds(
                     upper = stdDevBoundsRaw.doubleOrNull("upper"),
                     lower = stdDevBoundsRaw.doubleOrNull("lower"),
                 )
