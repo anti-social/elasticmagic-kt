@@ -64,8 +64,7 @@ class MetricTests : TestAggregation() {
         )
         ratingAgg.compile() shouldContainExactly mapOf(
             "percentiles" to mapOf(
-                "field" to "rating",
-                "percents" to listOf(1.0, 5.0, 25.0, 50.0, 75.0, 95.0, 99.0),
+                "field" to "rating"
             )
         )
 
