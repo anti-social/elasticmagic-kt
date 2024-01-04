@@ -14,7 +14,7 @@ interface Named : ToValue<String> {
     }
 }
 
-interface Expression<T: Serializer.Ctx> : BaseSearchQueryCompiler.Visitable<T> {
+interface Expression<T : Serializer.Ctx> : BaseSearchQueryCompiler.Visitable<T> {
     fun clone(): Expression<T>
 
     fun children(): Iterator<Expression<*>>? {

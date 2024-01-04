@@ -19,7 +19,7 @@ data class HistogramBounds<T>(
     }
 }
 
-abstract class BaseHistogramAgg<T, R: AggregationResult, B> : BucketAggregation<R>() {
+abstract class BaseHistogramAgg<T, R : AggregationResult, B> : BucketAggregation<R>() {
     abstract val value: AggValue<T>
     abstract val minDocCount: Long?
     abstract val missing: T?
@@ -97,7 +97,7 @@ abstract class BaseHistogramAgg<T, R: AggregationResult, B> : BucketAggregation<
     protected abstract val makeHistogramResult: (List<B>) -> R
 }
 
-data class HistogramAgg<T: Number>(
+data class HistogramAgg<T : Number>(
     override val value: AggValue<T>,
     val interval: T,
     val offset: T? = null,

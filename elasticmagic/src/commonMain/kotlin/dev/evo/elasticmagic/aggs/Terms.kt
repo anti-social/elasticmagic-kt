@@ -9,7 +9,7 @@ import dev.evo.elasticmagic.serde.Deserializer
 import dev.evo.elasticmagic.serde.Serializer
 import dev.evo.elasticmagic.serde.forEachObj
 
-abstract class BaseTermsAgg<T, R: AggregationResult> : BucketAggregation<R>() {
+abstract class BaseTermsAgg<T, R : AggregationResult> : BucketAggregation<R>() {
     abstract val value: AggValue<T>
     abstract val size: Int?
     abstract val shardSize: Int?

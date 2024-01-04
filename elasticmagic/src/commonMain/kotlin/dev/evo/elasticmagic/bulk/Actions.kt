@@ -121,7 +121,7 @@ interface IdActionMeta : ActionMeta {
  *
  * @see <https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-index_.html>
  */
-open class IndexAction<S: BaseDocSource>(
+open class IndexAction<S : BaseDocSource>(
     override val meta: ActionMeta,
     override val source: S,
     override val concurrencyControl: ConcurrencyControl? = null,
@@ -136,7 +136,7 @@ open class IndexAction<S: BaseDocSource>(
  *
  * @see <https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-index_.html>
  */
-class CreateAction<S: BaseDocSource>(
+class CreateAction<S : BaseDocSource>(
     meta: ActionMeta,
     source: S,
     pipeline: String? = null,
@@ -168,7 +168,7 @@ class DeleteAction(
  *
  * @see <https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-update.html>
  */
-class UpdateAction<S: BaseDocSource>(
+class UpdateAction<S : BaseDocSource>(
     override val meta: IdActionMeta,
     override val source: UpdateSource<S>,
     val retryOnConflict: Int? = null,
@@ -185,7 +185,7 @@ class UpdateAction<S: BaseDocSource>(
  * - [WithDoc] makes a partial update of the existing document.
  * - [WithScript] runs the specified script and indexes its result.
  */
-sealed class UpdateSource<S: BaseDocSource>(
+sealed class UpdateSource<S : BaseDocSource>(
     val upsert: S?,
     val detectNoop: Boolean?,
 ) {
@@ -199,7 +199,7 @@ sealed class UpdateSource<S: BaseDocSource>(
         detectNoop = detectNoop,
     )
 
-    class WithScript<S: BaseDocSource>(
+    class WithScript<S : BaseDocSource>(
         val script: Script,
         val scriptedUpsert: Boolean? = null,
         upsert: S? = null,
@@ -213,7 +213,7 @@ sealed class UpdateSource<S: BaseDocSource>(
 /**
  * Combines a document source with its action metadata.
  */
-class DocSourceAndMeta<M: ActionMeta>(
+class DocSourceAndMeta<M : ActionMeta>(
     val meta: M,
     val doc: BaseDocSource
 )

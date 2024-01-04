@@ -29,7 +29,7 @@ enum class SearchType : ToValue<String> {
  * suspendable or blocking.
  */
 @Suppress("UnnecessaryAbstractClass")
-abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
+abstract class BaseSearchQuery<S : BaseDocSource, T : BaseSearchQuery<S, T>>(
     protected val docSourceFactory: (obj: Deserializer.ObjectCtx) -> S,
     protected var query: QueryExpression? = null,
     params: Params = Params(),
@@ -147,7 +147,7 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
      *
      * @sample samples.code.SearchQuery.queryNode
      */
-    inline fun <reified N: QueryExpression> queryNode(
+    inline fun <reified N : QueryExpression> queryNode(
         handle: NodeHandle<N>,
         block: (N) -> N
     ): T {
@@ -776,7 +776,7 @@ abstract class BaseSearchQuery<S: BaseDocSource, T: BaseSearchQuery<S, T>>(
 /**
  * An asynchronous version of search query.
  */
-open class SearchQuery<S: BaseDocSource>(
+open class SearchQuery<S : BaseDocSource>(
     docSourceFactory: (obj: Deserializer.ObjectCtx) -> S,
     query: QueryExpression? = null,
     params: Params = Params(),
@@ -927,7 +927,7 @@ open class SearchQuery<S: BaseDocSource>(
      * A prepared search query is a public read-only view to a search query.
      * Mainly it is used to compile a search query.
      */
-    data class Search<out S: BaseDocSource>(
+    data class Search<out S : BaseDocSource>(
         val docSourceFactory: (obj: Deserializer.ObjectCtx) -> S,
         override val query: QueryExpression?,
         override val filters: List<QueryExpression>,

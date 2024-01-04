@@ -201,7 +201,7 @@ open class SearchQueryCompiler(
         }
     }
 
-    fun <S: BaseDocSource> compile(
+    fun <S : BaseDocSource> compile(
         serde: Serde, searchQuery: WithIndex<SearchQuery.Search<S>>
     ): ApiRequest<SearchQueryResult<S>> {
         val body = serde.serializer.obj {

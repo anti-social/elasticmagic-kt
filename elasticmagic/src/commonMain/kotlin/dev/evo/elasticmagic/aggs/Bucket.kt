@@ -10,7 +10,7 @@ import dev.evo.elasticmagic.serde.Deserializer
 import dev.evo.elasticmagic.serde.Serializer
 import dev.evo.elasticmagic.serde.forEachObj
 
-abstract class BucketAggregation<R: AggregationResult> : Aggregation<R> {
+abstract class BucketAggregation<R : AggregationResult> : Aggregation<R> {
     abstract val aggs: Map<String, Aggregation<*>>
 
     override fun accept(ctx: Serializer.ObjectCtx, compiler: BaseSearchQueryCompiler) {
@@ -41,7 +41,7 @@ abstract class SingleBucketAggregation : BucketAggregation<SingleBucketAggResult
     }
 }
 
-abstract class BucketAggResult<B: BaseBucket> : AggregationResult {
+abstract class BucketAggResult<B : BaseBucket> : AggregationResult {
     abstract val buckets: List<B>
 }
 

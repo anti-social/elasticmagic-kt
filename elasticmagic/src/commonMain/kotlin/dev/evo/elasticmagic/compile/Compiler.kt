@@ -100,7 +100,7 @@ enum class ElasticsearchFeatures(
             }
         }
 
-        private fun <T: Version<T>> findFeatures(
+        private fun <T : Version<T>> findFeatures(
             esVersion: T, features: List<Pair<T, ElasticsearchFeatures>>
         ): ElasticsearchFeatures {
             for (versionToFeature in features.reversed()) {

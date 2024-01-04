@@ -7,7 +7,7 @@ import dev.evo.elasticmagic.withIndex
 import io.kotest.matchers.types.shouldBeInstanceOf
 
 @Suppress("UnnecessaryAbstractClass")
-abstract class BaseCompilerTest<T: BaseCompiler>(
+abstract class BaseCompilerTest<T : BaseCompiler>(
     compilerFactory: (ElasticsearchFeatures) -> T
 ) : BaseTest() {
     protected open val compilers: List<T> = ElasticsearchFeatures.values()

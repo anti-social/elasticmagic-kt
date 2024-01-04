@@ -61,7 +61,7 @@ sealed class AggValue<T> : ObjExpression {
  * Base aggregation expression.
  * @param R an aggregation result type for this aggregation
  */
-interface Aggregation<R: AggregationResult> : NamedExpression {
+interface Aggregation<R : AggregationResult> : NamedExpression {
     /**
      * Processes corresponding aggregation response.
      */

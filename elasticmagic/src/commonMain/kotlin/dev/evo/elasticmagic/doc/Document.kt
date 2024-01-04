@@ -433,7 +433,7 @@ abstract class FieldSet : FieldSetShortcuts(), Named {
  * It is not recommended to use [Enum.ordinal] property for field value as it can change
  * when new variant is added.
  */
-inline fun <reified V: Enum<V>> FieldSet.Field<Int, Int>.enum(
+inline fun <reified V : Enum<V>> FieldSet.Field<Int, Int>.enum(
     fieldValue: IntEnumValue<V>,
 ): FieldSet.Field<V, V> {
     return FieldSet.Field(
@@ -454,7 +454,7 @@ inline fun <reified V: Enum<V>> FieldSet.Field<Int, Int>.enum(
  * @param fieldValue function that provides field value of an enum variant.
  * [Enum.name] property will be used if [fieldValue] is not provided.
  */
-inline fun <reified V: Enum<V>> FieldSet.Field<String, String>.enum(
+inline fun <reified V : Enum<V>> FieldSet.Field<String, String>.enum(
     fieldValue: KeywordEnumValue<V>? = null,
 ): FieldSet.Field<V, V> {
     return FieldSet.Field(
@@ -482,7 +482,7 @@ open class SubFields<V>(private val field: BoundField<V, V>) : FieldSet(), Field
 
     override fun getQualifiedFieldName(): String = field.getQualifiedFieldName()
 
-    class UnboundSubFields<V, F: SubFields<V>>(
+    class UnboundSubFields<V, F : SubFields<V>>(
         internal val unboundField: Field<V, V>,
         internal val subFieldsFactory: (BoundField<V, V>) -> F,
     ) {
@@ -520,12 +520,12 @@ internal class SubFieldsField<T>(
 ) : WrapperField<T>(field)
 
 abstract class BaseDocument : FieldSet() {
-    fun <V, F: SubFields<V>> Field<V, V>.subFields(
+    fun <V, F : SubFields<V>> Field<V, V>.subFields(
         factory: (BoundField<V, V>) -> F): SubFields.UnboundSubFields<V, F> {
         return SubFields.UnboundSubFields(this, factory)
     }
 
-    fun <T: SubDocument> `object`(
+    fun <T : SubDocument> `object`(
         name: String?,
         factory: (DocSourceField) -> T,
         enabled: Boolean? = null,
@@ -541,7 +541,7 @@ abstract class BaseDocument : FieldSet() {
         return SubDocument.UnboundSubDocument(name, ObjectType(), params, factory)
     }
 
-    fun <T: SubDocument> `object`(
+    fun <T : SubDocument> `object`(
         factory: (DocSourceField) -> T,
         enabled: Boolean? = null,
         dynamic: Dynamic? = null,
@@ -550,7 +550,7 @@ abstract class BaseDocument : FieldSet() {
         return `object`(null, factory, enabled, dynamic, params)
     }
 
-    fun <T: SubDocument> obj(
+    fun <T : SubDocument> obj(
         name: String?,
         factory: (DocSourceField) -> T,
         enabled: Boolean? = null,
@@ -560,7 +560,7 @@ abstract class BaseDocument : FieldSet() {
         return `object`(name, factory, enabled, dynamic, params)
     }
 
-    fun <T: SubDocument> obj(
+    fun <T : SubDocument> obj(
         factory: (DocSourceField) -> T,
         enabled: Boolean? = null,
         dynamic: Dynamic? = null,
@@ -569,7 +569,7 @@ abstract class BaseDocument : FieldSet() {
         return `object`(factory, enabled, dynamic, params)
     }
 
-    fun <T: SubDocument> nested(
+    fun <T : SubDocument> nested(
         name: String?,
         factory: (DocSourceField) -> T,
         dynamic: Dynamic? = null,
@@ -583,7 +583,7 @@ abstract class BaseDocument : FieldSet() {
         return SubDocument.UnboundSubDocument(name, NestedType(), params, factory)
     }
 
-    fun <T: SubDocument> nested(
+    fun <T : SubDocument> nested(
         factory: (DocSourceField) -> T,
         dynamic: Dynamic? = null,
         params: Params = Params()
@@ -616,7 +616,7 @@ abstract class SubDocument(
 
     fun getParent(): FieldSet = field.getParent()
 
-    class UnboundSubDocument<T: SubDocument>(
+    class UnboundSubDocument<T : SubDocument>(
         private val name: String?,
         internal val type: ObjectType<BaseDocSource>,
         internal val params: Params,
@@ -667,7 +667,7 @@ open class MetaFields : RootFieldSet() {
     open val size by SizeField()
 
     @Suppress("UnnecessaryAbstractClass")
-    abstract class BaseMetaField<V, B: MappingField<V>>(
+    abstract class BaseMetaField<V, B : MappingField<V>>(
         name: String, type: FieldType<V, V>, params: Params = Params(),
         private val boundFieldFactory: (String, Params, MetaFields) -> B
     ) : Field<V, V>(name, type, params) {
@@ -938,7 +938,7 @@ abstract class DynamicTemplates : RootFieldSet() {
     /**
      * Template for a field with sub-fields.
      */
-    fun <V, F: SubFields<V>> template(
+    fun <V, F : SubFields<V>> template(
         name: String? = null,
         mapping: SubFields.UnboundSubFields<V, F>,
         matchMappingType: MatchMappingType<*, *>? = null,
@@ -967,7 +967,7 @@ abstract class DynamicTemplates : RootFieldSet() {
     /**
      * Template for a sub-document field.
      */
-    fun <F: SubDocument> template(
+    fun <F : SubDocument> template(
         name: String? = null,
         mapping: SubDocument.UnboundSubDocument<F>,
         matchMappingType: MatchMappingType<*, *>? = null,
@@ -1202,7 +1202,7 @@ abstract class DynamicTemplates : RootFieldSet() {
             }
         }
 
-        class FromSubFields<V, F: SubFields<V>>(
+        class FromSubFields<V, F : SubFields<V>>(
             val subFields: SubFields.UnboundSubFields<V, F>
         ) : DynamicField<V, V, F>() {
             override fun field(fieldPath: String): F {
@@ -1212,7 +1212,7 @@ abstract class DynamicTemplates : RootFieldSet() {
             }
         }
 
-        class FromSubDocument<F: SubDocument>(
+        class FromSubDocument<F : SubDocument>(
             val subDocument: SubDocument.UnboundSubDocument<F>
         ) : DynamicField<Any, Nothing, F>() {
             override fun field(fieldPath: String): F {
@@ -1254,7 +1254,7 @@ abstract class DynamicTemplates : RootFieldSet() {
 
         data class Date<V>(override val fieldType: FieldType<V, V>) : MatchMappingType<V, V>()
 
-        data class Object<V: BaseDocSource>(override val fieldType: FieldType<V, V>) : MatchMappingType<V, V>()
+        data class Object<V : BaseDocSource>(override val fieldType: FieldType<V, V>) : MatchMappingType<V, V>()
     }
 
     enum class MatchPattern : ToValue<String> {

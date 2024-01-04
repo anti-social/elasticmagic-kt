@@ -144,7 +144,7 @@ data class FunctionScore(
         }
     }
 
-    data class FieldValueFactor<T: Number>(
+    data class FieldValueFactor<T : Number>(
         val field: FieldOperations<T>,
         val factor: Float? = null,
         val missing: T? = null,

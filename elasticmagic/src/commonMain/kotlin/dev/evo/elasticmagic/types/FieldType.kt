@@ -99,7 +99,7 @@ abstract class SimpleFieldType<V> : FieldType<V, V> {
  * See: <https://www.elastic.co/guide/en/elasticsearch/reference/current/number.html>
  */
 @Suppress("UnnecessaryAbstractClass")
-abstract class NumberType<V: Number> : SimpleFieldType<V>()
+abstract class NumberType<V : Number> : SimpleFieldType<V>()
 
 /**
  * Integer field type represents signed integer value from [Byte.MIN_VALUE] to [Byte.MAX_VALUE].
@@ -445,19 +445,19 @@ object DoubleRangeType : RangeType<Double>(DoubleType)
  * We need this interface hierarchy to be able to make multiple [enum] extension functions
  * without signature clashing.
  */
-fun interface EnumValue<V: Enum<V>, T> {
+fun interface EnumValue<V : Enum<V>, T> {
     fun get(v: V): T
 }
 
 /**
  * An interface that provides integer field value for an enum.
  */
-fun interface IntEnumValue<V: Enum<V>> : EnumValue<V, Int>
+fun interface IntEnumValue<V : Enum<V>> : EnumValue<V, Int>
 
 /**
  * An interface that provides string field value for an enum.
  */
-fun interface KeywordEnumValue<V: Enum<V>> : EnumValue<V, String>
+fun interface KeywordEnumValue<V : Enum<V>> : EnumValue<V, String>
 
 /**
  * A field type that transforms enum variants to field values and vice verse.
@@ -468,7 +468,7 @@ fun interface KeywordEnumValue<V: Enum<V>> : EnumValue<V, String>
  * @param type original field type
  * @param termType should be `V::class`
  */
-class EnumFieldType<V: Enum<V>>(
+class EnumFieldType<V : Enum<V>>(
     enumValues: Array<V>,
     private val fieldValue: EnumValue<V, *>,
     private val type: FieldType<*, *>,
@@ -546,7 +546,7 @@ object JoinType : FieldType<Join, String> {
  *
  * See: <https://www.elastic.co/guide/en/elasticsearch/reference/current/object.html>
  */
-open class ObjectType<V: BaseDocSource> : FieldType<V, Nothing> {
+open class ObjectType<V : BaseDocSource> : FieldType<V, Nothing> {
     override val name = "object"
     override val termType = Nothing::class
 
@@ -584,7 +584,7 @@ open class ObjectType<V: BaseDocSource> : FieldType<V, Nothing> {
  *
  * See: <https://www.elastic.co/guide/en/elasticsearch/reference/current/nested.html>
  */
-class NestedType<V: BaseDocSource> : ObjectType<V>() {
+class NestedType<V : BaseDocSource> : ObjectType<V>() {
     override val name = "nested"
 }
 
@@ -592,7 +592,7 @@ class NestedType<V: BaseDocSource> : ObjectType<V>() {
  * Needed to bind specific document source to [ObjectType] at runtime.
  * Used by [dev.evo.elasticmagic.doc.DocSource].
  */
-internal class SourceType<V: BaseDocSource>(
+internal class SourceType<V : BaseDocSource>(
     val type: FieldType<BaseDocSource, Nothing>,
     private val sourceFactory: () -> V
 ) : FieldType<V, Nothing> {

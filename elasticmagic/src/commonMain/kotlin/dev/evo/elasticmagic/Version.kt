@@ -1,6 +1,6 @@
 package dev.evo.elasticmagic
 
-sealed class Version<T: Version<T>> : Comparable<T> {
+sealed class Version<T : Version<T>> : Comparable<T> {
     companion object {
         fun compareVersions(
             major: Int, minor: Int, patch: Int,
