@@ -531,7 +531,7 @@ could be transformed from http query parameters.</p>
 
 <span class="kd">suspend</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">process</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">filtersResult</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">appliedFilters</span><span class="p">.</span><span class="na">processResult</span><span class="p">(</span><span class="w"></span>
-<span class="w">        </span><span class="n">searchQuery</span><span class="p">.</span><span class="na">execute</span><span class="p">(</span><span class="n">cluster</span><span class="o">[</span><span class="s">&quot;elasticmagic-samples_bike&quot;</span><span class="o">]</span><span class="p">)</span><span class="w"></span>
+<span class="w">        </span><span class="n">searchQuery</span><span class="p">.</span><span class="na">search</span><span class="p">(</span><span class="n">cluster</span><span class="o">[</span><span class="s">&quot;elasticmagic-samples_bike&quot;</span><span class="o">]</span><span class="p">)</span><span class="w"></span>
 <span class="w">    </span><span class="p">)</span><span class="w"></span>
 
 <span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">manufacturerFacet</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">filtersResult</span><span class="o">[</span><span class="n">BikeQueryFilters</span><span class="p">.</span><span class="na">manufacturer</span><span class="o">]</span><span class="w"></span>

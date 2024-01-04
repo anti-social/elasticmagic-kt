@@ -515,7 +515,7 @@ Use it on your own risk</p>
 <span class="w">    </span><span class="n">mavenCentral</span><span class="p">()</span><span class="w"></span>
 <span class="p">}</span><span class="w"></span>
 
-<span class="kd">val</span><span class="w"> </span><span class="nv">elasticmagicVersion</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;0.0.28-1-gba7b350&quot;</span><span class="w"></span>
+<span class="kd">val</span><span class="w"> </span><span class="nv">elasticmagicVersion</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;0.0.28-2-g5581d20&quot;</span><span class="w"></span>
 <span class="kd">val</span><span class="w"> </span><span class="nv">ktorVersion</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;2.2.2&quot;</span><span class="w"></span>
 
 <span class="n">dependencies</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
@@ -764,17 +764,17 @@ http client.</p>
 
 <span class="w">    </span><span class="c1">// Find all users</span><span class="w"></span>
 <span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">sq</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SearchQuery</span><span class="p">()</span><span class="w"></span>
-<span class="w">    </span><span class="n">printUsers</span><span class="p">(</span><span class="n">sq</span><span class="p">.</span><span class="na">execute</span><span class="p">(</span><span class="n">userIndex</span><span class="p">))</span><span class="w"></span>
+<span class="w">    </span><span class="n">printUsers</span><span class="p">(</span><span class="n">sq</span><span class="p">.</span><span class="na">search</span><span class="p">(</span><span class="n">userIndex</span><span class="p">))</span><span class="w"></span>
 
 <span class="w">    </span><span class="c1">// Find nobody users</span><span class="w"></span>
 <span class="w">    </span><span class="n">sq</span><span class="p">.</span><span class="na">query</span><span class="p">(</span><span class="n">UserDoc</span><span class="p">.</span><span class="na">about</span><span class="p">.</span><span class="na">match</span><span class="p">(</span><span class="s">&quot;nobody&quot;</span><span class="p">))</span><span class="w"></span>
-<span class="w">    </span><span class="n">printUsers</span><span class="p">(</span><span class="n">sq</span><span class="p">.</span><span class="na">execute</span><span class="p">(</span><span class="n">userIndex</span><span class="p">))</span><span class="w"></span>
+<span class="w">    </span><span class="n">printUsers</span><span class="p">(</span><span class="n">sq</span><span class="p">.</span><span class="na">search</span><span class="p">(</span><span class="n">userIndex</span><span class="p">))</span><span class="w"></span>
 
 <span class="w">    </span><span class="c1">// Build an aggregation that counts users inside a group</span><span class="w"></span>
 <span class="w">    </span><span class="n">printGroupsAgg</span><span class="p">(</span><span class="w"></span>
 <span class="w">        </span><span class="n">SearchQuery</span><span class="p">()</span><span class="w"></span>
 <span class="w">            </span><span class="p">.</span><span class="na">aggs</span><span class="p">(</span><span class="s">&quot;groups&quot;</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">TermsAgg</span><span class="p">(</span><span class="n">UserDoc</span><span class="p">.</span><span class="na">groups</span><span class="p">))</span><span class="w"></span>
-<span class="w">            </span><span class="p">.</span><span class="na">execute</span><span class="p">(</span><span class="n">userIndex</span><span class="p">)</span><span class="w"></span>
+<span class="w">            </span><span class="p">.</span><span class="na">search</span><span class="p">(</span><span class="n">userIndex</span><span class="p">)</span><span class="w"></span>
 <span class="w">            </span><span class="p">.</span><span class="na">agg</span><span class="p">(</span><span class="s">&quot;groups&quot;</span><span class="p">)</span><span class="w"></span>
 <span class="w">    </span><span class="p">)</span><span class="w"></span>
 <span class="p">}</span><span class="w"></span>
