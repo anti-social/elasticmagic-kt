@@ -30,13 +30,13 @@ class AttrFacetFilterTests : ElasticsearchTestBase() {
     fun facet() = runTestWithSerdes {
         withFixtures(ItemDoc, FIXTURES) {
             var searchQuery = SearchQuery()
-            searchQuery.execute(index).totalHits shouldBe 8
+            searchQuery.search(index).totalHits shouldBe 8
 
             searchQuery = SearchQuery()
             ItemQueryFilters.apply(
                 searchQuery, emptyMap()
             ).let { appliedFilters ->
-                val searchResult = searchQuery.execute(index)
+                val searchResult = searchQuery.search(index)
                 searchResult.totalHits shouldBe 8
 
                 val qfResult = appliedFilters.processResult(searchResult)
@@ -141,7 +141,7 @@ class AttrFacetFilterTests : ElasticsearchTestBase() {
             ItemQueryFilters.apply(
                 searchQuery, mapOf(listOf("attr", Manufacturer.ATTR_ID.toString()) to listOf("0"))
             ).let { appliedFilters ->
-                val searchResult = searchQuery.execute(index)
+                val searchResult = searchQuery.search(index)
                 searchResult.totalHits shouldBe 3
 
                 val qfResult = appliedFilters.processResult(searchResult)
@@ -223,7 +223,7 @@ class AttrFacetFilterTests : ElasticsearchTestBase() {
                     listOf("attr", "3") to listOf("12"),
                 )
             ).let { appliedFilters ->
-                val searchResult = searchQuery.execute(index)
+                val searchResult = searchQuery.search(index)
                 searchResult.totalHits shouldBe 2
 
                 val qfResult = appliedFilters.processResult(searchResult)
@@ -301,7 +301,7 @@ class AttrFacetFilterTests : ElasticsearchTestBase() {
                     listOf("attr", "5", "gte") to listOf("6.5"),
                 )
             ).let { appliedFilters ->
-                val searchResult = searchQuery.execute(index)
+                val searchResult = searchQuery.search(index)
                 searchResult.totalHits shouldBe 0
 
                 val qfResult = appliedFilters.processResult(searchResult)
@@ -349,7 +349,7 @@ class AttrFacetFilterTests : ElasticsearchTestBase() {
                     listOf("attr", "6", "lte") to listOf("5000"),
                 )
             ).let { appliedFilters ->
-                val searchResult = searchQuery.execute(index)
+                val searchResult = searchQuery.search(index)
                 searchResult.totalHits shouldBe 3
 
                 val qfResult = appliedFilters.processResult(searchResult)
@@ -431,7 +431,7 @@ class AttrFacetFilterTests : ElasticsearchTestBase() {
                     listOf("attr", "4", "all") to listOf("1", "3"),
                 )
             ).let { appliedFilters ->
-                val searchResult = searchQuery.execute(index)
+                val searchResult = searchQuery.search(index)
                 searchResult.totalHits shouldBe 2
 
                 val qfResult = appliedFilters.processResult(searchResult)

@@ -34,7 +34,7 @@ fun main() = runBlocking {
         println("Query filter params: $qfParams")
         val searchQuery = SearchQuery(::BikeDocSource)
         val appliedFilters = BikeShopQueryFilters.apply(searchQuery, qfParams)
-        val searchResult = searchQuery.execute(bikeShopIndex)
+        val searchResult = searchQuery.search(bikeShopIndex)
 
         val qfResult = appliedFilters.processResult(searchResult)
 

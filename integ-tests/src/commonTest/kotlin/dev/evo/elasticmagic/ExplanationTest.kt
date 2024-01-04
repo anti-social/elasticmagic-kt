@@ -24,7 +24,7 @@ class ExplanationTest : ElasticsearchTestBase() {
     fun withoutExplanation() = runTestWithSerdes {
         withFixtures(ItemDoc, FIXTURES) {
             val searchQuery = SearchQuery()
-            val result = searchQuery.execute(index)
+            val result = searchQuery.search(index)
             result.totalHits shouldBe 8
             result.hits.mapNotNull { it.explanation } shouldBe emptyList()
         }
@@ -34,7 +34,7 @@ class ExplanationTest : ElasticsearchTestBase() {
     fun withExplanationButEmptySearchQuery() = runTestWithSerdes {
         withFixtures(ItemDoc, FIXTURES) {
             val searchQuery = SearchQuery()
-            val result = searchQuery.execute(index, Params("explain" to true))
+            val result = searchQuery.search(index, Params("explain" to true))
             result.totalHits shouldBe 8
             val explanations = result.hits.mapNotNull { it.explanation }
 
@@ -50,7 +50,7 @@ class ExplanationTest : ElasticsearchTestBase() {
     fun withExplanation() = runTestWithSerdes {
         withFixtures(ItemDoc, FIXTURES) {
             val searchQuery = SearchQuery(StringField("model").match("Galaxy Note 10"))
-            val result = searchQuery.execute(index, Params("explain" to true))
+            val result = searchQuery.search(index, Params("explain" to true))
             result.totalHits shouldBe 5
             val explanations = result.hits.mapNotNull { it.explanation }
 

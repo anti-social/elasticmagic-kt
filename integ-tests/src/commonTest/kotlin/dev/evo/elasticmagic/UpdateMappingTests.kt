@@ -44,7 +44,7 @@ class UpdateMappingTests : ElasticsearchTestBase() {
             SearchQuery(
                 ::UserDocSource, UserV2Doc.name.match("boy")
             )
-                .execute(index)
+                .search(index)
                 .totalHits shouldBe 0
 
             cluster.updateMapping(
@@ -63,7 +63,7 @@ class UpdateMappingTests : ElasticsearchTestBase() {
             SearchQuery(
                 ::UserDocSource, UserV2Doc.name.match("boy")
             )
-                .execute(index)
+                .search(index)
                 .totalHits shouldBe 1
         }
     }

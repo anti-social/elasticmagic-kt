@@ -236,7 +236,7 @@ class SearchQueryTests : ElasticsearchTestBase() {
                             scriptType = "unknown",
                         )
                     )
-                    .execute(index)
+                    .search(index)
             }
         }
 
@@ -251,17 +251,17 @@ class SearchQueryTests : ElasticsearchTestBase() {
             when (val version = cluster.getVersion()) {
                 is Version.Opensearch -> {
                     shouldThrow<ElasticsearchException.BadRequest> {
-                        query.execute(index)
+                        query.search(index)
                     }
                 }
                 is Version.Elasticsearch -> {
                     if (version.major < 7) {
                         shouldThrow<ElasticsearchException.Internal> {
-                            query.execute(index)
+                            query.search(index)
                         }
                     } else {
                         shouldThrow<ElasticsearchException.BadRequest> {
-                            query.execute(index)
+                            query.search(index)
                         }
                     }
                 }
@@ -275,7 +275,7 @@ class SearchQueryTests : ElasticsearchTestBase() {
             karlssonsJam, karlssonsBestDonuts, karlssonsJustDonuts, littleBrotherDogStuff
         )) {
             val searchResult = SearchQuery(::OrderDocSource)
-                .execute(index)
+                .search(index)
 
             searchResult.totalHits shouldBe 4
             searchResult.maxScore shouldBe 1.0F
@@ -289,7 +289,7 @@ class SearchQueryTests : ElasticsearchTestBase() {
         withFixtures(OrderDoc, listOf(karlssonsJam)) {
             val searchResult = SearchQuery(::OrderDocSource)
                 .source(excludes=listOf(OrderDoc.comment))
-                .execute(index)
+                .search(index)
 
             searchResult.totalHits shouldBe 1
             searchResult.maxScore shouldBe 1.0F
@@ -308,7 +308,7 @@ class SearchQueryTests : ElasticsearchTestBase() {
         withFixtures(OrderDoc, listOf(karlssonsJam)) {
             val searchResult = SearchQuery(::OrderDocSource)
                 .source(false)
-                .execute(index)
+                .search(index)
 
             searchResult.totalHits shouldBe 1
             searchResult.maxScore shouldBe 1.0F
@@ -325,7 +325,7 @@ class SearchQueryTests : ElasticsearchTestBase() {
             val exc = shouldThrow<IllegalStateException> {
                 SearchQuery(::OrderDocSource)
                     .source(OrderDoc.comment)
-                    .execute(index)
+                    .search(index)
             }
             exc.message shouldBe "Field [user] is required"
         }
@@ -336,7 +336,7 @@ class SearchQueryTests : ElasticsearchTestBase() {
         withFixtures(OrderDoc, listOf(karlssonsJam)) {
             val searchResult = SearchQuery(::OrderDocSource)
                 .docvalueFields(OrderDoc.status, OrderDoc.dateCreated.format("YYYY"))
-                .execute(index)
+                .search(index)
 
             searchResult.totalHits shouldBe 1
             searchResult.maxScore shouldBe 1.0F
@@ -358,7 +358,7 @@ class SearchQueryTests : ElasticsearchTestBase() {
                 ::OrderDocSource,
                 OrderDoc.user.id.eq(1)
             )
-                .execute(index)
+                .search(index)
 
             searchResult.totalHits shouldBe 1
             searchResult.maxScore shouldBe 1.0F
@@ -394,7 +394,7 @@ class SearchQueryTests : ElasticsearchTestBase() {
         )) {
             val searchResult = SearchQuery(::OrderDocSource)
                 .filter(OrderDoc.status.eq(OrderStatus.NEW))
-                .execute(index)
+                .search(index)
 
             searchResult.totalHits shouldBe 3
             searchResult.maxScore.shouldNotBeNull() shouldBe 0.0F
@@ -410,7 +410,7 @@ class SearchQueryTests : ElasticsearchTestBase() {
         )) {
             val searchResult = SearchQuery(::OrderDocSource)
                 .filter(OrderDoc.dateCreated.lt(LocalDate(2020, 1, 1).atStartOfDayIn(TimeZone.UTC)))
-                .execute(index)
+                .search(index)
 
             searchResult.totalHits shouldBe 1
             searchResult.maxScore.shouldNotBeNull() shouldBe 0.0F
@@ -432,7 +432,7 @@ class SearchQueryTests : ElasticsearchTestBase() {
         )) {
             val searchResult = SearchQuery(::OrderDocSource)
                 .filter(Ids(listOf("105", "102")))
-                .execute(index)
+                .search(index)
 
             searchResult.totalHits shouldBe 2
             searchResult.maxScore shouldBe 0.0F
@@ -459,7 +459,7 @@ class SearchQueryTests : ElasticsearchTestBase() {
                         order = Sort.Order.DESC,
                     )
                 )
-                .execute(index)
+                .search(index)
 
             searchResult.totalHits shouldBe 4
             searchResult.maxScore shouldBe null
@@ -487,7 +487,7 @@ class SearchQueryTests : ElasticsearchTestBase() {
                         nested = Sort.Nested(OrderDoc.items)
                     )
                 )
-                .execute(index)
+                .search(index)
 
             searchResult.totalHits shouldBe 4
             searchResult.maxScore shouldBe null
@@ -513,7 +513,7 @@ class SearchQueryTests : ElasticsearchTestBase() {
                     ),
                 )
                 .size(0)
-                .execute(index)
+                .search(index)
 
             searchResult.totalHits shouldBe 4
             // Elasticsearch 6.x has max score 0.0, but 7.x has null
@@ -551,7 +551,7 @@ class SearchQueryTests : ElasticsearchTestBase() {
                     ),
                 )
                 .size(0)
-                .execute(index)
+                .search(index)
 
             val ordersByYear = searchResult.agg<DateHistogramAggResult<Instant>>("orders_by_year")
             ordersByYear.buckets.shouldHaveSize(3)
@@ -589,7 +589,7 @@ class SearchQueryTests : ElasticsearchTestBase() {
                     )
                 )
                 .size(0)
-                .execute(index)
+                .search(index)
 
             searchResult.totalHits shouldBe 4
             searchResult.maxScore ?: 0.0 shouldBe 0.0
@@ -649,7 +649,7 @@ class SearchQueryTests : ElasticsearchTestBase() {
                 .aggs("days_of_week" to TermsAgg(dayOfWeekField))
                 .fields(dayOfWeekField, statusStrField)
                 .sort(dayOfWeekField)
-                .execute(index)
+                .search(index)
 
             searchResult.hits.size shouldBe 4
             searchResult.hits.flatMap { hit -> hit.fields[dayOfWeekField] } shouldBe listOf(

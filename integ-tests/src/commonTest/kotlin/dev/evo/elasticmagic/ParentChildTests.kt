@@ -110,7 +110,7 @@ class ParentChildTests : ElasticsearchTestBase() {
                 "question" to ::QuestionDocSource,
                 "answer" to ::AnswerDocSource
             )
-            SearchQuery(sourceFactory).execute(index).let { searchResult ->
+            SearchQuery(sourceFactory).search(index).let { searchResult ->
                 searchResult.hits.toSet() shouldContainExactly setOf(
                     SearchHit(
                         index = index.name,
@@ -173,7 +173,7 @@ class ParentChildTests : ElasticsearchTestBase() {
 
             SearchQuery(sourceFactory)
                 .filter(AnswerDoc.join.eq("answer"))
-                .execute(index)
+                .search(index)
                 .let { searchResult ->
                     searchResult.hits.toSet() shouldContainExactly setOf(
                         SearchHit(
@@ -225,7 +225,7 @@ class ParentChildTests : ElasticsearchTestBase() {
                         KnowledgeDoc.join.parent("question")
                     )
                 )
-                .execute(index)
+                .search(index)
                 .let { searchResult ->
                     val parentsAgg = searchResult.agg<TermsAggResult<String>>("parents")
                     parentsAgg.buckets shouldBe listOf(
@@ -236,7 +236,7 @@ class ParentChildTests : ElasticsearchTestBase() {
 
             SearchQuery(sourceFactory)
                 .filter(HasParent(QuestionDoc.text.match("What"), "question"))
-                .execute(index)
+                .search(index)
                 .let { searchResult ->
                     searchResult.hits.toSet() shouldContainExactly setOf(
                         SearchHit(
@@ -260,7 +260,7 @@ class ParentChildTests : ElasticsearchTestBase() {
 
             SearchQuery(sourceFactory)
                 .filter(HasChild(MatchAll, "answer", minChildren = 1))
-                .execute(index)
+                .search(index)
                 .let { searchResult ->
                     searchResult.hits.toSet() shouldContainExactly setOf(
                         SearchHit(
@@ -284,7 +284,7 @@ class ParentChildTests : ElasticsearchTestBase() {
 
             SearchQuery(sourceFactory)
                 .filter(HasChild(MatchAll, "answer", maxChildren = 2))
-                .execute(index)
+                .search(index)
                 .let { searchResult ->
                     searchResult.hits.toSet() shouldContainExactly setOf(
                         SearchHit(
@@ -300,7 +300,7 @@ class ParentChildTests : ElasticsearchTestBase() {
 
             SearchQuery(sourceFactory)
                 .filter(HasChild(MatchAll, "answer", minChildren = 3))
-                .execute(index)
+                .search(index)
                 .let { searchResult ->
                     searchResult.hits.toSet() shouldContainExactly setOf(
                         SearchHit(

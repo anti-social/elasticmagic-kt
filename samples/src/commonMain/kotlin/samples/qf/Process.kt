@@ -5,7 +5,7 @@ import samples.started.cluster
 
 suspend fun process() {
     val filtersResult = appliedFilters.processResult(
-        searchQuery.execute(cluster["elasticmagic-samples_bike"])
+        searchQuery.search(cluster["elasticmagic-samples_bike"])
     )
 
     val manufacturerFacet = filtersResult[BikeQueryFilters.manufacturer]

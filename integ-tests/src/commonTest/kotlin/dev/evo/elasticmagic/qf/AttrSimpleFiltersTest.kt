@@ -18,14 +18,14 @@ class AttrSimpleFiltersTest : ElasticsearchTestBase() {
     fun attrSimpleFilterTest() = runTestWithSerdes {
         withFixtures(ItemDoc, FIXTURES) {
             val searchQuery = SearchQuery()
-            val result = searchQuery.execute(index)
+            val result = searchQuery.search(index)
             result.totalHits shouldBe 8
 
             ItemQueryFilters.apply(
                 searchQuery,
                 mapOf(listOf("attr", Manufacturer.ATTR_ID.toString(), "any") to listOf("1", "0"))
             ).let {
-                val searchResult = searchQuery.execute(index)
+                val searchResult = searchQuery.search(index)
                 searchResult.totalHits shouldBe 4
             }
         }
@@ -35,13 +35,13 @@ class AttrSimpleFiltersTest : ElasticsearchTestBase() {
     fun attrBoolSimpleFilterTest() = runTestWithSerdes {
         withFixtures(ItemDoc, FIXTURES) {
             val searchQuery = SearchQuery()
-            searchQuery.execute(index).totalHits shouldBe 8
+            searchQuery.search(index).totalHits shouldBe 8
 
             ItemQueryFilters.apply(
                 searchQuery,
                 mapOf(listOf("attr", ExtensionSlot.ATTR_ID.toString()) to listOf("true"))
             ).let {
-                val searchResult = searchQuery.execute(index)
+                val searchResult = searchQuery.search(index)
                 searchResult.totalHits shouldBe 3
             }
         }
@@ -51,13 +51,13 @@ class AttrSimpleFiltersTest : ElasticsearchTestBase() {
     fun attrRangeSimpleFilterTest() = runTestWithSerdes {
         withFixtures(ItemDoc, FIXTURES) {
             val searchQuery = SearchQuery()
-            searchQuery.execute(index).totalHits shouldBe 8
+            searchQuery.search(index).totalHits shouldBe 8
 
             ItemQueryFilters.apply(
                 searchQuery,
                 mapOf(listOf("attr", DisplaySize.ATTR_ID.toString(), "gte") to listOf("6.7"))
             ).let {
-                val searchResult = searchQuery.execute(index)
+                val searchResult = searchQuery.search(index)
                 searchResult.totalHits shouldBe 3
             }
         }
@@ -67,7 +67,7 @@ class AttrSimpleFiltersTest : ElasticsearchTestBase() {
     fun applyAllSimpleFilters() = runTestWithSerdes {
         withFixtures(ItemDoc, FIXTURES) {
             val searchQuery = SearchQuery()
-            searchQuery.execute(index).totalHits shouldBe 8
+            searchQuery.search(index).totalHits shouldBe 8
 
             ItemQueryFilters.apply(
                 searchQuery,
@@ -77,7 +77,7 @@ class AttrSimpleFiltersTest : ElasticsearchTestBase() {
                     listOf("attr", DisplaySize.ATTR_ID.toString(), "gte") to listOf("6.3"),
                 )
             ).let {
-                val searchResult = searchQuery.execute(index)
+                val searchResult = searchQuery.search(index)
                 searchResult.totalHits shouldBe 2
 
                 val qfResult = it.processResult(searchResult)

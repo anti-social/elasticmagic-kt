@@ -690,6 +690,11 @@ abstract class BaseSearchQuery<S : BaseDocSource, T : BaseSearchQuery<S, T>>(
     }
 
     /**
+     * Method is called before query execution. Can be overriden in subclasses of [SearchQuery].
+     */
+    open fun beforeExecute() {}
+
+    /**
      * Makes an immutable view of the search query. Be careful when using this method.
      *
      * <b>Note:</b>
@@ -812,8 +817,17 @@ open class SearchQuery<S : BaseDocSource>(
     /**
      * Executes the search query using an [index].
      */
-    suspend fun execute(index: ElasticsearchIndex, params: Params? = null): SearchQueryResult<S> {
+    suspend fun search(index: ElasticsearchIndex, params: Params? = null): SearchQueryResult<S> {
+        beforeExecute()
         return index.search(prepareSearch(params))
+    }
+
+    /**
+     * Alias of [SearchQuery.search]. Executes the search query using an [index].
+     */
+    @Deprecated("Replaced with `search` method", replaceWith = ReplaceWith("search"))
+    suspend fun execute(index: ElasticsearchIndex, params: Params? = null): SearchQueryResult<S> {
+        return search(index, params)
     }
 
     /**
@@ -838,6 +852,7 @@ open class SearchQuery<S : BaseDocSource>(
         scrollSize: Int? = null,
         params: Params? = null,
     ): DeleteByQueryResult {
+        beforeExecute()
         return index.deleteByQuery(
             prepareDelete(
                 Params(
@@ -859,6 +874,7 @@ open class SearchQuery<S : BaseDocSource>(
         scrollSize: Int? = null,
         params: Params? = null,
     ): AsyncResult<DeleteByQueryPartialResult, DeleteByQueryResult?> {
+        beforeExecute()
         return index.deleteByQueryAsync(
             prepareDelete(
                 Params(
@@ -886,6 +902,7 @@ open class SearchQuery<S : BaseDocSource>(
         scrollSize: Int? = null,
         params: Params? = null,
     ): UpdateByQueryResult {
+        beforeExecute()
         return index.updateByQuery(
             prepareUpdate(
                 script,
@@ -909,6 +926,7 @@ open class SearchQuery<S : BaseDocSource>(
         scrollSize: Int? = null,
         params: Params? = null,
     ): AsyncResult<UpdateByQueryPartialResult, UpdateByQueryResult?> {
+        beforeExecute()
         return index.updateByQueryAsync(
             prepareUpdate(
                 script,

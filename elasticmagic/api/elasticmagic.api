@@ -27,6 +27,7 @@ public abstract class dev/evo/elasticmagic/BaseSearchQuery {
 	public final fun aggs (Ldev/evo/elasticmagic/SearchQuery$CLEAR;)Ldev/evo/elasticmagic/BaseSearchQuery;
 	public final fun aggs (Ljava/util/Map;)Ldev/evo/elasticmagic/BaseSearchQuery;
 	public final fun aggs ([Lkotlin/Pair;)Ldev/evo/elasticmagic/BaseSearchQuery;
+	public fun beforeExecute ()V
 	public final fun clone ()Ldev/evo/elasticmagic/BaseSearchQuery;
 	public final fun docvalueFields (Ldev/evo/elasticmagic/SearchQuery$CLEAR;)Ldev/evo/elasticmagic/BaseSearchQuery;
 	public final fun docvalueFields (Ljava/util/List;)Ldev/evo/elasticmagic/BaseSearchQuery;
@@ -516,6 +517,8 @@ public class dev/evo/elasticmagic/SearchQuery : dev/evo/elasticmagic/BaseSearchQ
 	public static synthetic fun execute$default (Ldev/evo/elasticmagic/SearchQuery;Ldev/evo/elasticmagic/ElasticsearchIndex;Ljava/util/Map;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public synthetic fun new (Lkotlin/jvm/functions/Function1;)Ldev/evo/elasticmagic/BaseSearchQuery;
 	protected fun new (Lkotlin/jvm/functions/Function1;)Ldev/evo/elasticmagic/SearchQuery;
+	public final fun search (Ldev/evo/elasticmagic/ElasticsearchIndex;Ljava/util/Map;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun search$default (Ldev/evo/elasticmagic/SearchQuery;Ldev/evo/elasticmagic/ElasticsearchIndex;Ljava/util/Map;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public final fun update (Ldev/evo/elasticmagic/ElasticsearchIndex;Ldev/evo/elasticmagic/query/Script;Ldev/evo/elasticmagic/Refresh;Ldev/evo/elasticmagic/Conflicts;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/util/Map;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun update$default (Ldev/evo/elasticmagic/SearchQuery;Ldev/evo/elasticmagic/ElasticsearchIndex;Ldev/evo/elasticmagic/query/Script;Ldev/evo/elasticmagic/Refresh;Ldev/evo/elasticmagic/Conflicts;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/util/Map;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public final fun updateAsync (Ldev/evo/elasticmagic/ElasticsearchIndex;Ldev/evo/elasticmagic/query/Script;Ldev/evo/elasticmagic/Refresh;Ldev/evo/elasticmagic/Conflicts;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/util/Map;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;

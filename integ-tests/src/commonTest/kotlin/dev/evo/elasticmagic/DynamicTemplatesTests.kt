@@ -49,17 +49,17 @@ class DynamicTemplatesTests : ElasticsearchTestBase() {
                 // Field does not support fielddata
                 SearchQuery()
                     .sort(companyIdField.id)
-                    .execute(index)
+                    .search(index)
             }
             val totalHits = SearchQuery()
                 .filter(companyIdField.id eq "10")
-                .execute(index)
+                .search(index)
                 .totalHits
             totalHits shouldBe 1L
 
             val hits = SearchQuery()
                 .sort(companyIdField.asc())
-                .execute(index)
+                .search(index)
                 .hits
             hits.size shouldBe 2
             hits[0].id shouldBe "2"
