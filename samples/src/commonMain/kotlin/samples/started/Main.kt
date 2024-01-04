@@ -31,17 +31,17 @@ fun main() = runBlocking {
 
     // Find all users
     val sq = SearchQuery()
-    printUsers(sq.execute(userIndex))
+    printUsers(sq.search(userIndex))
 
     // Find nobody users
     sq.query(UserDoc.about.match("nobody"))
-    printUsers(sq.execute(userIndex))
+    printUsers(sq.search(userIndex))
 
     // Build an aggregation that counts users inside a group
     printGroupsAgg(
         SearchQuery()
             .aggs("groups" to TermsAgg(UserDoc.groups))
-            .execute(userIndex)
+            .search(userIndex)
             .agg("groups")
     )
 }

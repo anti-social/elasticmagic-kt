@@ -57,7 +57,7 @@ class AttrRangeFacetFilterTests : ElasticsearchTestBase() {
     fun rangeQueries() = runTestWithSerdes {
         withFixtures(ItemDoc, FIXTURES, cleanup = false) {
             val searchQuery = SearchQuery()
-            searchQuery.execute(index).totalHits shouldBe 55
+            searchQuery.search(index).totalHits shouldBe 55
 
             testRangeFiltering(
                 SelectedValue.Gte(ATTR_ID, Float.NEGATIVE_INFINITY),
