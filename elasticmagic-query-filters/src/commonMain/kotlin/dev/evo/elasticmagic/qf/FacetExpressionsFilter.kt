@@ -70,11 +70,14 @@ class PreparedFacetExpressionFilter(
             searchQueryResult.aggs
 
         val results = facetFilterExprs.map { facetFilterExpr ->
-            val filterAgg = parsedAggs[makeAggName(facetFilterExpr.name)] as LongValueAggResult
+            val filterAgg = parsedAggs[makeAggName(facetFilterExpr.name)]
+            val docCount = if (filterAgg is SingleBucketAggResult)
+                filterAgg.docCount
+            else (filterAgg as LongValueAggResult).value
             FaceExpressionValue(
                 facetFilterExpr.name,
                 selectedNames.contains(facetFilterExpr.name),
-                filterAgg.value
+                docCount
             )
         }
 
