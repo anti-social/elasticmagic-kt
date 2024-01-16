@@ -142,7 +142,7 @@ class PreparedFacetFilter<T>(
             }
             mapOf(
                 filterAggName to FilterAgg(
-                    if (aggFilters.size == 1) aggFilters[0] else Bool(filter = aggFilters),
+                    maybeWrapBool(Bool::filter, aggFilters),
                     aggs = mapOf(termsAggName to filter.termsAgg)
                 )
             )
@@ -185,7 +185,7 @@ class PreparedFacetFilter<T>(
         return FacetFilterResult(name, paramName, filter.mode, values, isSelected)
     }
 
-    private fun getTermsAggResult(
+     fun getTermsAggResult(
         searchQueryResult: SearchQueryResult<*>
     ): TermsAggResult<T> {
         var aggResult: AggAwareResult = searchQueryResult

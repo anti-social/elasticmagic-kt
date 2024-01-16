@@ -10,11 +10,11 @@ import io.kotest.matchers.maps.shouldContainExactly
 import kotlin.test.Test
 
 class AttrSimpleFilterTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQueryCompiler) {
-    object ProductDoc : Document() {
+    private object ProductDoc : Document() {
         val attrs by long()
     }
 
-    object AttrsQueryFilters : QueryFilters() {
+    private object AttrsQueryFilters : QueryFilters() {
         val attrsBool by AttrSimpleFilter(ProductDoc.attrs, "a")
     }
 

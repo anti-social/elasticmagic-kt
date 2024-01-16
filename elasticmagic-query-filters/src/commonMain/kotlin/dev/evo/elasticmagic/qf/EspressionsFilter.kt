@@ -1,6 +1,5 @@
 package dev.evo.elasticmagic.qf
 
-import dev.evo.elasticmagic.query.Bool
 import dev.evo.elasticmagic.query.QueryExpression
 
 class ExpressionValue(val name: String, val expr: QueryExpression)
@@ -18,23 +17,11 @@ open class SimpleExpressionsFilter(
             null
         )
 
-        val expression = mutableListOf<QueryExpression>()
-
-        filterValues.map { value ->
-            values.firstOrNull { it.name == value }?.let {
-                expression.add(it.expr)
-            }
-
+        val expression = filterValues.mapNotNull { value ->
+            values.find { it.name == value }?.expr
         }
-        val filterExpr = when (expression.size) {
-            0 -> null
-            else -> {
-                when (mode) {
-                    FilterMode.UNION -> maybeWrapBool(Bool::should, expression)
-                    FilterMode.INTERSECT -> maybeWrapBool(Bool::must, expression)
-                }
-            }
-        }
+
+        val filterExpr = getFacetFilterExpr(expression, mode)
 
         return PreparedSimpleFilter(
             name,
