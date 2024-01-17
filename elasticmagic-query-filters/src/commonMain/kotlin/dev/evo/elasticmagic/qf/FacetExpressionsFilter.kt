@@ -71,9 +71,11 @@ class PreparedFacetExpressionFilter(
 
         val results = facetFilterExprs.map { facetFilterExpr ->
             val filterAgg = parsedAggs[makeAggName(facetFilterExpr.name)]
-            val docCount = if (filterAgg is SingleBucketAggResult)
+            val docCount = if (filterAgg is SingleBucketAggResult) {
                 filterAgg.docCount
-            else (filterAgg as LongValueAggResult).value
+            } else {
+                (filterAgg as LongValueAggResult).value
+            }
             FacetExpressionValue(
                 facetFilterExpr.name,
                 selectedNames.contains(facetFilterExpr.name),
@@ -92,7 +94,7 @@ open class FacetExpressionsFilter(
 ) : Filter<FacetExpressionFilterResult>(name) {
 
     override fun prepare(name: String, paramName: String, params: QueryFilterParams): PreparedFacetExpressionFilter {
-        val filterValues = params.getOrElse(listOf(paramName)) { emptyList() }
+        val filterValues = params.getOrDefault(listOf(paramName), emptyList())
 
         val selectedValues = filterValues.mapNotNull { value ->
             allValues.find { it.name == value }
