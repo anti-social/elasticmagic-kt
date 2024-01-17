@@ -295,27 +295,27 @@ public final class dev/evo/elasticmagic/qf/ExpressionValue {
 	public final fun getName ()Ljava/lang/String;
 }
 
-public final class dev/evo/elasticmagic/qf/FaceExpressionValue {
-	public fun <init> (Ljava/lang/String;ZJ)V
-	public final fun component1 ()Ljava/lang/String;
-	public final fun component2 ()Z
-	public final fun component3 ()J
-	public final fun copy (Ljava/lang/String;ZJ)Ldev/evo/elasticmagic/qf/FaceExpressionValue;
-	public static synthetic fun copy$default (Ldev/evo/elasticmagic/qf/FaceExpressionValue;Ljava/lang/String;ZJILjava/lang/Object;)Ldev/evo/elasticmagic/qf/FaceExpressionValue;
-	public fun equals (Ljava/lang/Object;)Z
-	public final fun getDocCount ()J
-	public final fun getName ()Ljava/lang/String;
-	public final fun getSelected ()Z
-	public fun hashCode ()I
-	public fun toString ()Ljava/lang/String;
-}
-
 public final class dev/evo/elasticmagic/qf/FacetExpressionFilterResult : dev/evo/elasticmagic/qf/FilterResult {
 	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ldev/evo/elasticmagic/qf/FilterMode;)V
 	public final fun getMode ()Ldev/evo/elasticmagic/qf/FilterMode;
 	public fun getName ()Ljava/lang/String;
 	public fun getParamName ()Ljava/lang/String;
 	public final fun getResults ()Ljava/util/List;
+}
+
+public final class dev/evo/elasticmagic/qf/FacetExpressionValue {
+	public fun <init> (Ljava/lang/String;ZJ)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Z
+	public final fun component3 ()J
+	public final fun copy (Ljava/lang/String;ZJ)Ldev/evo/elasticmagic/qf/FacetExpressionValue;
+	public static synthetic fun copy$default (Ldev/evo/elasticmagic/qf/FacetExpressionValue;Ljava/lang/String;ZJILjava/lang/Object;)Ldev/evo/elasticmagic/qf/FacetExpressionValue;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getDocCount ()J
+	public final fun getName ()Ljava/lang/String;
+	public final fun getSelected ()Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
 }
 
 public class dev/evo/elasticmagic/qf/FacetExpressionsFilter : dev/evo/elasticmagic/qf/Filter {

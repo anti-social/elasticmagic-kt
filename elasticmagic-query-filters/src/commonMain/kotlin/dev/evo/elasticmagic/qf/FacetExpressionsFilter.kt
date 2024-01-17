@@ -8,12 +8,12 @@ import dev.evo.elasticmagic.aggs.SingleBucketAggResult
 import dev.evo.elasticmagic.query.Bool
 import dev.evo.elasticmagic.query.QueryExpression
 
-data class FaceExpressionValue(val name: String, val selected: Boolean, val docCount: Long)
+data class FacetExpressionValue(val name: String, val selected: Boolean, val docCount: Long)
 
 class FacetExpressionFilterResult(
     override val name: String,
     override val paramName: String,
-    val results: List<FaceExpressionValue>,
+    val results: List<FacetExpressionValue>,
     val mode: FilterMode
 ) : FilterResult
 
@@ -74,7 +74,7 @@ class PreparedFacetExpressionFilter(
             val docCount = if (filterAgg is SingleBucketAggResult)
                 filterAgg.docCount
             else (filterAgg as LongValueAggResult).value
-            FaceExpressionValue(
+            FacetExpressionValue(
                 facetFilterExpr.name,
                 selectedNames.contains(facetFilterExpr.name),
                 docCount
@@ -92,13 +92,7 @@ open class FacetExpressionsFilter(
 ) : Filter<FacetExpressionFilterResult>(name) {
 
     override fun prepare(name: String, paramName: String, params: QueryFilterParams): PreparedFacetExpressionFilter {
-        val filterValues = params.getOrElse(listOf(paramName)) { null } ?: return PreparedFacetExpressionFilter(
-            name,
-            paramName,
-            emptyList(),
-            allValues,
-            mode
-        )
+        val filterValues = params.getOrElse(listOf(paramName)) { emptyList() }
 
         val selectedValues = filterValues.mapNotNull { value ->
             allValues.find { it.name == value }
