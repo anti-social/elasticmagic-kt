@@ -94,7 +94,7 @@ open class FacetExpressionsFilter(
 ) : Filter<FacetExpressionFilterResult>(name) {
 
     override fun prepare(name: String, paramName: String, params: QueryFilterParams): PreparedFacetExpressionFilter {
-        val filterValues = params.getOrDefault(listOf(paramName), emptyList())
+        val filterValues = params.getOrElse(listOf(paramName), ::emptyList)
 
         val selectedValues = filterValues.mapNotNull { value ->
             allValues.find { it.name == value }
