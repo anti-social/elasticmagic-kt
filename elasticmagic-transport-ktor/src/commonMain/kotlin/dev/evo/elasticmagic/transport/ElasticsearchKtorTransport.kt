@@ -22,7 +22,7 @@ import io.ktor.http.takeFrom
 class ElasticsearchKtorTransport(
     baseUrl: String,
     engine: HttpClientEngine,
-    val customHttpClientConfig: HttpClientConfig<*>.() -> Unit = {},
+    private val customHttpClientConfig: HttpClientConfig<*>.() -> Unit = {},
     configure: Config.() -> Unit = {},
 ) : ElasticsearchTransport(
     baseUrl,
