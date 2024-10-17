@@ -1,6 +1,7 @@
 package dev.evo.elasticmagic.transport
 
 import io.ktor.client.HttpClient
+import io.ktor.client.HttpClientConfig
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.plugins.auth.Auth
 import io.ktor.client.plugins.auth.providers.basic
@@ -21,6 +22,7 @@ import io.ktor.http.takeFrom
 class ElasticsearchKtorTransport(
     baseUrl: String,
     engine: HttpClientEngine,
+    private val customHttpClientConfig: HttpClientConfig<*>.() -> Unit = {},
     configure: Config.() -> Unit = {},
 ) : ElasticsearchTransport(
     baseUrl,
@@ -28,6 +30,8 @@ class ElasticsearchKtorTransport(
 ) {
     private val client = HttpClient(engine) {
         expectSuccess = false
+
+        customHttpClientConfig(this)
 
         // Enable compressed response from Elasticsearch
         if (config.gzipRequests) {
