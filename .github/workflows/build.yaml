@@ -3,7 +3,7 @@ name: Build and test
 on:
   push:
     branches:
-    - master
+    - publish
     tags:
     - "v*"
   pull_request:
@@ -12,7 +12,7 @@ on:
 
 env:
   # TODO: Allow to pass logging level as a variable
-  GRADLE_ARGS: ""
+  GRADLE_ARGS: "--info"
 
 jobs:
   build:
@@ -34,200 +34,7 @@ jobs:
     - name: Compile JVM
       run: |
         set -eux
-        ./gradlew compileTestKotlinJvm $GRADLE_ARGS
-
-    - name: Compile native
-      run: |
-        set -eux
-        ./gradlew linkDebugTestNative $GRADLE_ARGS
-
-    - name: Compile JS
-      run: |
-        set -eux
-        ./gradlew compileTestKotlinJs $GRADLE_ARGS
-
-    - name: Compile samples
-      run: |
-        set -eux
-        ./gradlew compileKotlinJvm compileKotlinNative -p samples $GRADLE_ARGS
-
-    - name: Upload build artifact
-      uses: ./.github/upload-artifact
-
-  unit-tests:
-    needs: build
-    if: |
-      !contains(github.event.head_commit.message, '[skip tests]')
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        java-version: [11]
-    steps:
-    - uses: actions/checkout@v3
-
-    - name: Setup
-      uses: ./.github/setup
-      with:
-        java-version: ${{ matrix.java-version }}
-
-    - name: Load caches
-      uses: ./.github/cache
-
-    - name: Download build artifact
-      uses: ./.github/download-artifact
-
-    - name: Run linter
-      run: |
-        set -eux
-        ./gradlew detekt $GRADLE_ARGS
-
-    - name: Check ABI compatibility
-      run: |
-        set -eux
-        ./gradlew apiCheck $GRADLE_ARGS
-
-    - name: Run unit tests
-      run: |
-        set -eux
-        ./gradlew allTests -PshowPassedTests -x integ-tests:allTests $GRADLE_ARGS
-
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v3
-      with:
-        token: ${{ secrets.CODECOV_TOKEN }}
-        verbose: true
-
-  integ-tests:
-    needs: unit-tests
-    if: |
-      !contains(github.event.head_commit.message, '[skip tests]')
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        include:
-        - es-distribution: elasticsearch
-          es-major-version: 6
-          es-image: elasticsearch:6.8.23
-          es-url: http://localhost:9200
-        - es-distribution: elasticsearch
-          es-major-version: 7
-          es-image: elasticsearch:7.17.10
-          es-url: http://localhost:9200
-        - es-distribution: elasticsearch
-          es-major-version: 8
-          es-image: elasticsearch:8.7.1
-          es-url: https://localhost:9200
-        - es-distribution: opensearch
-          es-major-version: 2
-          es-image: opensearchproject/opensearch:2.4.0
-          es-url: https://localhost:9200
-    steps:
-    - uses: actions/checkout@v3
-
-    - name: Start Elasticsearch
-      run: |
-        set -eu
-        docker run -d \
-          --name elasticsearch \
-          -p 9200:9200 \
-          -e "discovery.type=single-node" \
-          -e "ES_JAVA_OPTS=-Xms128m -Xmx256m" \
-          --health-cmd="curl ${{ matrix.es-url }} --insecure" \
-          --health-interval=5s \
-          --health-timeout=2s \
-          --health-retries=10 \
-          ${{ matrix.es-image }}
-        echo -n "Waiting Elasticsearch "
-        until [ $(docker inspect -f '{{.State.Health.Status}}' elasticsearch) == "healthy" ]; do
-          sleep 1
-          echo -n .
-        done
-        echo "ELASTIC_URL=http://localhost:9200" >> $GITHUB_ENV
-
-    - name: Setup Elasticsearch password
-      if: matrix.es-distribution == 'elasticsearch' && matrix.es-major-version >= 8
-      run: |
-        set -eu
-        ELASTIC_PASSWORD=$( \
-          docker exec elasticsearch \
-            /usr/share/elasticsearch/bin/elasticsearch-reset-password --batch -u elastic | \
-          awk 'BEGIN { FS=": "; } /^New value:/ { print $2; }' \
-        )
-        echo "ELASTIC_URL=https://localhost:9200" >> $GITHUB_ENV
-        echo "ELASTIC_USER=elastic" >> $GITHUB_ENV
-        echo "ELASTIC_PASSWORD=$ELASTIC_PASSWORD" >> $GITHUB_ENV
-
-    - name: Opensearch settings
-      if: matrix.es-distribution == 'opensearch'
-      run: |
-        set -eu
-        echo "ELASTIC_URL=https://localhost:9200" >> $GITHUB_ENV
-        echo "ELASTIC_USER=admin" >> $GITHUB_ENV
-        echo "ELASTIC_PASSWORD=admin" >> $GITHUB_ENV
-
-    - name: Setup
-      uses: ./.github/setup
-      with:
-        java-version: 11
-
-    - name: Load caches
-      uses: ./.github/cache
-
-    - name: Download build artifact
-      uses: ./.github/download-artifact
-
-    - name: Run integration tests
-      run: |
-        set -eux
-        # Allow self-signed certificates for JS engine: https://stackoverflow.com/a/66476468/473308
-        export NODE_TLS_REJECT_UNAUTHORIZED=0
-        export ELASTIC_URL='${{ env.ELASTIC_URL }}'
-        export ELASTIC_USER='${{ env.ELASTIC_USER }}'
-        export ELASTIC_PASSWORD='${{ env.ELASTIC_PASSWORD }}'
-        ./gradlew :integ-tests:check -PshowPassedTests $GRADLE_ARGS
-
-    - name: Run samples JVM
-      run: |
-        set -eux
-        export ELASTIC_URL='${{ env.ELASTIC_URL }}'
-        export ELASTIC_USER='${{ env.ELASTIC_USER }}'
-        export ELASTIC_PASSWORD='${{ env.ELASTIC_PASSWORD }}'
-        ./gradlew run -p samples $GRADLE_ARGS
-
-    - name: Run samples native
-      run: |
-        set -eux
-        export ELASTIC_URL='${{ env.ELASTIC_URL }}'
-        export ELASTIC_USER='${{ env.ELASTIC_USER }}'
-        export ELASTIC_PASSWORD='${{ env.ELASTIC_PASSWORD }}'
-        ./gradlew runDebugExecutableNative -p samples $GRADLE_ARGS
-
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v3
-      with:
-        token: ${{ secrets.CODECOV_TOKEN }}
-        verbose: true
-
-  publish:
-    needs: integ-tests
-    if: |
-      always() &&
-      github.event_name == 'push' &&
-      startsWith(github.ref, 'refs/tags/v')
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
-
-    - name: Setup
-      uses: ./.github/setup
-      with:
-        java-version: 11
-
-    - name: Load caches
-      uses: ./.github/cache
-
-    - name: Download build artifact
-      uses: ./.github/download-artifact
+        ./gradlew :elasticmagic:compileTestKotlinJvm $GRADLE_ARGS
 
     - name: Prepare publishing
       run: |
@@ -235,12 +42,13 @@ jobs:
         echo '${{ secrets.SIGNING_KEY_CONTENT }}' | base64 -d > signing.gpg
 
     - name: Publish
-      if: |
-        github.event_name == 'push' &&
-        startsWith(github.ref, 'refs/tags/v')
+      # if: |
+      #   github.event_name == 'push' &&
+      #   startsWith(github.ref, 'refs/tags/v')
       run: |
         set -eux
-        ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository \
+        echo ${{ secrets.SONATYPE_USER }}
+        ./gradlew :elasticmagic:publishJvmPublicationToSonatypeRepository closeAndReleaseSonatypeStagingRepository \
           $GRADLE_ARGS \
           -Psigning.secretKeyRingFile="$PWD/signing.gpg" \
           -Psigning.keyId='${{ secrets.SIGNING_KEY_ID }}' \
@@ -248,80 +56,293 @@ jobs:
           -PsonatypeUser='${{ secrets.SONATYPE_USER }}' \
           -PsonatypePassword='${{ secrets.SONATYPE_PASSWORD }}'
 
-  docs:
-    needs: integ-tests
-    if: |
-      always() &&
-      !contains(github.event.head_commit.message, '[skip docs]')
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-      with:
-        # We need to fetch last tag for version
-        fetch-depth: 0
+    # - name: Compile native
+    #   run: |
+    #     set -eux
+    #     ./gradlew linkDebugTestNative $GRADLE_ARGS
 
-    - name: Setup
-      uses: ./.github/setup
-      with:
-        java-version: 11
+    # - name: Compile JS
+    #   run: |
+    #     set -eux
+    #     ./gradlew compileTestKotlinJs $GRADLE_ARGS
 
-    - name: Load caches
-      uses: ./.github/cache
+    # - name: Compile samples
+    #   run: |
+    #     set -eux
+    #     ./gradlew compileKotlinJvm compileKotlinNative -p samples $GRADLE_ARGS
 
-    - name: Download build artifact
-      uses: ./.github/download-artifact
+    # - name: Upload build artifact
+    #   uses: ./.github/upload-artifact
 
-    - name: Build docs
-      run: |
-        set -eux
-        ./gradlew mkdocsBuild $GRADLE_ARGS
-        ./gradlew mkdocsVersionsFile $GRADLE_ARGS
+  # unit-tests:
+  #   needs: build
+  #   if: |
+  #     !contains(github.event.head_commit.message, '[skip tests]')
+  #   runs-on: ubuntu-latest
+  #   strategy:
+  #     matrix:
+  #       java-version: [11]
+  #   steps:
+  #   - uses: actions/checkout@v3
 
-    - name: Review generated docs
-      run: |
-        set -eux
-        ls -l build/mkdocs
-        cat build/mkdocs/versions.json | jq
+  #   - name: Setup
+  #     uses: ./.github/setup
+  #     with:
+  #       java-version: ${{ matrix.java-version }}
 
-    - name: Build API docs
-      run: ./gradlew dokkaHtmlMultiModule $GRADLE_ARGS
+  #   - name: Load caches
+  #     uses: ./.github/cache
 
-    - name: Copy docs
-      if: |
-        github.event_name == 'push' && (
-          startsWith(github.ref, 'refs/tags/v') ||
-          github.ref == 'refs/heads/master' ||
-          github.ref == 'refs/heads/docs'
-        )
-      run: ./gradlew gitPublishCopy $GRADLE_ARGS
+  #   - name: Download build artifact
+  #     uses: ./.github/download-artifact
 
-    - name: Review publishing docs
-      run: |
-        set -eux
-        ls -l .gradle/gh-pages
-        cat .gradle/gh-pages/versions.json | jq
+  #   - name: Run linter
+  #     run: |
+  #       set -eux
+  #       ./gradlew detekt $GRADLE_ARGS
 
-    - name: Publish documentation
-      if: |
-        github.event_name == 'push' && (
-          startsWith(github.ref, 'refs/tags/v') ||
-          github.ref == 'refs/heads/master' ||
-          github.ref == 'refs/heads/docs'
-        )
-      uses: peaceiris/actions-gh-pages@v3
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./.gradle/gh-pages
-        # keep_files: true
-        full_commit_message: Publish documentation for ${{ github.ref }}
+  #   - name: Check ABI compatibility
+  #     run: |
+  #       set -eux
+  #       ./gradlew apiCheck $GRADLE_ARGS
 
-  cleanup:
-    if: always()
-    runs-on: ubuntu-latest
-    needs: [publish, docs]
-    steps:
-    - uses: geekyeggo/delete-artifact@v2
-      with:
-        name: Build
-        failOnError: false
+  #   - name: Run unit tests
+  #     run: |
+  #       set -eux
+  #       ./gradlew allTests -PshowPassedTests -x integ-tests:allTests $GRADLE_ARGS
+
+  #   - name: Upload coverage to Codecov
+  #     uses: codecov/codecov-action@v3
+  #     with:
+  #       token: ${{ secrets.CODECOV_TOKEN }}
+  #       verbose: true
+
+  # integ-tests:
+  #   needs: unit-tests
+  #   if: |
+  #     !contains(github.event.head_commit.message, '[skip tests]')
+  #   runs-on: ubuntu-latest
+  #   strategy:
+  #     matrix:
+  #       include:
+  #       - es-distribution: elasticsearch
+  #         es-major-version: 6
+  #         es-image: elasticsearch:6.8.23
+  #         es-url: http://localhost:9200
+  #       - es-distribution: elasticsearch
+  #         es-major-version: 7
+  #         es-image: elasticsearch:7.17.10
+  #         es-url: http://localhost:9200
+  #       - es-distribution: elasticsearch
+  #         es-major-version: 8
+  #         es-image: elasticsearch:8.7.1
+  #         es-url: https://localhost:9200
+  #       - es-distribution: opensearch
+  #         es-major-version: 2
+  #         es-image: opensearchproject/opensearch:2.4.0
+  #         es-url: https://localhost:9200
+  #   steps:
+  #   - uses: actions/checkout@v3
+
+  #   - name: Start Elasticsearch
+  #     run: |
+  #       set -eu
+  #       docker run -d \
+  #         --name elasticsearch \
+  #         -p 9200:9200 \
+  #         -e "discovery.type=single-node" \
+  #         -e "ES_JAVA_OPTS=-Xms128m -Xmx256m" \
+  #         --health-cmd="curl ${{ matrix.es-url }} --insecure" \
+  #         --health-interval=5s \
+  #         --health-timeout=2s \
+  #         --health-retries=10 \
+  #         ${{ matrix.es-image }}
+  #       echo -n "Waiting Elasticsearch "
+  #       until [ $(docker inspect -f '{{.State.Health.Status}}' elasticsearch) == "healthy" ]; do
+  #         sleep 1
+  #         echo -n .
+  #       done
+  #       echo "ELASTIC_URL=http://localhost:9200" >> $GITHUB_ENV
+
+  #   - name: Setup Elasticsearch password
+  #     if: matrix.es-distribution == 'elasticsearch' && matrix.es-major-version >= 8
+  #     run: |
+  #       set -eu
+  #       ELASTIC_PASSWORD=$( \
+  #         docker exec elasticsearch \
+  #           /usr/share/elasticsearch/bin/elasticsearch-reset-password --batch -u elastic | \
+  #         awk 'BEGIN { FS=": "; } /^New value:/ { print $2; }' \
+  #       )
+  #       echo "ELASTIC_URL=https://localhost:9200" >> $GITHUB_ENV
+  #       echo "ELASTIC_USER=elastic" >> $GITHUB_ENV
+  #       echo "ELASTIC_PASSWORD=$ELASTIC_PASSWORD" >> $GITHUB_ENV
+
+  #   - name: Opensearch settings
+  #     if: matrix.es-distribution == 'opensearch'
+  #     run: |
+  #       set -eu
+  #       echo "ELASTIC_URL=https://localhost:9200" >> $GITHUB_ENV
+  #       echo "ELASTIC_USER=admin" >> $GITHUB_ENV
+  #       echo "ELASTIC_PASSWORD=admin" >> $GITHUB_ENV
+
+  #   - name: Setup
+  #     uses: ./.github/setup
+  #     with:
+  #       java-version: 11
+
+  #   - name: Load caches
+  #     uses: ./.github/cache
+
+  #   - name: Download build artifact
+  #     uses: ./.github/download-artifact
+
+  #   - name: Run integration tests
+  #     run: |
+  #       set -eux
+  #       # Allow self-signed certificates for JS engine: https://stackoverflow.com/a/66476468/473308
+  #       export NODE_TLS_REJECT_UNAUTHORIZED=0
+  #       export ELASTIC_URL='${{ env.ELASTIC_URL }}'
+  #       export ELASTIC_USER='${{ env.ELASTIC_USER }}'
+  #       export ELASTIC_PASSWORD='${{ env.ELASTIC_PASSWORD }}'
+  #       ./gradlew :integ-tests:check -PshowPassedTests $GRADLE_ARGS
+
+  #   - name: Run samples JVM
+  #     run: |
+  #       set -eux
+  #       export ELASTIC_URL='${{ env.ELASTIC_URL }}'
+  #       export ELASTIC_USER='${{ env.ELASTIC_USER }}'
+  #       export ELASTIC_PASSWORD='${{ env.ELASTIC_PASSWORD }}'
+  #       ./gradlew run -p samples $GRADLE_ARGS
+
+  #   - name: Run samples native
+  #     run: |
+  #       set -eux
+  #       export ELASTIC_URL='${{ env.ELASTIC_URL }}'
+  #       export ELASTIC_USER='${{ env.ELASTIC_USER }}'
+  #       export ELASTIC_PASSWORD='${{ env.ELASTIC_PASSWORD }}'
+  #       ./gradlew runDebugExecutableNative -p samples $GRADLE_ARGS
+
+  #   - name: Upload coverage to Codecov
+  #     uses: codecov/codecov-action@v3
+  #     with:
+  #       token: ${{ secrets.CODECOV_TOKEN }}
+  #       verbose: true
+
+  # publish:
+  #   needs: build
+  #   # needs: integ-tests
+  #   # if: |
+  #   #   always() &&
+  #   #   github.event_name == 'push' &&
+  #   #   startsWith(github.ref, 'refs/tags/v')
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - uses: actions/checkout@v3
+
+  #   - name: Setup
+  #     uses: ./.github/setup
+  #     with:
+  #       java-version: 11
+
+  #   - name: Load caches
+  #     uses: ./.github/cache
+
+  #   - name: Download build artifact
+  #     uses: ./.github/download-artifact
+
+  #   - name: Prepare publishing
+  #     run: |
+  #       set -eux
+  #       echo '${{ secrets.SIGNING_KEY_CONTENT }}' | base64 -d > signing.gpg
+
+  #   - name: Publish
+  #     if: |
+  #       github.event_name == 'push' &&
+  #       startsWith(github.ref, 'refs/tags/v')
+  #     run: |
+  #       set -eux
+  #       ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository \
+  #         $GRADLE_ARGS \
+  #         -Psigning.secretKeyRingFile="$PWD/signing.gpg" \
+  #         -Psigning.keyId='${{ secrets.SIGNING_KEY_ID }}' \
+  #         -Psigning.password='${{ secrets.SIGNING_KEY_PASSPHRASE }}' \
+  #         -PsonatypeUser='${{ secrets.SONATYPE_USER }}' \
+  #         -PsonatypePassword='${{ secrets.SONATYPE_PASSWORD }}'
+
+  # docs:
+  #   needs: integ-tests
+  #   if: |
+  #     always() &&
+  #     !contains(github.event.head_commit.message, '[skip docs]')
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - name: Checkout
+  #     uses: actions/checkout@v3
+  #     with:
+  #       # We need to fetch last tag for version
+  #       fetch-depth: 0
+
+  #   - name: Setup
+  #     uses: ./.github/setup
+  #     with:
+  #       java-version: 11
+
+  #   - name: Load caches
+  #     uses: ./.github/cache
+
+  #   - name: Download build artifact
+  #     uses: ./.github/download-artifact
+
+  #   - name: Build docs
+  #     run: |
+  #       set -eux
+  #       ./gradlew mkdocsBuild $GRADLE_ARGS
+  #       ./gradlew mkdocsVersionsFile $GRADLE_ARGS
+
+  #   - name: Review generated docs
+  #     run: |
+  #       set -eux
+  #       ls -l build/mkdocs
+  #       cat build/mkdocs/versions.json | jq
+
+  #   - name: Build API docs
+  #     run: ./gradlew dokkaHtmlMultiModule $GRADLE_ARGS
+
+  #   - name: Copy docs
+  #     if: |
+  #       github.event_name == 'push' && (
+  #         startsWith(github.ref, 'refs/tags/v') ||
+  #         github.ref == 'refs/heads/master' ||
+  #         github.ref == 'refs/heads/docs'
+  #       )
+  #     run: ./gradlew gitPublishCopy $GRADLE_ARGS
+
+  #   - name: Review publishing docs
+  #     run: |
+  #       set -eux
+  #       ls -l .gradle/gh-pages
+  #       cat .gradle/gh-pages/versions.json | jq
+
+  #   - name: Publish documentation
+  #     if: |
+  #       github.event_name == 'push' && (
+  #         startsWith(github.ref, 'refs/tags/v') ||
+  #         github.ref == 'refs/heads/master' ||
+  #         github.ref == 'refs/heads/docs'
+  #       )
+  #     uses: peaceiris/actions-gh-pages@v3
+  #     with:
+  #       github_token: ${{ secrets.GITHUB_TOKEN }}
+  #       publish_dir: ./.gradle/gh-pages
+  #       # keep_files: true
+  #       full_commit_message: Publish documentation for ${{ github.ref }}
+
+  # cleanup:
+  #   if: always()
+  #   runs-on: ubuntu-latest
+  #   needs: [publish, docs]
+  #   steps:
+  #   - uses: geekyeggo/delete-artifact@v2
+  #     with:
+  #       name: Build
+  #       failOnError: false

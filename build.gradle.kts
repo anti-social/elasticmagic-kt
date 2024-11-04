@@ -20,8 +20,9 @@ repositories {
     mavenCentral()
 }
 
-val gitDescribe = grgit.describe(mapOf("match" to listOf("v*"), "tags" to true))
-    ?: "v0.0.0-SNAPSHOT"
+val gitDescribe = "v0.0.31"
+// val gitDescribe = grgit.describe(mapOf("match" to listOf("v*"), "tags" to true))
+//     ?: "v0.0.0-SNAPSHOT"
 
 // Collect all source and class directories for jacoco
 // TODO: Is there a better way to do that?
