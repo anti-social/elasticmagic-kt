@@ -18,7 +18,7 @@ idea {
 }
 
 val kotlinVersion = "1.7.21"
-val nexusPublishVersion = "1.1.0"
+val nexusPublishVersion = "2.0.0"
 
 // See example at: https://docs.gradle.org/current/dsl/org.gradle.api.tasks.SourceSetOutput.html
 val generatedResourcesDir = buildDir.resolve("generated-resources").resolve("main")
