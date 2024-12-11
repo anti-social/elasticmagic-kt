@@ -9,9 +9,8 @@ import dev.evo.elasticmagic.query.SearchExt
 import dev.evo.elasticmagic.serde.Serializer
 import io.kotest.matchers.shouldBe
 import kotlin.test.Test
-import kotlin.time.Duration
-import kotlin.time.ExperimentalTime
 import kotlin.time.Duration.Companion.seconds
+import kotlin.time.ExperimentalTime
 
 private data class SimpleExtension(override val name: String) : SearchExt {
     override fun clone() = copy()

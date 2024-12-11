@@ -776,7 +776,7 @@ abstract class BaseSearchQuery<S : BaseDocSource, T : BaseSearchQuery<S, T>>(
             terminateAfter = terminateAfter,
             script = script,
             params = Params(
-                PreparedSearchQuery.filteredParams(this.params, SearchQuery.Delete.ALLOWED_PARAMS),
+                PreparedSearchQuery.filteredParams(this.params, SearchQuery.Update.ALLOWED_PARAMS),
                 params
             )
         )
@@ -1015,6 +1015,7 @@ open class SearchQuery<S : BaseDocSource>(
                 "track_total_hits",
                 "typed_keys",
                 "version",
+                "timeout",
             )
         }
     }
