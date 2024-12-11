@@ -2,27 +2,35 @@ package dev.evo.elasticmagic
 
 import dev.evo.elasticmagic.bulk.Action
 import dev.evo.elasticmagic.compile.ActionCompiler
-import dev.evo.elasticmagic.compile.PreparedBulk
 import dev.evo.elasticmagic.compile.CompilerSet
+import dev.evo.elasticmagic.compile.PreparedBulk
 import dev.evo.elasticmagic.compile.PreparedCreateIndex
 import dev.evo.elasticmagic.compile.PreparedUpdateMapping
 import dev.evo.elasticmagic.doc.BaseDocSource
 import dev.evo.elasticmagic.doc.Document
 import dev.evo.elasticmagic.serde.Serde
+import dev.evo.elasticmagic.transport.ApiRequest
 import dev.evo.elasticmagic.transport.BulkRequest
 import dev.evo.elasticmagic.transport.ElasticsearchException
 import dev.evo.elasticmagic.transport.ElasticsearchTransport
-import dev.evo.elasticmagic.transport.ApiRequest
 import dev.evo.elasticmagic.transport.Method
 import dev.evo.elasticmagic.transport.Parameters
+import dev.evo.elasticmagic.util.toTimeoutString
+import kotlinx.coroutines.CompletableDeferred
+import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
 import kotlin.time.measureTimedValue
-import kotlinx.coroutines.CompletableDeferred
 
 internal fun Params.toRequestParameters(): Parameters {
     val entries = this.map { (key, value) ->
         key to when (value) {
             is ToValue<*> -> value.toValue()
+            is Duration -> {
+                if (key == "timeout")
+                    value.toTimeoutString()
+                else value
+            }
+
             else -> value
         }
     }
@@ -42,7 +50,7 @@ class ElasticsearchCluster(
         transport: ElasticsearchTransport,
         serde: Serde.OneLineJson,
         compilers: CompilerSet? = null,
-    ): this(
+    ) : this(
         transport,
         apiSerde = serde,
         bulkSerde = serde,
