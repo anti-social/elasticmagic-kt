@@ -38,6 +38,7 @@ import dev.evo.elasticmagic.transport.ApiRequest
 import dev.evo.elasticmagic.transport.BulkRequest
 import dev.evo.elasticmagic.transport.Method
 import dev.evo.elasticmagic.transport.Parameters
+import dev.evo.elasticmagic.util.toTimeoutString
 
 abstract class BaseSearchQueryCompiler(
     features: ElasticsearchFeatures,
@@ -91,12 +92,15 @@ abstract class BaseSearchQueryCompiler(
             is ObjExpression -> ctx.obj {
                 visit(this, value)
             }
+
             is ArrayExpression -> {
                 visit(ctx, value)
             }
+
             is ToValue<*> -> {
                 ctx.value(value.toValue())
             }
+
             else -> super.dispatch(ctx, value)
         }
     }
@@ -106,12 +110,15 @@ abstract class BaseSearchQueryCompiler(
             is ObjExpression -> ctx.obj(name) {
                 visit(this, value)
             }
+
             is ArrayExpression -> ctx.array(name) {
                 visit(this, value)
             }
+
             is ToValue<*> -> {
                 ctx.field(name, value.toValue())
             }
+
             else -> super.dispatch(ctx, name, value)
         }
     }
@@ -131,7 +138,7 @@ open class SearchQueryCompiler(
         }
 
         if (searchQuery.timeout != null) {
-            ctx.field("timeout", searchQuery.timeout.inWholeSeconds.toString() + "s")
+            ctx.field("timeout", searchQuery.timeout.toTimeoutString())
         }
 
         if (searchQuery.rescores.isNotEmpty()) {

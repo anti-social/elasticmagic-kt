@@ -87,7 +87,7 @@ class SearchQueryCompilerTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQ
                     )
                 )
             ),
-            "timeout" to "10s"
+            "timeout" to "10000ms"
         )
     }
 

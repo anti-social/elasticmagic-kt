@@ -4793,6 +4793,10 @@ public final class dev/evo/elasticmagic/types/ValueSerializationException : java
 	public synthetic fun <init> (Ljava/lang/Object;Ljava/lang/Throwable;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 }
 
+public final class dev/evo/elasticmagic/util/HelperKt {
+	public static final fun toTimeoutString-LRDsOJo (J)Ljava/lang/String;
+}
+
 public final class dev/evo/elasticmagic/util/OrderedMap {
 	public fun <init> ()V
 	public fun <init> ([Lkotlin/Pair;)V
