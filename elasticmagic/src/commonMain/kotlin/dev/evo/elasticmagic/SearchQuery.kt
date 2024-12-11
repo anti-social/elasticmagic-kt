@@ -16,6 +16,7 @@ import dev.evo.elasticmagic.query.Sort
 import dev.evo.elasticmagic.query.Source
 import dev.evo.elasticmagic.query.collect
 import dev.evo.elasticmagic.serde.Deserializer
+import kotlin.time.Duration
 
 enum class SearchType : ToValue<String> {
     QUERY_THEN_FETCH, DFS_QUERY_THEN_FETCH;
@@ -57,6 +58,7 @@ abstract class BaseSearchQuery<S : BaseDocSource, T : BaseSearchQuery<S, T>>(
     protected var size: Int? = null
     protected var from: Int? = null
     protected var terminateAfter: Int? = null
+    protected var timeout: Duration? = null
 
     protected val extensions: MutableList<SearchExt> = mutableListOf()
 
@@ -105,6 +107,7 @@ abstract class BaseSearchQuery<S : BaseDocSource, T : BaseSearchQuery<S, T>>(
         cloned.size = size
         cloned.from = from
         cloned.terminateAfter = terminateAfter
+        cloned.timeout = timeout
         cloned.params.putAll(params)
         return cloned
     }
@@ -695,6 +698,20 @@ abstract class BaseSearchQuery<S : BaseDocSource, T : BaseSearchQuery<S, T>>(
     open fun beforeExecute() {}
 
     /**
+     * Sets a timeout for the search query.
+     *
+     * @param timeout the maximum time to wait for the search query to complete.
+     *                If the search takes longer than this time, it will be terminated.
+     *
+     * @return the current instance of the search query with the updated timeout.
+     *
+     * @see <https://www.elastic.co/guide/en/elasticsearch/reference/current/search-search.html#search-timeout>
+     */
+    fun setTimeout(timeout: Duration?): T = self {
+        this.timeout = timeout
+    }
+
+    /**
      * Makes an immutable view of the search query. Be careful when using this method.
      *
      * <b>Note:</b>
@@ -730,6 +747,7 @@ abstract class BaseSearchQuery<S : BaseDocSource, T : BaseSearchQuery<S, T>>(
             from = from,
             terminateAfter = terminateAfter,
             extensions = extensions,
+            timeout = timeout,
             params = Params(
                 PreparedSearchQuery.filteredParams(this.params, SearchQuery.Search.ALLOWED_PARAMS),
                 params
@@ -965,6 +983,7 @@ open class SearchQuery<S : BaseDocSource>(
         val from: Int?,
         override val terminateAfter: Int?,
         val extensions: List<SearchExt>,
+        val timeout: Duration?,
         val params: Params,
     ) : PreparedSearchQuery {
         companion object {

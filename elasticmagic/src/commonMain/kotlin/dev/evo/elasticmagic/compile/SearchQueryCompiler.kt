@@ -129,6 +129,11 @@ open class SearchQueryCompiler(
                 visit(this, searchQuery.aggregations)
             }
         }
+
+        if (searchQuery.timeout != null) {
+            ctx.field("timeout", searchQuery.timeout.inWholeSeconds.toString() + "s")
+        }
+
         if (searchQuery.rescores.isNotEmpty()) {
             ctx.array("rescore") {
                 visit(this, searchQuery.rescores)

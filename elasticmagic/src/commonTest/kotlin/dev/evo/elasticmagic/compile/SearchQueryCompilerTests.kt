@@ -12,7 +12,6 @@ import dev.evo.elasticmagic.doc.BoundField
 import dev.evo.elasticmagic.doc.BoundRuntimeField
 import dev.evo.elasticmagic.doc.Document
 import dev.evo.elasticmagic.doc.RootFieldSet
-import dev.evo.elasticmagic.types.SimpleFieldType
 import dev.evo.elasticmagic.doc.SubDocument
 import dev.evo.elasticmagic.doc.datetime
 import dev.evo.elasticmagic.query.Bool
@@ -26,23 +25,22 @@ import dev.evo.elasticmagic.query.MatchAll
 import dev.evo.elasticmagic.query.MinimumShouldMatch
 import dev.evo.elasticmagic.query.MultiMatch
 import dev.evo.elasticmagic.query.NodeHandle
-import dev.evo.elasticmagic.query.Script
-import dev.evo.elasticmagic.query.Sort
 import dev.evo.elasticmagic.query.QueryExpressionNode
 import dev.evo.elasticmagic.query.QueryRescore
+import dev.evo.elasticmagic.query.Script
 import dev.evo.elasticmagic.query.SearchExt
+import dev.evo.elasticmagic.query.Sort
 import dev.evo.elasticmagic.query.match
 import dev.evo.elasticmagic.serde.Serializer
 import dev.evo.elasticmagic.types.FloatType
 import dev.evo.elasticmagic.types.KeywordType
 import dev.evo.elasticmagic.types.LongType
-
+import dev.evo.elasticmagic.types.SimpleFieldType
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.maps.shouldContainExactly
-
 import kotlinx.datetime.LocalDateTime
-
 import kotlin.test.Test
+import kotlin.time.Duration.Companion.seconds
 
 class AnyField(name: String) : BoundField<Any, Any>(
     name,
@@ -79,7 +77,7 @@ class SearchQueryCompilerTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQ
         }
 
         val compiled = compile(
-            SearchQuery(userDoc.lastLoggedAt.gt(LocalDateTime(2020, 12, 31, 23, 0)))
+            SearchQuery(userDoc.lastLoggedAt.gt(LocalDateTime(2020, 12, 31, 23, 0))).setTimeout(10.seconds)
         )
         compiled.body shouldContainExactly mapOf(
             "query" to mapOf(
@@ -88,7 +86,8 @@ class SearchQueryCompilerTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQ
                         "gt" to "2020-12-31T23:00:00Z"
                     )
                 )
-            )
+            ),
+            "timeout" to "10s"
         )
     }
 
@@ -186,17 +185,19 @@ class SearchQueryCompilerTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQ
             )
         }
 
-        query.aggs(mapOf(
-            "date_created_hist" to DateHistogramAgg(
-                AnyField("date_created"),
-                interval = DateHistogramAgg.Interval.Fixed(FixedInterval.Hours(2)),
-                aggs = mapOf(
-                    "min_price" to MinAgg(
-                        AnyField("price")
+        query.aggs(
+            mapOf(
+                "date_created_hist" to DateHistogramAgg(
+                    AnyField("date_created"),
+                    interval = DateHistogramAgg.Interval.Fixed(FixedInterval.Hours(2)),
+                    aggs = mapOf(
+                        "min_price" to MinAgg(
+                            AnyField("price")
+                        )
                     )
                 )
             )
-        ))
+        )
         compile(query).let { compiled ->
             compiled.body shouldContainExactly mapOf(
                 "aggs" to mapOf(
@@ -457,23 +458,25 @@ class SearchQueryCompilerTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQ
             )
         )
 
-        query.rescore(listOf(
-            QueryRescore(
-                FunctionScore(
-                    functions = listOf(
-                        FunctionScore.ScriptScore(
-                            script = Script.Source(
-                                "Math.log10(doc[params.field].value + 2)",
-                                params = mapOf(
-                                    "field" to AnyField("likes")
+        query.rescore(
+            listOf(
+                QueryRescore(
+                    FunctionScore(
+                        functions = listOf(
+                            FunctionScore.ScriptScore(
+                                script = Script.Source(
+                                    "Math.log10(doc[params.field].value + 2)",
+                                    params = mapOf(
+                                        "field" to AnyField("likes")
+                                    )
                                 )
                             )
                         )
-                    )
-                ),
-                scoreMode = QueryRescore.ScoreMode.MULTIPLY,
+                    ),
+                    scoreMode = QueryRescore.ScoreMode.MULTIPLY,
+                )
             )
-        ))
+        )
         compile(query).body shouldContainExactly mapOf(
             "rescore" to listOf(
                 mapOf(
@@ -806,15 +809,17 @@ class SearchQueryCompilerTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQ
             )
         )
 
-        query.runtimeMappings(listOf(
-            BoundRuntimeField(
-                "attr_ids", LongType,
-                Script.Source(
-                    "emit(doc[attr_id].value >>> 32)",
-                ),
-                RootFieldSet
+        query.runtimeMappings(
+            listOf(
+                BoundRuntimeField(
+                    "attr_ids", LongType,
+                    Script.Source(
+                        "emit(doc[attr_id].value >>> 32)",
+                    ),
+                    RootFieldSet
+                )
             )
-        ))
+        )
         compile(query).body shouldContainExactly mapOf(
             "runtime_mappings" to mapOf(
                 "day_of_week" to mapOf(
@@ -945,11 +950,13 @@ class SearchQueryCompilerTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQ
     @Test
     fun idsQuery() = testWithCompiler {
         val query = SearchQuery(
-            Ids(listOf(
-                "order~3",
-                "order~2",
-                "order~1",
-            ))
+            Ids(
+                listOf(
+                    "order~3",
+                    "order~2",
+                    "order~1",
+                )
+            )
         )
         compile(query).body shouldContainExactly mapOf(
             "query" to mapOf(

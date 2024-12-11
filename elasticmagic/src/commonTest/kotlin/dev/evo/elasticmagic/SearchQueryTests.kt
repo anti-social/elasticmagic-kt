@@ -9,6 +9,9 @@ import dev.evo.elasticmagic.query.SearchExt
 import dev.evo.elasticmagic.serde.Serializer
 import io.kotest.matchers.shouldBe
 import kotlin.test.Test
+import kotlin.time.Duration
+import kotlin.time.ExperimentalTime
+import kotlin.time.Duration.Companion.seconds
 
 private data class SimpleExtension(override val name: String) : SearchExt {
     override fun clone() = copy()
@@ -18,6 +21,7 @@ private data class SimpleExtension(override val name: String) : SearchExt {
 
 }
 
+@OptIn(ExperimentalTime::class)
 class SearchQueryTests {
     @Test
     fun cloning() {
@@ -29,6 +33,7 @@ class SearchQueryTests {
         val sq1 = SearchQuery()
             .filter(userDoc.login.eq("root"))
             .ext(SimpleExtension("test"))
+            .setTimeout(10.seconds)
 
         val sq2 = sq1.clone()
             .filter(userDoc.isActive.eq(true))
@@ -38,6 +43,7 @@ class SearchQueryTests {
             it.size shouldBe null
             it.filters.size shouldBe 1
             it.extensions.size shouldBe 1
+            it.timeout shouldBe 10.seconds
         }
         sq2.prepareSearch().let {
             it.size shouldBe 1
