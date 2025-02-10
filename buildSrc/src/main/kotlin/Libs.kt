@@ -23,6 +23,7 @@ object Versions {
     const val kotlinxCoroutines = "1.6.3-native-mt"
     const val kotlinxDatetime = "0.4.0"
     const val kotlinxAtomicfu = "0.20.0"
+    const val kotlinxBenchmark = "0.4.13"
     // A lot of trace logging in JS client on 2.2.3 and later:
     // See: https://youtrack.jetbrains.com/issue/KTOR-5456/Ktor-JS-websocket-client-unconfigurable-logging
     const val ktor = "2.2.2"
