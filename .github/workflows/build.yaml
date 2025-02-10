@@ -321,7 +321,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [publish, docs]
     steps:
-    - uses: geekyeggo/delete-artifact@v2
+    - uses: geekyeggo/delete-artifact@v5
       with:
         name: Build
         failOnError: false
