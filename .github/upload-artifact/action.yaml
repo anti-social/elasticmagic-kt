@@ -11,7 +11,7 @@ runs:
       find . -type d -name build -print | xargs tar --zstd -cf build.tar.zstd .gradle
 
   - name: Upload build artifact
-    uses: actions/upload-artifact@v3
+    uses: actions/upload-artifact@v4
     with:
       name: Build
       path: build.tar.zstd
