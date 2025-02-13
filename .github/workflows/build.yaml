@@ -39,7 +39,7 @@ jobs:
     - name: Compile native
       run: |
         set -eux
-        ./gradlew linkDebugTestNative $GRADLE_ARGS
+        ./gradlew linkDebugTestLinuxX64 $GRADLE_ARGS
 
     - name: Compile JS
       run: |
@@ -49,7 +49,7 @@ jobs:
     - name: Compile samples
       run: |
         set -eux
-        ./gradlew compileKotlinJvm compileKotlinNative -p samples $GRADLE_ARGS
+        ./gradlew compileKotlinJvm compileKotlinLinuxX64 -p samples $GRADLE_ARGS
 
     - name: Upload build artifact
       uses: ./.github/upload-artifact
@@ -200,7 +200,7 @@ jobs:
         export ELASTIC_URL='${{ env.ELASTIC_URL }}'
         export ELASTIC_USER='${{ env.ELASTIC_USER }}'
         export ELASTIC_PASSWORD='${{ env.ELASTIC_PASSWORD }}'
-        ./gradlew runDebugExecutableNative -p samples $GRADLE_ARGS
+        ./gradlew runDebugExecutableLinuxX64 -p samples $GRADLE_ARGS
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3

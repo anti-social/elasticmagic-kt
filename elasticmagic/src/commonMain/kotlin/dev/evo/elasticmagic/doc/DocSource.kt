@@ -586,7 +586,7 @@ class DynDocSource private constructor(
         val path = checkPathStartsWithPrefix(
             field.getQualifiedFieldName().split('.')
         )
-        return getFieldValue(path, fieldType::deserialize)
+        return getFieldValue(path) { v -> fieldType.deserialize(v) }
     }
 
     operator fun <V> get(field: SubFields<V>): V? {
