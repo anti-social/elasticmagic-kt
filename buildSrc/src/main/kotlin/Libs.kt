@@ -8,7 +8,7 @@ object Versions {
     val jvmTarget = JavaVersion.VERSION_11
 
     // Gradle plugins
-    const val jacoco = "0.8.8"
+    const val jacoco = "0.8.12"
     const val grgit = "4.1.1"
     const val detekt = "1.22.0"
     const val dokka = "1.7.20"
