@@ -84,62 +84,62 @@ subprojects {
         mavenCentral()
     }
 
-    afterEvaluate {
-        tasks.register<JacocoReport>("jacocoJVMTestReport") {
-            group = "Reporting"
-            description = "Generate Jacoco coverage report."
+    tasks.register<JacocoReport>("jacocoJVMTestReport") {
+        group = "Reporting"
+        description = "Generate Jacoco coverage report."
 
-            classDirectories.setFrom(allKotlinClassDirs)
-            sourceDirectories.setFrom(allKotlinSourceDirs)
+        classDirectories.setFrom(allKotlinClassDirs)
+        sourceDirectories.setFrom(allKotlinSourceDirs)
 
-            executionData.setFrom(files("$buildDir/jacoco/jvmTest.exec"))
-            reports {
-                html.required.set(true)
-                xml.required.set(true)
-                csv.required.set(false)
-            }
+        executionData.setFrom(files("$buildDir/jacoco/jvmTest.exec"))
+        reports {
+            html.required.set(true)
+            xml.required.set(true)
+            csv.required.set(false)
         }
+    }
 
-        tasks.findByName("nativeTest")?.run {
-            outputs.upToDateWhen { false }
-        }
-        tasks.findByName("jsNodeTest")?.run {
-            outputs.upToDateWhen { false }
-        }
+    tasks.findByName("nativeTest")?.run {
+        outputs.upToDateWhen { false }
+    }
+    tasks.findByName("jsNodeTest")?.run {
+        outputs.upToDateWhen { false }
+    }
 
-        tasks.findByName("jvmTest")?.run {
-            outputs.upToDateWhen { false }
+    tasks.findByName("jvmTest")?.run {
+        outputs.upToDateWhen { false }
 
-            finalizedBy("jacocoJVMTestReport")
-        }
+        finalizedBy("jacocoJVMTestReport")
+    }
 
-        tasks.withType<Test>().configureEach {
-            testLogging {
-                events = buildSet<TestLogEvent> {
-                    add(TestLogEvent.FAILED)
-                    if (project.hasProperty("showPassedTests")) {
-                        add(TestLogEvent.PASSED)
-                    }
-                    if (project.hasProperty("showTestsOutput")) {
-                        add(TestLogEvent.STANDARD_OUT)
-                        add(TestLogEvent.STANDARD_ERROR)
-                    }
+    tasks.withType<Test>().configureEach {
+        testLogging {
+            events = buildSet<TestLogEvent> {
+                add(TestLogEvent.FAILED)
+                if (project.hasProperty("showPassedTests")) {
+                    add(TestLogEvent.PASSED)
                 }
-                exceptionFormat = TestExceptionFormat.FULL
+                if (project.hasProperty("showTestsOutput")) {
+                    add(TestLogEvent.STANDARD_OUT)
+                    add(TestLogEvent.STANDARD_ERROR)
+                }
             }
+            exceptionFormat = TestExceptionFormat.FULL
         }
+    }
 
-        tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-            kotlinOptions {
-                jvmTarget = Versions.jvmTarget.toString()
-            }
+    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+        kotlinOptions {
+            jvmTarget = Versions.jvmTarget.toString()
         }
+    }
 
-        tasks.register("configurations") {
-            println("Available configurations:")
-            configurations.names.forEach { println("- $it") }
-        }
+    tasks.register("configurations") {
+        println("Available configurations:")
+        configurations.names.forEach { println("- $it") }
+    }
 
+    afterEvaluate {
         val detektConfig = "$rootDir/detekt.yml"
         val detektOthers = tasks.register<io.gitlab.arturbosch.detekt.Detekt>("detektOthers") {
             config.from(detektConfig)
