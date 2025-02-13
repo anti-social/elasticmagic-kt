@@ -66,6 +66,7 @@ fun Project.configureMultiplatform(
             }
         }
 
+        @Suppress("UNUSED_VARIABLE")
         sourceSets {
             val commonMain by getting
             val commonTest by getting {
