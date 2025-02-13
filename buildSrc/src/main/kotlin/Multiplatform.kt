@@ -14,6 +14,11 @@ fun Project.configureMultiplatform(
     entryPoints: List<String> = emptyList(),
 ) {
     configure<KotlinMultiplatformExtension> {
+        compilerOptions {
+            // TODO: Find out how to add the option only for tests
+            freeCompilerArgs.add("-Xexpect-actual-classes")
+        }
+
         if (configureJvm) {
             jvm {
                 compilations.all {
@@ -47,11 +52,12 @@ fun Project.configureMultiplatform(
         if (configureNative) {
             val hostOs = System.getProperty("os.name")
             val nativeTarget = when {
-                hostOs == "Mac OS X" -> macosX64("native")
-                hostOs == "Linux" -> linuxX64("native")
-                hostOs.startsWith("Windows") -> mingwX64("native")
+                hostOs == "Mac OS X" -> macosX64()
+                hostOs == "Linux" -> linuxX64()
+                hostOs.startsWith("Windows") -> mingwX64()
                 else -> throw GradleException("Host OS is not supported in Kotlin/Native.")
             }
+
             nativeTarget.binaries {
                 for ((ix, entryPoint) in entryPoints.withIndex()) {
                     executable(if (ix == 0) "" else entryPoint) {
@@ -59,12 +65,9 @@ fun Project.configureMultiplatform(
                     }
                 }
             }
-            targets.withType(org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget::class.java) {
-                binaries.all {
-                    binaryOptions["memoryModel"] = "experimental"
-                }
-            }
         }
+
+        applyDefaultHierarchyTemplate()
 
         @Suppress("UNUSED_VARIABLE")
         sourceSets {
@@ -121,7 +124,8 @@ fun Project.configureMultiplatform(
                     }
                     startScripts.dependsOn(startScript)
 
-                    register<JavaExec>("run${entryPoint.capitalize()}") {
+                    val runTaskName = "run${entryPoint.capitalize()}"
+                    register<JavaExec>(runTaskName) {
                         mainClass.set(startScript.mainClass)
                         classpath = startScript.classpath!!
                         standardInput = System.`in`
