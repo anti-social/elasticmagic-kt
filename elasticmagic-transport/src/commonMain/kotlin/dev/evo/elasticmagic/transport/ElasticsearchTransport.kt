@@ -76,7 +76,6 @@ abstract class BaseGzipEncoder : ContentEncoder {
 }
 
 internal expect val isGzipSupported: Boolean
-expect class GzipEncoder() : BaseGzipEncoder
 
 class PreservingOriginGzipEncoder : BaseGzipEncoder() {
     private val gzipEncoder = GzipEncoder()

@@ -10,6 +10,7 @@ import kotlinx.cinterop.toKString
 
 import platform.posix.getenv
 
+@OptIn(kotlinx.cinterop.ExperimentalForeignApi::class)
 actual val esTransport = ElasticsearchKtorTransport(
     getenv("ELASTIC_URL")?.toKString() ?: DEFAULT_ELASTIC_URL,
     engine = Curl.create {
