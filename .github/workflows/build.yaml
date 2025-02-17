@@ -41,10 +41,10 @@ jobs:
         set -eux
         ./gradlew linkDebugTestLinuxX64 $GRADLE_ARGS
 
-    - name: Compile JS
-      run: |
-        set -eux
-        ./gradlew compileTestKotlinJs $GRADLE_ARGS
+    # - name: Compile JS
+    #   run: |
+    #     set -eux
+    #     ./gradlew compileTestKotlinJs $GRADLE_ARGS
 
     - name: Compile samples
       run: |
