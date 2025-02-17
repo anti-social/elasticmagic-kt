@@ -215,6 +215,7 @@ public final class dev/evo/elasticmagic/BulkOpType : java/lang/Enum {
 	public static final field DELETE Ldev/evo/elasticmagic/BulkOpType;
 	public static final field INDEX Ldev/evo/elasticmagic/BulkOpType;
 	public static final field UPDATE Ldev/evo/elasticmagic/BulkOpType;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public static fun valueOf (Ljava/lang/String;)Ldev/evo/elasticmagic/BulkOpType;
 	public static fun values ()[Ldev/evo/elasticmagic/BulkOpType;
 }
@@ -269,6 +270,7 @@ public final class dev/evo/elasticmagic/BulkScrollRetries {
 public final class dev/evo/elasticmagic/Conflicts : java/lang/Enum, dev/evo/elasticmagic/ToValue {
 	public static final field ABORT Ldev/evo/elasticmagic/Conflicts;
 	public static final field PROCEED Ldev/evo/elasticmagic/Conflicts;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public synthetic fun toValue ()Ljava/lang/Object;
 	public fun toValue ()Ljava/lang/String;
 	public static fun valueOf (Ljava/lang/String;)Ldev/evo/elasticmagic/Conflicts;
@@ -456,6 +458,7 @@ public final class dev/evo/elasticmagic/Refresh : java/lang/Enum, dev/evo/elasti
 	public static final field FALSE Ldev/evo/elasticmagic/Refresh;
 	public static final field TRUE Ldev/evo/elasticmagic/Refresh;
 	public static final field WAIT_FOR Ldev/evo/elasticmagic/Refresh;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public synthetic fun toValue ()Ljava/lang/Object;
 	public fun toValue ()Ljava/lang/String;
 	public static fun valueOf (Ljava/lang/String;)Ldev/evo/elasticmagic/Refresh;
@@ -697,6 +700,7 @@ public final class dev/evo/elasticmagic/SearchQueryResult : dev/evo/elasticmagic
 public final class dev/evo/elasticmagic/SearchType : java/lang/Enum, dev/evo/elasticmagic/ToValue {
 	public static final field DFS_QUERY_THEN_FETCH Ldev/evo/elasticmagic/SearchType;
 	public static final field QUERY_THEN_FETCH Ldev/evo/elasticmagic/SearchType;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public synthetic fun toValue ()Ljava/lang/Object;
 	public fun toValue ()Ljava/lang/String;
 	public static fun valueOf (Ljava/lang/String;)Ldev/evo/elasticmagic/SearchType;
@@ -1055,6 +1059,7 @@ public abstract class dev/evo/elasticmagic/aggs/BaseTermsAgg : dev/evo/elasticma
 public final class dev/evo/elasticmagic/aggs/BaseTermsAgg$CollectMode : java/lang/Enum, dev/evo/elasticmagic/ToValue {
 	public static final field BREADTH_FIRST Ldev/evo/elasticmagic/aggs/BaseTermsAgg$CollectMode;
 	public static final field DEPTH_FIRST Ldev/evo/elasticmagic/aggs/BaseTermsAgg$CollectMode;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public synthetic fun toValue ()Ljava/lang/Object;
 	public fun toValue ()Ljava/lang/String;
 	public static fun valueOf (Ljava/lang/String;)Ldev/evo/elasticmagic/aggs/BaseTermsAgg$CollectMode;
@@ -1077,6 +1082,7 @@ public final class dev/evo/elasticmagic/aggs/BaseTermsAgg$Exclude$Values : dev/e
 public final class dev/evo/elasticmagic/aggs/BaseTermsAgg$ExecutionHint : java/lang/Enum, dev/evo/elasticmagic/ToValue {
 	public static final field GLOBAL_ORDINALS Ldev/evo/elasticmagic/aggs/BaseTermsAgg$ExecutionHint;
 	public static final field MAP Ldev/evo/elasticmagic/aggs/BaseTermsAgg$ExecutionHint;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public synthetic fun toValue ()Ljava/lang/Object;
 	public fun toValue ()Ljava/lang/String;
 	public static fun valueOf (Ljava/lang/String;)Ldev/evo/elasticmagic/aggs/BaseTermsAgg$ExecutionHint;
@@ -1146,6 +1152,7 @@ public final class dev/evo/elasticmagic/aggs/CalendarInterval : java/lang/Enum, 
 	public static final field QUARTER Ldev/evo/elasticmagic/aggs/CalendarInterval;
 	public static final field WEEK Ldev/evo/elasticmagic/aggs/CalendarInterval;
 	public static final field YEAR Ldev/evo/elasticmagic/aggs/CalendarInterval;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public synthetic fun toValue ()Ljava/lang/Object;
 	public fun toValue ()Ljava/lang/String;
 	public static fun valueOf (Ljava/lang/String;)Ldev/evo/elasticmagic/aggs/CalendarInterval;
@@ -2353,6 +2360,7 @@ public final class dev/evo/elasticmagic/bulk/ConcurrencyControl : java/lang/Enum
 	public static final field SEQ_NO Ldev/evo/elasticmagic/bulk/ConcurrencyControl;
 	public static final field VERSION Ldev/evo/elasticmagic/bulk/ConcurrencyControl;
 	public static final field VERSION_GTE Ldev/evo/elasticmagic/bulk/ConcurrencyControl;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public final fun getValue ()Ljava/lang/String;
 	public synthetic fun toValue ()Ljava/lang/Object;
 	public fun toValue ()Ljava/lang/String;
@@ -2550,6 +2558,7 @@ public final class dev/evo/elasticmagic/compile/ElasticsearchFeatures : java/lan
 	public static final field Companion Ldev/evo/elasticmagic/compile/ElasticsearchFeatures$Companion;
 	public static final field ES_6_0 Ldev/evo/elasticmagic/compile/ElasticsearchFeatures;
 	public static final field ES_7_0 Ldev/evo/elasticmagic/compile/ElasticsearchFeatures;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public final fun getRequiresMappingTypeName ()Z
 	public final fun getSupportsTrackingOfTotalHits ()Z
 	public static fun valueOf (Ljava/lang/String;)Ldev/evo/elasticmagic/compile/ElasticsearchFeatures;
@@ -2858,6 +2867,7 @@ public final class dev/evo/elasticmagic/doc/Dynamic : java/lang/Enum, dev/evo/el
 	public static final field RUNTIME Ldev/evo/elasticmagic/doc/Dynamic;
 	public static final field STRICT Ldev/evo/elasticmagic/doc/Dynamic;
 	public static final field TRUE Ldev/evo/elasticmagic/doc/Dynamic;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public fun toValue ()Ljava/lang/Object;
 	public static fun valueOf (Ljava/lang/String;)Ldev/evo/elasticmagic/doc/Dynamic;
 	public static fun values ()[Ldev/evo/elasticmagic/doc/Dynamic;
@@ -2937,6 +2947,7 @@ public final class dev/evo/elasticmagic/doc/DynamicTemplates$Mapping {
 public final class dev/evo/elasticmagic/doc/DynamicTemplates$MappingKind : java/lang/Enum, dev/evo/elasticmagic/ToValue {
 	public static final field MAPPING Ldev/evo/elasticmagic/doc/DynamicTemplates$MappingKind;
 	public static final field RUNTIME Ldev/evo/elasticmagic/doc/DynamicTemplates$MappingKind;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public synthetic fun toValue ()Ljava/lang/Object;
 	public fun toValue ()Ljava/lang/String;
 	public static fun valueOf (Ljava/lang/String;)Ldev/evo/elasticmagic/doc/DynamicTemplates$MappingKind;
@@ -3033,6 +3044,7 @@ public final class dev/evo/elasticmagic/doc/DynamicTemplates$MatchOptions {
 public final class dev/evo/elasticmagic/doc/DynamicTemplates$MatchPattern : java/lang/Enum, dev/evo/elasticmagic/ToValue {
 	public static final field REGEX Ldev/evo/elasticmagic/doc/DynamicTemplates$MatchPattern;
 	public static final field SIMPLE Ldev/evo/elasticmagic/doc/DynamicTemplates$MatchPattern;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public synthetic fun toValue ()Ljava/lang/Object;
 	public fun toValue ()Ljava/lang/String;
 	public static fun valueOf (Ljava/lang/String;)Ldev/evo/elasticmagic/doc/DynamicTemplates$MatchPattern;
@@ -3563,6 +3575,7 @@ public final class dev/evo/elasticmagic/query/FunctionScore$BoostMode : java/lan
 	public static final field MULTIPLY Ldev/evo/elasticmagic/query/FunctionScore$BoostMode;
 	public static final field REPLACE Ldev/evo/elasticmagic/query/FunctionScore$BoostMode;
 	public static final field SUM Ldev/evo/elasticmagic/query/FunctionScore$BoostMode;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public synthetic fun toValue ()Ljava/lang/Object;
 	public fun toValue ()Ljava/lang/String;
 	public static fun valueOf (Ljava/lang/String;)Ldev/evo/elasticmagic/query/FunctionScore$BoostMode;
@@ -3604,6 +3617,7 @@ public final class dev/evo/elasticmagic/query/FunctionScore$FieldValueFactor$Mod
 	public static final field RECIPROCAL Ldev/evo/elasticmagic/query/FunctionScore$FieldValueFactor$Modifier;
 	public static final field SQRT Ldev/evo/elasticmagic/query/FunctionScore$FieldValueFactor$Modifier;
 	public static final field SQUARE Ldev/evo/elasticmagic/query/FunctionScore$FieldValueFactor$Modifier;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public synthetic fun toValue ()Ljava/lang/Object;
 	public fun toValue ()Ljava/lang/String;
 	public static fun valueOf (Ljava/lang/String;)Ldev/evo/elasticmagic/query/FunctionScore$FieldValueFactor$Modifier;
@@ -3651,6 +3665,7 @@ public final class dev/evo/elasticmagic/query/FunctionScore$ScoreMode : java/lan
 	public static final field MIN Ldev/evo/elasticmagic/query/FunctionScore$ScoreMode;
 	public static final field MULTIPLY Ldev/evo/elasticmagic/query/FunctionScore$ScoreMode;
 	public static final field SUM Ldev/evo/elasticmagic/query/FunctionScore$ScoreMode;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public synthetic fun toValue ()Ljava/lang/Object;
 	public fun toValue ()Ljava/lang/String;
 	public static fun valueOf (Ljava/lang/String;)Ldev/evo/elasticmagic/query/FunctionScore$ScoreMode;
@@ -3977,6 +3992,7 @@ public final class dev/evo/elasticmagic/query/MultiMatch$Type : java/lang/Enum, 
 	public static final field MOST_FIELDS Ldev/evo/elasticmagic/query/MultiMatch$Type;
 	public static final field PHRASE Ldev/evo/elasticmagic/query/MultiMatch$Type;
 	public static final field PHRASE_PREFIX Ldev/evo/elasticmagic/query/MultiMatch$Type;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public synthetic fun toValue ()Ljava/lang/Object;
 	public fun toValue ()Ljava/lang/String;
 	public static fun valueOf (Ljava/lang/String;)Ldev/evo/elasticmagic/query/MultiMatch$Type;
@@ -4042,6 +4058,7 @@ public final class dev/evo/elasticmagic/query/Nested$ScoreMode : java/lang/Enum,
 	public static final field MIN Ldev/evo/elasticmagic/query/Nested$ScoreMode;
 	public static final field NONE Ldev/evo/elasticmagic/query/Nested$ScoreMode;
 	public static final field SUM Ldev/evo/elasticmagic/query/Nested$ScoreMode;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public synthetic fun toValue ()Ljava/lang/Object;
 	public fun toValue ()Ljava/lang/String;
 	public static fun valueOf (Ljava/lang/String;)Ldev/evo/elasticmagic/query/Nested$ScoreMode;
@@ -4139,6 +4156,7 @@ public final class dev/evo/elasticmagic/query/QueryRescore$ScoreMode : java/lang
 	public static final field MIN Ldev/evo/elasticmagic/query/QueryRescore$ScoreMode;
 	public static final field MULTIPLY Ldev/evo/elasticmagic/query/QueryRescore$ScoreMode;
 	public static final field TOTAL Ldev/evo/elasticmagic/query/QueryRescore$ScoreMode;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public synthetic fun toValue ()Ljava/lang/Object;
 	public fun toValue ()Ljava/lang/String;
 	public static fun valueOf (Ljava/lang/String;)Ldev/evo/elasticmagic/query/QueryRescore$ScoreMode;
@@ -4185,6 +4203,7 @@ public final class dev/evo/elasticmagic/query/Range$Relation : java/lang/Enum, d
 	public static final field CONTAINS Ldev/evo/elasticmagic/query/Range$Relation;
 	public static final field INTERSECTS Ldev/evo/elasticmagic/query/Range$Relation;
 	public static final field WITHIN Ldev/evo/elasticmagic/query/Range$Relation;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public synthetic fun toValue ()Ljava/lang/Object;
 	public fun toValue ()Ljava/lang/String;
 	public static fun valueOf (Ljava/lang/String;)Ldev/evo/elasticmagic/query/Range$Relation;
@@ -4324,6 +4343,7 @@ public final class dev/evo/elasticmagic/query/Sort$Mode : java/lang/Enum, dev/ev
 	public static final field MEDIAN Ldev/evo/elasticmagic/query/Sort$Mode;
 	public static final field MIN Ldev/evo/elasticmagic/query/Sort$Mode;
 	public static final field SUM Ldev/evo/elasticmagic/query/Sort$Mode;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public synthetic fun toValue ()Ljava/lang/Object;
 	public fun toValue ()Ljava/lang/String;
 	public static fun valueOf (Ljava/lang/String;)Ldev/evo/elasticmagic/query/Sort$Mode;
@@ -4360,6 +4380,7 @@ public final class dev/evo/elasticmagic/query/Sort$NumericType : java/lang/Enum,
 	public static final field DATE_NANOS Ldev/evo/elasticmagic/query/Sort$NumericType;
 	public static final field DOUBLE Ldev/evo/elasticmagic/query/Sort$NumericType;
 	public static final field LONG Ldev/evo/elasticmagic/query/Sort$NumericType;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public synthetic fun toValue ()Ljava/lang/Object;
 	public fun toValue ()Ljava/lang/String;
 	public static fun valueOf (Ljava/lang/String;)Ldev/evo/elasticmagic/query/Sort$NumericType;
@@ -4369,6 +4390,7 @@ public final class dev/evo/elasticmagic/query/Sort$NumericType : java/lang/Enum,
 public final class dev/evo/elasticmagic/query/Sort$Order : java/lang/Enum, dev/evo/elasticmagic/ToValue {
 	public static final field ASC Ldev/evo/elasticmagic/query/Sort$Order;
 	public static final field DESC Ldev/evo/elasticmagic/query/Sort$Order;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public synthetic fun toValue ()Ljava/lang/Object;
 	public fun toValue ()Ljava/lang/String;
 	public static fun valueOf (Ljava/lang/String;)Ldev/evo/elasticmagic/query/Sort$Order;
