@@ -138,6 +138,7 @@ public final class dev/evo/elasticmagic/serde/Platform : java/lang/Enum {
 	public static final field JS Ldev/evo/elasticmagic/serde/Platform;
 	public static final field JVM Ldev/evo/elasticmagic/serde/Platform;
 	public static final field NATIVE Ldev/evo/elasticmagic/serde/Platform;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public static fun valueOf (Ljava/lang/String;)Ldev/evo/elasticmagic/serde/Platform;
 	public static fun values ()[Ldev/evo/elasticmagic/serde/Platform;
 }

@@ -286,12 +286,6 @@ public final class dev/evo/elasticmagic/transport/FailedShard$Companion {
 	public final fun parse (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;)Ldev/evo/elasticmagic/transport/FailedShard;
 }
 
-public final class dev/evo/elasticmagic/transport/GzipEncoder : dev/evo/elasticmagic/transport/BaseGzipEncoder {
-	public fun <init> ()V
-	public fun append (Ljava/lang/CharSequence;)Ljava/lang/Appendable;
-	public fun toByteArray ()[B
-}
-
 public final class dev/evo/elasticmagic/transport/GzipEncoderKt {
 	public static final fun isGzipSupported ()Z
 }
@@ -312,6 +306,7 @@ public final class dev/evo/elasticmagic/transport/Method : java/lang/Enum {
 	public static final field HEAD Ldev/evo/elasticmagic/transport/Method;
 	public static final field POST Ldev/evo/elasticmagic/transport/Method;
 	public static final field PUT Ldev/evo/elasticmagic/transport/Method;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public static fun valueOf (Ljava/lang/String;)Ldev/evo/elasticmagic/transport/Method;
 	public static fun values ()[Ldev/evo/elasticmagic/transport/Method;
 }

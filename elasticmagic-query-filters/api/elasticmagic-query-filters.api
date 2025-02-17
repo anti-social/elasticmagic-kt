@@ -423,6 +423,7 @@ public final class dev/evo/elasticmagic/qf/FilterMode : java/lang/Enum {
 	public static final field INTERSECT Ldev/evo/elasticmagic/qf/FilterMode;
 	public static final field UNION Ldev/evo/elasticmagic/qf/FilterMode;
 	public final fun filterByValues (Ldev/evo/elasticmagic/query/FieldOperations;Ljava/util/List;)Ldev/evo/elasticmagic/query/QueryExpression;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public static fun valueOf (Ljava/lang/String;)Ldev/evo/elasticmagic/qf/FilterMode;
 	public static fun values ()[Ldev/evo/elasticmagic/qf/FilterMode;
 }
