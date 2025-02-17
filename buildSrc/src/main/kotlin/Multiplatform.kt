@@ -36,18 +36,20 @@ fun Project.configureMultiplatform(
             }
         }
 
-        if (configureJs) {
-            js(IR) {
-                nodejs()
+        // FIXME: Uncomment after upgrading to Kotlin 2.x
+        // https://youtrack.jetbrains.com/issue/KT-65870/KJS-Gradle-kotlinUpgradePackageLock-fails-making-Yarn-unusable
+        // if (configureJs) {
+        //     js(IR) {
+        //         nodejs()
 
-                compilations.all {
-                    kotlinOptions {
-                        moduleKind = "umd"
-                        sourceMap = true
-                    }
-                }
-            }
-        }
+        //         compilations.all {
+        //             kotlinOptions {
+        //                 moduleKind = "umd"
+        //                 sourceMap = true
+        //             }
+        //         }
+        //     }
+        // }
 
         if (configureNative) {
             val hostOs = System.getProperty("os.name")
@@ -89,14 +91,14 @@ fun Project.configureMultiplatform(
                 }
             }
 
-            if (configureJs) {
-                val jsMain by getting
-                val jsTest by getting {
-                    dependencies {
-                        implementation(kotlin("test-js"))
-                    }
-                }
-            }
+            // if (configureJs) {
+            //     val jsMain by getting
+            //     val jsTest by getting {
+            //         dependencies {
+            //             implementation(kotlin("test-js"))
+            //         }
+            //     }
+            // }
 
             if (configureNative) {
                 val nativeMain by getting
