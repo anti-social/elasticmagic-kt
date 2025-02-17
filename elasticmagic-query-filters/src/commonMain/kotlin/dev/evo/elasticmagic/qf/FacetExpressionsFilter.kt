@@ -38,9 +38,11 @@ class PreparedFacetExpressionFilter(
     ) {
 
         val filterAggs = facetFilterExprs.associate { makeAggName(it.name) to FilterAgg(it.expr) }
-        val filters =
-            if (mode == FilterMode.INTERSECT) (otherFacetFilterExpressions + facetFilterExpr).mapNotNull { it }
-            else otherFacetFilterExpressions
+        val filters = if (mode == FilterMode.INTERSECT) {
+            (otherFacetFilterExpressions + facetFilterExpr).mapNotNull { it }
+        } else {
+            otherFacetFilterExpressions
+        }
 
         val aggs = if (filters.isNotEmpty()) {
             val filtered = filters.filter { f -> facetFilterExprs.all { it.name != f.name } }
@@ -50,7 +52,9 @@ class PreparedFacetExpressionFilter(
                     aggs = filterAggs
                 )
             )
-        } else filterAggs
+        } else {
+            filterAggs
+        }
 
         searchQuery.aggs(aggs)
         if (facetFilterExpr != null) {
@@ -64,10 +68,11 @@ class PreparedFacetExpressionFilter(
         val selectedNames = selectedFilterExprs.map { it.name }
         val agg = searchQueryResult.aggs[filterAggName]
 
-        val parsedAggs = if (agg != null)
+        val parsedAggs = if (agg != null) {
             (agg as SingleBucketAggResult).aggs
-        else
+        } else {
             searchQueryResult.aggs
+        }
 
         val results = facetFilterExprs.map { facetFilterExpr ->
             val filterAgg = parsedAggs[makeAggName(facetFilterExpr.name)]

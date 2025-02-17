@@ -26,9 +26,11 @@ internal fun Params.toRequestParameters(): Parameters {
         key to when (value) {
             is ToValue<*> -> value.toValue()
             is Duration -> {
-                if (key == "timeout")
+                if (key == "timeout") {
                     value.toTimeoutString()
-                else value
+                } else {
+                    value
+                }
             }
 
             else -> value
