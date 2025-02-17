@@ -58,6 +58,9 @@ internal inline fun Expression<*>.collect(process: (Expression<*>) -> Unit) {
     val stack = ArrayList<Expression<*>>()
     stack.add(this)
 
+    // detekt's false positive:
+    // https://github.com/detekt/detekt/issues/6129
+    @Suppress("UnreachableCode")
     while (true) {
         val currentExpression = stack.removeLastOrNull() ?: break
         process(currentExpression)

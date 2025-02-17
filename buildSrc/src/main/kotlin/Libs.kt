@@ -10,7 +10,7 @@ object Versions {
     // Gradle plugins
     const val jacoco = "0.8.12"
     const val grgit = "4.1.1"
-    const val detekt = "1.22.0"
+    const val detekt = "1.23.7"
     const val dokka = "1.7.20"
     const val mkdocs = "4.0.1"
     // With 0.13.0 ':integ-tests:transformJvmTestAtomicfu' task somehow fails

@@ -57,7 +57,8 @@ class BulkCompiler(
         val ctx = response.content
         val bulkItems = buildList {
             ctx.array("items").forEachObj { itemObjWrapper ->
-                val (itemObj, itemOpType) = itemObjWrapper.objOrNull("index")?.let { it to BulkOpType.INDEX }
+                val (itemObj, itemOpType) =
+                    itemObjWrapper.objOrNull("index")?.let { it to BulkOpType.INDEX }
                     ?: itemObjWrapper.objOrNull("delete")?.let { it to BulkOpType.DELETE }
                     ?: itemObjWrapper.objOrNull("update")?.let { it to BulkOpType.UPDATE }
                     ?: itemObjWrapper.objOrNull("create")?.let { it to BulkOpType.CREATE }
