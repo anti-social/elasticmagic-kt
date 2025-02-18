@@ -391,7 +391,7 @@ class ElasticsearchKtorTransportTests {
             "http://example.com:9200",
             MockEngine { request ->
                 request.method shouldBe HttpMethod.Get
-                if (isGzipSupported) {
+                if (createGzipEncoder() != null) {
                     request.headers["content-encoding"] shouldBe "gzip"
                 } else {
                     request.headers["content-encoding"].shouldBeNull()
@@ -424,7 +424,7 @@ class ElasticsearchKtorTransportTests {
                             request.method shouldBe Method.GET
                             request.path shouldBe "products/_search"
                             request.contentType shouldBe "application/json"
-                            if (isGzipSupported) {
+                            if (createGzipEncoder() != null) {
                                 request.contentEncoding shouldBe "gzip"
                                 request.content shouldNotBe expectedContent.encodeToByteArray()
                             } else {
