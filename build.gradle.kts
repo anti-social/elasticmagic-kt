@@ -173,6 +173,19 @@ subprojects {
         }
         tasks.getByName("check").dependsOn(detektAll)
 
+        tasks.register("quickCheck") {
+            val dependsOnTasks = mutableListOf(
+                "compileKotlinJvm", "compileTestKotlinJvm", "detektAll",
+            )
+            if (!listOf("benchmarks", "test-utils", "integ-tests").contains(project.name)) {
+                dependsOnTasks.add("apiCheck")
+            }
+            if (project.name != "integ-tests") {
+                dependsOnTasks.add("jvmTest")
+            }
+            dependsOn(dependsOnTasks)
+        }
+
         tasks.withType<DokkaTaskPartial> {
             failOnWarning.set(true)
 
@@ -228,6 +241,10 @@ val docsInfo = when {
 
 tasks.withType<DokkaMultiModuleTask> {
     outputDirectory.set(buildDir.resolve("mkdocs/${docsInfo.version}/api"))
+}
+
+tasks.register("quickCheck") {
+    dependsOn("mkdocsBuild")
 }
 
 mkdocs {
