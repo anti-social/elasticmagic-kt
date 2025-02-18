@@ -287,7 +287,7 @@ public final class dev/evo/elasticmagic/transport/FailedShard$Companion {
 }
 
 public final class dev/evo/elasticmagic/transport/GzipEncoderKt {
-	public static final fun isGzipSupported ()Z
+	public static final fun createGzipEncoder ()Ldev/evo/elasticmagic/transport/BaseGzipEncoder;
 }
 
 public final class dev/evo/elasticmagic/transport/IdentityEncoder : dev/evo/elasticmagic/transport/ContentEncoder {
@@ -332,7 +332,7 @@ public final class dev/evo/elasticmagic/transport/PlainResponse {
 }
 
 public final class dev/evo/elasticmagic/transport/PreservingOriginGzipEncoder : dev/evo/elasticmagic/transport/BaseGzipEncoder {
-	public fun <init> ()V
+	public fun <init> (Ldev/evo/elasticmagic/transport/BaseGzipEncoder;Ldev/evo/elasticmagic/transport/IdentityEncoder;)V
 	public fun append (Ljava/lang/CharSequence;)Ljava/lang/Appendable;
 	public fun toByteArray ()[B
 	public fun toString ()Ljava/lang/String;

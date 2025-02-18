@@ -75,12 +75,12 @@ abstract class BaseGzipEncoder : ContentEncoder {
     override val encoding: String = "gzip"
 }
 
-internal expect val isGzipSupported: Boolean
+internal expect fun createGzipEncoder(): BaseGzipEncoder?
 
-class PreservingOriginGzipEncoder : BaseGzipEncoder() {
-    private val gzipEncoder = GzipEncoder()
-    private val identEncoder = IdentityEncoder()
-
+class PreservingOriginGzipEncoder(
+    private val gzipEncoder: BaseGzipEncoder,
+    private val identEncoder: IdentityEncoder,
+) : BaseGzipEncoder() {
     override fun append(value: CharSequence?): Appendable {
         gzipEncoder.append(value)
         identEncoder.append(value)
@@ -347,11 +347,14 @@ abstract class ElasticsearchTransport(
     }
 
     private fun createContentEncoder(preserveOrigin: Boolean): ContentEncoder {
-        if (config.gzipRequests && isGzipSupported) {
-            if (!preserveOrigin) {
-                return GzipEncoder()
+        if (config.gzipRequests) {
+            val gzipEncoder = createGzipEncoder()
+            if (gzipEncoder != null) {
+                if (!preserveOrigin) {
+                    return gzipEncoder
+                }
+                return PreservingOriginGzipEncoder(gzipEncoder, IdentityEncoder())
             }
-            return PreservingOriginGzipEncoder()
         }
         return IdentityEncoder()
     }
