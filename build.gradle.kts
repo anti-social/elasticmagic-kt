@@ -37,7 +37,7 @@ val allKotlinSourceDirs = publishProjects
     }
 val allKotlinClassDirs = publishProjects
     .map { p ->
-        "${p.buildDir}/classes/kotlin/jvm/main"
+        "${p.layout.buildDirectory.get()}/classes/kotlin/jvm/main"
     }
 
 apiValidation {
@@ -91,7 +91,7 @@ subprojects {
         classDirectories.setFrom(allKotlinClassDirs)
         sourceDirectories.setFrom(allKotlinSourceDirs)
 
-        executionData.setFrom(files("$buildDir/jacoco/jvmTest.exec"))
+        executionData.setFrom(files("${layout.buildDirectory.get()}/jacoco/jvmTest.exec"))
         reports {
             html.required.set(true)
             xml.required.set(true)
@@ -175,7 +175,7 @@ subprojects {
 
         tasks.register("quickCheck") {
             val dependsOnTasks = mutableListOf(
-                "compileKotlinJvm", "compileTestKotlinJvm", "detektAll",
+                "compileKotlinJvm", "compileTestKotlinJvm", "detekt"
             )
             if (!listOf("benchmarks", "test-utils", "integ-tests").contains(project.name)) {
                 dependsOnTasks.add("apiCheck")
@@ -240,7 +240,9 @@ val docsInfo = when {
 }
 
 tasks.withType<DokkaMultiModuleTask> {
-    outputDirectory.set(buildDir.resolve("mkdocs/${docsInfo.version}/api"))
+    outputDirectory.set(
+        layout.buildDirectory.get().getAsFile().resolve("mkdocs/${docsInfo.version}/api")
+    )
 }
 
 tasks.register("quickCheck") {

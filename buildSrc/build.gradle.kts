@@ -21,7 +21,10 @@ val kotlinVersion = "1.9.25"
 val nexusPublishVersion = "2.0.0"
 
 // See example at: https://docs.gradle.org/current/dsl/org.gradle.api.tasks.SourceSetOutput.html
-val generatedResourcesDir = buildDir.resolve("generated-resources").resolve("main")
+val generatedResourcesDir = layout.buildDirectory
+    .dir("generated-resources/main")
+    .get()
+    .getAsFile()
 val generateVersions = tasks.register("generateVersions") {
    val versionsDir = generatedResourcesDir.resolve("elasticmagic")
    outputs.dir(versionsDir)
