@@ -12,13 +12,18 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import java.net.URI
 
 fun Project.configureMultiplatformPublishing(projectDescription: String) {
-    val javadocJar by tasks.registering(Jar::class) {
-        archiveClassifier.set("javadoc")
-    }
-
     configure<PublishingExtension> {
         publications.withType<MavenPublication> {
-            artifact(javadocJar)
+            val publication = this
+            val javaDocJar = tasks.register<Jar>("${publication.name}javaDocJar") {
+                group = JavaBasePlugin.DOCUMENTATION_GROUP
+                description = "Assembles Kotlin docs into a Javadoc jar"
+                archiveClassifier.set("javadoc")
+                // Each archive name should be distinct, to avoid implicit dependency issues.
+                // We use the same format as the sources Jar tasks.
+                // https://youtrack.jetbrains.com/issue/KT-46466
+                archiveBaseName.set("${archiveBaseName.get()}-${publication.name}")
+            }
 
             configurePom(
                 rootProject.extra["projectUrl"] as URI,
