@@ -1,13 +1,21 @@
 package dev.evo.elasticmagic
 
 import kotlin.js.Promise
-
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.promise
+
+@JsName("Promise")
+external class MyPromise {
+    fun then(onFulfilled: ((Unit) -> Unit), onRejected: ((Throwable) -> Unit)): MyPromise
+    fun then(onFulfilled: ((Unit) -> Unit)): MyPromise
+}
+
+/** Always a `Promise<Unit>` */
+public actual typealias TestResult = MyPromise
 
 /*
  * Origin was taken from:
@@ -31,19 +39,13 @@ actual open class TestBase {
         throw exception
     }
 
-    // Somehow it is not work with such a wrapper. Find out why
-    // actual fun runTest(block: suspend CoroutineScope.() -> Unit) {
-    //     runTest(null, block)
-    // }
-
     @OptIn(DelicateCoroutinesApi::class)
-    @Suppress("ACTUAL_FUNCTION_WITH_DEFAULT_ARGUMENTS")
     actual fun runTest(
-        expected: ((Throwable) -> Boolean)? = null,
+        expected: ((Throwable) -> Boolean)?,
         block: suspend CoroutineScope.() -> Unit
-    ): dynamic {
+    ): TestResult {
         var ex: Throwable? = null
-        return GlobalScope.promise(block = block, context = CoroutineExceptionHandler { _, e ->
+        val result = GlobalScope.promise(block = block, context = CoroutineExceptionHandler { _, e ->
             if (e is CancellationException) return@CoroutineExceptionHandler // are ignored
             setError(e)
         }).catch { e ->
@@ -61,6 +63,7 @@ actual open class TestBase {
             }
             error?.let { throw it }
         }
+        return result as TestResult
     }
 }
 
