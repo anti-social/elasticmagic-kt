@@ -21,8 +21,8 @@ fun Project.configureMultiplatform(
 
         if (configureJvm) {
             jvm {
-                compilations.all {
-                    kotlinOptions.jvmTarget = "1.8"
+                compilerOptions {
+                    jvmTarget.set(JvmTarget.JVM_11)
                 }
                 testRuns["test"].executionTask.configure {
                     useJUnit()

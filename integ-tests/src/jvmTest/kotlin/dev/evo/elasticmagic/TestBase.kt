@@ -24,9 +24,8 @@ actual open class TestBase {
         }
     }
 
-    @Suppress("ACTUAL_FUNCTION_WITH_DEFAULT_ARGUMENTS")
     actual fun runTest(
-        expected: ((Throwable) -> Boolean)? = null,
+        expected: ((Throwable) -> Boolean)?,
         block: suspend CoroutineScope.() -> Unit
     ) {
         var ex: Throwable? = null

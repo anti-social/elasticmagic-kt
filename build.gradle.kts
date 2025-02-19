@@ -128,12 +128,6 @@ subprojects {
         }
     }
 
-    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-        kotlinOptions {
-            jvmTarget = Versions.jvmTarget.toString()
-        }
-    }
-
     tasks.register("configurations") {
         println("Available configurations:")
         configurations.names.forEach { println("- $it") }
@@ -166,7 +160,6 @@ subprojects {
                 configurations.getByName("jvmCompileClasspath"),
                 configurations.getByName("jvmTestCompileClasspath"),
             )
-            jvmTarget = Versions.jvmTarget.toString()
         }
         val detektAll = tasks.register("detektAll") {
             dependsOn(detektJvm, detektOthers)

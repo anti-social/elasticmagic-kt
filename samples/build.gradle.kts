@@ -44,19 +44,13 @@ configure<org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension> {
     }
 }
 
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_11.toString()
-    }
-}
-
 val Project.sourceSets: SourceSetContainer
     get() = extensions.getByType(JavaPluginExtension::class).sourceSets
 
 tasks {
     val startScripts by getting(CreateStartScripts::class)
 
-    val subFieldsMistakeStartScript by creating(CreateStartScripts::class) {
+    val subFieldsMistakeStartScript by registering(CreateStartScripts::class) {
         applicationName = "subfields-mistake"
         mainClass.set("samples.document.subfields.mistake.MistakeKt")
         classpath = sourceSets.getByName("main").runtimeClasspath
@@ -65,7 +59,7 @@ tasks {
     startScripts.dependsOn(subFieldsMistakeStartScript)
 
     register<JavaExec>("runSubFieldsMistake") {
-        mainClass.set(subFieldsMistakeStartScript.mainClass)
-        classpath = subFieldsMistakeStartScript.classpath!!
+        mainClass.set(subFieldsMistakeStartScript.get().mainClass)
+        classpath = subFieldsMistakeStartScript.get().classpath!!
     }
 }
