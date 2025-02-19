@@ -50,9 +50,7 @@ interface Serializer {
                 is Double? -> field(name, value)
                 is Boolean? -> field(name, value)
                 is String? -> field(name, value)
-                else -> error(
-                    "Unsupported value type: ${if (value != null) value::class else null}"
-                )
+                else -> error("Unsupported value type: ${value::class}")
             }
         }
         fun fieldIfNotNull(name: String, value: Any?) {
@@ -109,9 +107,7 @@ interface Serializer {
                 is Double? -> value(v)
                 is Boolean? -> value(v)
                 is String? -> value(v)
-                else -> error(
-                    "Unsupported value type: ${if (v != null) v::class else null}"
-                )
+                else -> error("Unsupported value type: ${v::class}")
             }
         }
         fun valueIfNotNull(v: Any?) {

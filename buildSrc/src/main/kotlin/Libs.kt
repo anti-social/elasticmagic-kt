@@ -5,8 +5,6 @@ import java.util.Properties
 object Versions {
     private val versionProps = readVersionProperties()
 
-    val jvmTarget = JavaVersion.VERSION_11
-
     // Gradle plugins
     const val jacoco = "0.8.12"
     const val grgit = "4.1.1"

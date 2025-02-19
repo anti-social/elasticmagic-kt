@@ -6,6 +6,14 @@ import dev.evo.elasticmagic.doc.Document
 import dev.evo.elasticmagic.doc.DynDocSource
 import dev.evo.elasticmagic.doc.list
 
+private const val MANUFACTURER_ATTR_ID = 1
+private const val PROCESSOR_ATTR_ID = 2
+private const val RAM_ATTR_ID = 3
+private const val CONNECTIVITY_ATTR_ID = 4
+private const val DISPLAY_SIZE_ATTR_ID = 5
+private const val BATTERY_CAPACITY_ATTR_ID = 6
+private const val EXTENSION_SLOT_ATTR_ID = 7
+
 interface AttributeValue {
     val attrId: Int
     val valueId: Int
@@ -34,10 +42,10 @@ enum class Manufacturer(override val valueId: Int) : AttributeValue {
     Xiaomi(3);
 
     companion object {
-        const val ATTR_ID = 1
+        const val ATTR_ID = MANUFACTURER_ATTR_ID
     }
 
-    override val attrId = Manufacturer.ATTR_ID
+    override val attrId = MANUFACTURER_ATTR_ID
 }
 
 enum class Processor(override val valueId: Int) : AttributeValue {
@@ -48,18 +56,18 @@ enum class Processor(override val valueId: Int) : AttributeValue {
     Tensor(4);
 
     companion object {
-        const val ATTR_ID = 2
+        const val ATTR_ID = PROCESSOR_ATTR_ID
     }
 
-    override val attrId = Processor.ATTR_ID
+    override val attrId = PROCESSOR_ATTR_ID
 }
 
 class Ram(override val valueId: Int) : AttributeValue {
     companion object {
-        const val ATTR_ID = 3
+        const val ATTR_ID = RAM_ATTR_ID
     }
 
-    override val attrId = ATTR_ID
+    override val attrId = RAM_ATTR_ID
 }
 
 enum class Connectivity(override val valueId: Int) : AttributeValue {
@@ -69,34 +77,34 @@ enum class Connectivity(override val valueId: Int) : AttributeValue {
     INFRARED(3);
 
     companion object {
-        const val ATTR_ID = 4
+        const val ATTR_ID = CONNECTIVITY_ATTR_ID
     }
 
-    override val attrId = Connectivity.ATTR_ID
+    override val attrId = CONNECTIVITY_ATTR_ID
 }
 
 class DisplaySize(override val value: Float) : AttributeRangeValue {
     companion object {
-        const val ATTR_ID = 5
+        const val ATTR_ID = DISPLAY_SIZE_ATTR_ID
     }
 
-    override val attrId = ATTR_ID
+    override val attrId = DISPLAY_SIZE_ATTR_ID
 }
 
 class BatteryCapacity(override val value: Float) : AttributeRangeValue {
     companion object {
-        const val ATTR_ID = 6
+        const val ATTR_ID = BATTERY_CAPACITY_ATTR_ID
     }
 
-    override val attrId = ATTR_ID
+    override val attrId = BATTERY_CAPACITY_ATTR_ID
 }
 
 class ExtensionSlot(override val value: Boolean) : AttributeBoolValue {
     companion object {
-        const val ATTR_ID = 7
+        const val ATTR_ID = EXTENSION_SLOT_ATTR_ID
     }
 
-    override val attrId = ATTR_ID
+    override val attrId = EXTENSION_SLOT_ATTR_ID
 }
 
 object ItemDoc : Document() {
