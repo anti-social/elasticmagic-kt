@@ -5,6 +5,8 @@ import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.runBlocking
 
+actual typealias TestResult = Unit
+
 /*
  * Origin was taken from:
  * https://github.com/Kotlin/kotlinx.coroutines/blob/1.4.3/kotlinx-coroutines-core/native/test/TestBase.kt
@@ -26,7 +28,7 @@ actual open class TestBase {
     actual fun runTest(
         expected: ((Throwable) -> Boolean)?,
         block: suspend CoroutineScope.() -> Unit
-    ) {
+    ): TestResult {
         var ex: Throwable? = null
         try {
             runBlocking(block = block, context = CoroutineExceptionHandler { _, e ->

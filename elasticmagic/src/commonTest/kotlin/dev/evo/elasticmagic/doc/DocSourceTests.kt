@@ -514,7 +514,7 @@ class DocSourceTests {
         order.status shouldBe listOf(1, 2)
         order.toSource() shouldBe mapOf("status" to listOf(1, 2))
 
-        order.status.addAll(order.status)
+        order.status.addAll(listOf(1, 2))
         order.status shouldBe listOf(1, 2, 1, 2)
         order.toSource() shouldBe mapOf("status" to listOf(1, 2, 1, 2))
 

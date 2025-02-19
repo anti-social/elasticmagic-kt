@@ -7,6 +7,8 @@ import kotlinx.coroutines.runBlocking
 
 import java.util.concurrent.atomic.AtomicReference
 
+actual typealias TestResult = Unit
+
 /*
  * Origin was taken from:
  * https://github.com/Kotlin/kotlinx.coroutines/blob/1.4.3/kotlinx-coroutines-core/jvm/test/TestBase.kt
@@ -27,7 +29,7 @@ actual open class TestBase {
     actual fun runTest(
         expected: ((Throwable) -> Boolean)?,
         block: suspend CoroutineScope.() -> Unit
-    ) {
+    ): TestResult {
         var ex: Throwable? = null
         try {
             runBlocking(block = block, context = CoroutineExceptionHandler { _, e ->
