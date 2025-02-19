@@ -42,11 +42,9 @@ fun Project.configureMultiplatform(
             js(IR) {
                 nodejs()
 
-                compilations.all {
-                    kotlinOptions {
-                        moduleKind = "umd"
-                        sourceMap = true
-                    }
+                compilerOptions {
+                    moduleKind.set(JsModuleKind.MODULE_UMD)
+                    sourceMap.set(true)
                 }
             }
         }
