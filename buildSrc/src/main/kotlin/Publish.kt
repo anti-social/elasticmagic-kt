@@ -25,6 +25,7 @@ fun Project.configureMultiplatformPublishing(projectDescription: String) {
                 // https://youtrack.jetbrains.com/issue/KT-46466
                 archiveBaseName.set("${archiveBaseName.get()}-${publication.name}")
             }
+            artifact(javaDocJar)
 
             configurePom(
                 rootProject.extra["projectUrl"] as URI,
