@@ -1,3 +1,3 @@
 version: dev
-elasticmagic_version: 0.0.31-23-gb1b6ed8
-ktor_version: 2.2.2
+elasticmagic_version: 0.1.0-1-g2d7e0d6
+ktor_version: 2.3.13
