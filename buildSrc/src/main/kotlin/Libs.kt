@@ -24,7 +24,7 @@ object Versions {
     const val kotlinxBenchmark = "0.4.13"
     // A lot of trace logging in JS client on 2.2.3 and later:
     // See: https://youtrack.jetbrains.com/issue/KTOR-5456/Ktor-JS-websocket-client-unconfigurable-logging
-    const val ktor = "2.2.2"
+    const val ktor = "2.3.13"
 
     // Serialization dependencies
     const val jackson = "2.12.2"
