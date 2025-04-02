@@ -23,6 +23,7 @@ import dev.evo.elasticmagic.query.ArrayExpression
 import dev.evo.elasticmagic.query.Bool
 import dev.evo.elasticmagic.query.Expression
 import dev.evo.elasticmagic.query.ObjExpression
+import dev.evo.elasticmagic.query.StoredField
 import dev.evo.elasticmagic.serde.Deserializer
 import dev.evo.elasticmagic.serde.Serde
 import dev.evo.elasticmagic.serde.Serializer
@@ -171,8 +172,14 @@ open class SearchQueryCompiler(
             }
         }
         if (searchQuery.storedFields.isNotEmpty()) {
-            ctx.array("stored_fields") {
-                visit(this, searchQuery.storedFields)
+            val firstStoredField = searchQuery.storedFields.first()
+            if (firstStoredField === StoredField.None) {
+                // Elasticsearch 8.x requires _none_ to be a scalar value
+                ctx.field("stored_fields", firstStoredField.toValue())
+            } else {
+                ctx.array("stored_fields") {
+                    visit(this, searchQuery.storedFields)
+                }
             }
         }
         if (searchQuery.scriptFields.isNotEmpty()) {
@@ -299,7 +306,7 @@ open class SearchQueryCompiler(
         return SearchHit(
             index = rawHit.string("_index"),
             type = rawHit.stringOrNull("_type") ?: "_doc",
-            id = rawHit.string("_id"),
+            id = rawHit.stringOrNull("_id"),
             routing = rawHit.stringOrNull("_routing"),
             version = rawHit.longOrNull("_version"),
             seqNo = rawHit.longOrNull("_seq_no"),

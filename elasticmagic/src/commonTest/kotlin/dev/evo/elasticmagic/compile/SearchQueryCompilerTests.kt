@@ -30,6 +30,7 @@ import dev.evo.elasticmagic.query.QueryRescore
 import dev.evo.elasticmagic.query.Script
 import dev.evo.elasticmagic.query.SearchExt
 import dev.evo.elasticmagic.query.Sort
+import dev.evo.elasticmagic.query.StoredField
 import dev.evo.elasticmagic.query.match
 import dev.evo.elasticmagic.serde.Serializer
 import dev.evo.elasticmagic.types.FloatType
@@ -733,6 +734,19 @@ class SearchQueryCompilerTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQ
         )
 
         compile(query.storedFields(SearchQuery.CLEAR)).body shouldContainExactly emptyMap()
+
+        query
+            .storedFields(AnyField("rank"))
+            .storedFields(StoredField.None)
+        compile(query).body shouldContainExactly mapOf(
+            "stored_fields" to "_none_"
+        )
+
+        query
+            .storedFields(AnyField("rank"))
+        compile(query).body shouldContainExactly mapOf(
+            "stored_fields" to listOf("rank")
+        )
     }
 
     @Test

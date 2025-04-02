@@ -14,6 +14,7 @@ import dev.evo.elasticmagic.query.Script
 import dev.evo.elasticmagic.query.SearchExt
 import dev.evo.elasticmagic.query.Sort
 import dev.evo.elasticmagic.query.Source
+import dev.evo.elasticmagic.query.StoredField
 import dev.evo.elasticmagic.query.collect
 import dev.evo.elasticmagic.serde.Deserializer
 import kotlin.time.Duration
@@ -45,7 +46,7 @@ abstract class BaseSearchQuery<S : BaseDocSource, T : BaseSearchQuery<S, T>>(
     protected var source: Source? = null
     protected val fields: MutableList<FieldFormat> = mutableListOf()
     protected val docvalueFields: MutableList<FieldFormat> = mutableListOf()
-    protected val storedFields: MutableList<FieldOperations<*>> = mutableListOf()
+    protected val storedFields: MutableList<StoredField> = mutableListOf()
     protected val scriptFields: MutableMap<String, Script> = mutableMapOf()
     protected val runtimeMappings: MutableMap<String, BoundRuntimeField<*>> = mutableMapOf()
 
@@ -473,7 +474,10 @@ abstract class BaseSearchQuery<S : BaseDocSource, T : BaseSearchQuery<S, T>>(
      * @see <https://www.elastic.co/guide/en/elasticsearch/reference/current/search-fields.html#stored-fields>
      */
     fun storedFields(vararg fields: FieldOperations<*>): T = self {
-        storedFields += fields
+        if (storedFields.firstOrNull() === StoredField.None) {
+            storedFields.clear()
+        }
+        storedFields += fields.map(StoredField.Companion::invoke)
     }
 
     /**
@@ -482,7 +486,17 @@ abstract class BaseSearchQuery<S : BaseDocSource, T : BaseSearchQuery<S, T>>(
      * @see <https://www.elastic.co/guide/en/elasticsearch/reference/current/search-fields.html#stored-fields>
      */
     fun storedFields(fields: List<FieldOperations<*>>): T = self {
-        storedFields += fields
+        storedFields(*fields.toTypedArray())
+    }
+
+    /**
+     * Disables retrieving any stored fields including meta fields like `_id` and `_routing`.
+     *
+     * @see <https://www.elastic.co/guide/en/elasticsearch/reference/current/search-fields.html#disable-stored-fields>
+     */
+    fun storedFields(none: StoredField.None): T = self {
+        storedFields.clear()
+        storedFields.add(none)
     }
 
     /**
@@ -976,7 +990,7 @@ open class SearchQuery<S : BaseDocSource>(
         val source: Source?,
         val fields: List<FieldFormat>,
         val docvalueFields: List<FieldFormat>,
-        val storedFields: List<FieldOperations<*>>,
+        val storedFields: List<StoredField>,
         val scriptFields: Map<String, Script>,
         val runtimeMappings: Map<String, BoundRuntimeField<*>>,
         val size: Int?,

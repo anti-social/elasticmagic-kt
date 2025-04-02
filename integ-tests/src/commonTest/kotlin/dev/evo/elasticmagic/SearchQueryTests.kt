@@ -23,6 +23,7 @@ import dev.evo.elasticmagic.query.Ids
 import dev.evo.elasticmagic.query.Nested
 import dev.evo.elasticmagic.query.Script
 import dev.evo.elasticmagic.query.Sort
+import dev.evo.elasticmagic.query.StoredField
 import dev.evo.elasticmagic.query.match
 import dev.evo.elasticmagic.transport.ElasticsearchException
 import dev.evo.elasticmagic.types.KeywordType
@@ -68,7 +69,7 @@ object OrderDoc : Document() {
     val user by obj(::User)
     val items by nested(::CartItem)
     val status by int().enum(OrderStatus::id)
-    val comment by text()
+    val comment by text(store = true)
     val dateCreated by instant()
 }
 
@@ -347,6 +348,34 @@ class SearchQueryTests : ElasticsearchTestBase() {
                 fields["status"] shouldBe listOf(0L)
                 fields[OrderDoc.dateCreated] shouldBe listOf(LocalDateTime(2019, 1, 1, 0, 0).toInstant(TimeZone.UTC))
                 fields["dateCreated"] shouldBe listOf("2019")
+            }
+        }
+    }
+
+    @Test
+    fun storedFields() = runTestWithSerdes {
+        withFixtures(OrderDoc, listOf(karlssonsJam)) {
+            var searchResult = SearchQuery(::OrderDocSource)
+                .storedFields(OrderDoc.comment)
+                .search(index)
+
+            searchResult.totalHits shouldBe 1
+            searchResult.maxScore shouldBe 1.0F
+
+            searchResult.hits[0].shouldNotBeNull().let { hit ->
+                hit.id shouldBe "101"
+                hit.fields["comment"] shouldBe listOf("Call me later")
+            }
+
+            searchResult = SearchQuery(::OrderDocSource)
+                .storedFields(StoredField.None)
+                .search(index)
+
+            searchResult.totalHits shouldBe 1
+            searchResult.maxScore shouldBe 1.0F
+
+            searchResult.hits[0].shouldNotBeNull().let { hit ->
+                hit.id.shouldBeNull()
             }
         }
     }

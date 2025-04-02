@@ -118,6 +118,7 @@ public abstract class dev/evo/elasticmagic/BaseSearchQuery {
 	public static synthetic fun source$default (Ldev/evo/elasticmagic/BaseSearchQuery;Ljava/util/List;Ljava/util/List;ILjava/lang/Object;)Ldev/evo/elasticmagic/BaseSearchQuery;
 	public final fun stats (Ljava/lang/String;)Ldev/evo/elasticmagic/BaseSearchQuery;
 	public final fun storedFields (Ldev/evo/elasticmagic/SearchQuery$CLEAR;)Ldev/evo/elasticmagic/BaseSearchQuery;
+	public final fun storedFields (Ldev/evo/elasticmagic/query/StoredField$None;)Ldev/evo/elasticmagic/BaseSearchQuery;
 	public final fun storedFields (Ljava/util/List;)Ldev/evo/elasticmagic/BaseSearchQuery;
 	public final fun storedFields ([Ldev/evo/elasticmagic/query/FieldOperations;)Ldev/evo/elasticmagic/BaseSearchQuery;
 	public final fun terminateAfter (Ljava/lang/Integer;)Ldev/evo/elasticmagic/BaseSearchQuery;
@@ -4462,6 +4463,15 @@ public final class dev/evo/elasticmagic/query/Source$Filter : dev/evo/elasticmag
 	public final fun getIncludes ()Ljava/util/List;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
+}
+
+public abstract class dev/evo/elasticmagic/query/StoredField : dev/evo/elasticmagic/ToValue {
+}
+
+public final class dev/evo/elasticmagic/query/StoredField$None : dev/evo/elasticmagic/query/StoredField {
+	public static final field INSTANCE Ldev/evo/elasticmagic/query/StoredField$None;
+	public synthetic fun toValue ()Ljava/lang/Object;
+	public fun toValue ()Ljava/lang/String;
 }
 
 public final class dev/evo/elasticmagic/query/Term : dev/evo/elasticmagic/query/QueryExpression {
