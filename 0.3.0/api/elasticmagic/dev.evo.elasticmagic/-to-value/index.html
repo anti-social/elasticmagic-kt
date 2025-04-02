@@ -1,0 +1,100 @@
+<!doctype html>
+<html class="no-js">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>ToValue</title>
+<link href="../../../images/logo-icon.svg" rel="icon" type="image/svg">    <script>var pathToRoot = "../../../";</script>
+    <script>document.documentElement.classList.replace("no-js","js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async></script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../../styles/font-jb-sans-auto.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/clipboard.js" async></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
+<body>
+    <div class="root">
+<nav class="navigation" id="navigation-wrapper">
+    <div class="navigation--inner">
+        <div class="navigation-title">
+            <button class="menu-toggle" id="menu-toggle" type="button">toggle menu</button>
+            <div class="library-name">
+<a class="library-name--link" href="../../../index.html">
+                            elasticmagic-kt
+                    </a>            </div>
+            <div class="library-version">0.3.0
+            </div>
+        </div>
+        <div class="filter-section" id="filter-section">
+                <button class="platform-tag platform-selector common-like" data-active="" data-filter=":elasticmagic:dokkaHtmlPartial/commonMain">common</button>
+        </div>
+    </div>
+    <div class="navigation-controls">
+        <button class="navigation-controls--btn navigation-controls--theme" id="theme-toggle-button" type="button">switch theme</button>
+        <div class="navigation-controls--btn navigation-controls--search" id="searchBar" role="button">search in API</div>
+    </div>
+</nav>
+        <div id="container">
+            <div class="sidebar" id="leftColumn">
+                <div class="sidebar--inner" id="sideMenu"></div>
+            </div>
+            <div id="main">
+<div class="main-content" data-page-type="classlike" id="content" pageids="elasticmagic::dev.evo.elasticmagic/ToValue///PointingToDeclaration//-1391351333">
+  <div class="breadcrumbs"><a href="../../index.html">elasticmagic</a><span class="delimiter">/</span><a href="../index.html">dev.evo.elasticmagic</a><span class="delimiter">/</span><span class="current">ToValue</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span>To</span><wbr><span><span>Value</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">interface </span><a href="index.html">ToValue</a><span class="token operator">&lt;</span><a href="index.html">T</a><span class="token operator">&gt;</span></div><h4 class="">Inheritors</h4><div class="table"><div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="../-refresh/index.html">Refresh</a></div></span></div><div></div></div></div><div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="../-conflicts/index.html">Conflicts</a></div></span></div><div></div></div></div><div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="../-search-type/index.html">SearchType</a></div></span></div><div></div></div></div><div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="../../dev.evo.elasticmagic.aggs/-calendar-interval/index.html">CalendarInterval</a></div></span></div><div></div></div></div><div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="../../dev.evo.elasticmagic.aggs/-fixed-interval/index.html">FixedInterval</a></div></span></div><div></div></div></div><div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="../../dev.evo.elasticmagic.aggs/-base-terms-agg/-collect-mode/index.html">CollectMode</a></div></span></div><div></div></div></div><div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="../../dev.evo.elasticmagic.aggs/-base-terms-agg/-execution-hint/index.html">ExecutionHint</a></div></span></div><div></div></div></div><div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="../../dev.evo.elasticmagic.bulk/-concurrency-control/index.html">ConcurrencyControl</a></div></span></div><div></div></div></div><div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="../../dev.evo.elasticmagic.doc/-dynamic/index.html">Dynamic</a></div></span></div><div></div></div></div><div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="../../dev.evo.elasticmagic.doc/-dynamic-templates/-mapping-kind/index.html">MappingKind</a></div></span></div><div></div></div></div><div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="../../dev.evo.elasticmagic.doc/-dynamic-templates/-match-mapping-type/index.html">MatchMappingType</a></div></span></div><div></div></div></div><div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="../../dev.evo.elasticmagic.doc/-dynamic-templates/-match-pattern/index.html">MatchPattern</a></div></span></div><div></div></div></div><div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="../../dev.evo.elasticmagic.query/-named/index.html">Named</a></div></span></div><div></div></div></div><div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="../../dev.evo.elasticmagic.query/-boosted-field/index.html">BoostedField</a></div></span></div><div></div></div></div><div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="../../dev.evo.elasticmagic.query/-stored-field/index.html">StoredField</a></div></span></div><div></div></div></div><div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="../../dev.evo.elasticmagic.query/-function-score/-score-mode/index.html">ScoreMode</a></div></span></div><div></div></div></div><div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="../../dev.evo.elasticmagic.query/-function-score/-boost-mode/index.html">BoostMode</a></div></span></div><div></div></div></div><div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="../../dev.evo.elasticmagic.query/-function-score/-field-value-factor/-modifier/index.html">Modifier</a></div></span></div><div></div></div></div><div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="../../dev.evo.elasticmagic.query/-minimum-should-match/index.html">MinimumShouldMatch</a></div></span></div><div></div></div></div><div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="../../dev.evo.elasticmagic.query/-multi-match/-type/index.html">Type</a></div></span></div><div></div></div></div><div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="../../dev.evo.elasticmagic.query/-nested/-score-mode/index.html">ScoreMode</a></div></span></div><div></div></div></div><div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="../../dev.evo.elasticmagic.query/-query-rescore/-score-mode/index.html">ScoreMode</a></div></span></div><div></div></div></div><div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="../../dev.evo.elasticmagic.query/-sort/-order/index.html">Order</a></div></span></div><div></div></div></div><div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="../../dev.evo.elasticmagic.query/-sort/-mode/index.html">Mode</a></div></span></div><div></div></div></div><div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="../../dev.evo.elasticmagic.query/-sort/-numeric-type/index.html">NumericType</a></div></span></div><div></div></div></div><div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="../../dev.evo.elasticmagic.query/-sort/-missing/index.html">Missing</a></div></span></div><div></div></div></div><div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="../../dev.evo.elasticmagic.query/-range/-relation/index.html">Relation</a></div></span></div><div></div></div></div></div></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="FUNCTION">
+        <h2 class="">Functions</h2>
+        <div class="table"><a data-name="-1013007442%2FFunctions%2F-1391351333" anchor-label="toValue" id="-1013007442%2FFunctions%2F-1391351333" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="to-value.html"><span>to</span><wbr><span><span>Value</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1013007442%2FFunctions%2F-1391351333"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="to-value.html"><span class="token function">toValue</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">T</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      <div class="footer">
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2025 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+      </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
