@@ -50,7 +50,7 @@ data class Explanation(
 data class SearchHit<S : BaseDocSource>(
     val index: String,
     val type: String,
-    override val id: String,
+    override val id: String? = null,
     override val routing: String? = null,
     override val version: Long? = null,
     override val seqNo: Long? = null,
