@@ -383,4 +383,48 @@ class ElasticsearchIndex(
             )
         )
     }
+
+    suspend fun refresh(
+        ignoreUnavailable: Boolean? = null,
+        params: Params? = null,
+    ): PersistResult {
+        val params = Params(
+            params,
+            "ignore_unavailable" to ignoreUnavailable,
+        )
+        return transport.request(
+            ApiRequest(
+                Method.POST,
+                "/${name}/_refresh",
+                params.toRequestParameters(),
+                serde = cluster.apiSerde,
+                processContent = PersistResult::invoke,
+            )
+        )
+    }
+
+    suspend fun forceMerge(
+        ignoreUnavailable: Boolean? = null,
+        maxNumSegments: Int? = null,
+        onlyExpungeDeletes: Boolean? = null,
+        primaryOnly: Boolean? = null,
+        params: Params? = null,
+    ): PersistResult {
+        val params = Params(
+            params,
+            "ignore_unavailable" to ignoreUnavailable,
+            "max_num_segments" to maxNumSegments,
+            "only_expunge_deletes" to onlyExpungeDeletes,
+            "primary_only" to primaryOnly,
+        )
+        return transport.request(
+            ApiRequest(
+                Method.POST,
+                "/${name}/_forcemerge",
+                params.toRequestParameters(),
+                serde = cluster.apiSerde,
+                processContent = PersistResult::invoke,
+            )
+        )
+    }
 }

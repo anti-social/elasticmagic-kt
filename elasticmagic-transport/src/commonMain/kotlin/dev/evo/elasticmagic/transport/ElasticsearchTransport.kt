@@ -131,6 +131,24 @@ class ApiRequest<ResultT>(
     override val processResponse: (ApiResponse) -> ResultT
 ) : Request<Serializer.ObjectCtx, ApiResponse, ResultT>() {
     companion object {
+        operator fun <ResultT> invoke(
+            method: Method,
+            path: String,
+            parameters: Parameters = emptyMap(),
+            body: Serializer.ObjectCtx? = null,
+            serde: Serde,
+            processContent: (Deserializer.ObjectCtx) -> ResultT,
+        ): ApiRequest<ResultT> {
+            return ApiRequest(
+                method,
+                path,
+                parameters = parameters,
+                body = body,
+                serde = serde,
+                processResponse = { resp -> processContent(resp.content) },
+            )
+        }
+
         operator fun invoke(
             method: Method,
             path: String,

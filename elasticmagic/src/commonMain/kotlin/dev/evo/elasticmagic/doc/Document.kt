@@ -388,8 +388,17 @@ abstract class FieldSet : FieldSetShortcuts(), Named {
     open class Field<V, T>(
         val name: String?,
         val type: FieldType<V, T>,
-        val params: Params,
+        val params: Params = Params(),
     ) {
+        companion object {
+            operator fun <V, T> invoke(
+                type: FieldType<V, T>,
+                params: Params = Params(),
+            ): Field<V, T> {
+                return Field(null, type, params)
+            }
+        }
+
         operator fun provideDelegate(
             thisRef: FieldSet, prop: KProperty<*>
         ): ReadOnlyProperty<FieldSet, BoundField<V, T>> {

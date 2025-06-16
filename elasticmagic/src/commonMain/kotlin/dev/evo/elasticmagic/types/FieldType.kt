@@ -50,6 +50,10 @@ interface FieldType<V, T> {
      */
     val termType: KClass<*>
 
+    fun params(): Params {
+        return Params()
+    }
+
     /**
      * Serializes field value to Elasticsearch.
      *
@@ -617,12 +621,7 @@ internal class SourceType<V : BaseDocSource>(
     }
 }
 
-/**
- * Serializes/deserializes [type] into list of values.
- * Might be used in aggregations.
- */
-class SimpleListType<V>(val type: SimpleFieldType<V>) : SimpleFieldType<List<V & Any>>() {
-    override val name get() = type.name
+abstract class AbstractListType<V>(val type: SimpleFieldType<V>) : SimpleFieldType<List<V & Any>>() {
     override val termType = type.termType
 
     override fun serialize(v: List<V & Any>): Any {
@@ -653,6 +652,14 @@ class SimpleListType<V>(val type: SimpleFieldType<V>) : SimpleFieldType<List<V &
             else -> listOf(type.deserialize(v))
         }
     }
+}
+
+/**
+ * Serializes/deserializes [type] into list of values.
+ * Might be used in aggregations.
+ */
+class SimpleListType<V>(type: SimpleFieldType<V>) : AbstractListType<V>(type) {
+    override val name get() = type.name
 }
 
 /**
