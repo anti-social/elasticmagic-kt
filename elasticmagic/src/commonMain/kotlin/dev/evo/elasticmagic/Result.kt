@@ -7,6 +7,11 @@ import dev.evo.elasticmagic.doc.BaseDocSource
 import dev.evo.elasticmagic.doc.BoundField
 import dev.evo.elasticmagic.query.FieldOperations
 import dev.evo.elasticmagic.serde.Deserializer
+import dev.evo.elasticmagic.serde.forEach
+import dev.evo.elasticmagic.serde.forEachArray
+import dev.evo.elasticmagic.serde.forEachObj
+import dev.evo.elasticmagic.serde.toList
+import dev.evo.elasticmagic.serde.toMap
 
 abstract class AggAwareResult {
     abstract val aggs: Map<String, AggregationResult>
@@ -45,7 +50,23 @@ data class Explanation(
     val value: Float,
     val description: String,
     val details: List<Explanation> = emptyList(),
-)
+) {
+    companion object {
+        operator fun invoke(rawHit: Deserializer.ObjectCtx): Explanation {
+            val description = rawHit.string("description")
+            val value = rawHit.float("value")
+            val explanation = rawHit.arrayOrNull("details")?.let {
+                buildList {
+                    it.forEachObj { rawExplanation ->
+                        add(Explanation(rawExplanation))
+                    }
+                }
+            }
+
+            return Explanation(value, description, explanation ?: emptyList())
+        }
+    }
+}
 
 data class SearchHit<S : BaseDocSource>(
     val index: String,
@@ -61,6 +82,48 @@ data class SearchHit<S : BaseDocSource>(
     val fields: Fields = Fields(emptyMap()),
     val explanation: Explanation? = null,
 ) : ActionMeta {
+    companion object {
+        operator fun <S: BaseDocSource> invoke(
+            rawHit: Deserializer.ObjectCtx,
+            docSourceFactory: (obj: Deserializer.ObjectCtx) -> S,
+        ): SearchHit<S> {
+            val source = rawHit.objOrNull("_source")?.let { rawSource ->
+                docSourceFactory(rawHit).apply {
+                    // TODO: Don't convert to a map
+                    fromSource(rawSource.toMap())
+                }
+            }
+            val fields = rawHit.objOrNull("fields").let { rawFields ->
+                val fields = buildMap {
+                    rawFields?.forEachArray { fieldName, fieldValues ->
+                        put(fieldName, fieldValues.toList().filterNotNull())
+                    }
+                }
+                SearchHit.Fields(fields)
+            }
+            val rawSort = rawHit.arrayOrNull("sort")
+            val sort = buildList {
+                rawSort?.forEach { sortValue ->
+                    add(sortValue)
+                }
+            }
+            return SearchHit(
+                index = rawHit.string("_index"),
+                type = rawHit.stringOrNull("_type") ?: "_doc",
+                id = rawHit.stringOrNull("_id"),
+                routing = rawHit.stringOrNull("_routing"),
+                version = rawHit.longOrNull("_version"),
+                seqNo = rawHit.longOrNull("_seq_no"),
+                primaryTerm = rawHit.longOrNull("_primary_term"),
+                score = rawHit.floatOrNull("_score"),
+                sort = sort.ifEmpty { null },
+                source = source,
+                fields = fields,
+                explanation = rawHit.objOrNull("_explanation")?.let(Explanation::invoke),
+            )
+        }
+    }
+
     class Fields(private val fields: Map<String, List<Any>>) {
         /**
          * Checks if the search hit contains the given field name.

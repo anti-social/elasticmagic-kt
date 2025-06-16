@@ -812,6 +812,10 @@ abstract class BaseSearchQuery<S : BaseDocSource, T : BaseSearchQuery<S, T>>(
 
 /**
  * An asynchronous version of search query.
+ *
+ * @param docSourceFactory a factory that produce a document source. It needs
+ * [Deserializer.ObjectCtx] to be able to create different instances based
+ * on a hit.
  */
 open class SearchQuery<S : BaseDocSource>(
     docSourceFactory: (obj: Deserializer.ObjectCtx) -> S,

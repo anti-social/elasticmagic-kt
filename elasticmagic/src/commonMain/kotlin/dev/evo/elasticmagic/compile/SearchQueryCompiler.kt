@@ -7,7 +7,6 @@ import dev.evo.elasticmagic.BulkScrollRetries
 import dev.evo.elasticmagic.CountResult
 import dev.evo.elasticmagic.DeleteByQueryPartialResult
 import dev.evo.elasticmagic.DeleteByQueryResult
-import dev.evo.elasticmagic.Explanation
 import dev.evo.elasticmagic.MultiSearchQueryResult
 import dev.evo.elasticmagic.Params
 import dev.evo.elasticmagic.PreparedSearchQuery
@@ -29,11 +28,7 @@ import dev.evo.elasticmagic.serde.Serde
 import dev.evo.elasticmagic.serde.Serializer
 import dev.evo.elasticmagic.serde.Serializer.ArrayCtx
 import dev.evo.elasticmagic.serde.Serializer.ObjectCtx
-import dev.evo.elasticmagic.serde.forEach
-import dev.evo.elasticmagic.serde.forEachArray
 import dev.evo.elasticmagic.serde.forEachObj
-import dev.evo.elasticmagic.serde.toList
-import dev.evo.elasticmagic.serde.toMap
 import dev.evo.elasticmagic.toRequestParameters
 import dev.evo.elasticmagic.transport.ApiRequest
 import dev.evo.elasticmagic.transport.BulkRequest
@@ -253,7 +248,7 @@ open class SearchQueryCompiler(
         val rawHits = rawHitsData.arrayOrNull("hits")
         val hits = buildList {
             rawHits?.forEachObj { rawHit ->
-                add(processSearchHit(rawHit, preparedSearchQuery))
+                add(SearchHit(rawHit, preparedSearchQuery.docSourceFactory))
             }
         }
 
@@ -277,61 +272,6 @@ open class SearchQueryCompiler(
             hits = hits,
             aggs = aggResults,
         )
-    }
-
-    private fun <S : BaseDocSource> processSearchHit(
-        rawHit: Deserializer.ObjectCtx,
-        preparedSearchQuery: SearchQuery.Search<S>,
-    ): SearchHit<S> {
-        val source = rawHit.objOrNull("_source")?.let { rawSource ->
-            preparedSearchQuery.docSourceFactory(rawHit).apply {
-                // TODO: Don't convert to a map
-                fromSource(rawSource.toMap())
-            }
-        }
-        val fields = rawHit.objOrNull("fields").let { rawFields ->
-            val fields = buildMap {
-                rawFields?.forEachArray { fieldName, fieldValues ->
-                    put(fieldName, fieldValues.toList().filterNotNull())
-                }
-            }
-            SearchHit.Fields(fields)
-        }
-        val rawSort = rawHit.arrayOrNull("sort")
-        val sort = buildList {
-            rawSort?.forEach { sortValue ->
-                add(sortValue)
-            }
-        }
-        return SearchHit(
-            index = rawHit.string("_index"),
-            type = rawHit.stringOrNull("_type") ?: "_doc",
-            id = rawHit.stringOrNull("_id"),
-            routing = rawHit.stringOrNull("_routing"),
-            version = rawHit.longOrNull("_version"),
-            seqNo = rawHit.longOrNull("_seq_no"),
-            primaryTerm = rawHit.longOrNull("_primary_term"),
-            score = rawHit.floatOrNull("_score"),
-            sort = sort.ifEmpty { null },
-            source = source,
-            fields = fields,
-            explanation = rawHit.objOrNull("_explanation")?.let(::parseExplanation),
-        )
-    }
-
-    private fun parseExplanation(rawHit: Deserializer.ObjectCtx): Explanation {
-        val description = rawHit.string("description")
-        val value = rawHit.float("value")
-        val explanation =
-            rawHit.arrayOrNull("details")?.let {
-                buildList {
-                    it.forEachObj { rawExplanation ->
-                        add(parseExplanation(rawExplanation))
-                    }
-                }
-            }
-
-        return Explanation(value, description, explanation ?: emptyList())
     }
 }
 

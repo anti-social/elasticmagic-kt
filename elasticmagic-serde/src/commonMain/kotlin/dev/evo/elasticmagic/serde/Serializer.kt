@@ -59,6 +59,15 @@ interface Serializer {
             }
         }
         fun array(name: String, block: ArrayCtx.() -> Unit)
+        fun arrayIfNotNull(name: String, values: List<Any?>?) {
+            if (values != null) {
+                array(name) {
+                    for (v in values) {
+                        value(v)
+                    }
+                }
+            }
+        }
         fun obj(name: String, block: ObjectCtx.() -> Unit)
     }
 

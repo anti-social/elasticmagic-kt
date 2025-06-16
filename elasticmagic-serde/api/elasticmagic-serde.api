@@ -203,6 +203,7 @@ public abstract interface class dev/evo/elasticmagic/serde/Serializer$Ctx {
 
 public abstract interface class dev/evo/elasticmagic/serde/Serializer$ObjectCtx : dev/evo/elasticmagic/serde/Serializer$Ctx {
 	public abstract fun array (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
+	public abstract fun arrayIfNotNull (Ljava/lang/String;Ljava/util/List;)V
 	public abstract fun field (Ljava/lang/String;Ljava/lang/Boolean;)V
 	public abstract fun field (Ljava/lang/String;Ljava/lang/Double;)V
 	public abstract fun field (Ljava/lang/String;Ljava/lang/Float;)V
@@ -221,6 +222,7 @@ public abstract interface class dev/evo/elasticmagic/serde/Serializer$ObjectCtx 
 }
 
 public final class dev/evo/elasticmagic/serde/Serializer$ObjectCtx$DefaultImpls {
+	public static fun arrayIfNotNull (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ljava/lang/String;Ljava/util/List;)V
 	public static fun field (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ljava/lang/String;Ljava/lang/Object;)V
 	public static fun fieldIfNotNull (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ljava/lang/String;Ljava/lang/Boolean;)V
 	public static fun fieldIfNotNull (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ljava/lang/String;Ljava/lang/Double;)V
@@ -386,6 +388,7 @@ public abstract class dev/evo/elasticmagic/serde/StdSerializer$ArrayCtx : dev/ev
 public abstract class dev/evo/elasticmagic/serde/StdSerializer$ObjectCtx : dev/evo/elasticmagic/serde/Serializer$ObjectCtx {
 	public fun <init> (Ldev/evo/elasticmagic/serde/StdSerializer;Ljava/util/Map;)V
 	public fun array (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
+	public fun arrayIfNotNull (Ljava/lang/String;Ljava/util/List;)V
 	public final fun build ()Ljava/util/Map;
 	public fun field (Ljava/lang/String;Ljava/lang/Boolean;)V
 	public fun field (Ljava/lang/String;Ljava/lang/Double;)V

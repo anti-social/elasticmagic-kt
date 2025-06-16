@@ -9,6 +9,8 @@ import dev.evo.elasticmagic.aggs.NestedAgg
 import dev.evo.elasticmagic.aggs.SingleBucketAggResult
 import dev.evo.elasticmagic.aggs.TermsAgg
 import dev.evo.elasticmagic.aggs.TermsAggResult
+import dev.evo.elasticmagic.aggs.TopHitsAgg
+import dev.evo.elasticmagic.aggs.TopHitsAggResult
 import dev.evo.elasticmagic.bulk.DocSourceAndMeta
 import dev.evo.elasticmagic.bulk.withActionMeta
 import dev.evo.elasticmagic.doc.BaseDocSource
@@ -555,6 +557,48 @@ class SearchQueryTests : ElasticsearchTestBase() {
             statusesAgg.buckets[0].docCount shouldBe 3
             statusesAgg.buckets[1].key shouldBe OrderStatus.ACCEPTED
             statusesAgg.buckets[1].docCount shouldBe 1
+        }
+    }
+
+    @Test
+    fun topHitsAgg() = runTestWithSerdes {
+        withFixtures(OrderDoc, listOf(
+            karlssonsJam, karlssonsBestDonuts, karlssonsJustDonuts, littleBrotherDogStuff
+        )) {
+            val searchResult = SearchQuery(::OrderDocSource)
+                .aggs(
+                    "statuses" to TermsAgg(
+                        OrderDoc.status,
+                        aggs = mapOf(
+                            "top_orders" to TopHitsAgg(::OrderDocSource)
+                        )
+                    ),
+                )
+                .size(0)
+                .search(index)
+
+            val statusesAgg = searchResult.agg<TermsAggResult<OrderStatus>>("statuses")
+            statusesAgg.buckets.size shouldBe 2
+            statusesAgg.buckets[0].key shouldBe OrderStatus.NEW
+            statusesAgg.buckets[0].docCount shouldBe 3
+            statusesAgg.buckets[0].agg<TopHitsAggResult<OrderDocSource>>("top_orders").let { topOrders ->
+                topOrders.totalHits shouldBe 3
+                topOrders.maxScore shouldBe 1.0F
+                topOrders.hits[0].id shouldBe "101"
+                topOrders.hits[0].source shouldBe karlssonsJam.doc
+                topOrders.hits[1].id shouldBe "102"
+                topOrders.hits[1].source shouldBe karlssonsBestDonuts.doc
+                topOrders.hits[2].id shouldBe "105"
+                topOrders.hits[2].source shouldBe littleBrotherDogStuff.doc
+            }
+            statusesAgg.buckets[1].key shouldBe OrderStatus.ACCEPTED
+            statusesAgg.buckets[1].docCount shouldBe 1
+            statusesAgg.buckets[1].agg<TopHitsAggResult<OrderDocSource>>("top_orders").let { topOrders ->
+                topOrders.totalHits shouldBe 1
+                topOrders.maxScore shouldBe 1.0F
+                topOrders.hits[0].id shouldBe "103"
+                topOrders.hits[0].source shouldBe karlssonsJustDonuts.doc
+            }
         }
     }
 
