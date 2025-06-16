@@ -58,4 +58,10 @@ abstract class BaseExpressionTest : BaseTest() {
         val description by text()
         val join by join(relations = mapOf("year" to listOf("movie")))
     }
+
+    protected class BaseMovieDocSource : DocSource() {
+        var status by MovieDoc.status.required()
+        var name by MovieDoc.name.required()
+    }
+
 }

@@ -464,6 +464,27 @@ class DynDocSource private constructor(
         }
     }
 
+    override fun equals(other: Any?): Boolean {
+        if (other == null) {
+            return false
+        }
+        if (other !is DynDocSource) {
+            return false
+        }
+
+        return prefix == other.prefix && source == other.source
+    }
+
+    override fun hashCode(): Int {
+        var h = this::class.hashCode()
+        h = 37 * h + prefix.hashCode()
+        for ((name, value) in source) {
+            h = 37 * h + name.hashCode()
+            h = 37 * h + value.hashCode()
+        }
+        return h
+    }
+
     override fun toSource(): Map<String, Any?> {
         val rawSource = mutableMapOf<String, Any?>()
         for ((fieldName, sourceValue) in source) {

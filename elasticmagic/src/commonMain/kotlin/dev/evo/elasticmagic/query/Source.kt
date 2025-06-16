@@ -10,6 +10,18 @@ sealed class Source : ObjExpression {
         val includes: List<FieldOperations<*>>,
         val excludes: List<FieldOperations<*>>,
     ) : Source() {
+        companion object {
+            fun includes(includes: List<FieldOperations<*>>) = Filter(
+                includes = includes,
+                excludes = emptyList(),
+            )
+
+            fun excludes(excludes: List<FieldOperations<*>>) = Filter(
+                includes = emptyList(),
+                excludes = excludes,
+            )
+        }
+
         override fun clone() = copy()
 
         override fun accept(ctx: Serializer.ObjectCtx, compiler: BaseSearchQueryCompiler) {
