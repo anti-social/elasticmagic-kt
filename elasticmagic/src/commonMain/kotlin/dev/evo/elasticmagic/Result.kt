@@ -336,3 +336,19 @@ data class BulkError(
 )
 
 data class PingResult(val statusCode: Int, val responseTimeMs: Long)
+
+data class PersistResult(val shards: Shards) {
+    companion object {
+        operator fun invoke(rawResp: Deserializer.ObjectCtx): PersistResult {
+            val rawShards = rawResp.obj("_shards")
+            val shards = Shards(
+                failed = rawShards.int("failed"),
+                successful = rawShards.int("successful"),
+                total = rawShards.int("total"),
+            )
+            return PersistResult(shards)
+        }
+    }
+}
+
+data class Shards(val failed: Int, val successful: Int, val total: Int)

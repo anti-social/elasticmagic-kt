@@ -16,3 +16,5 @@ val elasticAuth = when (val elasticPassword = getenv("ELASTIC_PASSWORD")) {
         elasticPassword
     )
 }
+
+val elasticDebug = getenv("ELASTIC_DEBUG") == "1"

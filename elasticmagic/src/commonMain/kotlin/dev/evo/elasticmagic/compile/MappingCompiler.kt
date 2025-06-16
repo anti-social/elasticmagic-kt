@@ -18,6 +18,7 @@ import dev.evo.elasticmagic.query.ObjExpression
 import dev.evo.elasticmagic.serde.Serializer
 import dev.evo.elasticmagic.serde.Serializer.ArrayCtx
 import dev.evo.elasticmagic.serde.Serializer.ObjectCtx
+import dev.evo.elasticmagic.types.FieldType
 import dev.evo.elasticmagic.types.AnyFieldType
 import dev.evo.elasticmagic.types.ObjectType
 
@@ -175,8 +176,13 @@ open class MappingCompiler(
         }
     }
 
+    private fun visit(ctx: ObjectCtx, fieldType: FieldType<*, *>) {
+        ctx.field("type", fieldType.name)
+        visit(ctx, fieldType.params())
+    }
+
     private fun visit(ctx: ObjectCtx, field: FieldSet.Field<*, *>) {
-        ctx.field("type", field.type.name)
+        visit(ctx, field.type)
         visit(ctx, field.params)
     }
 
@@ -207,7 +213,7 @@ open class MappingCompiler(
     }
 
     private fun visit(ctx: ObjectCtx, field: MappingField<*>) {
-        ctx.field("type", field.getFieldType().name)
+        visit(ctx, field.getFieldType())
         visit(ctx, field.getMappingParams())
 
         when (field) {

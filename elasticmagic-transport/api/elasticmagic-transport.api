@@ -18,7 +18,9 @@ public final class dev/evo/elasticmagic/transport/ApiRequest : dev/evo/elasticma
 
 public final class dev/evo/elasticmagic/transport/ApiRequest$Companion {
 	public final fun invoke (Ldev/evo/elasticmagic/transport/Method;Ljava/lang/String;Ljava/util/Map;Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/serde/Serde;)Ldev/evo/elasticmagic/transport/ApiRequest;
+	public final fun invoke (Ldev/evo/elasticmagic/transport/Method;Ljava/lang/String;Ljava/util/Map;Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/serde/Serde;Lkotlin/jvm/functions/Function1;)Ldev/evo/elasticmagic/transport/ApiRequest;
 	public static synthetic fun invoke$default (Ldev/evo/elasticmagic/transport/ApiRequest$Companion;Ldev/evo/elasticmagic/transport/Method;Ljava/lang/String;Ljava/util/Map;Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/serde/Serde;ILjava/lang/Object;)Ldev/evo/elasticmagic/transport/ApiRequest;
+	public static synthetic fun invoke$default (Ldev/evo/elasticmagic/transport/ApiRequest$Companion;Ldev/evo/elasticmagic/transport/Method;Ljava/lang/String;Ljava/util/Map;Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/serde/Serde;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Ldev/evo/elasticmagic/transport/ApiRequest;
 }
 
 public final class dev/evo/elasticmagic/transport/ApiResponse : dev/evo/elasticmagic/transport/Response {

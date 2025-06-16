@@ -164,6 +164,7 @@ public final class dev/evo/elasticmagic/serde/kotlinx/JsonSerializer$Companion :
 
 public final class dev/evo/elasticmagic/serde/kotlinx/JsonSerializer$ObjectCtx : dev/evo/elasticmagic/serde/Serializer$ObjectCtx {
 	public fun <init> (Ldev/evo/elasticmagic/serde/kotlinx/JsonSerializer;)V
+	public fun array (Ljava/lang/String;Ljava/util/List;)V
 	public fun array (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
 	public fun arrayIfNotNull (Ljava/lang/String;Ljava/util/List;)V
 	public final fun build ()Lkotlinx/serialization/json/JsonObject;

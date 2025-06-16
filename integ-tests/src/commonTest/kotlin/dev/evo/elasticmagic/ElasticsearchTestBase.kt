@@ -20,7 +20,7 @@ import kotlinx.atomicfu.atomic
 abstract class ElasticsearchTestBase : TestBase() {
     abstract val indexName: String
 
-    protected val debug = atomic(false)
+    private val debug = atomic(elasticDebug)
     // TODO: Also test against a transport with an enabled gzipRequests setting
     protected val transport = ElasticsearchKtorTransport(
         elasticUrl,
@@ -31,7 +31,7 @@ abstract class ElasticsearchTestBase : TestBase() {
         }
 
         trackers = listOf({
-            @Suppress("ForbiddenMethodCall")
+            @Suppress("ForbiddenMethodCall")  // It's about println
             object : Tracker {
                 override fun requiresTextContent(request: Request<*, *, *>) = true
 
@@ -73,10 +73,12 @@ abstract class ElasticsearchTestBase : TestBase() {
 
     protected fun runTestWithSerdes(
         serdes: List<Serde>,
-        debug: Boolean = false,
+        debug: Boolean? = null,
         block: suspend TestScope.() -> Unit
     ) {
-        this.debug.value = debug
+        if (debug != null) {
+            this.debug.value = debug
+        }
 
         for (apiSerde in serdes) {
             val bulkSerde = if (apiSerde is Serde.OneLineJson) {
@@ -92,7 +94,7 @@ abstract class ElasticsearchTestBase : TestBase() {
         }
     }
 
-    protected fun runTestWithSerdes(debug: Boolean = false, block: suspend TestScope.() -> Unit) {
+    protected fun runTestWithSerdes(debug: Boolean? = null, block: suspend TestScope.() -> Unit) {
         runTestWithSerdes(apiSerdes, debug = debug, block)
     }
 
@@ -118,7 +120,7 @@ abstract class ElasticsearchTestBase : TestBase() {
             block()
         }
 
-        suspend fun ensureIndex(vararg mappings: Document) {
+        suspend fun ensureIndex(vararg mappings: Document, isKnn: Boolean = false) {
             if (!cluster.indexExists(index.name)) {
                 cluster.createIndex(
                     index.name,
@@ -126,25 +128,28 @@ abstract class ElasticsearchTestBase : TestBase() {
                     settings = Params(
                         "index.number_of_shards" to 1,
                         "index.number_of_replicas" to 0,
+                        "index.knn" to if (isKnn) true else null,
                     ),
                 )
             } else {
-                cluster.updateMapping(index.name, mapping = OrderDoc)
+                cluster.updateMapping(index.name, mapping = mergeDocuments(*mappings))
             }
         }
 
         suspend fun TestScope.withFixtures(
             mapping: Document,
             fixtures: List<DocSourceAndMeta<*>>,
+            forcemerge: Boolean = false,
             cleanup: Boolean = true,
             block: suspend () -> Unit
         ) {
-            withFixtures(listOf(mapping), fixtures, cleanup, block)
+            withFixtures(listOf(mapping), fixtures, forcemerge, cleanup, block)
         }
 
         suspend fun TestScope.withFixtures(
             mappings: List<Document>,
             fixtures: List<DocSourceAndMeta<*>>,
+            forcemerge: Boolean = false,
             cleanup: Boolean = true,
             block: suspend () -> Unit
         ) {
@@ -157,6 +162,9 @@ abstract class ElasticsearchTestBase : TestBase() {
                 )
             }
             val bulkResult = index.bulk(indexActions, refresh = Refresh.TRUE)
+            if (forcemerge) {
+                index.forceMerge()
+            }
             val deleteActions = mutableListOf<Action<*>>()
             val failedItems = mutableListOf<BulkError>()
             for (bulkItem in bulkResult.items) {
