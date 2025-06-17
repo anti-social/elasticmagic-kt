@@ -3,6 +3,7 @@ package dev.evo.elasticmagic.aggs
 import dev.evo.elasticmagic.Params
 import dev.evo.elasticmagic.ToValue
 import dev.evo.elasticmagic.compile.BaseSearchQueryCompiler
+import dev.evo.elasticmagic.doc.BaseDocSource
 import dev.evo.elasticmagic.query.FieldOperations
 import dev.evo.elasticmagic.query.QueryExpression
 import dev.evo.elasticmagic.serde.Deserializer
@@ -147,7 +148,10 @@ data class TermsAgg<T>(
         super.visit(ctx, compiler)
     }
 
-    override fun processResult(obj: Deserializer.ObjectCtx): TermsAggResult<T> {
+    override fun processResult(
+        obj: Deserializer.ObjectCtx,
+        docSourceFactory: (Deserializer.ObjectCtx) -> BaseDocSource,
+    ): TermsAggResult<T> {
         val rawBuckets = obj.array("buckets")
         val buckets = buildList<TermBucket<T>> {
             rawBuckets.forEachObj { rawBucket ->
@@ -156,7 +160,7 @@ data class TermsAgg<T>(
                         key = value.deserializeTerm(rawBucket.any("key")),
                         docCount = rawBucket.long("doc_count"),
                         docCountErrorUpperBound = rawBucket.longOrNull("doc_count_error_upper_bound"),
-                        aggs = processSubAggs(rawBucket)
+                        aggs = processSubAggs(rawBucket, docSourceFactory)
                     )
                 )
             }
@@ -243,7 +247,10 @@ data class SignificantTermsAgg<T>(
         super.visit(ctx, compiler)
     }
 
-    override fun processResult(obj: Deserializer.ObjectCtx): SignificantTermsAggResult<T> {
+    override fun processResult(
+        obj: Deserializer.ObjectCtx,
+        docSourceFactory: (Deserializer.ObjectCtx) -> BaseDocSource,
+    ): SignificantTermsAggResult<T> {
         val rawBuckets = obj.array("buckets")
         val buckets = buildList<SignificantTermBucket<T>> {
             rawBuckets.forEachObj { rawBucket ->
@@ -254,7 +261,7 @@ data class SignificantTermsAgg<T>(
                         bgCount = rawBucket.long("bg_count"),
                         score = rawBucket.float("score"),
                         docCountErrorUpperBound = rawBucket.longOrNull("doc_count_error_upper_bound"),
-                        aggs = processSubAggs(rawBucket)
+                        aggs = processSubAggs(rawBucket, docSourceFactory)
                     )
                 )
             }

@@ -982,11 +982,13 @@ public final class dev/evo/elasticmagic/aggs/AggValue$ValueScript : dev/evo/elas
 
 public abstract interface class dev/evo/elasticmagic/aggs/Aggregation : dev/evo/elasticmagic/query/NamedExpression {
 	public abstract fun processResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;)Ldev/evo/elasticmagic/aggs/AggregationResult;
+	public abstract fun processResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;Lkotlin/jvm/functions/Function1;)Ldev/evo/elasticmagic/aggs/AggregationResult;
 }
 
 public final class dev/evo/elasticmagic/aggs/Aggregation$DefaultImpls {
 	public static fun accept (Ldev/evo/elasticmagic/aggs/Aggregation;Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 	public static fun children (Ldev/evo/elasticmagic/aggs/Aggregation;)Ljava/util/Iterator;
+	public static fun processResult (Ldev/evo/elasticmagic/aggs/Aggregation;Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;)Ldev/evo/elasticmagic/aggs/AggregationResult;
 	public static fun reduce (Ldev/evo/elasticmagic/aggs/Aggregation;)Ldev/evo/elasticmagic/query/Expression;
 	public static fun rewrite (Ldev/evo/elasticmagic/aggs/Aggregation;Ldev/evo/elasticmagic/query/QueryExpressionNode;)Ldev/evo/elasticmagic/query/Expression;
 }
@@ -1031,8 +1033,8 @@ public abstract class dev/evo/elasticmagic/aggs/BaseHistogramAgg : dev/evo/elast
 	public abstract fun getOrder ()Ljava/util/List;
 	public abstract fun getParams ()Ljava/util/Map;
 	public abstract fun getValue ()Ldev/evo/elasticmagic/aggs/AggValue;
-	protected abstract fun processBucketResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;)Ljava/lang/Object;
-	public fun processResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;)Ldev/evo/elasticmagic/aggs/AggregationResult;
+	protected abstract fun processBucketResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;Lkotlin/jvm/functions/Function1;)Ljava/lang/Object;
+	public fun processResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;Lkotlin/jvm/functions/Function1;)Ldev/evo/elasticmagic/aggs/AggregationResult;
 	public fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 }
 
@@ -1044,9 +1046,8 @@ public abstract class dev/evo/elasticmagic/aggs/BaseRangeAgg : dev/evo/elasticma
 	public abstract fun getRanges ()Ljava/util/List;
 	public abstract fun getValue ()Ldev/evo/elasticmagic/aggs/AggValue;
 	protected abstract fun makeRangeResult (Ljava/util/List;)Ldev/evo/elasticmagic/aggs/AggregationResult;
-	protected abstract fun processBucketResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;Ljava/lang/String;)Ljava/lang/Object;
-	public static synthetic fun processBucketResult$default (Ldev/evo/elasticmagic/aggs/BaseRangeAgg;Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;Ljava/lang/String;ILjava/lang/Object;)Ljava/lang/Object;
-	public fun processResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;)Ldev/evo/elasticmagic/aggs/AggregationResult;
+	protected abstract fun processBucketResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;Ljava/lang/String;Lkotlin/jvm/functions/Function1;)Ljava/lang/Object;
+	public fun processResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;Lkotlin/jvm/functions/Function1;)Ldev/evo/elasticmagic/aggs/AggregationResult;
 	public fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 }
 
@@ -1130,7 +1131,8 @@ public abstract class dev/evo/elasticmagic/aggs/BucketAggregation : dev/evo/elas
 	public fun accept (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 	public fun children ()Ljava/util/Iterator;
 	public abstract fun getAggs ()Ljava/util/Map;
-	protected final fun processSubAggs (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;)Ljava/util/Map;
+	public fun processResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;)Ldev/evo/elasticmagic/aggs/AggregationResult;
+	protected final fun processSubAggs (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;Lkotlin/jvm/functions/Function1;)Ljava/util/Map;
 	public fun reduce ()Ldev/evo/elasticmagic/query/Expression;
 	public fun rewrite (Ldev/evo/elasticmagic/query/QueryExpressionNode;)Ldev/evo/elasticmagic/query/Expression;
 }
@@ -1223,7 +1225,7 @@ public final class dev/evo/elasticmagic/aggs/DateHistogramAgg : dev/evo/elasticm
 	public fun getParams ()Ljava/util/Map;
 	public fun getValue ()Ldev/evo/elasticmagic/aggs/AggValue;
 	public fun hashCode ()I
-	public synthetic fun processBucketResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;)Ljava/lang/Object;
+	public synthetic fun processBucketResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;Lkotlin/jvm/functions/Function1;)Ljava/lang/Object;
 	public fun toString ()Ljava/lang/String;
 	public fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 }
@@ -1340,7 +1342,7 @@ public final class dev/evo/elasticmagic/aggs/DateRangeAgg : dev/evo/elasticmagic
 	public fun getValue ()Ldev/evo/elasticmagic/aggs/AggValue;
 	public fun hashCode ()I
 	public synthetic fun makeRangeResult (Ljava/util/List;)Ldev/evo/elasticmagic/aggs/AggregationResult;
-	public synthetic fun processBucketResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;Ljava/lang/String;)Ljava/lang/Object;
+	public synthetic fun processBucketResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;Ljava/lang/String;Lkotlin/jvm/functions/Function1;)Ljava/lang/Object;
 	public fun toString ()Ljava/lang/String;
 }
 
@@ -1509,8 +1511,8 @@ public final class dev/evo/elasticmagic/aggs/FiltersAgg : dev/evo/elasticmagic/a
 	public fun getName ()Ljava/lang/String;
 	public final fun getOtherBucketKey ()Ljava/lang/String;
 	public fun hashCode ()I
-	public synthetic fun processResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;)Ldev/evo/elasticmagic/aggs/AggregationResult;
-	public fun processResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;)Ldev/evo/elasticmagic/aggs/FiltersAggResult;
+	public synthetic fun processResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;Lkotlin/jvm/functions/Function1;)Ldev/evo/elasticmagic/aggs/AggregationResult;
+	public fun processResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;Lkotlin/jvm/functions/Function1;)Ldev/evo/elasticmagic/aggs/FiltersAggResult;
 	public fun toString ()Ljava/lang/String;
 	public fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 }
@@ -1663,7 +1665,7 @@ public final class dev/evo/elasticmagic/aggs/HistogramAgg : dev/evo/elasticmagic
 	public fun getParams ()Ljava/util/Map;
 	public fun getValue ()Ldev/evo/elasticmagic/aggs/AggValue;
 	public fun hashCode ()I
-	public synthetic fun processBucketResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;)Ljava/lang/Object;
+	public synthetic fun processBucketResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;Lkotlin/jvm/functions/Function1;)Ljava/lang/Object;
 	public fun toString ()Ljava/lang/String;
 	public fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 }
@@ -1787,6 +1789,7 @@ public abstract class dev/evo/elasticmagic/aggs/MetricAggregation : dev/evo/elas
 	public synthetic fun accept (Ldev/evo/elasticmagic/serde/Serializer$Ctx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 	public fun accept (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 	public fun children ()Ljava/util/Iterator;
+	public fun processResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;)Ldev/evo/elasticmagic/aggs/AggregationResult;
 	public fun reduce ()Ldev/evo/elasticmagic/query/Expression;
 	public fun rewrite (Ldev/evo/elasticmagic/query/QueryExpressionNode;)Ldev/evo/elasticmagic/query/Expression;
 }
@@ -1833,7 +1836,7 @@ public abstract class dev/evo/elasticmagic/aggs/NumericValueAgg : dev/evo/elasti
 	public fun <init> (Lkotlin/jvm/functions/Function1;)V
 	public abstract fun getMissing ()Ljava/lang/Object;
 	public abstract fun getValue ()Ldev/evo/elasticmagic/aggs/AggValue;
-	public fun processResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;)Ldev/evo/elasticmagic/aggs/AggregationResult;
+	public fun processResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;Lkotlin/jvm/functions/Function1;)Ldev/evo/elasticmagic/aggs/AggregationResult;
 	public fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 }
 
@@ -1887,8 +1890,8 @@ public final class dev/evo/elasticmagic/aggs/PercentilesAgg : dev/evo/elasticmag
 	public fun getName ()Ljava/lang/String;
 	public final fun getPercents ()Ljava/util/List;
 	public fun hashCode ()I
-	public synthetic fun processResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;)Ldev/evo/elasticmagic/aggs/AggregationResult;
-	public fun processResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;)Ldev/evo/elasticmagic/aggs/PercentileAggResult;
+	public synthetic fun processResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;Lkotlin/jvm/functions/Function1;)Ldev/evo/elasticmagic/aggs/AggregationResult;
+	public fun processResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;Lkotlin/jvm/functions/Function1;)Ldev/evo/elasticmagic/aggs/PercentileAggResult;
 	public fun toString ()Ljava/lang/String;
 	public fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 }
@@ -1920,7 +1923,7 @@ public final class dev/evo/elasticmagic/aggs/RangeAgg : dev/evo/elasticmagic/agg
 	public fun getValue ()Ldev/evo/elasticmagic/aggs/AggValue;
 	public fun hashCode ()I
 	public synthetic fun makeRangeResult (Ljava/util/List;)Ldev/evo/elasticmagic/aggs/AggregationResult;
-	public synthetic fun processBucketResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;Ljava/lang/String;)Ljava/lang/Object;
+	public synthetic fun processBucketResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;Ljava/lang/String;Lkotlin/jvm/functions/Function1;)Ljava/lang/Object;
 	public fun toString ()Ljava/lang/String;
 }
 
@@ -1988,8 +1991,8 @@ public final class dev/evo/elasticmagic/aggs/ScriptedMetricAgg : dev/evo/elastic
 	public final fun getReduceScript ()Ldev/evo/elasticmagic/query/Script;
 	public final fun getResultProcessor ()Lkotlin/jvm/functions/Function1;
 	public fun hashCode ()I
-	public synthetic fun processResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;)Ldev/evo/elasticmagic/aggs/AggregationResult;
-	public fun processResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;)Ldev/evo/elasticmagic/aggs/ScriptedMetricAggResult;
+	public synthetic fun processResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;Lkotlin/jvm/functions/Function1;)Ldev/evo/elasticmagic/aggs/AggregationResult;
+	public fun processResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;Lkotlin/jvm/functions/Function1;)Ldev/evo/elasticmagic/aggs/ScriptedMetricAggResult;
 	public fun toString ()Ljava/lang/String;
 	public fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 }
@@ -2072,8 +2075,8 @@ public final class dev/evo/elasticmagic/aggs/SignificantTermsAgg : dev/evo/elast
 	public fun getSize ()Ljava/lang/Integer;
 	public fun getValue ()Ldev/evo/elasticmagic/aggs/AggValue;
 	public fun hashCode ()I
-	public synthetic fun processResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;)Ldev/evo/elasticmagic/aggs/AggregationResult;
-	public fun processResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;)Ldev/evo/elasticmagic/aggs/SignificantTermsAggResult;
+	public synthetic fun processResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;Lkotlin/jvm/functions/Function1;)Ldev/evo/elasticmagic/aggs/AggregationResult;
+	public fun processResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;Lkotlin/jvm/functions/Function1;)Ldev/evo/elasticmagic/aggs/SignificantTermsAggResult;
 	public fun toString ()Ljava/lang/String;
 	public fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 }
@@ -2108,8 +2111,8 @@ public final class dev/evo/elasticmagic/aggs/SingleBucketAggResult : dev/evo/ela
 
 public abstract class dev/evo/elasticmagic/aggs/SingleBucketAggregation : dev/evo/elasticmagic/aggs/BucketAggregation {
 	public fun <init> ()V
-	public synthetic fun processResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;)Ldev/evo/elasticmagic/aggs/AggregationResult;
-	public fun processResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;)Ldev/evo/elasticmagic/aggs/SingleBucketAggResult;
+	public synthetic fun processResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;Lkotlin/jvm/functions/Function1;)Ldev/evo/elasticmagic/aggs/AggregationResult;
+	public fun processResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;Lkotlin/jvm/functions/Function1;)Ldev/evo/elasticmagic/aggs/SingleBucketAggResult;
 }
 
 public abstract class dev/evo/elasticmagic/aggs/SingleValueMetricAggResult : dev/evo/elasticmagic/aggs/AggregationResult {
@@ -2251,8 +2254,8 @@ public final class dev/evo/elasticmagic/aggs/TermsAgg : dev/evo/elasticmagic/agg
 	public fun getSize ()Ljava/lang/Integer;
 	public fun getValue ()Ldev/evo/elasticmagic/aggs/AggValue;
 	public fun hashCode ()I
-	public synthetic fun processResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;)Ldev/evo/elasticmagic/aggs/AggregationResult;
-	public fun processResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;)Ldev/evo/elasticmagic/aggs/TermsAggResult;
+	public synthetic fun processResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;Lkotlin/jvm/functions/Function1;)Ldev/evo/elasticmagic/aggs/AggregationResult;
+	public fun processResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;Lkotlin/jvm/functions/Function1;)Ldev/evo/elasticmagic/aggs/TermsAggResult;
 	public fun toString ()Ljava/lang/String;
 	public fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 }
@@ -2294,8 +2297,8 @@ public final class dev/evo/elasticmagic/aggs/TopHitsAgg : dev/evo/elasticmagic/a
 	public final fun getSort ()Ljava/util/List;
 	public final fun getSource ()Ldev/evo/elasticmagic/query/Source;
 	public fun hashCode ()I
-	public synthetic fun processResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;)Ldev/evo/elasticmagic/aggs/AggregationResult;
-	public fun processResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;)Ldev/evo/elasticmagic/aggs/TopHitsAggResult;
+	public synthetic fun processResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;Lkotlin/jvm/functions/Function1;)Ldev/evo/elasticmagic/aggs/AggregationResult;
+	public fun processResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;Lkotlin/jvm/functions/Function1;)Ldev/evo/elasticmagic/aggs/TopHitsAggResult;
 	public fun toString ()Ljava/lang/String;
 	public fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 }
@@ -2359,8 +2362,8 @@ public final class dev/evo/elasticmagic/aggs/WeightedAvgAgg : dev/evo/elasticmag
 	public final fun getValue ()Ldev/evo/elasticmagic/aggs/WeightedAvgAgg$ValueSource;
 	public final fun getWeight ()Ldev/evo/elasticmagic/aggs/WeightedAvgAgg$ValueSource;
 	public fun hashCode ()I
-	public synthetic fun processResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;)Ldev/evo/elasticmagic/aggs/AggregationResult;
-	public fun processResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;)Ldev/evo/elasticmagic/aggs/OptionalDoubleValueAggResult;
+	public synthetic fun processResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;Lkotlin/jvm/functions/Function1;)Ldev/evo/elasticmagic/aggs/AggregationResult;
+	public fun processResult (Ldev/evo/elasticmagic/serde/Deserializer$ObjectCtx;Lkotlin/jvm/functions/Function1;)Ldev/evo/elasticmagic/aggs/OptionalDoubleValueAggResult;
 	public fun toString ()Ljava/lang/String;
 	public fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/compile/BaseSearchQueryCompiler;)V
 }

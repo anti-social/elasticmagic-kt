@@ -1,6 +1,8 @@
 package dev.evo.elasticmagic.aggs
 
 import dev.evo.elasticmagic.compile.BaseSearchQueryCompiler
+import dev.evo.elasticmagic.doc.BaseDocSource
+import dev.evo.elasticmagic.doc.DynDocSource
 import dev.evo.elasticmagic.query.FieldOperations
 import dev.evo.elasticmagic.query.NamedExpression
 import dev.evo.elasticmagic.query.ObjExpression
@@ -65,7 +67,14 @@ interface Aggregation<R : AggregationResult> : NamedExpression {
     /**
      * Processes corresponding aggregation response.
      */
-    fun processResult(obj: Deserializer.ObjectCtx): R
+    fun processResult(
+        obj: Deserializer.ObjectCtx,
+        docSourceFactory: (Deserializer.ObjectCtx) -> BaseDocSource,
+    ): R
+
+    fun processResult(obj: Deserializer.ObjectCtx): R {
+        return processResult(obj) { DynDocSource() }
+    }
 }
 
 /**

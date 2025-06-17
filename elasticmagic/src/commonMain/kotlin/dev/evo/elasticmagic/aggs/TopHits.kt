@@ -3,7 +3,6 @@ package dev.evo.elasticmagic.aggs
 import dev.evo.elasticmagic.SearchHit
 import dev.evo.elasticmagic.compile.BaseSearchQueryCompiler
 import dev.evo.elasticmagic.doc.BaseDocSource
-import dev.evo.elasticmagic.doc.DynDocSource
 import dev.evo.elasticmagic.query.Sort
 import dev.evo.elasticmagic.query.Source
 import dev.evo.elasticmagic.serde.Deserializer
@@ -18,7 +17,7 @@ data class TopHitsAggResult<S : BaseDocSource>(
 ) : AggregationResult
 
 data class TopHitsAgg<S : BaseDocSource>(
-    val docSourceFactory: (obj: Deserializer.ObjectCtx) -> S,
+    val docSourceFactory: ((obj: Deserializer.ObjectCtx) -> S)?,
     val from: Int? = null,
     val size: Int? = null,
     val sort: List<Sort>? = null,
@@ -46,9 +45,9 @@ data class TopHitsAgg<S : BaseDocSource>(
             size: Int? = null,
             sort: List<Sort>? = null,
             source: Source? = null,
-        ): TopHitsAgg<DynDocSource> {
+        ): TopHitsAgg<BaseDocSource> {
             return TopHitsAgg(
-                { DynDocSource() },
+                null,
                 from = from,
                 size = size,
                 sort = sort,
@@ -74,7 +73,14 @@ data class TopHitsAgg<S : BaseDocSource>(
         }
     }
 
-    override fun processResult(obj: Deserializer.ObjectCtx): TopHitsAggResult<S> {
+    override fun processResult(
+        obj: Deserializer.ObjectCtx,
+        docSourceFactory: (Deserializer.ObjectCtx) -> BaseDocSource,
+    ): TopHitsAggResult<S> {
+        @Suppress("UNCHECKED_CAST")
+        val docSourceFactory = this.docSourceFactory ?:
+            docSourceFactory as (Deserializer.ObjectCtx) -> S
+
         val rawHitsData = obj.obj("hits")
         val rawTotal = rawHitsData.objOrNull("total")
         val (totalHits, totalHitsRelation) = if (rawTotal != null) {
@@ -84,7 +90,7 @@ data class TopHitsAgg<S : BaseDocSource>(
         }
 
         val rawHits = rawHitsData.arrayOrNull("hits")
-        val hits = buildList {
+        val hits = buildList<SearchHit<S>> {
             rawHits?.forEachObj { rawHit ->
                 add(SearchHit(rawHit, docSourceFactory))
             }

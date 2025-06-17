@@ -3,6 +3,7 @@ package dev.evo.elasticmagic.aggs
 import dev.evo.elasticmagic.Params
 import dev.evo.elasticmagic.ToValue
 import dev.evo.elasticmagic.compile.BaseSearchQueryCompiler
+import dev.evo.elasticmagic.doc.BaseDocSource
 import dev.evo.elasticmagic.query.FieldOperations
 import dev.evo.elasticmagic.query.ObjExpression
 import dev.evo.elasticmagic.serde.Deserializer
@@ -72,12 +73,15 @@ abstract class BaseHistogramAgg<T, R : AggregationResult, B> : BucketAggregation
         }
     }
 
-    override fun processResult(obj: Deserializer.ObjectCtx): R {
+    override fun processResult(
+        obj: Deserializer.ObjectCtx,
+        docSourceFactory: (Deserializer.ObjectCtx) -> BaseDocSource,
+    ): R {
         val bucketsArray = obj.arrayOrNull("buckets")
         if (bucketsArray != null) {
             val buckets = buildList {
                 bucketsArray.forEachObj { bucketObj ->
-                    add(processBucketResult(bucketObj))
+                    add(processBucketResult(bucketObj, docSourceFactory))
                 }
             }
             return makeHistogramResult(buckets)
@@ -86,13 +90,16 @@ abstract class BaseHistogramAgg<T, R : AggregationResult, B> : BucketAggregation
         val bucketsObj = obj.obj("buckets")
         val buckets = buildList {
             bucketsObj.forEachObj { _, bucketObj ->
-                add(processBucketResult(bucketObj))
+                add(processBucketResult(bucketObj, docSourceFactory))
             }
         }
         return makeHistogramResult(buckets)
     }
 
-    protected abstract fun processBucketResult(bucketObj: Deserializer.ObjectCtx): B
+    protected abstract fun processBucketResult(
+        bucketObj: Deserializer.ObjectCtx,
+        docSourceFactory: (Deserializer.ObjectCtx) -> BaseDocSource,
+    ): B
 
     protected abstract val makeHistogramResult: (List<B>) -> R
 }
@@ -147,12 +154,15 @@ data class HistogramAgg<T : Number>(
         super.visit(ctx, compiler)
     }
 
-    override fun processBucketResult(bucketObj: Deserializer.ObjectCtx): HistogramBucket {
+    override fun processBucketResult(
+        bucketObj: Deserializer.ObjectCtx,
+        docSourceFactory: (Deserializer.ObjectCtx) -> BaseDocSource,
+    ): HistogramBucket {
         return HistogramBucket(
             key = bucketObj.double("key"),
             docCount = bucketObj.long("doc_count"),
             keyAsString = bucketObj.stringOrNull("key_as_string"),
-            aggs = processSubAggs(bucketObj)
+            aggs = processSubAggs(bucketObj, docSourceFactory)
         )
     }
 
@@ -287,14 +297,17 @@ data class DateHistogramAgg<T>(
         super.visit(ctx, compiler)
     }
 
-    override fun processBucketResult(bucketObj: Deserializer.ObjectCtx): DateHistogramBucket<T> {
+    override fun processBucketResult(
+        bucketObj: Deserializer.ObjectCtx,
+        docSourceFactory: (Deserializer.ObjectCtx) -> BaseDocSource,
+    ): DateHistogramBucket<T> {
         val key = bucketObj.long("key")
         return DateHistogramBucket(
             key = key,
             keyAsString = bucketObj.stringOrNull("key_as_string"),
             keyAsDatetime = value.deserializeTerm(key),
             docCount = bucketObj.long("doc_count"),
-            aggs = processSubAggs(bucketObj)
+            aggs = processSubAggs(bucketObj, docSourceFactory)
         )
     }
 
