@@ -570,7 +570,7 @@ class SearchQueryTests : ElasticsearchTestBase() {
                     "statuses" to TermsAgg(
                         OrderDoc.status,
                         aggs = mapOf(
-                            "top_orders" to TopHitsAgg(::OrderDocSource)
+                            "top_orders" to TopHitsAgg()
                         )
                     ),
                 )

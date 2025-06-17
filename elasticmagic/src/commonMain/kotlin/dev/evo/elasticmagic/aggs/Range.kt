@@ -3,6 +3,7 @@ package dev.evo.elasticmagic.aggs
 import dev.evo.elasticmagic.query.FieldOperations
 import dev.evo.elasticmagic.Params
 import dev.evo.elasticmagic.compile.BaseSearchQueryCompiler
+import dev.evo.elasticmagic.doc.BaseDocSource
 import dev.evo.elasticmagic.serde.Deserializer
 import dev.evo.elasticmagic.serde.Serializer
 import dev.evo.elasticmagic.serde.forEachObj
@@ -52,12 +53,15 @@ abstract class BaseRangeAgg<T, R : AggregationResult, B> : BucketAggregation<R>(
         }
     }
 
-    override fun processResult(obj: Deserializer.ObjectCtx): R {
+    override fun processResult(
+        obj: Deserializer.ObjectCtx,
+        docSourceFactory: (Deserializer.ObjectCtx) -> BaseDocSource,
+    ): R {
         val bucketsArray = obj.arrayOrNull("buckets")
         if (bucketsArray != null) {
             val buckets = buildList {
                 bucketsArray.forEachObj { bucketObj ->
-                    add(processBucketResult(bucketObj))
+                    add(processBucketResult(bucketObj, null, docSourceFactory))
                 }
             }
             return makeRangeResult(buckets)
@@ -66,7 +70,7 @@ abstract class BaseRangeAgg<T, R : AggregationResult, B> : BucketAggregation<R>(
         val bucketsObj = obj.obj("buckets")
         val buckets = buildList {
             bucketsObj.forEachObj { bucketKey, bucketObj ->
-                add(processBucketResult(bucketObj, bucketKey))
+                add(processBucketResult(bucketObj, bucketKey, docSourceFactory))
             }
         }
         return makeRangeResult(buckets)
@@ -76,7 +80,8 @@ abstract class BaseRangeAgg<T, R : AggregationResult, B> : BucketAggregation<R>(
 
     protected abstract fun processBucketResult(
         bucketObj: Deserializer.ObjectCtx,
-        bucketKey: String? = null,
+        bucketKey: String?,
+        docSourceFactory: (Deserializer.ObjectCtx) -> BaseDocSource,
     ): B
 }
 
@@ -146,7 +151,8 @@ data class RangeAgg<T : Number>(
 
     override fun processBucketResult(
         bucketObj: Deserializer.ObjectCtx,
-        bucketKey: String?
+        bucketKey: String?,
+        docSourceFactory: (Deserializer.ObjectCtx) -> BaseDocSource,
     ): RangeBucket {
         return RangeBucket(
             key = bucketKey ?: bucketObj.string("key"),
@@ -155,7 +161,7 @@ data class RangeAgg<T : Number>(
             fromAsString = bucketObj.stringOrNull("from_as_string"),
             to = bucketObj.doubleOrNull("to"),
             toAsString = bucketObj.stringOrNull("to_as_string"),
-            aggs = processSubAggs(bucketObj),
+            aggs = processSubAggs(bucketObj, docSourceFactory),
         )
     }
 }
@@ -228,7 +234,8 @@ data class DateRangeAgg<T>(
 
     override fun processBucketResult(
         bucketObj: Deserializer.ObjectCtx,
-        bucketKey: String?
+        bucketKey: String?,
+        docSourceFactory: (Deserializer.ObjectCtx) -> BaseDocSource,
     ): DateRangeBucket<T> {
         val fromAsString = bucketObj.stringOrNull("from_as_string")
         val toAsString = bucketObj.stringOrNull("to_as_string")
@@ -241,7 +248,7 @@ data class DateRangeAgg<T>(
             to = bucketObj.doubleOrNull("to"),
             toAsString = toAsString,
             toAsDatetime = toAsString?.let(value::deserializeTerm),
-            aggs = processSubAggs(bucketObj),
+            aggs = processSubAggs(bucketObj, docSourceFactory),
         )
     }
 }

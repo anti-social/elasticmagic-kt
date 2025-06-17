@@ -2,6 +2,7 @@ package dev.evo.elasticmagic.aggs
 
 import dev.evo.elasticmagic.AggAwareResult
 import dev.evo.elasticmagic.compile.BaseSearchQueryCompiler
+import dev.evo.elasticmagic.doc.BaseDocSource
 import dev.evo.elasticmagic.query.FieldOperations
 import dev.evo.elasticmagic.query.ObjExpression
 import dev.evo.elasticmagic.query.QueryExpression
@@ -23,20 +24,26 @@ abstract class BucketAggregation<R : AggregationResult> : Aggregation<R> {
         }
     }
 
-    protected fun processSubAggs(bucketObj: Deserializer.ObjectCtx): Map<String, AggregationResult> {
+    protected fun processSubAggs(
+        bucketObj: Deserializer.ObjectCtx,
+        docSourceFactory: (Deserializer.ObjectCtx) -> BaseDocSource,
+    ): Map<String, AggregationResult> {
         val subAggs = mutableMapOf<String, AggregationResult>()
         for ((aggName, agg) in aggs) {
-            subAggs[aggName] = agg.processResult(bucketObj.obj(aggName))
+            subAggs[aggName] = agg.processResult(bucketObj.obj(aggName), docSourceFactory)
         }
         return subAggs
     }
 }
 
 abstract class SingleBucketAggregation : BucketAggregation<SingleBucketAggResult>() {
-    override fun processResult(obj: Deserializer.ObjectCtx): SingleBucketAggResult {
+    override fun processResult(
+        obj: Deserializer.ObjectCtx,
+        docSourceFactory: (Deserializer.ObjectCtx) -> BaseDocSource,
+    ): SingleBucketAggResult {
         return SingleBucketAggResult(
             docCount = obj.long("doc_count"),
-            aggs = processSubAggs(obj)
+            aggs = processSubAggs(obj, docSourceFactory)
         )
     }
 }
@@ -120,7 +127,10 @@ data class FiltersAgg(
         ctx.fieldIfNotNull("other_bucket_key", otherBucketKey)
     }
 
-    override fun processResult(obj: Deserializer.ObjectCtx): FiltersAggResult {
+    override fun processResult(
+        obj: Deserializer.ObjectCtx,
+        docSourceFactory: (Deserializer.ObjectCtx) -> BaseDocSource,
+    ): FiltersAggResult {
         val buckets = buildMap {
             obj.obj("buckets").forEachObj { bucketKey, bucketObj ->
                 put(
@@ -128,7 +138,7 @@ data class FiltersAgg(
                     FiltersBucket(
                         key = bucketKey,
                         docCount = bucketObj.long("doc_count"),
-                        aggs = processSubAggs(bucketObj),
+                        aggs = processSubAggs(bucketObj, docSourceFactory),
                     )
                 )
             }

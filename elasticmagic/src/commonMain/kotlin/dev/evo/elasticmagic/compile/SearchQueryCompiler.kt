@@ -256,7 +256,7 @@ open class SearchQueryCompiler(
         val aggResults = buildMap {
             if (rawAggs != null) {
                 for ((aggName, agg) in preparedSearchQuery.aggregations) {
-                    put(aggName, agg.processResult(rawAggs.obj(aggName)))
+                    put(aggName, agg.processResult(rawAggs.obj(aggName), preparedSearchQuery.docSourceFactory))
                 }
             }
         }

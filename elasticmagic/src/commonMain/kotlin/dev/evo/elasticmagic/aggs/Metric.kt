@@ -2,6 +2,7 @@ package dev.evo.elasticmagic.aggs
 
 import dev.evo.elasticmagic.Params
 import dev.evo.elasticmagic.compile.BaseSearchQueryCompiler
+import dev.evo.elasticmagic.doc.BaseDocSource
 import dev.evo.elasticmagic.query.FieldOperations
 import dev.evo.elasticmagic.query.ObjExpression
 import dev.evo.elasticmagic.query.Script
@@ -71,7 +72,10 @@ abstract class NumericValueAgg<T, R : AggregationResult>(
         ctx.fieldIfNotNull("missing", missing)
     }
 
-    override fun processResult(obj: Deserializer.ObjectCtx): R {
+    override fun processResult(
+        obj: Deserializer.ObjectCtx,
+        docSourceFactory: (Deserializer.ObjectCtx) -> BaseDocSource,
+    ): R {
         return resultProcessor(obj)
     }
 }
@@ -134,7 +138,10 @@ data class PercentilesAgg(
     val field: FieldOperations<*>,
     val percents: List<Double>? = null,
 ) : MetricAggregation<PercentileAggResult>() {
-    override fun processResult(obj: Deserializer.ObjectCtx): PercentileAggResult {
+    override fun processResult(
+        obj: Deserializer.ObjectCtx,
+        docSourceFactory: (Deserializer.ObjectCtx) -> BaseDocSource,
+    ): PercentileAggResult {
         return PercentileAggResult(obj)
     }
 
@@ -220,7 +227,10 @@ data class WeightedAvgAgg<T>(
         ctx.fieldIfNotNull("format", format)
     }
 
-    override fun processResult(obj: Deserializer.ObjectCtx): WeightedAvgAggResult {
+    override fun processResult(
+        obj: Deserializer.ObjectCtx,
+        docSourceFactory: (Deserializer.ObjectCtx) -> BaseDocSource,
+    ): WeightedAvgAggResult {
         return WeightedAvgAggResult(obj)
     }
 }
@@ -467,7 +477,10 @@ data class ScriptedMetricAgg<T>(
         }
     }
 
-    override fun processResult(obj: Deserializer.ObjectCtx): ScriptedMetricAggResult<T> {
+    override fun processResult(
+        obj: Deserializer.ObjectCtx,
+        docSourceFactory: (Deserializer.ObjectCtx) -> BaseDocSource,
+    ): ScriptedMetricAggResult<T> {
         return ScriptedMetricAggResult(resultProcessor(obj))
     }
 }
