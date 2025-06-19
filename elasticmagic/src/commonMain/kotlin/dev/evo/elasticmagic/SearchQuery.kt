@@ -4,6 +4,7 @@ import dev.evo.elasticmagic.aggs.Aggregation
 import dev.evo.elasticmagic.doc.BaseDocSource
 import dev.evo.elasticmagic.doc.BoundRuntimeField
 import dev.evo.elasticmagic.doc.DynDocSource
+import dev.evo.elasticmagic.ext.elasticsearch.Knn
 import dev.evo.elasticmagic.query.FieldFormat
 import dev.evo.elasticmagic.query.FieldOperations
 import dev.evo.elasticmagic.query.NodeHandle
@@ -52,6 +53,8 @@ abstract class BaseSearchQuery<S : BaseDocSource, T : BaseSearchQuery<S, T>>(
 
     protected val rescores: MutableList<Rescore> = mutableListOf()
     protected val sorts: MutableList<Sort> = mutableListOf()
+
+    protected var knn: Knn<*, *>? = null
 
     protected var trackScores: Boolean? = null
     protected var trackTotalHits: Boolean? = null
@@ -627,6 +630,23 @@ abstract class BaseSearchQuery<S : BaseDocSource, T : BaseSearchQuery<S, T>>(
     }
 
     /**
+     * Replaces current knn search option.
+     *
+     * @see <https://www.elastic.co/docs/solutions/search/vector/knn>
+     */
+    fun knn(knn: Knn<*, *>): T = self {
+        this.knn = knn
+    }
+
+    /**
+     * Clears current knn search option.
+     */
+    @Suppress("UNUSED_PARAMETER")
+    fun knn(clear: SearchQuery.CLEAR): T = self {
+        this.knn = null
+    }
+
+    /**
      * Updates search parameters.
      *
      * @see <https://www.elastic.co/guide/en/elasticsearch/reference/current/search-search.html#search-search-api-query-params>
@@ -746,6 +766,7 @@ abstract class BaseSearchQuery<S : BaseDocSource, T : BaseSearchQuery<S, T>>(
             query = query,
             filters = filters,
             postFilters = postFilters,
+            knn = knn,
             aggregations = aggregations,
             rescores = rescores,
             sorts = sorts,
@@ -986,6 +1007,7 @@ open class SearchQuery<S : BaseDocSource>(
         override val query: QueryExpression?,
         override val filters: List<QueryExpression>,
         override val postFilters: List<QueryExpression>,
+        val knn: Knn<*, *>?,
         val aggregations: Map<String, Aggregation<*>>,
         val rescores: List<Rescore>,
         val sorts: List<Sort>,

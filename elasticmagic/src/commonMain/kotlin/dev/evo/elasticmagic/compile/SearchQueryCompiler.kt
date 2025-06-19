@@ -127,6 +127,11 @@ open class SearchQueryCompiler(
     @Suppress("CyclomaticComplexMethod")
     fun visit(ctx: ObjectCtx, searchQuery: SearchQuery.Search<*>) {
         super.visit(ctx, searchQuery)
+
+        if (searchQuery.knn != null) {
+            visit(ctx, searchQuery.knn)
+        }
+
         if (searchQuery.aggregations.isNotEmpty()) {
             ctx.obj("aggs") {
                 visit(this, searchQuery.aggregations)

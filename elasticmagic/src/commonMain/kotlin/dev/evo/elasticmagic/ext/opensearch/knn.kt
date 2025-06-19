@@ -101,6 +101,11 @@ data class Knn<D: KnnDataType<T>, T: Number>(
             fieldIfNotNull("k", k)
             fieldIfNotNull("max_distance", maxDistance)
             fieldIfNotNull("min_score", minScore)
+            if (filter != null) {
+                obj("filter") {
+                    compiler.visit(this, filter)
+                }
+            }
             if (methodParameters != null) {
                 obj("method_parameters") {
                     compiler.visit(this, methodParameters)
