@@ -77,7 +77,9 @@ markdown_extensions:
   - pymdownx.inlinehilite
   - pymdownx.magiclink
   - pymdownx.smartsymbols
-  - pymdownx.snippets
+  - pymdownx.snippets:
+      base_path: [..]
+      check_paths: true
   - pymdownx.highlight
   - pymdownx.superfences
 

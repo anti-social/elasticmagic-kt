@@ -15,7 +15,7 @@ in the code. Specifying document source we can set up proper (de)serialization o
 Suppose we have following `Document`:
 
 ```kotlin
---8<-- "../samples/src/commonMain/kotlin/samples/docsource/UserDoc.kt"
+--8<-- "samples/src/commonMain/kotlin/samples/docsource/UserDoc.kt"
 ```
 
 ## Dynamic
@@ -23,7 +23,7 @@ Suppose we have following `Document`:
 The most simple way to work with source documents is just to use `DynDocSource`:
 
 ```kotlin
---8<-- "../samples/src/commonMain/kotlin/samples/docsource/dynamic/DynDocSource.kt"
+--8<-- "samples/src/commonMain/kotlin/samples/docsource/dynamic/DynDocSource.kt"
 ```
 
 ## User defined
@@ -31,5 +31,5 @@ The most simple way to work with source documents is just to use `DynDocSource`:
 This is the recommended way. You can explicitly specify document source:
 
 ```kotlin
---8<-- "../samples/src/commonMain/kotlin/samples/docsource/custom/UserDocSource.kt"
+--8<-- "samples/src/commonMain/kotlin/samples/docsource/custom/UserDocSource.kt"
 ```
