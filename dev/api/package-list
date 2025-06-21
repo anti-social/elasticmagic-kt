@@ -7,6 +7,8 @@ dev.evo.elasticmagic.aggs
 dev.evo.elasticmagic.bulk
 dev.evo.elasticmagic.compile
 dev.evo.elasticmagic.doc
+dev.evo.elasticmagic.ext.elasticsearch
+dev.evo.elasticmagic.ext.opensearch
 dev.evo.elasticmagic.query
 dev.evo.elasticmagic.types
 dev.evo.elasticmagic.util
