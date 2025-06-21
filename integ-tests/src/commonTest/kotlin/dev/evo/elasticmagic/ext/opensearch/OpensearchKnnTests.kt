@@ -10,7 +10,6 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.nulls.shouldNotBeNull
 import kotlin.test.Test
 
-
 object HotelDoc : Document() {
     val location by Field(
         KnnVector(dimension = 2, spaceType = KnnSpace.L2),

@@ -10,7 +10,6 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.nulls.shouldNotBeNull
 import kotlin.test.Test
 
-
 object HotelDoc : Document() {
     val location by Field(
         DenseVector(dims = 2, similarity = VectorSimilarity.L2_NORM),

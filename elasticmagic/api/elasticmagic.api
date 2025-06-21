@@ -2624,7 +2624,7 @@ public final class dev/evo/elasticmagic/compile/BulkCompiler$Compiled {
 }
 
 public final class dev/evo/elasticmagic/compile/CompilerSet {
-	public fun <init> (Ldev/evo/elasticmagic/Version;)V
+	public fun <init> (Ldev/evo/elasticmagic/compile/ElasticsearchFeatures;)V
 	public final fun getActionCompiler ()Ldev/evo/elasticmagic/compile/ActionCompiler;
 	public final fun getActionMetaCompiler ()Ldev/evo/elasticmagic/compile/ActionMetaCompiler;
 	public final fun getActionSourceCompiler ()Ldev/evo/elasticmagic/compile/ActionSourceCompiler;
@@ -2683,6 +2683,7 @@ public class dev/evo/elasticmagic/compile/MappingCompiler : dev/evo/elasticmagic
 	public fun dispatch (Ldev/evo/elasticmagic/serde/Serializer$ArrayCtx;Ljava/lang/Object;)V
 	public fun dispatch (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ljava/lang/String;Ljava/lang/Object;)V
 	public final fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/doc/Document;)V
+	public final fun visit (Ldev/evo/elasticmagic/serde/Serializer$ObjectCtx;Ldev/evo/elasticmagic/types/FieldType;)V
 }
 
 public final class dev/evo/elasticmagic/compile/MappingCompiler$Compiled {
@@ -3529,8 +3530,8 @@ public abstract class dev/evo/elasticmagic/ext/elasticsearch/VectorElementType {
 	public final fun getType ()Ldev/evo/elasticmagic/types/NumberType;
 }
 
-public final class dev/evo/elasticmagic/ext/elasticsearch/VectorElementType$Binary : dev/evo/elasticmagic/ext/elasticsearch/VectorElementType {
-	public static final field INSTANCE Ldev/evo/elasticmagic/ext/elasticsearch/VectorElementType$Binary;
+public final class dev/evo/elasticmagic/ext/elasticsearch/VectorElementType$Bit : dev/evo/elasticmagic/ext/elasticsearch/VectorElementType {
+	public static final field INSTANCE Ldev/evo/elasticmagic/ext/elasticsearch/VectorElementType$Bit;
 }
 
 public final class dev/evo/elasticmagic/ext/elasticsearch/VectorElementType$Byte : dev/evo/elasticmagic/ext/elasticsearch/VectorElementType {
@@ -3648,8 +3649,8 @@ public final class dev/evo/elasticmagic/ext/opensearch/KnnVector : dev/evo/elast
 }
 
 public final class dev/evo/elasticmagic/ext/opensearch/KnnVector$Companion {
-	public final fun invoke (SLdev/evo/elasticmagic/ext/opensearch/KnnSpace;Ldev/evo/elasticmagic/ext/opensearch/KnnMode;Ljava/lang/String;Ljava/util/Map;Ljava/lang/String;)Ldev/evo/elasticmagic/ext/opensearch/KnnVector;
-	public static synthetic fun invoke$default (Ldev/evo/elasticmagic/ext/opensearch/KnnVector$Companion;SLdev/evo/elasticmagic/ext/opensearch/KnnSpace;Ldev/evo/elasticmagic/ext/opensearch/KnnMode;Ljava/lang/String;Ljava/util/Map;Ljava/lang/String;ILjava/lang/Object;)Ldev/evo/elasticmagic/ext/opensearch/KnnVector;
+	public final fun invoke (SLdev/evo/elasticmagic/ext/opensearch/KnnSpace;Ldev/evo/elasticmagic/ext/opensearch/KnnMode;Ljava/lang/String;Ljava/util/Map;Ljava/lang/String;Ljava/util/Map;)Ldev/evo/elasticmagic/ext/opensearch/KnnVector;
+	public static synthetic fun invoke$default (Ldev/evo/elasticmagic/ext/opensearch/KnnVector$Companion;SLdev/evo/elasticmagic/ext/opensearch/KnnSpace;Ldev/evo/elasticmagic/ext/opensearch/KnnMode;Ljava/lang/String;Ljava/util/Map;Ljava/lang/String;Ljava/util/Map;ILjava/lang/Object;)Ldev/evo/elasticmagic/ext/opensearch/KnnVector;
 }
 
 public abstract interface class dev/evo/elasticmagic/query/ArrayExpression : dev/evo/elasticmagic/query/Expression {

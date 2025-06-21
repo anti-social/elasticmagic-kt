@@ -3,6 +3,7 @@ package dev.evo.elasticmagic
 import dev.evo.elasticmagic.bulk.Action
 import dev.evo.elasticmagic.compile.ActionCompiler
 import dev.evo.elasticmagic.compile.CompilerSet
+import dev.evo.elasticmagic.compile.ElasticsearchFeatures
 import dev.evo.elasticmagic.compile.PreparedBulk
 import dev.evo.elasticmagic.compile.PreparedCreateIndex
 import dev.evo.elasticmagic.compile.PreparedUpdateMapping
@@ -95,7 +96,9 @@ class ElasticsearchCluster(
         }
         if (!sniffedCompilers.isCompleted) {
             // Only first value will be set
-            sniffedCompilers.complete(CompilerSet(getVersion()))
+            sniffedCompilers.complete(
+                CompilerSet(ElasticsearchFeatures(getVersion()))
+            )
         }
         return sniffedCompilers.await()
     }

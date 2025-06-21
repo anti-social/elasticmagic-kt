@@ -47,6 +47,7 @@ class KnnVector<T: Number>(
             compressionLevel: String? = null,
             method: Params? = null,
             modelId: String? = null,
+            params: Params? = null,
         ): KnnVector<Float> {
             return KnnVector(
                 KnnDataType.Float,
@@ -56,6 +57,7 @@ class KnnVector<T: Number>(
                 compressionLevel = compressionLevel,
                 method = method,
                 modelId = modelId,
+                params = params,
             )
         }
     }

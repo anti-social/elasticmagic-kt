@@ -176,7 +176,7 @@ open class MappingCompiler(
         }
     }
 
-    private fun visit(ctx: ObjectCtx, fieldType: FieldType<*, *>) {
+    fun visit(ctx: ObjectCtx, fieldType: FieldType<*, *>) {
         ctx.field("type", fieldType.name)
         visit(ctx, fieldType.params())
     }
