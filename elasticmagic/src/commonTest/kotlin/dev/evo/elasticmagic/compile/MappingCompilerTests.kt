@@ -154,7 +154,12 @@ class MappingCompilerTests : BaseTest() {
     }
 
     @Test
-    fun runtimeFields() {
+    fun runtimeFields() = withCompilers {
+        val runtimeFieldsMappingName = compiler.features.runtimeFieldsMappingName
+        if (runtimeFieldsMappingName == null) {
+            return@withCompilers
+        }
+
         val logDoc = object : Document() {
             // TODO: Replace with date field
             val timestamp by datetime("@timestamp")
@@ -176,8 +181,8 @@ class MappingCompilerTests : BaseTest() {
             )
         }
 
-        compile(logDoc) shouldContainExactly mapOf(
-            "runtime" to mapOf(
+        logDoc shouldCompileInto mapOf(
+            runtimeFieldsMappingName to mapOf(
                 "day_of_week" to mapOf(
                     "type" to "keyword",
                     "script" to mapOf(

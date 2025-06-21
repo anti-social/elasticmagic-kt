@@ -2623,6 +2623,10 @@ public final class dev/evo/elasticmagic/compile/BulkCompiler$Compiled {
 	public final fun getProcessResult ()Lkotlin/jvm/functions/Function1;
 }
 
+public final class dev/evo/elasticmagic/compile/CompilationException : java/lang/IllegalArgumentException {
+	public fun <init> (Ljava/lang/String;)V
+}
+
 public final class dev/evo/elasticmagic/compile/CompilerSet {
 	public fun <init> (Ldev/evo/elasticmagic/compile/ElasticsearchFeatures;)V
 	public final fun getActionCompiler ()Ldev/evo/elasticmagic/compile/ActionCompiler;
@@ -2664,8 +2668,12 @@ public final class dev/evo/elasticmagic/compile/ElasticsearchFeatures : java/lan
 	public static final field Companion Ldev/evo/elasticmagic/compile/ElasticsearchFeatures$Companion;
 	public static final field ES_6_0 Ldev/evo/elasticmagic/compile/ElasticsearchFeatures;
 	public static final field ES_7_0 Ldev/evo/elasticmagic/compile/ElasticsearchFeatures;
+	public static final field OS_1_0 Ldev/evo/elasticmagic/compile/ElasticsearchFeatures;
+	public static final field OS_2_0 Ldev/evo/elasticmagic/compile/ElasticsearchFeatures;
 	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public final fun getRequiresMappingTypeName ()Z
+	public final fun getRuntimeFieldsMappingName ()Ljava/lang/String;
+	public final fun getRuntimeFieldsSearchQueryName ()Ljava/lang/String;
 	public final fun getSupportsTrackingOfTotalHits ()Z
 	public static fun valueOf (Ljava/lang/String;)Ldev/evo/elasticmagic/compile/ElasticsearchFeatures;
 	public static fun values ()[Ldev/evo/elasticmagic/compile/ElasticsearchFeatures;

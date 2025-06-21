@@ -5,6 +5,8 @@ import dev.evo.elasticmagic.query.Named
 import dev.evo.elasticmagic.serde.Serializer.ArrayCtx
 import dev.evo.elasticmagic.serde.Serializer.ObjectCtx
 
+class CompilationException(message: String) : IllegalArgumentException(message)
+
 @Suppress("UnnecessaryAbstractClass")
 abstract class BaseCompiler(
     val features: ElasticsearchFeatures
@@ -72,14 +74,32 @@ abstract class BaseCompiler(
 enum class ElasticsearchFeatures(
     val requiresMappingTypeName: Boolean,
     val supportsTrackingOfTotalHits: Boolean,
+    val runtimeFieldsMappingName: String?,
+    val runtimeFieldsSearchQueryName: String?,
 ) {
     ES_6_0(
         requiresMappingTypeName = true,
         supportsTrackingOfTotalHits = false,
+        runtimeFieldsMappingName = null,
+        runtimeFieldsSearchQueryName = null,
     ),
     ES_7_0(
         requiresMappingTypeName = false,
         supportsTrackingOfTotalHits = true,
+        runtimeFieldsMappingName = "runtime",
+        runtimeFieldsSearchQueryName = "runtime_mappings",
+    ),
+    OS_1_0(
+        requiresMappingTypeName = false,
+        supportsTrackingOfTotalHits = true,
+        runtimeFieldsMappingName = null,
+        runtimeFieldsSearchQueryName = null,
+    ),
+    OS_2_0(
+        requiresMappingTypeName = false,
+        supportsTrackingOfTotalHits = true,
+        runtimeFieldsMappingName = "derived",
+        runtimeFieldsSearchQueryName = "derived",
     ),
     ;
 
@@ -89,7 +109,8 @@ enum class ElasticsearchFeatures(
             Version.Elasticsearch(7, 0, 0) to ES_7_0,
         )
         val OS_VERSION_FEATURES = listOf(
-            Version.Opensearch(1, 0, 0) to ES_7_0,
+            Version.Opensearch(1, 0, 0) to OS_1_0,
+            Version.Opensearch(2, 0, 0) to OS_2_0,
         )
 
         @Suppress("MagicNumber")

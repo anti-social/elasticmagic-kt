@@ -73,7 +73,12 @@ open class MappingCompiler(
         visit(ctx, document as BaseDocument)
 
         if (document.getAllFields().any { it is BoundRuntimeField }) {
-            ctx.obj("runtime") {
+            if (features.runtimeFieldsMappingName == null) {
+                throw CompilationException(
+                    "Runtime fields are not supported by this Elasticsearch/Opensearch version"
+                )
+            }
+            ctx.obj(features.runtimeFieldsMappingName) {
                 visit(this, document as FieldSet) { it is BoundRuntimeField }
             }
         }
