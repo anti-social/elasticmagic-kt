@@ -194,7 +194,12 @@ open class SearchQueryCompiler(
             }
         }
         if (searchQuery.runtimeMappings.isNotEmpty()) {
-            ctx.obj("runtime_mappings") {
+            if (features.runtimeFieldsSearchQueryName == null) {
+                throw CompilationException(
+                    "Runtime fields are not supported by this Elasticsearch/Opensearch version"
+                )
+            }
+            ctx.obj(features.runtimeFieldsSearchQueryName) {
                 for ((fieldName, field) in searchQuery.runtimeMappings) {
                     obj(fieldName) {
                         field("type", field.getFieldType().name)

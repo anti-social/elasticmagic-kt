@@ -2,6 +2,7 @@ package dev.evo.elasticmagic
 
 import dev.evo.elasticmagic.compile.CompilerSet
 import dev.evo.elasticmagic.compile.ElasticsearchFeatures
+import dev.evo.elasticmagic.doc.Document
 import dev.evo.elasticmagic.query.Expression
 import dev.evo.elasticmagic.serde.Deserializer
 import dev.evo.elasticmagic.serde.Serde
@@ -19,10 +20,8 @@ abstract class BaseTest {
     protected val deserializer = serde.deserializer
 
     companion object {
-        private val ALL_COMPILERS = listOf(
-            CompilerSet(ElasticsearchFeatures.ES_6_0),
-            CompilerSet(ElasticsearchFeatures.ES_7_0),
-        )
+        private val ALL_COMPILERS = ElasticsearchFeatures.values()
+            .map(::CompilerSet)
     }
 
     object TestSerializer : StdSerializer(::ObjectCtx, ::ArrayCtx) {
@@ -82,6 +81,19 @@ abstract class BaseTest {
             compile() shouldContainExactly expected
         }
 
+        fun SearchQuery<*>.compile(): Map<String, Any?> {
+            val obj = serializer.obj {
+                compiler.searchQuery.visit(this, this@compile.prepareSearch())
+            }
+            return obj.shouldBeInstanceOf<TestSerializer.ObjectCtx>().toMap()
+        }
+
+        infix fun SearchQuery<*>.shouldCompileInto(
+            expected: Map<String, Any>,
+        ) {
+            compile() shouldContainExactly expected
+        }
+
         fun FieldType<*, *>.compile(): Map<String, Any?> {
             val obj = serializer.obj {
                 compiler.mapping.visit(this, this@compile)
@@ -90,6 +102,19 @@ abstract class BaseTest {
         }
 
         infix fun FieldType<*, *>.shouldCompileInto(
+            expected: Map<String, Any>,
+        ) {
+            compile() shouldContainExactly expected
+        }
+
+        fun Document.compile(): Map<String, Any?> {
+            val obj = serializer.obj {
+                compiler.mapping.visit(this, this@compile)
+            }
+            return obj.shouldBeInstanceOf<TestSerializer.ObjectCtx>().toMap()
+        }
+
+        infix fun Document.shouldCompileInto(
             expected: Map<String, Any>,
         ) {
             compile() shouldContainExactly expected

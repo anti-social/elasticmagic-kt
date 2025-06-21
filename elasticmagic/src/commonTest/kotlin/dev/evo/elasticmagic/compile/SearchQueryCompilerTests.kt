@@ -784,7 +784,12 @@ class SearchQueryCompilerTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQ
     }
 
     @Test
-    fun runtimeMappings() = testWithCompiler {
+    fun runtimeMappings() = withCompilers {
+        val runtimeFieldsSearchQueryName = compiler.features.runtimeFieldsSearchQueryName
+        if (runtimeFieldsSearchQueryName == null) {
+            return@withCompilers
+        }
+
         val query = SearchQuery().runtimeMappings(
             BoundRuntimeField(
                 "day_of_week", KeywordType,
@@ -803,8 +808,8 @@ class SearchQueryCompilerTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQ
                 RootFieldSet
             )
         )
-        compile(query).body shouldContainExactly mapOf(
-            "runtime_mappings" to mapOf(
+        query shouldCompileInto mapOf(
+            runtimeFieldsSearchQueryName to mapOf(
                 "day_of_week" to mapOf(
                     "type" to "keyword",
                     "script" to mapOf(
@@ -834,8 +839,8 @@ class SearchQueryCompilerTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQ
                 )
             )
         )
-        compile(query).body shouldContainExactly mapOf(
-            "runtime_mappings" to mapOf(
+        query shouldCompileInto mapOf(
+            runtimeFieldsSearchQueryName to mapOf(
                 "day_of_week" to mapOf(
                     "type" to "keyword",
                     "script" to mapOf(
@@ -860,7 +865,7 @@ class SearchQueryCompilerTests : BaseCompilerTest<SearchQueryCompiler>(::SearchQ
             )
         )
 
-        compile(query.runtimeMappings(SearchQuery.CLEAR)).body shouldContainExactly emptyMap()
+        query.runtimeMappings(SearchQuery.CLEAR) shouldCompileInto emptyMap()
     }
 
     @Test
