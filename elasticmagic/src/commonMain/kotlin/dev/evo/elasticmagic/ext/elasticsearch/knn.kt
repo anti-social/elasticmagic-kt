@@ -14,7 +14,7 @@ import dev.evo.elasticmagic.types.NumberType
 sealed class VectorElementType<T: Number>(val type: NumberType<T>, val name: String? = null) {
     object Float : VectorElementType<kotlin.Float>(FloatType)
     object Byte : VectorElementType<kotlin.Byte>(ByteType)
-    object Binary : VectorElementType<kotlin.Byte>(ByteType, "bit")
+    object Bit : VectorElementType<kotlin.Byte>(ByteType, "bit")
 }
 
 enum class VectorSimilarity : ToValue<String> {
@@ -59,12 +59,12 @@ class DenseVector<T: Number>(
             "dims" to dims?.toInt(),
             "index" to index,
             "similarity" to similarity,
-            "indexOptions" to indexOptions,
+            "index_options" to indexOptions,
         )
     }
 }
 
-sealed class QueryVector<T: Number> {
+sealed class QueryVector<out T: Number> {
     data class Raw<T: Number>(val vector: List<T>) : QueryVector<T>()
     data class Builder(val params: Params) : QueryVector<Nothing>()
 }
@@ -120,7 +120,7 @@ data class Knn<E: VectorElementType<T>, T: Number>(
         ctx.field("field", field.getQualifiedFieldName())
         when (queryVector) {
             is QueryVector.Raw -> ctx.array("query_vector", queryVector.vector)
-            is QueryVector.Builder -> ctx.obj("query_vector") {
+            is QueryVector.Builder -> ctx.obj("query_vector_builder") {
                 compiler.visit(this, queryVector.params)
             }
         }

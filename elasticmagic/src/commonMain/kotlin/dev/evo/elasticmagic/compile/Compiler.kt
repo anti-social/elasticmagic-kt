@@ -115,9 +115,7 @@ enum class ElasticsearchFeatures(
     }
 }
 
-class CompilerSet(esVersion: Version<*>) {
-    val features: ElasticsearchFeatures = ElasticsearchFeatures(esVersion)
-
+class CompilerSet(val features: ElasticsearchFeatures) {
     val searchQuery: SearchQueryCompiler = SearchQueryCompiler(features)
     val countQuery: CountQueryCompiler = CountQueryCompiler(features)
     val updateByQuery: UpdateByQueryCompiler = UpdateByQueryCompiler(features)
@@ -134,5 +132,4 @@ class CompilerSet(esVersion: Version<*>) {
         features, actionMetaCompiler, actionSourceCompiler
     )
     val bulk: BulkCompiler = BulkCompiler(features, actionCompiler)
-
 }

@@ -11,30 +11,7 @@ import io.kotest.matchers.types.shouldNotBeSameInstanceAs
 
 @Suppress("UnnecessaryAbstractClass")
 abstract class BaseExpressionTest : BaseTest() {
-    protected val compiler = SearchQueryCompiler(
-        ElasticsearchFeatures.ES_6_0
-    )
-
-    protected fun Expression<Serializer.ObjectCtx>.compile(): Map<String, Any?> {
-        val obj = serializer.obj {
-            compiler.visit(this, this@compile)
-        }
-        return obj.shouldBeInstanceOf<TestSerializer.ObjectCtx>().toMap()
-    }
-
-    protected fun Expression<Serializer.ArrayCtx>.compile(): List<Any?> {
-        val arr = serializer.array {
-            compiler.visit(this, this@compile)
-        }
-        return arr.shouldBeInstanceOf<TestSerializer.ArrayCtx>().toList()
-    }
-
-    protected fun checkClone(expression: Expression<*>) {
-        val clone = expression.clone()
-        clone.shouldNotBeSameInstanceAs(expression)
-        clone shouldBe expression
-    }
-
+    protected val compiler = SearchQueryCompiler(ElasticsearchFeatures.ES_6_0)
 
     protected class YearDoc(field: BoundField<BaseDocSource, Nothing>) : SubDocument(field) {
         val year by int()
@@ -64,4 +41,23 @@ abstract class BaseExpressionTest : BaseTest() {
         var name by MovieDoc.name.required()
     }
 
+    protected fun Expression<Serializer.ObjectCtx>.compile(): Map<String, Any?> {
+        val obj = serializer.obj {
+            compiler.visit(this, this@compile)
+        }
+        return obj.shouldBeInstanceOf<TestSerializer.ObjectCtx>().toMap()
+    }
+
+    protected fun Expression<Serializer.ArrayCtx>.compile(): List<Any?> {
+        val arr = serializer.array {
+            compiler.visit(this, this@compile)
+        }
+        return arr.shouldBeInstanceOf<TestSerializer.ArrayCtx>().toList()
+    }
+
+    protected fun checkClone(expression: Expression<*>) {
+        val clone = expression.clone()
+        clone.shouldNotBeSameInstanceAs(expression)
+        clone shouldBe expression
+    }
 }
