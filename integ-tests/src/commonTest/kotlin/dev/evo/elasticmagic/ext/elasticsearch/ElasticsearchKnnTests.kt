@@ -12,7 +12,7 @@ import kotlin.test.Test
 
 object HotelDoc : Document() {
     val location by Field(
-        DenseVector(dims = 2, similarity = VectorSimilarity.L2_NORM),
+        DenseVector(dims = 2, similarity = VectorSimilarity.L2_NORM, index = true),
     )
 }
 
@@ -53,7 +53,14 @@ class ElasticsearchKnnTests : ElasticsearchTestBase() {
 
         withFixtures(HotelDoc, docSources, forcemerge = true) {
             val searchResult = SearchQuery(::HotelDocSource)
-                .knn(Knn(HotelDoc.location, queryVector = listOf(5F, 4F), k = 3))
+                .knn(
+                    Knn(
+                        HotelDoc.location,
+                        queryVector = listOf(5F, 4F),
+                        k = 3,
+                        numCandidates = 10,
+                    )
+                )
                 .search(index)
             searchResult.totalHits shouldBe 3
             val hits = searchResult.hits
