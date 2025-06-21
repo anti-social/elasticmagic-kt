@@ -37,13 +37,13 @@ dependencies {
 First you need to describe a document (represents a mapping in terms of Elasticsearch):
 
 ```kotlin
---8<-- "../samples/src/commonMain/kotlin/samples/started/UserDoc.kt"
+--8<-- "samples/src/commonMain/kotlin/samples/started/UserDoc.kt"
 ```
 
 Now create `ElasticsearchCluster` object. It is an entry point for executing search queries:
 
 ```kotlin
---8<-- "../samples/src/commonMain/kotlin/samples/started/Cluster.kt"
+--8<-- "samples/src/commonMain/kotlin/samples/started/Cluster.kt"
 ```
 
 Any `ElasticsearchCluster` needs an `ElasticsearchTransport`. We will use
@@ -55,31 +55,31 @@ Here are examples of creating transports for the cluster.
 JVM:
 
 ```kotlin
---8<-- "../samples/src/jvmMain/kotlin/samples/started/ClusterJvm.kt"
+--8<-- "samples/src/jvmMain/kotlin/samples/started/ClusterJvm.kt"
 ```
 
 Native:
 
 ```kotlin
---8<-- "../samples/src/nativeMain/kotlin/samples/started/ClusterNative.kt"
+--8<-- "samples/src/nativeMain/kotlin/samples/started/ClusterNative.kt"
 ```
 
 Create our index if it does not exist or update the mapping otherwise:
 
 ```kotlin
---8<-- "../samples/src/commonMain/kotlin/samples/started/EnsureIndexExists.kt"
+--8<-- "samples/src/commonMain/kotlin/samples/started/EnsureIndexExists.kt"
 ```
 
 Describe document sources and index them: 
 
 ```kotlin
---8<-- "../samples/src/commonMain/kotlin/samples/started/IndexDocs.kt"
+--8<-- "samples/src/commonMain/kotlin/samples/started/IndexDocs.kt"
 ```
 
 And finally we can search our data:
 
 ```kotlin
---8<-- "../samples/src/commonMain/kotlin/samples/started/Main.kt"
+--8<-- "samples/src/commonMain/kotlin/samples/started/Main.kt"
 ```
 
 ### Run the sample
