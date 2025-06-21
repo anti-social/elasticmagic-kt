@@ -600,7 +600,7 @@ Use it on your own risk</p>
 <span class="w">    </span><span class="n">mavenCentral</span><span class="p">()</span>
 <span class="p">}</span>
 
-<span class="kd">val</span><span class="w"> </span><span class="nv">elasticmagicVersion</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;0.3.0-5-g87366a2&quot;</span>
+<span class="kd">val</span><span class="w"> </span><span class="nv">elasticmagicVersion</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;0.3.0-6-g1afba5a&quot;</span>
 <span class="kd">val</span><span class="w"> </span><span class="nv">ktorVersion</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;3.0.3&quot;</span>
 
 <span class="n">dependencies</span><span class="w"> </span><span class="p">{</span>
@@ -616,29 +616,254 @@ Use it on your own risk</p>
 </code></pre></div>
 <h3 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">&para;</a></h3>
 <p>First you need to describe a document (represents a mapping in terms of Elasticsearch):</p>
-<div class="highlight"><pre><span></span><code>
+<div class="highlight"><pre><span></span><code><span class="k">package</span><span class="w"> </span><span class="nn">samples.started</span>
+
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.doc.Document</span>
+
+<span class="kd">object</span><span class="w"> </span><span class="nc">UserDoc</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Document</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">id</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">int</span><span class="p">()</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">name</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">keyword</span><span class="p">()</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">groups</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">keyword</span><span class="p">()</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">about</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">text</span><span class="p">()</span>
+<span class="p">}</span>
 </code></pre></div>
 <p>Now create <code>ElasticsearchCluster</code> object. It is an entry point for executing search queries:</p>
-<div class="highlight"><pre><span></span><code>
+<div class="highlight"><pre><span></span><code><span class="k">package</span><span class="w"> </span><span class="nn">samples.started</span>
+
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.ElasticsearchCluster</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.serde.kotlinx.JsonSerde</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.transport.ElasticsearchKtorTransport</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">DEFAULT_ELASTIC_URL</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;http://localhost:9200&quot;</span>
+<span class="kd">const</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">DEFAULT_ELASTIC_USER</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;elastic&quot;</span>
+
+<span class="kd">expect</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">esTransport</span><span class="p">:</span><span class="w"> </span><span class="n">ElasticsearchKtorTransport</span>
+<span class="kd">val</span><span class="w"> </span><span class="nv">cluster</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ElasticsearchCluster</span><span class="p">(</span><span class="n">esTransport</span><span class="p">,</span><span class="w"> </span><span class="n">serde</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">JsonSerde</span><span class="p">)</span>
+<span class="kd">val</span><span class="w"> </span><span class="nv">userIndex</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cluster</span><span class="o">[</span><span class="s">&quot;elasticmagic-samples_user&quot;</span><span class="o">]</span>
 </code></pre></div>
 <p>Any <code>ElasticsearchCluster</code> needs an <code>ElasticsearchTransport</code>. We will use
 the <code>ElasticsearchKtorTransport</code> that utilises <a href="https://ktor.io/docs/create-client.html">Ktor</a>
 http client.</p>
 <p>Here are examples of creating transports for the cluster.</p>
 <p>JVM:</p>
-<div class="highlight"><pre><span></span><code>
+<div class="highlight"><pre><span></span><code><span class="k">package</span><span class="w"> </span><span class="nn">samples.started</span>
+
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.transport.Auth</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.transport.ElasticsearchKtorTransport</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.transport.Request</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.transport.Response</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.transport.PlainRequest</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.transport.PlainResponse</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.transport.Tracker</span>
+
+<span class="k">import</span><span class="w"> </span><span class="nn">io.ktor.client.engine.cio.CIO</span>
+
+<span class="k">import</span><span class="w"> </span><span class="nn">java.security.cert.X509Certificate</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">javax.net.ssl.X509TrustManager</span>
+
+<span class="k">import</span><span class="w"> </span><span class="nn">kotlin.time.Duration</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">kotlin.getOrThrow</span>
+
+<span class="kd">actual</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">esTransport</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ElasticsearchKtorTransport</span><span class="p">(</span>
+<span class="w">    </span><span class="n">System</span><span class="p">.</span><span class="na">getenv</span><span class="p">(</span><span class="s">&quot;ELASTIC_URL&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">?:</span><span class="w"> </span><span class="n">DEFAULT_ELASTIC_URL</span><span class="p">,</span>
+<span class="w">    </span><span class="n">engine</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CIO</span><span class="p">.</span><span class="na">create</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">https</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">trustManager</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">object</span><span class="p">:</span><span class="w"> </span><span class="n">X509TrustManager</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">checkClientTrusted</span><span class="p">(</span>
+<span class="w">                    </span><span class="n">chain</span><span class="p">:</span><span class="w"> </span><span class="n">Array</span><span class="o">&lt;</span><span class="k">out</span><span class="w"> </span><span class="n">X509Certificate</span><span class="o">&gt;?</span><span class="p">,</span><span class="w"> </span><span class="n">authType</span><span class="p">:</span><span class="w"> </span><span class="kt">String?</span>
+<span class="w">                </span><span class="p">)</span><span class="w"> </span><span class="p">{}</span>
+
+<span class="w">                </span><span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">checkServerTrusted</span><span class="p">(</span>
+<span class="w">                    </span><span class="n">chain</span><span class="p">:</span><span class="w"> </span><span class="n">Array</span><span class="o">&lt;</span><span class="k">out</span><span class="w"> </span><span class="n">X509Certificate</span><span class="o">&gt;?</span><span class="p">,</span><span class="w"> </span><span class="n">authType</span><span class="p">:</span><span class="w"> </span><span class="kt">String?</span>
+<span class="w">                </span><span class="p">)</span><span class="w"> </span><span class="p">{}</span>
+
+<span class="w">                </span><span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">getAcceptedIssuers</span><span class="p">():</span><span class="w"> </span><span class="n">Array</span><span class="o">&lt;</span><span class="n">X509Certificate</span><span class="o">&gt;?</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">null</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">elasticUser</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">System</span><span class="p">.</span><span class="na">getenv</span><span class="p">(</span><span class="s">&quot;ELASTIC_USER&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">?:</span><span class="w"> </span><span class="n">DEFAULT_ELASTIC_USER</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">elasticPassword</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">System</span><span class="p">.</span><span class="na">getenv</span><span class="p">(</span><span class="s">&quot;ELASTIC_PASSWORD&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">elasticPassword</span><span class="p">.</span><span class="na">isNullOrEmpty</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">auth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Auth</span><span class="p">.</span><span class="na">Basic</span><span class="p">(</span><span class="n">elasticUser</span><span class="p">,</span><span class="w"> </span><span class="n">elasticPassword</span><span class="p">)</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">System</span><span class="p">.</span><span class="na">getenv</span><span class="p">(</span><span class="s">&quot;ELASTICMAGIC_DEBUG&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">trackers</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">listOf</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="k">object</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="nc">Tracker</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">requiresTextContent</span><span class="p">(</span><span class="n">request</span><span class="p">:</span><span class="w"> </span><span class="n">Request</span><span class="o">&lt;*</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="o">*&gt;</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span>
+
+<span class="w">                </span><span class="kd">override</span><span class="w"> </span><span class="kd">suspend</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">onRequest</span><span class="p">(</span><span class="n">request</span><span class="p">:</span><span class="w"> </span><span class="n">PlainRequest</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                    </span><span class="n">println</span><span class="p">(</span><span class="s">&quot;&gt;&gt;&gt;&quot;</span><span class="p">)</span>
+<span class="w">                    </span><span class="n">println</span><span class="p">(</span><span class="s">&quot;</span><span class="si">${</span><span class="n">request</span><span class="p">.</span><span class="na">method</span><span class="si">}</span><span class="s"> </span><span class="si">${</span><span class="n">request</span><span class="p">.</span><span class="na">path</span><span class="p">.</span><span class="na">ifEmpty</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="s">&quot;/&quot;</span><span class="w"> </span><span class="p">}</span><span class="si">}</span><span class="s">&quot;</span><span class="p">)</span>
+<span class="w">                    </span><span class="n">println</span><span class="p">(</span><span class="n">request</span><span class="p">.</span><span class="na">textContent</span><span class="p">)</span>
+<span class="w">                </span><span class="p">}</span>
+
+<span class="w">                </span><span class="kd">override</span><span class="w"> </span><span class="kd">suspend</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">onResponse</span><span class="p">(</span><span class="n">responseResult</span><span class="p">:</span><span class="w"> </span><span class="n">Result</span><span class="o">&lt;</span><span class="n">PlainResponse</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="n">duration</span><span class="p">:</span><span class="w"> </span><span class="n">Duration</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                    </span><span class="n">responseResult</span>
+<span class="w">                        </span><span class="p">.</span><span class="na">onSuccess</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">response</span><span class="w"> </span><span class="o">-&gt;</span>
+<span class="w">                            </span><span class="n">println</span><span class="p">(</span><span class="s">&quot;&lt;&lt;&lt; </span><span class="si">${</span><span class="n">response</span><span class="p">.</span><span class="na">statusCode</span><span class="si">}</span><span class="s">: </span><span class="si">${</span><span class="n">duration</span><span class="si">}</span><span class="s">&quot;</span><span class="p">)</span>
+<span class="w">                            </span><span class="n">response</span><span class="p">.</span><span class="na">headers</span><span class="p">.</span><span class="na">forEach</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">header</span><span class="w"> </span><span class="o">-&gt;</span>
+<span class="w">                                </span><span class="n">println</span><span class="p">(</span><span class="s">&quot;&lt; </span><span class="si">${</span><span class="n">header</span><span class="p">.</span><span class="na">key</span><span class="si">}</span><span class="s">: </span><span class="si">${</span><span class="n">header</span><span class="p">.</span><span class="na">value</span><span class="si">}</span><span class="s">&quot;</span><span class="p">)</span>
+<span class="w">                            </span><span class="p">}</span>
+<span class="w">                            </span><span class="n">println</span><span class="p">(</span><span class="n">response</span><span class="p">.</span><span class="na">contentType</span><span class="p">)</span>
+<span class="w">                            </span><span class="n">println</span><span class="p">(</span><span class="n">response</span><span class="p">.</span><span class="na">content</span><span class="p">)</span>
+<span class="w">                        </span><span class="p">}</span>
+<span class="w">                        </span><span class="p">.</span><span class="na">onFailure</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">exception</span><span class="w"> </span><span class="o">-&gt;</span>
+<span class="w">                            </span><span class="n">println</span><span class="p">(</span><span class="s">&quot;!!! </span><span class="si">$</span><span class="n">exception</span><span class="s">&quot;</span><span class="p">)</span>
+<span class="w">                        </span><span class="p">}</span>
+<span class="w">                </span><span class="p">}</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
 </code></pre></div>
 <p>Native:</p>
-<div class="highlight"><pre><span></span><code>
+<div class="highlight"><pre><span></span><code><span class="k">package</span><span class="w"> </span><span class="nn">samples.started</span>
+
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.serde.kotlinx.JsonSerde</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.transport.Auth</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.transport.ElasticsearchKtorTransport</span>
+
+<span class="k">import</span><span class="w"> </span><span class="nn">io.ktor.client.engine.curl.Curl</span>
+
+<span class="k">import</span><span class="w"> </span><span class="nn">kotlinx.cinterop.toKString</span>
+
+<span class="k">import</span><span class="w"> </span><span class="nn">platform.posix.getenv</span>
+
+<span class="nd">@OptIn</span><span class="p">(</span><span class="n">kotlinx</span><span class="p">.</span><span class="na">cinterop</span><span class="p">.</span><span class="na">ExperimentalForeignApi</span><span class="o">::</span><span class="n">class</span><span class="p">)</span>
+<span class="kd">actual</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">esTransport</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ElasticsearchKtorTransport</span><span class="p">(</span>
+<span class="w">    </span><span class="n">getenv</span><span class="p">(</span><span class="s">&quot;ELASTIC_URL&quot;</span><span class="p">)</span><span class="o">?.</span><span class="na">toKString</span><span class="p">()</span><span class="w"> </span><span class="o">?:</span><span class="w"> </span><span class="n">DEFAULT_ELASTIC_URL</span><span class="p">,</span>
+<span class="w">    </span><span class="n">engine</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Curl</span><span class="p">.</span><span class="na">create</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">sslVerify</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">elasticUser</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">getenv</span><span class="p">(</span><span class="s">&quot;ELASTIC_USER&quot;</span><span class="p">)</span><span class="o">?.</span><span class="na">toKString</span><span class="p">()</span><span class="w"> </span><span class="o">?:</span><span class="w"> </span><span class="n">DEFAULT_ELASTIC_USER</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">elasticPassword</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">getenv</span><span class="p">(</span><span class="s">&quot;ELASTIC_PASSWORD&quot;</span><span class="p">)</span><span class="o">?.</span><span class="na">toKString</span><span class="p">()</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">elasticPassword</span><span class="p">.</span><span class="na">isNullOrEmpty</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">auth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Auth</span><span class="p">.</span><span class="na">Basic</span><span class="p">(</span><span class="n">elasticUser</span><span class="p">,</span><span class="w"> </span><span class="n">elasticPassword</span><span class="p">)</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
 </code></pre></div>
 <p>Create our index if it does not exist or update the mapping otherwise:</p>
-<div class="highlight"><pre><span></span><code>
+<div class="highlight"><pre><span></span><code><span class="k">package</span><span class="w"> </span><span class="nn">samples.started</span>
+
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.Params</span>
+
+<span class="kd">suspend</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">ensureIndexExists</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">cluster</span><span class="p">.</span><span class="na">indexExists</span><span class="p">(</span><span class="n">userIndex</span><span class="p">.</span><span class="na">name</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">cluster</span><span class="p">.</span><span class="na">createIndex</span><span class="p">(</span>
+<span class="w">            </span><span class="n">userIndex</span><span class="p">.</span><span class="na">name</span><span class="p">,</span>
+<span class="w">            </span><span class="n">mapping</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">UserDoc</span><span class="p">,</span>
+<span class="w">            </span><span class="n">settings</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Params</span><span class="p">(</span>
+<span class="w">                </span><span class="s">&quot;index.number_of_replicas&quot;</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="m">0</span><span class="p">,</span>
+<span class="w">            </span><span class="p">),</span>
+<span class="w">        </span><span class="p">)</span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">cluster</span><span class="p">.</span><span class="na">updateMapping</span><span class="p">(</span><span class="n">userIndex</span><span class="p">.</span><span class="na">name</span><span class="p">,</span><span class="w"> </span><span class="n">mapping</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">UserDoc</span><span class="p">)</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
 </code></pre></div>
 <p>Describe document sources and index them: </p>
-<div class="highlight"><pre><span></span><code>
+<div class="highlight"><pre><span></span><code><span class="k">package</span><span class="w"> </span><span class="nn">samples.started</span>
+
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.Refresh</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.doc.DynDocSource</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.bulk.IndexAction</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.bulk.IdActionMeta</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.doc.list</span>
+
+<span class="kd">suspend</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">indexDocs</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">docs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">listOf</span><span class="p">(</span>
+<span class="w">        </span><span class="n">DynDocSource</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="c1">// Note that you can&#39;t write like following (it just won&#39;t compile):</span>
+<span class="w">            </span><span class="c1">// it[UserDoc.id] = &quot;0&quot;</span>
+<span class="w">            </span><span class="c1">// it[UserDoc.name] = 123</span>
+<span class="w">            </span><span class="c1">// it[UserDoc.groups.list()] = &quot;root&quot;</span>
+<span class="w">            </span><span class="nb">it</span><span class="o">[</span><span class="n">UserDoc</span><span class="p">.</span><span class="na">id</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span>
+<span class="w">            </span><span class="nb">it</span><span class="o">[</span><span class="n">UserDoc</span><span class="p">.</span><span class="na">name</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;root&quot;</span>
+<span class="w">            </span><span class="nb">it</span><span class="o">[</span><span class="n">UserDoc</span><span class="p">.</span><span class="na">groups</span><span class="p">.</span><span class="na">list</span><span class="p">()</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mutableListOf</span><span class="p">(</span><span class="s">&quot;root&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;wheel&quot;</span><span class="p">)</span>
+<span class="w">            </span><span class="nb">it</span><span class="o">[</span><span class="n">UserDoc</span><span class="p">.</span><span class="na">about</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Super user&quot;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="n">DynDocSource</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nb">it</span><span class="o">[</span><span class="n">UserDoc</span><span class="p">.</span><span class="na">id</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span>
+<span class="w">            </span><span class="nb">it</span><span class="o">[</span><span class="n">UserDoc</span><span class="p">.</span><span class="na">name</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;daemon&quot;</span>
+<span class="w">            </span><span class="nb">it</span><span class="o">[</span><span class="n">UserDoc</span><span class="p">.</span><span class="na">groups</span><span class="p">.</span><span class="na">list</span><span class="p">()</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mutableListOf</span><span class="p">(</span><span class="s">&quot;daemon&quot;</span><span class="p">)</span>
+<span class="w">            </span><span class="nb">it</span><span class="o">[</span><span class="n">UserDoc</span><span class="p">.</span><span class="na">about</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Daemon user&quot;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="n">DynDocSource</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nb">it</span><span class="o">[</span><span class="n">UserDoc</span><span class="p">.</span><span class="na">id</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">65535</span>
+<span class="w">            </span><span class="nb">it</span><span class="o">[</span><span class="n">UserDoc</span><span class="p">.</span><span class="na">name</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;nobody&quot;</span>
+<span class="w">            </span><span class="nb">it</span><span class="o">[</span><span class="n">UserDoc</span><span class="p">.</span><span class="na">groups</span><span class="p">.</span><span class="na">list</span><span class="p">()</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mutableListOf</span><span class="p">(</span><span class="s">&quot;nobody&quot;</span><span class="p">)</span>
+<span class="w">            </span><span class="nb">it</span><span class="o">[</span><span class="n">UserDoc</span><span class="p">.</span><span class="na">about</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Just nobody&quot;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="n">DynDocSource</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nb">it</span><span class="o">[</span><span class="n">UserDoc</span><span class="p">.</span><span class="na">id</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">65534</span>
+<span class="w">            </span><span class="nb">it</span><span class="o">[</span><span class="n">UserDoc</span><span class="p">.</span><span class="na">name</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;noone&quot;</span>
+<span class="w">            </span><span class="nb">it</span><span class="o">[</span><span class="n">UserDoc</span><span class="p">.</span><span class="na">groups</span><span class="p">.</span><span class="na">list</span><span class="p">()</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mutableListOf</span><span class="p">(</span><span class="s">&quot;nobody&quot;</span><span class="p">)</span>
+<span class="w">            </span><span class="nb">it</span><span class="o">[</span><span class="n">UserDoc</span><span class="p">.</span><span class="na">about</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Another nobody&quot;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">    </span><span class="p">)</span>
+<span class="w">    </span><span class="c1">// Create index actions, make bulk request and refresh the index</span>
+<span class="w">    </span><span class="n">userIndex</span><span class="p">.</span><span class="na">bulk</span><span class="p">(</span>
+<span class="w">        </span><span class="n">docs</span><span class="p">.</span><span class="na">map</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">doc</span><span class="w"> </span><span class="o">-&gt;</span>
+<span class="w">            </span><span class="n">IndexAction</span><span class="p">(</span>
+<span class="w">                </span><span class="n">meta</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">IdActionMeta</span><span class="p">(</span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">doc</span><span class="o">[</span><span class="n">UserDoc</span><span class="p">.</span><span class="na">id</span><span class="o">]</span><span class="p">.</span><span class="na">toString</span><span class="p">()),</span>
+<span class="w">                </span><span class="n">source</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">doc</span><span class="p">,</span>
+<span class="w">            </span><span class="p">)</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="n">refresh</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Refresh</span><span class="p">.</span><span class="na">TRUE</span><span class="p">,</span>
+<span class="w">    </span><span class="p">)</span>
+<span class="p">}</span>
 </code></pre></div>
 <p>And finally we can search our data:</p>
-<div class="highlight"><pre><span></span><code>
+<div class="highlight"><pre><span></span><code><span class="k">package</span><span class="w"> </span><span class="nn">samples.started</span>
+
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.SearchQuery</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.SearchQueryResult</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.aggs.TermsAgg</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.aggs.TermsAggResult</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.doc.DynDocSource</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.query.match</span>
+
+<span class="k">import</span><span class="w"> </span><span class="nn">kotlinx.coroutines.runBlocking</span>
+
+<span class="kd">fun</span><span class="w"> </span><span class="nf">printUsers</span><span class="p">(</span><span class="n">result</span><span class="p">:</span><span class="w"> </span><span class="n">SearchQueryResult</span><span class="o">&lt;</span><span class="n">DynDocSource</span><span class="o">&gt;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">println</span><span class="p">(</span><span class="s">&quot;Found: </span><span class="si">${</span><span class="n">result</span><span class="p">.</span><span class="na">totalHits</span><span class="si">}</span><span class="s"> users&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">hit</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">result</span><span class="p">.</span><span class="na">hits</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kd">val</span><span class="w"> </span><span class="nv">user</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">hit</span><span class="p">.</span><span class="na">source</span><span class="o">!!</span>
+<span class="w">        </span><span class="n">println</span><span class="p">(</span><span class="s">&quot;  </span><span class="si">${</span><span class="n">user</span><span class="o">[</span><span class="n">UserDoc</span><span class="p">.</span><span class="na">id</span><span class="o">]</span><span class="si">}</span><span class="s">: </span><span class="si">${</span><span class="n">user</span><span class="o">[</span><span class="n">UserDoc</span><span class="p">.</span><span class="na">name</span><span class="o">]</span><span class="si">}</span><span class="s">&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="n">println</span><span class="p">()</span>
+<span class="p">}</span>
+
+<span class="kd">fun</span><span class="w"> </span><span class="nf">printGroupsAgg</span><span class="p">(</span><span class="n">aggResult</span><span class="p">:</span><span class="w"> </span><span class="n">TermsAggResult</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">println</span><span class="p">(</span><span class="s">&quot;Groups aggregation&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">bucket</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">aggResult</span><span class="p">.</span><span class="na">buckets</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">println</span><span class="p">(</span><span class="s">&quot;  </span><span class="si">${</span><span class="n">bucket</span><span class="p">.</span><span class="na">key</span><span class="si">}</span><span class="s">: </span><span class="si">${</span><span class="n">bucket</span><span class="p">.</span><span class="na">docCount</span><span class="si">}</span><span class="s">&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">fun</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">runBlocking</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">ensureIndexExists</span><span class="p">()</span>
+<span class="w">    </span><span class="n">indexDocs</span><span class="p">()</span>
+
+<span class="w">    </span><span class="c1">// Find all users</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">sq</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SearchQuery</span><span class="p">()</span>
+<span class="w">    </span><span class="n">printUsers</span><span class="p">(</span><span class="n">sq</span><span class="p">.</span><span class="na">search</span><span class="p">(</span><span class="n">userIndex</span><span class="p">))</span>
+
+<span class="w">    </span><span class="c1">// Find nobody users</span>
+<span class="w">    </span><span class="n">sq</span><span class="p">.</span><span class="na">query</span><span class="p">(</span><span class="n">UserDoc</span><span class="p">.</span><span class="na">about</span><span class="p">.</span><span class="na">match</span><span class="p">(</span><span class="s">&quot;nobody&quot;</span><span class="p">))</span>
+<span class="w">    </span><span class="n">printUsers</span><span class="p">(</span><span class="n">sq</span><span class="p">.</span><span class="na">search</span><span class="p">(</span><span class="n">userIndex</span><span class="p">))</span>
+
+<span class="w">    </span><span class="c1">// Build an aggregation that counts users inside a group</span>
+<span class="w">    </span><span class="n">printGroupsAgg</span><span class="p">(</span>
+<span class="w">        </span><span class="n">SearchQuery</span><span class="p">()</span>
+<span class="w">            </span><span class="p">.</span><span class="na">aggs</span><span class="p">(</span><span class="s">&quot;groups&quot;</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">TermsAgg</span><span class="p">(</span><span class="n">UserDoc</span><span class="p">.</span><span class="na">groups</span><span class="p">))</span>
+<span class="w">            </span><span class="p">.</span><span class="na">search</span><span class="p">(</span><span class="n">userIndex</span><span class="p">)</span>
+<span class="w">            </span><span class="p">.</span><span class="na">agg</span><span class="p">(</span><span class="s">&quot;groups&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="p">)</span>
+<span class="p">}</span>
 </code></pre></div>
 <h3 id="run-the-sample">Run the sample<a class="headerlink" href="#run-the-sample" title="Permanent link">&para;</a></h3>
 <p>You can find fully working example inside <a href="https://github.com/anti-social/elasticmagic-kt/tree/master/samples/src/commonMain/kotlin/samples/started">samples</a></p>

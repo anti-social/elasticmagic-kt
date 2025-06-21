@@ -769,15 +769,51 @@ a single mapping.</p>
 <h3 id="general-way">General way<a class="headerlink" href="#general-way" title="Permanent link">&para;</a></h3>
 <p>You can use <a href="https://anti-social.github.io/elasticmagic-kt/api/latest/elasticmagic/dev.evo.elasticmagic.doc/-field-set/field.html">field</a>
 method to describe a field in a document:</p>
-<div class="highlight"><pre><span></span><code>
+<div class="highlight"><pre><span></span><code><span class="k">package</span><span class="w"> </span><span class="nn">samples.document.field</span>
+
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.doc.Document</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.types.BooleanType</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.types.IntType</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.types.KeywordType</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.types.TextType</span>
+
+<span class="kd">object</span><span class="w"> </span><span class="nc">UserDoc</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Document</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// It is possible to pass field options via shortcuts like `index`</span>
+<span class="w">    </span><span class="c1">// or specifying `params` argument which can include any options (see `about` field below)</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">id</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">field</span><span class="p">(</span><span class="n">IntType</span><span class="p">,</span><span class="w"> </span><span class="n">index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w"> </span><span class="n">store</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">)</span>
+
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">login</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">field</span><span class="p">(</span><span class="n">KeywordType</span><span class="p">)</span>
+
+<span class="w">    </span><span class="c1">// By default the field name is equal to the property name</span>
+<span class="w">    </span><span class="c1">// but that behaviour can be changed</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">isAdmin</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">field</span><span class="p">(</span><span class="s">&quot;is_admin&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">BooleanType</span><span class="p">)</span>
+
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">about</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">field</span><span class="p">(</span><span class="n">TextType</span><span class="p">,</span><span class="w"> </span><span class="n">params</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mapOf</span><span class="p">(</span><span class="s">&quot;norms&quot;</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="kc">false</span><span class="p">))</span>
+<span class="p">}</span>
 </code></pre></div>
 <p>Fields can be used when building a search query:</p>
-<div class="highlight"><pre><span></span><code>
+<div class="highlight"><pre><span></span><code><span class="k">package</span><span class="w"> </span><span class="nn">samples.document.field</span>
+
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.SearchQuery</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.query.match</span>
+
+<span class="kd">val</span><span class="w"> </span><span class="nv">fakeAdmins</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SearchQuery</span><span class="p">(</span><span class="n">UserDoc</span><span class="p">.</span><span class="na">about</span><span class="p">.</span><span class="na">match</span><span class="p">(</span><span class="s">&quot;fake&quot;</span><span class="p">))</span>
+<span class="w">    </span><span class="p">.</span><span class="na">filter</span><span class="p">(</span><span class="n">UserDoc</span><span class="p">.</span><span class="na">isAdmin</span><span class="p">.</span><span class="na">eq</span><span class="p">(</span><span class="kc">true</span><span class="p">))</span>
+<span class="w">    </span><span class="p">.</span><span class="na">sort</span><span class="p">(</span><span class="n">UserDoc</span><span class="p">.</span><span class="na">id</span><span class="p">)</span>
 </code></pre></div>
 <h3 id="using-shortcuts">Using shortcuts<a class="headerlink" href="#using-shortcuts" title="Permanent link">&para;</a></h3>
 <p>There are some nice shortcuts for popular field types. 
 You don't need to import all those field types:</p>
-<div class="highlight"><pre><span></span><code>
+<div class="highlight"><pre><span></span><code><span class="k">package</span><span class="w"> </span><span class="nn">samples.document.shortcuts</span>
+
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.doc.Document</span>
+
+<span class="kd">object</span><span class="w"> </span><span class="nc">UserDoc</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Document</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">id</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">int</span><span class="p">(</span><span class="n">index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w"> </span><span class="n">store</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">)</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">login</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">keyword</span><span class="p">()</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">isAdmin</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">boolean</span><span class="p">(</span><span class="s">&quot;is_admin&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">about</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">text</span><span class="p">(</span><span class="n">norms</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span><span class="p">)</span>
+<span class="p">}</span>
 </code></pre></div>
 <p>Full list of available shortcuts can be found
 <a href="https://anti-social.github.io/elasticmagic-kt/api/latest/elasticmagic/dev.evo.elasticmagic.doc/-base-document/index.html">here</a></p>
@@ -785,24 +821,78 @@ You don't need to import all those field types:</p>
 <p>It is possible to map field values to kotlin enums.
 Use <a href="https://anti-social.github.io/elasticmagic-kt/api/latest/elasticmagic/dev.evo.elasticmagic.doc/enum.html">enum</a>
 extension function for that:</p>
-<div class="highlight"><pre><span></span><code>
+<div class="highlight"><pre><span></span><code><span class="k">package</span><span class="w"> </span><span class="nn">samples.document.enums</span>
+
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.doc.Document</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.doc.enum</span>
+
+<span class="kd">enum</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">UserStatus</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">ACTIVE</span><span class="p">,</span><span class="w"> </span><span class="n">LOCKED</span><span class="p">,</span><span class="w"> </span><span class="n">NO_PASSWORD</span>
+<span class="p">}</span>
+
+<span class="kd">object</span><span class="w"> </span><span class="nc">UserDoc</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Document</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">status</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">keyword</span><span class="p">().</span><span class="na">enum</span><span class="o">&lt;</span><span class="n">UserStatus</span><span class="o">&gt;</span><span class="p">()</span>
+<span class="p">}</span>
 </code></pre></div>
 <p>Now you are able to use enum variants in your search queries:</p>
-<div class="highlight"><pre><span></span><code>
+<div class="highlight"><pre><span></span><code><span class="k">package</span><span class="w"> </span><span class="nn">samples.document.enums</span>
+
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.SearchQuery</span>
+
+<span class="kd">val</span><span class="w"> </span><span class="nv">q</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SearchQuery</span><span class="p">()</span>
+<span class="w">    </span><span class="p">.</span><span class="na">filter</span><span class="p">(</span>
+<span class="w">        </span><span class="n">UserDoc</span><span class="p">.</span><span class="na">status</span><span class="p">.</span><span class="na">eq</span><span class="p">(</span><span class="n">UserStatus</span><span class="p">.</span><span class="na">ACTIVE</span><span class="p">)</span>
+<span class="w">    </span><span class="p">)</span>
 </code></pre></div>
 <h3 id="sub-fields">Sub fields<a class="headerlink" href="#sub-fields" title="Permanent link">&para;</a></h3>
 <p>It is possible to define <a href="https://anti-social.github.io/elasticmagic-kt/api/latest/elasticmagic/dev.evo.elasticmagic.doc/-sub-fields/index.html">sub-fields</a>
 for any simple field:</p>
-<div class="highlight"><pre><span></span><code>
+<div class="highlight"><pre><span></span><code><span class="k">package</span><span class="w"> </span><span class="nn">samples.document.subfields</span>
+
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.doc.BoundField</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.doc.Document</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.doc.SubFields</span>
+
+<span class="kd">class</span><span class="w"> </span><span class="nc">AboutSubFields</span><span class="p">(</span><span class="n">field</span><span class="p">:</span><span class="w"> </span><span class="n">BoundField</span><span class="o">&lt;</span><span class="kt">String</span><span class="p">,</span><span class="w"> </span><span class="kt">String</span><span class="o">&gt;</span><span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">SubFields</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span><span class="p">(</span><span class="n">field</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">sort</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">keyword</span><span class="p">(</span><span class="n">normalizer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;lowercase&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">autocomplete</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">text</span><span class="p">(</span><span class="n">analyzer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;autocomplete&quot;</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="kd">object</span><span class="w"> </span><span class="nc">UserDoc</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Document</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">about</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">text</span><span class="p">().</span><span class="na">subFields</span><span class="p">(</span><span class="o">::</span><span class="n">AboutSubFields</span><span class="p">)</span>
+<span class="p">}</span>
 </code></pre></div>
 <p>Sub-fields also can be used in search queries:</p>
-<div class="highlight"><pre><span></span><code>
+<div class="highlight"><pre><span></span><code><span class="k">package</span><span class="w"> </span><span class="nn">samples.document.subfields</span>
+
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.SearchQuery</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.query.match</span>
+
+<span class="kd">val</span><span class="w"> </span><span class="nv">maybeNiceUsers</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SearchQuery</span><span class="p">(</span><span class="n">UserDoc</span><span class="p">.</span><span class="na">about</span><span class="p">.</span><span class="na">autocomplete</span><span class="p">.</span><span class="na">match</span><span class="p">(</span><span class="s">&quot;nic&quot;</span><span class="p">))</span>
+<span class="w">    </span><span class="p">.</span><span class="na">sort</span><span class="p">(</span><span class="n">UserDoc</span><span class="p">.</span><span class="na">about</span><span class="p">.</span><span class="na">sort</span><span class="p">)</span>
 </code></pre></div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>It is a mistake to use sub-fields twice. Following example will fail at runtime.</p>
 </div>
-<div class="highlight"><pre><span></span><code>
+<div class="highlight"><pre><span></span><code><span class="k">package</span><span class="w"> </span><span class="nn">samples.document.subfields.mistake</span>
+
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.doc.BoundField</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.doc.Document</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.doc.SubFields</span>
+
+<span class="kd">class</span><span class="w"> </span><span class="nc">AboutSubFields</span><span class="p">(</span><span class="n">field</span><span class="p">:</span><span class="w"> </span><span class="n">BoundField</span><span class="o">&lt;</span><span class="kt">String</span><span class="p">,</span><span class="w"> </span><span class="kt">String</span><span class="o">&gt;</span><span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">SubFields</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span><span class="p">(</span><span class="n">field</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">sort</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">keyword</span><span class="p">(</span><span class="n">normalizer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;lowercase&quot;</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="kd">object</span><span class="w"> </span><span class="nc">UserDoc</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Document</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">about</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">text</span><span class="p">().</span><span class="na">subFields</span><span class="p">(</span><span class="o">::</span><span class="n">AboutSubFields</span><span class="p">)</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">description</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">text</span><span class="p">().</span><span class="na">subFields</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">about</span><span class="w"> </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">fun</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">println</span><span class="p">(</span><span class="n">UserDoc</span><span class="p">)</span>
+<span class="p">}</span>
 </code></pre></div>
 <details>
   <summary>Show an error</summary>
@@ -821,7 +911,25 @@ Caused by: java.lang.IllegalStateException: Field [description] has already been
 <h3 id="object">Object<a class="headerlink" href="#object" title="Permanent link">&para;</a></h3>
 <p>Object type just represents a hierarchical structure. It is similar to sub-fields but every field
 in a sub-document can have its own source value:</p>
-<div class="highlight"><pre><span></span><code>
+<div class="highlight"><pre><span></span><code><span class="k">package</span><span class="w"> </span><span class="nn">samples.document.`object`</span>
+
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.doc.BaseDocSource</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.doc.BoundField</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.doc.Document</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.SearchQuery</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.doc.SubDocument</span>
+
+<span class="kd">class</span><span class="w"> </span><span class="nc">GroupDoc</span><span class="p">(</span><span class="n">field</span><span class="p">:</span><span class="w"> </span><span class="n">BoundField</span><span class="o">&lt;</span><span class="n">BaseDocSource</span><span class="p">,</span><span class="w"> </span><span class="n">Nothing</span><span class="o">&gt;</span><span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">SubDocument</span><span class="p">(</span><span class="n">field</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">id</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">int</span><span class="p">()</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">name</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">keyword</span><span class="p">()</span>
+<span class="p">}</span>
+
+<span class="kd">object</span><span class="w"> </span><span class="nc">UserDoc</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Document</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">groups</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">obj</span><span class="p">(</span><span class="o">::</span><span class="n">GroupDoc</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="kd">val</span><span class="w"> </span><span class="nv">systemUsers</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SearchQuery</span><span class="p">()</span>
+<span class="w">    </span><span class="p">.</span><span class="na">filter</span><span class="p">(</span><span class="n">UserDoc</span><span class="p">.</span><span class="na">groups</span><span class="p">.</span><span class="na">name</span><span class="p">.</span><span class="na">eq</span><span class="p">(</span><span class="s">&quot;system&quot;</span><span class="p">))</span>
 </code></pre></div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -836,7 +944,36 @@ in a sub-document can have its own source value:</p>
 <p>Using nested type it you can work with sub-documents independently. 
 In the example below we find all users that have a <code>moderator</code> role with both 
 <code>article</code> and <code>order</code> permissions:</p>
-<div class="highlight"><pre><span></span><code>
+<div class="highlight"><pre><span></span><code><span class="k">package</span><span class="w"> </span><span class="nn">samples.document.nested</span>
+
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.doc.BaseDocSource</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.query.Bool</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.doc.BoundField</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.doc.Document</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.query.Nested</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.SearchQuery</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.doc.SubDocument</span>
+
+<span class="kd">class</span><span class="w"> </span><span class="nc">RoleDoc</span><span class="p">(</span><span class="n">field</span><span class="p">:</span><span class="w"> </span><span class="n">BoundField</span><span class="o">&lt;</span><span class="n">BaseDocSource</span><span class="p">,</span><span class="w"> </span><span class="n">Nothing</span><span class="o">&gt;</span><span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">SubDocument</span><span class="p">(</span><span class="n">field</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">name</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">keyword</span><span class="p">()</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">permissions</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">keyword</span><span class="p">()</span>
+<span class="p">}</span>
+
+<span class="kd">object</span><span class="w"> </span><span class="nc">UserDoc</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Document</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">roles</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">nested</span><span class="p">(</span><span class="o">::</span><span class="n">RoleDoc</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="kd">val</span><span class="w"> </span><span class="nv">moderators</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SearchQuery</span><span class="p">()</span>
+<span class="w">    </span><span class="p">.</span><span class="na">filter</span><span class="p">(</span>
+<span class="w">        </span><span class="n">Nested</span><span class="p">(</span>
+<span class="w">            </span><span class="n">UserDoc</span><span class="p">.</span><span class="na">roles</span><span class="p">,</span>
+<span class="w">            </span><span class="n">Bool</span><span class="p">.</span><span class="na">must</span><span class="p">(</span>
+<span class="w">                </span><span class="n">UserDoc</span><span class="p">.</span><span class="na">roles</span><span class="p">.</span><span class="na">name</span><span class="p">.</span><span class="na">eq</span><span class="p">(</span><span class="s">&quot;moderator&quot;</span><span class="p">),</span>
+<span class="w">                </span><span class="n">UserDoc</span><span class="p">.</span><span class="na">roles</span><span class="p">.</span><span class="na">permissions</span><span class="p">.</span><span class="na">eq</span><span class="p">(</span><span class="s">&quot;article&quot;</span><span class="p">),</span>
+<span class="w">                </span><span class="n">UserDoc</span><span class="p">.</span><span class="na">roles</span><span class="p">.</span><span class="na">permissions</span><span class="p">.</span><span class="na">eq</span><span class="p">(</span><span class="s">&quot;order&quot;</span><span class="p">),</span>
+<span class="w">            </span><span class="p">)</span>
+<span class="w">        </span><span class="p">)</span>
+<span class="w">    </span><span class="p">)</span>
 </code></pre></div>
 <p>If we tried to make it with <code>object</code> type, we would find users that have 
 a <code>moderator</code> role with <code>article</code> permission and <code>view</code> role with <code>order</code> permission.</p>
@@ -848,7 +985,24 @@ a <code>moderator</code> role with <code>article</code> permission and <code>vie
 <h2 id="parent-child-relationship">Parent-child relationship<a class="headerlink" href="#parent-child-relationship" title="Permanent link">&para;</a></h2>
 <p>Parent/child relationship allows you to define a link between documents inside an index.</p>
 <h3 id="join-field">Join field<a class="headerlink" href="#join-field" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code>
+<div class="highlight"><pre><span></span><code><span class="k">package</span><span class="w"> </span><span class="nn">samples.document.join</span>
+
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.doc.Document</span>
+
+<span class="kd">abstract</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">BaseQADoc</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Document</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">id</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">int</span><span class="p">()</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">content</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">text</span><span class="p">()</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">join</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">join</span><span class="p">(</span><span class="n">relations</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mapOf</span><span class="p">(</span><span class="s">&quot;question&quot;</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">listOf</span><span class="p">(</span><span class="s">&quot;answer&quot;</span><span class="p">)))</span>
+<span class="p">}</span>
+
+<span class="kd">object</span><span class="w"> </span><span class="nc">QuestionDoc</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">BaseQADoc</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">rating</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">float</span><span class="p">()</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">title</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">text</span><span class="p">()</span>
+<span class="p">}</span>
+
+<span class="kd">object</span><span class="w"> </span><span class="nc">AnswerDoc</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">BaseQADoc</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">accepted</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">boolean</span><span class="p">()</span>
+<span class="p">}</span>
 </code></pre></div>
 <p>Read more:</p>
 <ul>
@@ -859,7 +1013,20 @@ a <code>moderator</code> role with <code>article</code> permission and <code>vie
 <p>Elasticsearch mapping has <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-fields.html">metadata fields</a>.
 Some of those fields can be customized. In following example we make a value for <code>_routing</code>
 field required and keep only <code>name</code> field in document source:</p>
-<div class="highlight"><pre><span></span><code>
+<div class="highlight"><pre><span></span><code><span class="k">package</span><span class="w"> </span><span class="nn">samples.document.meta</span>
+
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.doc.Document</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.doc.MetaFields</span>
+
+<span class="kd">object</span><span class="w"> </span><span class="nc">ProductDoc</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Document</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">name</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">text</span><span class="p">()</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">companyId</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">int</span><span class="p">()</span>
+
+<span class="w">    </span><span class="kd">override</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">meta</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">object</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="nc">MetaFields</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kd">override</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">routing</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">RoutingField</span><span class="p">(</span><span class="n">required</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">)</span>
+<span class="w">        </span><span class="kd">override</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">source</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">SourceField</span><span class="p">(</span><span class="n">includes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">listOf</span><span class="p">(</span><span class="s">&quot;name&quot;</span><span class="p">))</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
 </code></pre></div>
 <p>Now you must provide the required routing value when indexing documents otherwise Elasticsearch
 will throw <code>routing_missing_exceptions</code>.</p>
@@ -867,7 +1034,11 @@ will throw <code>routing_missing_exceptions</code>.</p>
 <p>To create a mapping for multiple documents you can use
 <a href="https://anti-social.github.io/elasticmagic-kt/api/latest/elasticmagic/dev.evo.elasticmagic.doc/merge-documents.html">mergeDocuments</a>
 function. Documents that are merged should not contradict each other.</p>
-<div class="highlight"><pre><span></span><code>
+<div class="highlight"><pre><span></span><code><span class="k">package</span><span class="w"> </span><span class="nn">samples.document.join</span>
+
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.doc.mergeDocuments</span>
+
+<span class="kd">val</span><span class="w"> </span><span class="nv">QAMapping</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mergeDocuments</span><span class="p">(</span><span class="n">QuestionDoc</span><span class="p">,</span><span class="w"> </span><span class="n">AnswerDoc</span><span class="p">)</span>
 </code></pre></div>
 <p>Resulting document can be used when creating an index or updating an existing mapping. </p>
 

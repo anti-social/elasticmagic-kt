@@ -556,15 +556,108 @@ in the code. Specifying document source we can set up proper (de)serialization o
 See more info at <a href="https://github.com/anti-social/elasticmagic-kt/issues/1">issue</a></p>
 </div>
 <p>Suppose we have following <code>Document</code>:</p>
-<div class="highlight"><pre><span></span><code>
+<div class="highlight"><pre><span></span><code><span class="k">package</span><span class="w"> </span><span class="nn">samples.docsource</span>
+
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.doc.BaseDocSource</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.doc.BoundField</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.doc.Document</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.doc.SubDocument</span>
+
+<span class="kd">class</span><span class="w"> </span><span class="nc">RoleDoc</span><span class="p">(</span><span class="n">field</span><span class="p">:</span><span class="w"> </span><span class="n">BoundField</span><span class="o">&lt;</span><span class="n">BaseDocSource</span><span class="p">,</span><span class="w"> </span><span class="n">Nothing</span><span class="o">&gt;</span><span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">SubDocument</span><span class="p">(</span><span class="n">field</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">name</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">keyword</span><span class="p">()</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">permissions</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">keyword</span><span class="p">()</span>
+<span class="p">}</span>
+
+<span class="kd">object</span><span class="w"> </span><span class="nc">UserDoc</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Document</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">id</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">int</span><span class="p">()</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">login</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">keyword</span><span class="p">()</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">groups</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">keyword</span><span class="p">()</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">roles</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">nested</span><span class="p">(</span><span class="o">::</span><span class="n">RoleDoc</span><span class="p">)</span>
+<span class="p">}</span>
 </code></pre></div>
 <h2 id="dynamic">Dynamic<a class="headerlink" href="#dynamic" title="Permanent link">&para;</a></h2>
 <p>The most simple way to work with source documents is just to use <code>DynDocSource</code>:</p>
-<div class="highlight"><pre><span></span><code>
+<div class="highlight"><pre><span></span><code><span class="k">package</span><span class="w"> </span><span class="nn">samples.docsource.dynamic</span>
+
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.doc.DynDocSource</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.doc.list</span>
+
+<span class="k">import</span><span class="w"> </span><span class="nn">samples.docsource.UserDoc</span>
+
+<span class="kd">val</span><span class="w"> </span><span class="nv">root</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DynDocSource</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nb">it</span><span class="o">[</span><span class="n">UserDoc</span><span class="p">.</span><span class="na">id</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span>
+<span class="w">    </span><span class="nb">it</span><span class="o">[</span><span class="n">UserDoc</span><span class="p">.</span><span class="na">login</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;root&quot;</span>
+<span class="w">    </span><span class="nb">it</span><span class="o">[</span><span class="n">UserDoc</span><span class="p">.</span><span class="na">groups</span><span class="p">.</span><span class="na">list</span><span class="p">()</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mutableListOf</span><span class="p">(</span><span class="s">&quot;root&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;wheel&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="nb">it</span><span class="o">[</span><span class="n">UserDoc</span><span class="p">.</span><span class="na">roles</span><span class="p">.</span><span class="na">list</span><span class="p">()</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mutableListOf</span><span class="p">(</span>
+<span class="w">        </span><span class="n">DynDocSource</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nb">it</span><span class="o">[</span><span class="n">UserDoc</span><span class="p">.</span><span class="na">roles</span><span class="p">.</span><span class="na">name</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;superuser&quot;</span>
+<span class="w">            </span><span class="nb">it</span><span class="o">[</span><span class="n">UserDoc</span><span class="p">.</span><span class="na">roles</span><span class="p">.</span><span class="na">permissions</span><span class="p">.</span><span class="na">list</span><span class="p">()</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mutableListOf</span><span class="p">(</span><span class="s">&quot;*&quot;</span><span class="p">)</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="c1">// Int?</span>
+<span class="kd">val</span><span class="w"> </span><span class="nv">rootId</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">root</span><span class="o">[</span><span class="n">UserDoc</span><span class="p">.</span><span class="na">id</span><span class="o">]</span>
+
+<span class="c1">// List&lt;String?&gt;?</span>
+<span class="kd">val</span><span class="w"> </span><span class="nv">rootPermissions</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">root</span><span class="o">[</span><span class="n">UserDoc</span><span class="p">.</span><span class="na">roles</span><span class="p">.</span><span class="na">list</span><span class="p">()</span><span class="o">]</span>
+<span class="w">    </span><span class="o">?.</span><span class="na">mapNotNull</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nb">it</span><span class="o">?.</span><span class="na">get</span><span class="p">(</span><span class="n">UserDoc</span><span class="p">.</span><span class="na">roles</span><span class="p">.</span><span class="na">permissions</span><span class="p">.</span><span class="na">list</span><span class="p">())</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="o">?.</span><span class="na">flatten</span><span class="p">()</span>
 </code></pre></div>
 <h2 id="user-defined">User defined<a class="headerlink" href="#user-defined" title="Permanent link">&para;</a></h2>
 <p>This is the recommended way. You can explicitly specify document source:</p>
-<div class="highlight"><pre><span></span><code>
+<div class="highlight"><pre><span></span><code><span class="k">package</span><span class="w"> </span><span class="nn">samples.docsource.custom</span>
+
+<span class="k">import</span><span class="w"> </span><span class="nn">dev.evo.elasticmagic.doc.DocSource</span>
+
+<span class="k">import</span><span class="w"> </span><span class="nn">samples.docsource.UserDoc</span>
+
+<span class="c1">// Explicit types are specified for clarity. You can totally omit them</span>
+
+<span class="kd">class</span><span class="w"> </span><span class="nc">RoleDocSource</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">DocSource</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">name</span><span class="p">:</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">UserDoc</span><span class="p">.</span><span class="na">roles</span><span class="p">.</span><span class="na">name</span><span class="p">.</span><span class="na">required</span><span class="p">()</span>
+<span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">permissions</span><span class="p">:</span><span class="w"> </span><span class="n">MutableList</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">UserDoc</span><span class="p">.</span><span class="na">roles</span><span class="p">.</span><span class="na">permissions</span><span class="p">.</span><span class="na">required</span><span class="p">().</span><span class="na">list</span><span class="p">().</span><span class="na">required</span><span class="p">()</span>
+<span class="p">}</span>
+
+<span class="kd">class</span><span class="w"> </span><span class="nc">UserDocSource</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">DocSource</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// id and login fields must be present</span>
+<span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">id</span><span class="p">:</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">UserDoc</span><span class="p">.</span><span class="na">id</span><span class="p">.</span><span class="na">required</span><span class="p">()</span>
+<span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">login</span><span class="p">:</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">UserDoc</span><span class="p">.</span><span class="na">login</span><span class="p">.</span><span class="na">required</span><span class="p">()</span>
+
+<span class="w">    </span><span class="c1">// If groups field is missing or null default value will be used</span>
+<span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">groups</span><span class="p">:</span><span class="w"> </span><span class="n">MutableList</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">UserDoc</span><span class="p">.</span><span class="na">groups</span><span class="p">.</span><span class="na">required</span><span class="p">().</span><span class="na">list</span><span class="p">().</span><span class="na">default</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">mutableListOf</span><span class="p">()</span><span class="w"> </span><span class="p">}</span>
+
+<span class="w">    </span><span class="c1">// Optional list of a required RoleDocSource instances</span>
+<span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">roles</span><span class="p">:</span><span class="w"> </span><span class="n">MutableList</span><span class="o">&lt;</span><span class="n">RoleDocSource</span><span class="o">&gt;?</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">UserDoc</span><span class="p">.</span><span class="na">roles</span><span class="p">.</span><span class="na">source</span><span class="p">(</span><span class="o">::</span><span class="n">RoleDocSource</span><span class="p">).</span><span class="na">required</span><span class="p">().</span><span class="na">list</span><span class="p">()</span>
+<span class="p">}</span>
+
+<span class="kd">val</span><span class="w"> </span><span class="nv">nobody</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">UserDocSource</span><span class="p">().</span><span class="na">apply</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">65535</span>
+<span class="w">    </span><span class="n">login</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;nobody&quot;</span>
+<span class="p">}</span>
+
+<span class="kd">val</span><span class="w"> </span><span class="nv">nobodyHasGroups</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nobody</span><span class="p">.</span><span class="na">groups</span><span class="p">.</span><span class="na">isEmpty</span><span class="p">()</span>
+
+<span class="kd">val</span><span class="w"> </span><span class="nv">root</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">UserDocSource</span><span class="p">().</span><span class="na">apply</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span>
+<span class="w">    </span><span class="n">login</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;root&quot;</span>
+<span class="w">    </span><span class="n">groups</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mutableListOf</span><span class="p">(</span><span class="s">&quot;root&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;wheel&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="n">roles</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mutableListOf</span><span class="p">(</span>
+<span class="w">        </span><span class="n">RoleDocSource</span><span class="p">().</span><span class="na">apply</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;superuser&quot;</span>
+<span class="w">            </span><span class="n">permissions</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mutableListOf</span><span class="p">(</span><span class="s">&quot;*&quot;</span><span class="p">)</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="kd">val</span><span class="w"> </span><span class="nv">rootId</span><span class="p">:</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">root</span><span class="p">.</span><span class="na">id</span>
+
+<span class="kd">val</span><span class="w"> </span><span class="nv">rootPermissions</span><span class="p">:</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;?</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">root</span><span class="p">.</span><span class="na">roles</span>
+<span class="w">    </span><span class="o">?.</span><span class="na">flatMap</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nb">it</span><span class="p">.</span><span class="na">permissions</span>
+<span class="w">    </span><span class="p">}</span>
 </code></pre></div>
 
 
