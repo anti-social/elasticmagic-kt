@@ -122,6 +122,10 @@ jobs:
           es-major-version: 2
           es-image: opensearchproject/opensearch:2.17.1
           es-url: http://localhost:9200
+        - es-distribution: opensearch
+          es-major-version: 3
+          es-image: opensearchproject/opensearch:3.0.0
+          es-url: http://localhost:9200
     steps:
     - uses: actions/checkout@v4
 
