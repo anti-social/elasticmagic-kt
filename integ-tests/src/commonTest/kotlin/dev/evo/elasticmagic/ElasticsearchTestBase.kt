@@ -120,15 +120,15 @@ abstract class ElasticsearchTestBase : TestBase() {
             block()
         }
 
-        suspend fun ensureIndex(vararg mappings: Document, isKnn: Boolean = false) {
+        suspend fun ensureIndex(vararg mappings: Document, indexSettings: Params = Params()) {
             if (!cluster.indexExists(index.name)) {
                 cluster.createIndex(
                     index.name,
                     mapping = mergeDocuments(*mappings),
                     settings = Params(
+                        indexSettings,
                         "index.number_of_shards" to 1,
                         "index.number_of_replicas" to 0,
-                        "index.knn" to if (isKnn) true else null,
                     ),
                 )
             } else {
@@ -139,21 +139,27 @@ abstract class ElasticsearchTestBase : TestBase() {
         suspend fun TestScope.withFixtures(
             mapping: Document,
             fixtures: List<DocSourceAndMeta<*>>,
-            forcemerge: Boolean = false,
+            indexSettings: Params = Params(),
             cleanup: Boolean = true,
             block: suspend () -> Unit
         ) {
-            withFixtures(listOf(mapping), fixtures, forcemerge, cleanup, block)
+            withFixtures(
+                listOf(mapping),
+                fixtures,
+                indexSettings = indexSettings,
+                cleanup = cleanup,
+                block,
+            )
         }
 
         suspend fun TestScope.withFixtures(
             mappings: List<Document>,
             fixtures: List<DocSourceAndMeta<*>>,
-            forcemerge: Boolean = false,
+            indexSettings: Params = Params(),
             cleanup: Boolean = true,
             block: suspend () -> Unit
         ) {
-            ensureIndex(*mappings.toTypedArray())
+            ensureIndex(*mappings.toTypedArray(), indexSettings = indexSettings)
 
             val indexActions = fixtures.map { docAndMeta ->
                 IndexAction(
@@ -162,9 +168,6 @@ abstract class ElasticsearchTestBase : TestBase() {
                 )
             }
             val bulkResult = index.bulk(indexActions, refresh = Refresh.TRUE)
-            if (forcemerge) {
-                index.forceMerge()
-            }
             val deleteActions = mutableListOf<Action<*>>()
             val failedItems = mutableListOf<BulkError>()
             for (bulkItem in bulkResult.items) {

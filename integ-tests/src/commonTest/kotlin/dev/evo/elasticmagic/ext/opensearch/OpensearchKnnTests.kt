@@ -1,6 +1,7 @@
 package dev.evo.elasticmagic.ext.opensearch
 
 import dev.evo.elasticmagic.ElasticsearchTestBase
+import dev.evo.elasticmagic.SearchHit
 import dev.evo.elasticmagic.SearchQuery
 import dev.evo.elasticmagic.Version
 import dev.evo.elasticmagic.bulk.withActionMeta
@@ -9,6 +10,7 @@ import dev.evo.elasticmagic.doc.DocSource
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.nulls.shouldNotBeNull
 import kotlin.test.Test
+import kotlinx.coroutines.delay
 
 object HotelDoc : Document() {
     val location by Field(
@@ -48,14 +50,19 @@ class OpensearchKnnTests : ElasticsearchTestBase() {
             return@runTestWithSerdes
         }
 
-        withFixtures(HotelDoc, docSources, forcemerge = true) {
+        withFixtures(HotelDoc, docSources, indexSettings = mapOf("index.knn" to true)) {
+            index.forceMerge()
+            // FIXME: It looks like forcemerge is not enough to make vector data
+            // available for search. Find a right way to do that
+            delay(5_000)
+
             val searchResult = SearchQuery(
                 ::HotelDocSource,
                 Knn(HotelDoc.location, vector = listOf(5F, 4F), k = 3)
             ).search(index)
             searchResult.totalHits shouldBe 3
             val hits = searchResult.hits
-            hits.map { h -> h.id } shouldBe listOf("2", "1", "3")
+            hits.map(SearchHit<*>::id) shouldBe listOf("2", "1", "3")
             hits[0].source.shouldNotBeNull().location shouldBe listOf(5.2F, 3.9F)
             hits[1].source.shouldNotBeNull().location shouldBe listOf(5.2F, 4.4F)
             hits[2].source.shouldNotBeNull().location shouldBe listOf(4.9F, 3.4F)

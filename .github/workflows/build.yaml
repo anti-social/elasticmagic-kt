@@ -12,7 +12,8 @@ on:
 
 env:
   # TODO: Allow to pass logging level as a variable
-  GRADLE_ARGS: ""
+  # We need an info level to force native tests to show a stack trace
+  GRADLE_ARGS: "--info"
 
 jobs:
   build:
@@ -187,7 +188,7 @@ jobs:
     - name: Run samples JVM
       run: |
         set -eux
-        export ELASTIC_URL='${{ env.ELASTIC_URL }}'
+        export ELASTIC_URL='${{ matrix.es-url }}'
         export ELASTIC_USER='${{ env.ELASTIC_USER }}'
         export ELASTIC_PASSWORD='${{ env.ELASTIC_PASSWORD }}'
         ./gradlew run -p samples $GRADLE_ARGS
@@ -195,7 +196,7 @@ jobs:
     - name: Run samples native
       run: |
         set -eux
-        export ELASTIC_URL='${{ env.ELASTIC_URL }}'
+        export ELASTIC_URL='${{ matrix.es-url }}'
         export ELASTIC_USER='${{ env.ELASTIC_USER }}'
         export ELASTIC_PASSWORD='${{ env.ELASTIC_PASSWORD }}'
         ./gradlew runDebugExecutableLinuxX64 -p samples $GRADLE_ARGS
@@ -249,7 +250,10 @@ jobs:
   docs:
     needs: integ-tests
     if: |
+      github.event_name == 'pull_request' ||
       always() &&
+      github.event_name == 'push' &&
+      startsWith(github.ref, 'refs/tags/v') &&
       !contains(github.event.head_commit.message, '[skip docs]')
     runs-on: ubuntu-latest
     steps:
