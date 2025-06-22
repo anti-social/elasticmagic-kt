@@ -120,7 +120,7 @@ jobs:
         - es-distribution: opensearch
           es-major-version: 2
           es-image: opensearchproject/opensearch:2.17.1
-          es-url: https://localhost:9200
+          es-url: http://localhost:9200
     steps:
     - uses: actions/checkout@v4
 
@@ -132,6 +132,7 @@ jobs:
           -p 9200:9200 \
           -e "discovery.type=single-node" \
           -e "ES_JAVA_OPTS=-Xms128m -Xmx256m" \
+          -e "DISABLE_SECURITY_PLUGIN=true" \
           --health-cmd="curl ${{ matrix.es-url }} --insecure" \
           --health-interval=5s \
           --health-timeout=2s \
@@ -142,7 +143,6 @@ jobs:
           sleep 1
           echo -n .
         done
-        echo "ELASTIC_URL=http://localhost:9200" >> $GITHUB_ENV
 
     - name: Setup Elasticsearch password
       if: matrix.es-distribution == 'elasticsearch' && matrix.es-major-version >= 8
@@ -153,7 +153,6 @@ jobs:
             /usr/share/elasticsearch/bin/elasticsearch-reset-password --batch -u elastic | \
           awk 'BEGIN { FS=": "; } /^New value:/ { print $2; }' \
         )
-        echo "ELASTIC_URL=https://localhost:9200" >> $GITHUB_ENV
         echo "ELASTIC_USER=elastic" >> $GITHUB_ENV
         echo "ELASTIC_PASSWORD=$ELASTIC_PASSWORD" >> $GITHUB_ENV
 
@@ -161,7 +160,6 @@ jobs:
       if: matrix.es-distribution == 'opensearch'
       run: |
         set -eu
-        echo "ELASTIC_URL=https://localhost:9200" >> $GITHUB_ENV
         echo "ELASTIC_USER=admin" >> $GITHUB_ENV
         echo "ELASTIC_PASSWORD=admin" >> $GITHUB_ENV
 
@@ -181,7 +179,7 @@ jobs:
         set -eux
         # Allow self-signed certificates for JS engine: https://stackoverflow.com/a/66476468/473308
         export NODE_TLS_REJECT_UNAUTHORIZED=0
-        export ELASTIC_URL='${{ env.ELASTIC_URL }}'
+        export ELASTIC_URL='${{ matrix.es-url }}'
         export ELASTIC_USER='${{ env.ELASTIC_USER }}'
         export ELASTIC_PASSWORD='${{ env.ELASTIC_PASSWORD }}'
         ./gradlew :integ-tests:check -PshowPassedTests $GRADLE_ARGS
