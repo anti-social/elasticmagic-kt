@@ -1,8 +1,11 @@
+import org.gradle.api.tasks.testing.TestDescriptor
+import org.gradle.api.tasks.testing.TestResult
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestStackTraceFilter
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.dokka.gradle.DokkaMultiModuleTask
 import org.jetbrains.dokka.gradle.DokkaTaskPartial
+import org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeHostTest
 
 plugins {
     `maven-publish`
@@ -101,6 +104,26 @@ subprojects {
 
     tasks.findByName("jvmTest")?.run {
         finalizedBy("jacocoJVMTestReport")
+    }
+
+    tasks.withType<KotlinNativeHostTest>().configureEach {
+        afterTest(
+            KotlinClosure2<TestDescriptor, TestResult, Unit>({ descriptor, result ->
+                result.exception?.let { exc ->
+                    val lib = "dev.evo.elasticmagic"
+                    println()
+                    println("### $exc ###")
+                    println("### ---✀--- ###")
+                    exc.stackTrace
+                        .dropWhile { !it.className.startsWith(lib) }
+                        .dropLastWhile { !it.className.startsWith(lib) }
+                        .forEach {
+                            println("\tat $it")
+                        }
+                    println("### ---✀--- ###")
+                }
+            })
+        )
     }
 
     tasks.withType<Test>().configureEach {
