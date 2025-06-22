@@ -99,16 +99,7 @@ subprojects {
         }
     }
 
-    tasks.findByName("nativeTest")?.run {
-        outputs.upToDateWhen { false }
-    }
-    tasks.findByName("jsNodeTest")?.run {
-        outputs.upToDateWhen { false }
-    }
-
     tasks.findByName("jvmTest")?.run {
-        outputs.upToDateWhen { false }
-
         finalizedBy("jacocoJVMTestReport")
     }
 
@@ -134,6 +125,16 @@ subprojects {
     }
 
     afterEvaluate {
+        tasks.findByName("linuxX64Test")?.run {
+            outputs.upToDateWhen { false }
+        }
+        tasks.findByName("jsNodeTest")?.run {
+            outputs.upToDateWhen { false }
+        }
+        tasks.findByName("jvmTest")?.run {
+            outputs.upToDateWhen { false }
+        }
+
         val detektConfig = "$rootDir/detekt.yml"
         val detektOthers = tasks.register<io.gitlab.arturbosch.detekt.Detekt>("detektOthers") {
             config.from(detektConfig)
