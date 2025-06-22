@@ -250,6 +250,7 @@ jobs:
   docs:
     needs: integ-tests
     if: |
+      success() &&
       github.event_name == 'pull_request' ||
       always() &&
       github.event_name == 'push' &&
