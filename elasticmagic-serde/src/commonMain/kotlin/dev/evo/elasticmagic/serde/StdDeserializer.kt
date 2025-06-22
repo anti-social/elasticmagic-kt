@@ -173,16 +173,20 @@ abstract class StdDeserializer : Deserializer {
     class ArrayIterator(
         private val iter: Iterator<Any?>,
     ) : Deserializer.ArrayIterator {
+        private var hasValue: Boolean = false
         private var currentValue: Any? = null
 
         override fun hasNext(): Boolean {
-            return iter.hasNext().also {
-                currentValue = if (it) iter.next() else null
-            }
+            hasValue = iter.hasNext()
+            currentValue = if (hasValue) iter.next() else null
+            return hasValue
         }
 
-        private fun getCurrentValue(): Any {
-            return currentValue ?: throw IllegalStateException("hasNext must be called first")
+        private fun getCurrentValue(): Any? {
+            if (hasValue) {
+                return currentValue
+            }
+            throw IllegalStateException("hasNext must be called first")
         }
 
         override fun anyOrNull(): Any? = coerceToAny(getCurrentValue())

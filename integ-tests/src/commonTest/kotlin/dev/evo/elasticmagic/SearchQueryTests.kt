@@ -690,10 +690,10 @@ class SearchQueryTests : ElasticsearchTestBase() {
             listOf(karlssonsJam, karlssonsBestDonuts, karlssonsJustDonuts, karlssonsJustAnotherDonuts)
         ) {
             val version = cluster.getVersion()
-            if (
-                version is Version.Opensearch ||
-                version is Version.Elasticsearch && version < Version.Elasticsearch(7, 11, 0)
-            ) {
+            if (version is Version.Opensearch && version < Version.Opensearch(2, 15, 0)) {
+                return@withFixtures
+            }
+            if (version is Version.Elasticsearch && version < Version.Elasticsearch(7, 11, 0)) {
                 return@withFixtures
             }
 
@@ -725,12 +725,25 @@ class SearchQueryTests : ElasticsearchTestBase() {
                 .search(index)
 
             searchResult.hits.size shouldBe 4
-            searchResult.hits.flatMap { hit -> hit.fields[dayOfWeekField] } shouldBe listOf(
-                "Thursday", "Thursday", "Tuesday", "Wednesday"
-            )
-            searchResult.hits.flatMap { hit -> hit.fields[statusStrField] } shouldBe listOf(
-                "1", "1", "0", "0"
-            )
+            if (version is Version.Opensearch) {
+                // Opensearch does not support sorting for derived (runtime) fields
+                searchResult.hits.flatMap { hit -> hit.fields[dayOfWeekField] }.toSet() shouldBe setOf(
+                    "Thursday", "Tuesday", "Wednesday"
+                )
+                searchResult.hits.flatMap(SearchHit<*>::sort) shouldBe listOf(
+                    null, null, null, null
+                )
+            } else {
+                searchResult.hits.flatMap { hit -> hit.fields[dayOfWeekField] } shouldBe listOf(
+                    "Thursday", "Thursday", "Tuesday", "Wednesday"
+                )
+                searchResult.hits.flatMap(SearchHit<*>::sort) shouldBe listOf(
+                    "Thursday", "Thursday", "Tuesday", "Wednesday"
+                )
+                searchResult.hits.flatMap { hit -> hit.fields[statusStrField] } shouldBe listOf(
+                    "1", "1", "0", "0"
+                )
+            }
             val daysOfWeekAgg = searchResult.agg<TermsAggResult<String>>("days_of_week")
             daysOfWeekAgg.buckets.size shouldBe 3
             daysOfWeekAgg.buckets[0].key shouldBe "Thursday"
