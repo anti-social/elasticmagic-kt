@@ -727,9 +727,14 @@ class SearchQueryTests : ElasticsearchTestBase() {
             searchResult.hits.size shouldBe 4
             if (version is Version.Opensearch) {
                 // Opensearch does not support sorting for derived (runtime) fields
-                searchResult.hits.flatMap { hit -> hit.fields[dayOfWeekField] }.toSet() shouldBe setOf(
-                    "Thursday", "Tuesday", "Wednesday"
-                )
+                val expectedDaysOfWeek = if (version >= Version.Opensearch(3, 0, 0)) {
+                    setOf("Thu", "Tue", "Wed")
+                } else {
+                    setOf("Thursday", "Tuesday", "Wednesday")
+                }
+                searchResult.hits
+                    .flatMap { hit -> hit.fields[dayOfWeekField] }
+                    .toSet() shouldBe expectedDaysOfWeek
                 searchResult.hits.flatMap(SearchHit<*>::sort) shouldBe listOf(
                     null, null, null, null
                 )
@@ -746,11 +751,17 @@ class SearchQueryTests : ElasticsearchTestBase() {
             }
             val daysOfWeekAgg = searchResult.agg<TermsAggResult<String>>("days_of_week")
             daysOfWeekAgg.buckets.size shouldBe 3
-            daysOfWeekAgg.buckets[0].key shouldBe "Thursday"
+            if (version is Version.Opensearch && version >= Version.Opensearch(3, 0, 0)) {
+                daysOfWeekAgg.buckets[0].key shouldBe "Thu"
+                daysOfWeekAgg.buckets[1].key shouldBe "Tue"
+                daysOfWeekAgg.buckets[2].key shouldBe "Wed"
+            } else {
+                daysOfWeekAgg.buckets[0].key shouldBe "Thursday"
+                daysOfWeekAgg.buckets[1].key shouldBe "Tuesday"
+                daysOfWeekAgg.buckets[2].key shouldBe "Wednesday"
+            }
             daysOfWeekAgg.buckets[0].docCount shouldBe 2
-            daysOfWeekAgg.buckets[1].key shouldBe "Tuesday"
             daysOfWeekAgg.buckets[1].docCount shouldBe 1
-            daysOfWeekAgg.buckets[2].key shouldBe "Wednesday"
             daysOfWeekAgg.buckets[2].docCount shouldBe 1
         }
     }
