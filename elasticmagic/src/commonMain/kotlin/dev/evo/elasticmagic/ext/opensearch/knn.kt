@@ -29,10 +29,10 @@ enum class KnnMode : ToValue<String> {
     override fun toValue() = name.lowercase()
 }
 
-class KnnVector<T: Number>(
+class KnnVector<T: Number> private constructor(
     private val dataType: KnnDataType<T>,
-    private val dimension: Short,
-    private val spaceType: KnnSpace,
+    private val dimension: Short? = null,
+    private val spaceType: KnnSpace? = null,
     private val mode: KnnMode? = null,
     private val compressionLevel: String? = null,
     private val method: Params? = null,
@@ -40,13 +40,32 @@ class KnnVector<T: Number>(
     private val params: Params? = null,
 ) : AbstractListType<T>(dataType.type) {
     companion object {
-        operator fun invoke(
+        operator fun <T: Number> invoke(
+            dataType: KnnDataType<T>,
             dimension: Short,
-            spaceType: KnnSpace,
+            spaceType: KnnSpace? = null,
             mode: KnnMode? = null,
             compressionLevel: String? = null,
             method: Params? = null,
-            modelId: String? = null,
+            params: Params? = null,
+        ): KnnVector<T> {
+            return KnnVector(
+                dataType,
+                dimension = dimension,
+                spaceType = spaceType,
+                mode = mode,
+                compressionLevel = compressionLevel,
+                method = method,
+                params = params,
+            )
+        }
+
+        operator fun invoke(
+            dimension: Short,
+            spaceType: KnnSpace? = null,
+            mode: KnnMode? = null,
+            compressionLevel: String? = null,
+            method: Params? = null,
             params: Params? = null,
         ): KnnVector<Float> {
             return KnnVector(
@@ -56,8 +75,22 @@ class KnnVector<T: Number>(
                 mode = mode,
                 compressionLevel = compressionLevel,
                 method = method,
-                modelId = modelId,
                 params = params,
+            )
+        }
+        operator fun <T: Number> invoke(
+            dataType: KnnDataType<T>,
+            modelId: String
+        ): KnnVector<T> {
+            return KnnVector(
+                dataType,
+                modelId = modelId,
+            )
+        }
+        operator fun invoke(modelId: String): KnnVector<Float> {
+            return KnnVector(
+                KnnDataType.Float,
+                modelId = modelId,
             )
         }
     }
@@ -68,7 +101,7 @@ class KnnVector<T: Number>(
         return Params(
             params,
             "data_type" to (dataType.name ?: dataType.type.name),
-            "dimension" to dimension.toInt(),
+            "dimension" to dimension?.toInt(),
             "space_type" to spaceType,
             "mode" to mode,
             "compression_level" to compressionLevel,
