@@ -3650,15 +3650,17 @@ public final class dev/evo/elasticmagic/ext/opensearch/KnnSpace : java/lang/Enum
 
 public final class dev/evo/elasticmagic/ext/opensearch/KnnVector : dev/evo/elasticmagic/types/AbstractListType {
 	public static final field Companion Ldev/evo/elasticmagic/ext/opensearch/KnnVector$Companion;
-	public fun <init> (Ldev/evo/elasticmagic/ext/opensearch/KnnDataType;SLdev/evo/elasticmagic/ext/opensearch/KnnSpace;Ldev/evo/elasticmagic/ext/opensearch/KnnMode;Ljava/lang/String;Ljava/util/Map;Ljava/lang/String;Ljava/util/Map;)V
-	public synthetic fun <init> (Ldev/evo/elasticmagic/ext/opensearch/KnnDataType;SLdev/evo/elasticmagic/ext/opensearch/KnnSpace;Ldev/evo/elasticmagic/ext/opensearch/KnnMode;Ljava/lang/String;Ljava/util/Map;Ljava/lang/String;Ljava/util/Map;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun getName ()Ljava/lang/String;
 	public fun params ()Ljava/util/Map;
 }
 
 public final class dev/evo/elasticmagic/ext/opensearch/KnnVector$Companion {
-	public final fun invoke (SLdev/evo/elasticmagic/ext/opensearch/KnnSpace;Ldev/evo/elasticmagic/ext/opensearch/KnnMode;Ljava/lang/String;Ljava/util/Map;Ljava/lang/String;Ljava/util/Map;)Ldev/evo/elasticmagic/ext/opensearch/KnnVector;
-	public static synthetic fun invoke$default (Ldev/evo/elasticmagic/ext/opensearch/KnnVector$Companion;SLdev/evo/elasticmagic/ext/opensearch/KnnSpace;Ldev/evo/elasticmagic/ext/opensearch/KnnMode;Ljava/lang/String;Ljava/util/Map;Ljava/lang/String;Ljava/util/Map;ILjava/lang/Object;)Ldev/evo/elasticmagic/ext/opensearch/KnnVector;
+	public final fun invoke (Ldev/evo/elasticmagic/ext/opensearch/KnnDataType;Ljava/lang/String;)Ldev/evo/elasticmagic/ext/opensearch/KnnVector;
+	public final fun invoke (Ldev/evo/elasticmagic/ext/opensearch/KnnDataType;SLdev/evo/elasticmagic/ext/opensearch/KnnSpace;Ldev/evo/elasticmagic/ext/opensearch/KnnMode;Ljava/lang/String;Ljava/util/Map;Ljava/util/Map;)Ldev/evo/elasticmagic/ext/opensearch/KnnVector;
+	public final fun invoke (Ljava/lang/String;)Ldev/evo/elasticmagic/ext/opensearch/KnnVector;
+	public final fun invoke (SLdev/evo/elasticmagic/ext/opensearch/KnnSpace;Ldev/evo/elasticmagic/ext/opensearch/KnnMode;Ljava/lang/String;Ljava/util/Map;Ljava/util/Map;)Ldev/evo/elasticmagic/ext/opensearch/KnnVector;
+	public static synthetic fun invoke$default (Ldev/evo/elasticmagic/ext/opensearch/KnnVector$Companion;Ldev/evo/elasticmagic/ext/opensearch/KnnDataType;SLdev/evo/elasticmagic/ext/opensearch/KnnSpace;Ldev/evo/elasticmagic/ext/opensearch/KnnMode;Ljava/lang/String;Ljava/util/Map;Ljava/util/Map;ILjava/lang/Object;)Ldev/evo/elasticmagic/ext/opensearch/KnnVector;
+	public static synthetic fun invoke$default (Ldev/evo/elasticmagic/ext/opensearch/KnnVector$Companion;SLdev/evo/elasticmagic/ext/opensearch/KnnSpace;Ldev/evo/elasticmagic/ext/opensearch/KnnMode;Ljava/lang/String;Ljava/util/Map;Ljava/util/Map;ILjava/lang/Object;)Ldev/evo/elasticmagic/ext/opensearch/KnnVector;
 }
 
 public abstract interface class dev/evo/elasticmagic/query/ArrayExpression : dev/evo/elasticmagic/query/Expression {
