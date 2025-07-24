@@ -570,7 +570,9 @@ class SearchQueryTests : ElasticsearchTestBase() {
                     "statuses" to TermsAgg(
                         OrderDoc.status,
                         aggs = mapOf(
-                            "top_orders" to TopHitsAgg()
+                            "top_orders" to TopHitsAgg(
+                                docvalueFields = listOf(OrderDoc.dateCreated),
+                            )
                         )
                     ),
                 )
@@ -586,10 +588,19 @@ class SearchQueryTests : ElasticsearchTestBase() {
                 topOrders.maxScore shouldBe 1.0F
                 topOrders.hits[0].id shouldBe "101"
                 topOrders.hits[0].source shouldBe karlssonsJam.doc
+                topOrders.hits[0].fields[OrderDoc.dateCreated] shouldBe listOf(
+                    LocalDateTime(2019, 4, 30, 12, 29, 35).toInstant(TimeZone.UTC)
+                )
                 topOrders.hits[1].id shouldBe "102"
                 topOrders.hits[1].source shouldBe karlssonsBestDonuts.doc
+                topOrders.hits[1].fields[OrderDoc.dateCreated] shouldBe listOf(
+                    LocalDateTime(2020, 12, 23, 8, 47, 8).toInstant(TimeZone.UTC)
+                )
                 topOrders.hits[2].id shouldBe "105"
                 topOrders.hits[2].source shouldBe littleBrotherDogStuff.doc
+                topOrders.hits[2].fields[OrderDoc.dateCreated] shouldBe listOf(
+                    LocalDateTime(2021, 10, 9, 15, 31, 45).toInstant(TimeZone.UTC)
+                )
             }
             statusesAgg.buckets[1].key shouldBe OrderStatus.ACCEPTED
             statusesAgg.buckets[1].docCount shouldBe 1
@@ -598,6 +609,9 @@ class SearchQueryTests : ElasticsearchTestBase() {
                 topOrders.maxScore shouldBe 1.0F
                 topOrders.hits[0].id shouldBe "103"
                 topOrders.hits[0].source shouldBe karlssonsJustDonuts.doc
+                topOrders.hits[0].fields[OrderDoc.dateCreated] shouldBe listOf(
+                    LocalDateTime(2020, 12, 31, 23, 59, 59).toInstant(TimeZone.UTC)
+                )
             }
         }
     }
