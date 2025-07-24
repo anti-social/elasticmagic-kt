@@ -1,0 +1,813 @@
+<!doctype html>
+<html class="no-js">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>SearchQuery</title>
+<link href="../../../images/logo-icon.svg" rel="icon" type="image/svg">    <script>var pathToRoot = "../../../";</script>
+    <script>document.documentElement.classList.replace("no-js","js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async></script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../../styles/font-jb-sans-auto.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/clipboard.js" async></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
+<body>
+    <div class="root">
+<nav class="navigation" id="navigation-wrapper">
+    <div class="navigation--inner">
+        <div class="navigation-title">
+            <button class="menu-toggle" id="menu-toggle" type="button">toggle menu</button>
+            <div class="library-name">
+<a class="library-name--link" href="../../../index.html">
+                            elasticmagic-kt
+                    </a>            </div>
+            <div class="library-version">0.3.4
+            </div>
+        </div>
+        <div class="filter-section" id="filter-section">
+                <button class="platform-tag platform-selector common-like" data-active="" data-filter=":elasticmagic:dokkaHtmlPartial/commonMain">common</button>
+        </div>
+    </div>
+    <div class="navigation-controls">
+        <button class="navigation-controls--btn navigation-controls--theme" id="theme-toggle-button" type="button">switch theme</button>
+        <div class="navigation-controls--btn navigation-controls--search" id="searchBar" role="button">search in API</div>
+    </div>
+</nav>
+        <div id="container">
+            <div class="sidebar" id="leftColumn">
+                <div class="sidebar--inner" id="sideMenu"></div>
+            </div>
+            <div id="main">
+<div class="main-content" data-page-type="classlike" id="content" pageids="elasticmagic::dev.evo.elasticmagic/SearchQuery///PointingToDeclaration//-1391351333">
+  <div class="breadcrumbs"><a href="../../index.html">elasticmagic</a><span class="delimiter">/</span><a href="../index.html">dev.evo.elasticmagic</a><span class="delimiter">/</span><span class="current">SearchQuery</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span>Search</span><wbr><span><span>Query</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="index.html">SearchQuery</a><span class="token operator">&lt;</span><a href="index.html">S</a><span class="token operator"> : </span><a href="../../dev.evo.elasticmagic.doc/-base-doc-source/index.html">BaseDocSource</a><span class="token operator">&gt;</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">docSourceFactory<span class="token operator">: </span><span class="token punctuation">(</span>obj<span class="token operator">: </span><a href="../../../elasticmagic-serde/dev.evo.elasticmagic.serde/-deserializer/-object-ctx/index.html">Deserializer.ObjectCtx</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="index.html">S</a><span class="token punctuation">, </span></span><span class="parameter ">query<span class="token operator">: </span><a href="../../dev.evo.elasticmagic.query/-query-expression/index.html">QueryExpression</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">params<span class="token operator">: </span><a href="../-params/index.html">Params</a><span class="token operator"> = </span>Params()</span></span><span class="token punctuation">)</span> : <a href="../-base-search-query/index.html">BaseSearchQuery</a><span class="token operator">&lt;</span><a href="index.html">S</a><span class="token punctuation">, </span><a href="index.html">SearchQuery</a><span class="token operator">&lt;</span><a href="index.html">S</a><span class="token operator">&gt;</span><span class="token operator">&gt; </span></div><p class="paragraph">An asynchronous version of search query.</p><h4 class="">Parameters</h4><div class="table"><div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><u><span>doc</span><wbr><span>Source</span><wbr><span><span>Factory</span></span></u></div></span></div><div><div class="title"><p class="paragraph">a factory that produce a document source. It needs <a href="../../../elasticmagic-serde/dev.evo.elasticmagic.serde/-deserializer/-object-ctx/index.html">Deserializer.ObjectCtx</a> to be able to create different instances based on a hit.</p></div></div></div></div></div></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="CONSTRUCTOR">
+        <h2 class="">Constructors</h2>
+        <div class="table"><a data-name="1525738111%2FConstructors%2F-1391351333" anchor-label="SearchQuery" id="1525738111%2FConstructors%2F-1391351333" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-togglable="CONSTRUCTOR" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-search-query.html"><span>Search</span><wbr><span><span>Query</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1525738111%2FConstructors%2F-1391351333"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">docSourceFactory<span class="token operator">: </span><span class="token punctuation">(</span>obj<span class="token operator">: </span><a href="../../../elasticmagic-serde/dev.evo.elasticmagic.serde/-deserializer/-object-ctx/index.html">Deserializer.ObjectCtx</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="index.html">S</a><span class="token punctuation">, </span></span><span class="parameter ">query<span class="token operator">: </span><a href="../../dev.evo.elasticmagic.query/-query-expression/index.html">QueryExpression</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">params<span class="token operator">: </span><a href="../-params/index.html">Params</a><span class="token operator"> = </span>Params()</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="TYPE">
+        <h2 class="">Types</h2>
+        <div class="table"><a data-name="426134656%2FClasslikes%2F-1391351333" anchor-label="CLEAR" id="426134656%2FClasslikes%2F-1391351333" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-c-l-e-a-r/index.html"><span><span>CLEAR</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="426134656%2FClasslikes%2F-1391351333"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">object </span><a href="-c-l-e-a-r/index.html">CLEAR</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-78627167%2FClasslikes%2F-1391351333" anchor-label="Companion" id="-78627167%2FClasslikes%2F-1391351333" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-companion/index.html"><span><span>Companion</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-78627167%2FClasslikes%2F-1391351333"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">object </span><a href="-companion/index.html">Companion</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="950069246%2FClasslikes%2F-1391351333" anchor-label="Count" id="950069246%2FClasslikes%2F-1391351333" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-count/index.html"><span><span>Count</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="950069246%2FClasslikes%2F-1391351333"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-count/index.html">Count</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>query<span class="token operator">: </span><a href="../../dev.evo.elasticmagic.query/-query-expression/index.html">QueryExpression</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>filters<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../../dev.evo.elasticmagic.query/-query-expression/index.html">QueryExpression</a><span class="token operator">&gt;</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>postFilters<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../../dev.evo.elasticmagic.query/-query-expression/index.html">QueryExpression</a><span class="token operator">&gt;</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>terminateAfter<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>params<span class="token operator">: </span><a href="../-params/index.html">Params</a></span></span><span class="token punctuation">)</span> : <a href="../-prepared-search-query/index.html">PreparedSearchQuery</a></div><div class="brief "><p class="paragraph">A prepared search query used for delete by count API.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-540700054%2FClasslikes%2F-1391351333" anchor-label="Delete" id="-540700054%2FClasslikes%2F-1391351333" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-delete/index.html"><span><span>Delete</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-540700054%2FClasslikes%2F-1391351333"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-delete/index.html">Delete</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>query<span class="token operator">: </span><a href="../../dev.evo.elasticmagic.query/-query-expression/index.html">QueryExpression</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>filters<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../../dev.evo.elasticmagic.query/-query-expression/index.html">QueryExpression</a><span class="token operator">&gt;</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>postFilters<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../../dev.evo.elasticmagic.query/-query-expression/index.html">QueryExpression</a><span class="token operator">&gt;</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>terminateAfter<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>params<span class="token operator">: </span><a href="../-params/index.html">Params</a></span></span><span class="token punctuation">)</span> : <a href="../-prepared-search-query/index.html">PreparedSearchQuery</a></div><div class="brief "><p class="paragraph">A prepared search query used for delete by query API.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-993937139%2FClasslikes%2F-1391351333" anchor-label="Search" id="-993937139%2FClasslikes%2F-1391351333" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-search/index.html"><span><span>Search</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-993937139%2FClasslikes%2F-1391351333"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-search/index.html">Search</a><span class="token operator">&lt;</span><span class="token keyword">out </span><a href="-search/index.html">S</a><span class="token operator"> : </span><a href="../../dev.evo.elasticmagic.doc/-base-doc-source/index.html">BaseDocSource</a><span class="token operator">&gt;</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>docSourceFactory<span class="token operator">: </span><span class="token punctuation">(</span>obj<span class="token operator">: </span><a href="../../../elasticmagic-serde/dev.evo.elasticmagic.serde/-deserializer/-object-ctx/index.html">Deserializer.ObjectCtx</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="-search/index.html">S</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>query<span class="token operator">: </span><a href="../../dev.evo.elasticmagic.query/-query-expression/index.html">QueryExpression</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>filters<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../../dev.evo.elasticmagic.query/-query-expression/index.html">QueryExpression</a><span class="token operator">&gt;</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>postFilters<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../../dev.evo.elasticmagic.query/-query-expression/index.html">QueryExpression</a><span class="token operator">&gt;</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>knn<span class="token operator">: </span><a href="../../dev.evo.elasticmagic.ext.elasticsearch/-knn/index.html">Knn</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token punctuation">, </span><span class="token operator">*</span><span class="token operator">&gt;</span><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>aggregations<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-map/index.html">Map</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span><a href="../../dev.evo.elasticmagic.aggs/-aggregation/index.html">Aggregation</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token operator">&gt;</span><span class="token operator">&gt;</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>rescores<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../../dev.evo.elasticmagic.query/-rescore/index.html">Rescore</a><span class="token operator">&gt;</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>sorts<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../../dev.evo.elasticmagic.query/-sort/index.html">Sort</a><span class="token operator">&gt;</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>trackScores<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>trackTotalHits<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>source<span class="token operator">: </span><a href="../../dev.evo.elasticmagic.query/-source/index.html">Source</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>fields<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../../dev.evo.elasticmagic.query/-field-format/index.html">FieldFormat</a><span class="token operator">&gt;</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>docvalueFields<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../../dev.evo.elasticmagic.query/-field-format/index.html">FieldFormat</a><span class="token operator">&gt;</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>storedFields<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../../dev.evo.elasticmagic.query/-stored-field/index.html">StoredField</a><span class="token operator">&gt;</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>scriptFields<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-map/index.html">Map</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span><a href="../../dev.evo.elasticmagic.query/-script/index.html">Script</a><span class="token operator">&gt;</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>runtimeMappings<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-map/index.html">Map</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span><a href="../../dev.evo.elasticmagic.doc/-bound-runtime-field/index.html">BoundRuntimeField</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token operator">&gt;</span><span class="token operator">&gt;</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>size<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>from<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>terminateAfter<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>extensions<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../../dev.evo.elasticmagic.query/-search-ext/index.html">SearchExt</a><span class="token operator">&gt;</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>timeout<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.time/-duration/index.html">Duration</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>params<span class="token operator">: </span><a href="../-params/index.html">Params</a></span></span><span class="token punctuation">)</span> : <a href="../-prepared-search-query/index.html">PreparedSearchQuery</a></div><div class="brief "><p class="paragraph">A prepared search query is a public read-only view to a search query. Mainly it is used to compile a search query.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1021508876%2FClasslikes%2F-1391351333" anchor-label="Update" id="1021508876%2FClasslikes%2F-1391351333" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-update/index.html"><span><span>Update</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1021508876%2FClasslikes%2F-1391351333"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-update/index.html">Update</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>query<span class="token operator">: </span><a href="../../dev.evo.elasticmagic.query/-query-expression/index.html">QueryExpression</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>filters<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../../dev.evo.elasticmagic.query/-query-expression/index.html">QueryExpression</a><span class="token operator">&gt;</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>postFilters<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../../dev.evo.elasticmagic.query/-query-expression/index.html">QueryExpression</a><span class="token operator">&gt;</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>terminateAfter<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>script<span class="token operator">: </span><a href="../../dev.evo.elasticmagic.query/-script/index.html">Script</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>params<span class="token operator">: </span><a href="../-params/index.html">Params</a></span></span><span class="token punctuation">)</span> : <a href="../-prepared-search-query/index.html">PreparedSearchQuery</a></div><div class="brief "><p class="paragraph">A prepared search query used for update by query API.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="FUNCTION">
+        <h2 class="">Functions</h2>
+        <div class="table"><a data-name="-1680715556%2FFunctions%2F-1391351333" anchor-label="aggs" id="-1680715556%2FFunctions%2F-1391351333" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-base-search-query/aggs.html"><span><span>aggs</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1680715556%2FFunctions%2F-1391351333"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="../-base-search-query/aggs.html"><span class="token function">aggs</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">clear<span class="token operator">: </span><a href="-c-l-e-a-r/index.html">SearchQuery.CLEAR</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">SearchQuery</a><span class="token operator">&lt;</span><a href="index.html">S</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Clears the existing aggregations.</p></div><div class="symbol monospace"><span class="token keyword">fun </span><a href="../-base-search-query/aggs.html"><span class="token function">aggs</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">vararg </span>aggregations<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-pair/index.html">Pair</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span><a href="../../dev.evo.elasticmagic.aggs/-aggregation/index.html">Aggregation</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token operator">&gt;</span><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">SearchQuery</a><span class="token operator">&lt;</span><a href="index.html">S</a><span class="token operator">&gt;</span></div><div class="symbol monospace"><span class="token keyword">fun </span><a href="../-base-search-query/aggs.html"><span class="token function">aggs</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">aggregations<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-map/index.html">Map</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span><a href="../../dev.evo.elasticmagic.aggs/-aggregation/index.html">Aggregation</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token operator">&gt;</span><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">SearchQuery</a><span class="token operator">&lt;</span><a href="index.html">S</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Adds <a href="../-base-search-query/aggs.html">aggregations</a> to the existing query aggregations.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1742730667%2FFunctions%2F-1391351333" anchor-label="beforeExecute" id="-1742730667%2FFunctions%2F-1391351333" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-base-search-query/before-execute.html"><span>before</span><wbr><span><span>Execute</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1742730667%2FFunctions%2F-1391351333"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="../-base-search-query/before-execute.html"><span class="token function">beforeExecute</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Method is called before query execution. Can be overriden in subclasses of <a href="index.html">SearchQuery</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="73023438%2FFunctions%2F-1391351333" anchor-label="clone" id="73023438%2FFunctions%2F-1391351333" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-base-search-query/clone.html"><span><span>clone</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="73023438%2FFunctions%2F-1391351333"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="../-base-search-query/clone.html"><span class="token function">clone</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">SearchQuery</a><span class="token operator">&lt;</span><a href="index.html">S</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Clones this search query builder.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="853189988%2FFunctions%2F-1391351333" anchor-label="count" id="853189988%2FFunctions%2F-1391351333" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="count.html"><span><span>count</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="853189988%2FFunctions%2F-1391351333"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="count.html"><span class="token function">count</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">index<span class="token operator">: </span><a href="../-elasticsearch-index/index.html">ElasticsearchIndex</a><span class="token punctuation">, </span></span><span class="parameter ">params<span class="token operator">: </span><a href="../-params/index.html">Params</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../-count-result/index.html">CountResult</a></div><div class="brief "><p class="paragraph">Retrieves a number of hits for the search query using an <a href="count.html">index</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1895924304%2FFunctions%2F-1391351333" anchor-label="delete" id="1895924304%2FFunctions%2F-1391351333" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="delete.html"><span><span>delete</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1895924304%2FFunctions%2F-1391351333"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="delete.html"><span class="token function">delete</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">index<span class="token operator">: </span><a href="../-elasticsearch-index/index.html">ElasticsearchIndex</a><span class="token punctuation">, </span></span><span class="parameter ">refresh<span class="token operator">: </span><a href="../-refresh/index.html">Refresh</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">conflicts<span class="token operator">: </span><a href="../-conflicts/index.html">Conflicts</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">maxDocs<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">scrollSize<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">params<span class="token operator">: </span><a href="../-params/index.html">Params</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../-delete-by-query-result/index.html">DeleteByQueryResult</a></div><div class="brief "><p class="paragraph">Update by query API.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1833094172%2FFunctions%2F-1391351333" anchor-label="deleteAsync" id="1833094172%2FFunctions%2F-1391351333" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="delete-async.html"><span>delete</span><wbr><span><span>Async</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1833094172%2FFunctions%2F-1391351333"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="delete-async.html"><span class="token function">deleteAsync</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">index<span class="token operator">: </span><a href="../-elasticsearch-index/index.html">ElasticsearchIndex</a><span class="token punctuation">, </span></span><span class="parameter ">refresh<span class="token operator">: </span><a href="../-refresh/index.html">Refresh</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">conflicts<span class="token operator">: </span><a href="../-conflicts/index.html">Conflicts</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">maxDocs<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">scrollSize<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">params<span class="token operator">: </span><a href="../-params/index.html">Params</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../-async-result/index.html">AsyncResult</a><span class="token operator">&lt;</span><a href="../-delete-by-query-partial-result/index.html">DeleteByQueryPartialResult</a><span class="token punctuation">, </span><a href="../-delete-by-query-result/index.html">DeleteByQueryResult</a><span class="token operator">?</span><span class="token operator">&gt;</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="2034911709%2FFunctions%2F-1391351333" anchor-label="docvalueFields" id="2034911709%2FFunctions%2F-1391351333" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-base-search-query/docvalue-fields.html"><span>docvalue</span><wbr><span><span>Fields</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2034911709%2FFunctions%2F-1391351333"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="../-base-search-query/docvalue-fields.html"><span class="token function">docvalueFields</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">clear<span class="token operator">: </span><a href="-c-l-e-a-r/index.html">SearchQuery.CLEAR</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">SearchQuery</a><span class="token operator">&lt;</span><a href="index.html">S</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Clears current search query doc value fields.</p></div><div class="symbol monospace"><span class="token keyword">fun </span><a href="../-base-search-query/docvalue-fields.html"><span class="token function">docvalueFields</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">vararg </span>fields<span class="token operator">: </span><a href="../../dev.evo.elasticmagic.query/-field-format/index.html">FieldFormat</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">SearchQuery</a><span class="token operator">&lt;</span><a href="index.html">S</a><span class="token operator">&gt;</span></div><div class="symbol monospace"><span class="token keyword">fun </span><a href="../-base-search-query/docvalue-fields.html"><span class="token function">docvalueFields</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">fields<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../../dev.evo.elasticmagic.query/-field-format/index.html">FieldFormat</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">SearchQuery</a><span class="token operator">&lt;</span><a href="index.html">S</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Adds <a href="../-base-search-query/docvalue-fields.html">fields</a> to the search query doc value fields list.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-110632566%2FFunctions%2F-1391351333" anchor-label="execute" id="-110632566%2FFunctions%2F-1391351333" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="execute.html"><span><span>execute</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-110632566%2FFunctions%2F-1391351333"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="execute.html"><span class="token function"><strike>execute</strike></span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">index<span class="token operator">: </span><a href="../-elasticsearch-index/index.html">ElasticsearchIndex</a><span class="token punctuation">, </span></span><span class="parameter ">params<span class="token operator">: </span><a href="../-params/index.html">Params</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../-search-query-result/index.html">SearchQueryResult</a><span class="token operator">&lt;</span><a href="index.html">S</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Alias of <a href="search.html">SearchQuery.search</a>. Executes the search query using an <a href="execute.html">index</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="850418018%2FFunctions%2F-1391351333" anchor-label="ext" id="850418018%2FFunctions%2F-1391351333" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-base-search-query/ext.html"><span><span>ext</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="850418018%2FFunctions%2F-1391351333"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="../-base-search-query/ext.html"><span class="token function">ext</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">clear<span class="token operator">: </span><a href="-c-l-e-a-r/index.html">SearchQuery.CLEAR</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">SearchQuery</a><span class="token operator">&lt;</span><a href="index.html">S</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Clears current search query extensions.</p></div><div class="symbol monospace"><span class="token keyword">fun </span><a href="../-base-search-query/ext.html"><span class="token function">ext</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">vararg </span>extensions<span class="token operator">: </span><a href="../../dev.evo.elasticmagic.query/-search-ext/index.html">SearchExt</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">SearchQuery</a><span class="token operator">&lt;</span><a href="index.html">S</a><span class="token operator">&gt;</span></div><div class="symbol monospace"><span class="token keyword">fun </span><a href="../-base-search-query/ext.html"><span class="token function">ext</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">extensions<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../../dev.evo.elasticmagic.query/-search-ext/index.html">SearchExt</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">SearchQuery</a><span class="token operator">&lt;</span><a href="index.html">S</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Adds <a href="../-base-search-query/ext.html">extensions</a> to the search query extensions list.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1438579694%2FFunctions%2F-1391351333" anchor-label="fields" id="-1438579694%2FFunctions%2F-1391351333" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-base-search-query/fields.html"><span><span>fields</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1438579694%2FFunctions%2F-1391351333"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="../-base-search-query/fields.html"><span class="token function">fields</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">clear<span class="token operator">: </span><a href="-c-l-e-a-r/index.html">SearchQuery.CLEAR</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">SearchQuery</a><span class="token operator">&lt;</span><a href="index.html">S</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Clears current search query retrieval fields.</p></div><div class="symbol monospace"><span class="token keyword">fun </span><a href="../-base-search-query/fields.html"><span class="token function">fields</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">vararg </span>fields<span class="token operator">: </span><a href="../../dev.evo.elasticmagic.query/-field-format/index.html">FieldFormat</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">SearchQuery</a><span class="token operator">&lt;</span><a href="index.html">S</a><span class="token operator">&gt;</span></div><div class="symbol monospace"><span class="token keyword">fun </span><a href="../-base-search-query/fields.html"><span class="token function">fields</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">fields<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../../dev.evo.elasticmagic.query/-field-format/index.html">FieldFormat</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">SearchQuery</a><span class="token operator">&lt;</span><a href="index.html">S</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Adds <a href="../-base-search-query/fields.html">fields</a> to the search query retrieval fields list.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1865276241%2FFunctions%2F-1391351333" anchor-label="filter" id="-1865276241%2FFunctions%2F-1391351333" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-base-search-query/filter.html"><span><span>filter</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1865276241%2FFunctions%2F-1391351333"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="../-base-search-query/filter.html"><span class="token function">filter</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">clear<span class="token operator">: </span><a href="-c-l-e-a-r/index.html">SearchQuery.CLEAR</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">SearchQuery</a><span class="token operator">&lt;</span><a href="index.html">S</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Clears the existing filters.</p></div><div class="symbol monospace"><span class="token keyword">fun </span><a href="../-base-search-query/filter.html"><span class="token function">filter</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">vararg </span>filters<span class="token operator">: </span><a href="../../dev.evo.elasticmagic.query/-query-expression/index.html">QueryExpression</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">SearchQuery</a><span class="token operator">&lt;</span><a href="index.html">S</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Combines all the filter expressions together and wraps the existing query using the <a href="../../dev.evo.elasticmagic.query/-bool/index.html">dev.evo.elasticmagic.query.Bool</a> query expression.</p></div><div class="symbol monospace"><span class="token keyword">fun </span><a href="../-base-search-query/filter.html"><span class="token function">filter</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">filters<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../../dev.evo.elasticmagic.query/-query-expression/index.html">QueryExpression</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">SearchQuery</a><span class="token operator">&lt;</span><a href="index.html">S</a><span class="token operator">&gt;</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="38006048%2FFunctions%2F-1391351333" anchor-label="from" id="38006048%2FFunctions%2F-1391351333" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-base-search-query/from.html"><span><span>from</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="38006048%2FFunctions%2F-1391351333"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="../-base-search-query/from.html"><span class="token function">from</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">from<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">SearchQuery</a><span class="token operator">&lt;</span><a href="index.html">S</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Sets a number of hits to skip in a search result.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1194739604%2FFunctions%2F-1391351333" anchor-label="knn" id="1194739604%2FFunctions%2F-1391351333" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-base-search-query/knn.html"><span><span>knn</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1194739604%2FFunctions%2F-1391351333"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="../-base-search-query/knn.html"><span class="token function">knn</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">clear<span class="token operator">: </span><a href="-c-l-e-a-r/index.html">SearchQuery.CLEAR</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">SearchQuery</a><span class="token operator">&lt;</span><a href="index.html">S</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Clears current knn search option.</p></div><div class="symbol monospace"><span class="token keyword">fun </span><a href="../-base-search-query/knn.html"><span class="token function">knn</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">knn<span class="token operator">: </span><a href="../../dev.evo.elasticmagic.ext.elasticsearch/-knn/index.html">Knn</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token punctuation">, </span><span class="token operator">*</span><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">SearchQuery</a><span class="token operator">&lt;</span><a href="index.html">S</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Replaces current knn search option.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="2029380591%2FFunctions%2F-1391351333" anchor-label="postFilter" id="2029380591%2FFunctions%2F-1391351333" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-base-search-query/post-filter.html"><span>post</span><wbr><span><span>Filter</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2029380591%2FFunctions%2F-1391351333"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="../-base-search-query/post-filter.html"><span class="token function">postFilter</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">clear<span class="token operator">: </span><a href="-c-l-e-a-r/index.html">SearchQuery.CLEAR</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">SearchQuery</a><span class="token operator">&lt;</span><a href="index.html">S</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Clears the existing post filters.</p></div><div class="symbol monospace"><span class="token keyword">fun </span><a href="../-base-search-query/post-filter.html"><span class="token function">postFilter</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">vararg </span>filters<span class="token operator">: </span><a href="../../dev.evo.elasticmagic.query/-query-expression/index.html">QueryExpression</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">SearchQuery</a><span class="token operator">&lt;</span><a href="index.html">S</a><span class="token operator">&gt;</span></div><div class="symbol monospace"><span class="token keyword">fun </span><a href="../-base-search-query/post-filter.html"><span class="token function">postFilter</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">filters<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../../dev.evo.elasticmagic.query/-query-expression/index.html">QueryExpression</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">SearchQuery</a><span class="token operator">&lt;</span><a href="index.html">S</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Filter expressions in the post filter will be applied after the aggregations are calculated. Useful for building faceted filtering.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1690756551%2FFunctions%2F-1391351333" anchor-label="prepareCount" id="1690756551%2FFunctions%2F-1391351333" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-base-search-query/prepare-count.html"><span>prepare</span><wbr><span><span>Count</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1690756551%2FFunctions%2F-1391351333"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="../-base-search-query/prepare-count.html"><span class="token function">prepareCount</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">params<span class="token operator">: </span><a href="../-params/index.html">Params</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="-count/index.html">SearchQuery.Count</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-77934923%2FFunctions%2F-1391351333" anchor-label="prepareDelete" id="-77934923%2FFunctions%2F-1391351333" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-base-search-query/prepare-delete.html"><span>prepare</span><wbr><span><span>Delete</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-77934923%2FFunctions%2F-1391351333"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="../-base-search-query/prepare-delete.html"><span class="token function">prepareDelete</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">params<span class="token operator">: </span><a href="../-params/index.html">Params</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="-delete/index.html">SearchQuery.Delete</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="730607218%2FFunctions%2F-1391351333" anchor-label="prepareSearch" id="730607218%2FFunctions%2F-1391351333" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-base-search-query/prepare-search.html"><span>prepare</span><wbr><span><span>Search</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="730607218%2FFunctions%2F-1391351333"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="../-base-search-query/prepare-search.html"><span class="token function">prepareSearch</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">params<span class="token operator">: </span><a href="../-params/index.html">Params</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="-search/index.html">SearchQuery.Search</a><span class="token operator">&lt;</span><a href="index.html">S</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Makes an immutable view of the search query. Be careful when using this method.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="343091913%2FFunctions%2F-1391351333" anchor-label="prepareUpdate" id="343091913%2FFunctions%2F-1391351333" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-base-search-query/prepare-update.html"><span>prepare</span><wbr><span><span>Update</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="343091913%2FFunctions%2F-1391351333"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="../-base-search-query/prepare-update.html"><span class="token function">prepareUpdate</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">script<span class="token operator">: </span><a href="../../dev.evo.elasticmagic.query/-script/index.html">Script</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">params<span class="token operator">: </span><a href="../-params/index.html">Params</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="-update/index.html">SearchQuery.Update</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="303463629%2FFunctions%2F-1391351333" anchor-label="query" id="303463629%2FFunctions%2F-1391351333" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-base-search-query/query.html"><span><span>query</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="303463629%2FFunctions%2F-1391351333"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="../-base-search-query/query.html"><span class="token function">query</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">query<span class="token operator">: </span><a href="../../dev.evo.elasticmagic.query/-query-expression/index.html">QueryExpression</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">SearchQuery</a><span class="token operator">&lt;</span><a href="index.html">S</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Replaces main query expression.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-612033850%2FFunctions%2F-1391351333" anchor-label="queryNode" id="-612033850%2FFunctions%2F-1391351333" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-base-search-query/query-node.html"><span>query</span><wbr><span><span>Node</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-612033850%2FFunctions%2F-1391351333"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="../-base-search-query/query-node.html">N</a><span class="token operator"> : </span><a href="../../dev.evo.elasticmagic.query/-query-expression/index.html">QueryExpression</a><span class="token operator">&gt; </span><a href="../-base-search-query/query-node.html"><span class="token function">queryNode</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">handle<span class="token operator">: </span><a href="../../dev.evo.elasticmagic.query/-node-handle/index.html">NodeHandle</a><span class="token operator">&lt;</span><a href="../-base-search-query/query-node.html">N</a><span class="token operator">&gt;</span><span class="token punctuation">, </span></span><span class="parameter ">block<span class="token operator">: </span><span class="token punctuation">(</span><a href="../-base-search-query/query-node.html">N</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="../-base-search-query/query-node.html">N</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">SearchQuery</a><span class="token operator">&lt;</span><a href="index.html">S</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Allows to replace a specific query expression node using a <a href="../-base-search-query/query-node.html">handle</a> of the node.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1884420706%2FFunctions%2F-1391351333" anchor-label="requestCache" id="1884420706%2FFunctions%2F-1391351333" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-base-search-query/request-cache.html"><span>request</span><wbr><span><span>Cache</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1884420706%2FFunctions%2F-1391351333"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="../-base-search-query/request-cache.html"><span class="token function">requestCache</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">requestCache<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">SearchQuery</a><span class="token operator">&lt;</span><a href="index.html">S</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Enables/disables a request cache of the search query.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1853558900%2FFunctions%2F-1391351333" anchor-label="rescore" id="-1853558900%2FFunctions%2F-1391351333" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-base-search-query/rescore.html"><span><span>rescore</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1853558900%2FFunctions%2F-1391351333"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="../-base-search-query/rescore.html"><span class="token function">rescore</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">clear<span class="token operator">: </span><a href="-c-l-e-a-r/index.html">SearchQuery.CLEAR</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">SearchQuery</a><span class="token operator">&lt;</span><a href="index.html">S</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Clears the existing rescorers.</p></div><div class="symbol monospace"><span class="token keyword">fun </span><a href="../-base-search-query/rescore.html"><span class="token function">rescore</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">vararg </span>rescores<span class="token operator">: </span><a href="../../dev.evo.elasticmagic.query/-rescore/index.html">Rescore</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">SearchQuery</a><span class="token operator">&lt;</span><a href="index.html">S</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Adds <a href="../-base-search-query/rescore.html">rescores</a> to the existing query rescorers. Rescoring is executed after post filter phase.</p></div><div class="symbol monospace"><span class="token keyword">fun </span><a href="../-base-search-query/rescore.html"><span class="token function">rescore</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">rescores<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../../dev.evo.elasticmagic.query/-rescore/index.html">Rescore</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">SearchQuery</a><span class="token operator">&lt;</span><a href="index.html">S</a><span class="token operator">&gt;</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1265802303%2FFunctions%2F-1391351333" anchor-label="routing" id="-1265802303%2FFunctions%2F-1391351333" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-base-search-query/routing.html"><span><span>routing</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1265802303%2FFunctions%2F-1391351333"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="../-base-search-query/routing.html"><span class="token function">routing</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">routing<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-long/index.html">Long</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">SearchQuery</a><span class="token operator">&lt;</span><a href="index.html">S</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Sets a routing parameter of the search query. A search request will be send to a specific shard.</p></div><div class="symbol monospace"><span class="token keyword">fun </span><a href="../-base-search-query/routing.html"><span class="token function">routing</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">routing<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">SearchQuery</a><span class="token operator">&lt;</span><a href="index.html">S</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Updates search type of the search query.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="777703982%2FFunctions%2F-1391351333" anchor-label="runtimeMappings" id="777703982%2FFunctions%2F-1391351333" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-base-search-query/runtime-mappings.html"><span>runtime</span><wbr><span><span>Mappings</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="777703982%2FFunctions%2F-1391351333"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="../-base-search-query/runtime-mappings.html"><span class="token function">runtimeMappings</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">clear<span class="token operator">: </span><a href="-c-l-e-a-r/index.html">SearchQuery.CLEAR</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">SearchQuery</a><span class="token operator">&lt;</span><a href="index.html">S</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Clears current search query runtime fields.</p></div><div class="symbol monospace"><span class="token keyword">fun </span><a href="../-base-search-query/runtime-mappings.html"><span class="token function">runtimeMappings</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">vararg </span>fields<span class="token operator">: </span><a href="../../dev.evo.elasticmagic.doc/-bound-runtime-field/index.html">BoundRuntimeField</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">SearchQuery</a><span class="token operator">&lt;</span><a href="index.html">S</a><span class="token operator">&gt;</span></div><div class="symbol monospace"><span class="token keyword">fun </span><a href="../-base-search-query/runtime-mappings.html"><span class="token function">runtimeMappings</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">fields<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../../dev.evo.elasticmagic.doc/-bound-runtime-field/index.html">BoundRuntimeField</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token operator">&gt;</span><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">SearchQuery</a><span class="token operator">&lt;</span><a href="index.html">S</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Adds <a href="../-base-search-query/runtime-mappings.html">fields</a> to the search query runtime fields list.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1214700518%2FFunctions%2F-1391351333" anchor-label="scriptFields" id="1214700518%2FFunctions%2F-1391351333" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-base-search-query/script-fields.html"><span>script</span><wbr><span><span>Fields</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1214700518%2FFunctions%2F-1391351333"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="../-base-search-query/script-fields.html"><span class="token function">scriptFields</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">clear<span class="token operator">: </span><a href="-c-l-e-a-r/index.html">SearchQuery.CLEAR</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">SearchQuery</a><span class="token operator">&lt;</span><a href="index.html">S</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Clears current search query stored fields.</p></div><div class="symbol monospace"><span class="token keyword">fun </span><a href="../-base-search-query/script-fields.html"><span class="token function">scriptFields</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">vararg </span>fields<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-pair/index.html">Pair</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span><a href="../../dev.evo.elasticmagic.query/-script/index.html">Script</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">SearchQuery</a><span class="token operator">&lt;</span><a href="index.html">S</a><span class="token operator">&gt;</span></div><div class="symbol monospace"><span class="token keyword">fun </span><a href="../-base-search-query/script-fields.html"><span class="token function">scriptFields</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">fields<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-map/index.html">Map</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span><a href="../../dev.evo.elasticmagic.query/-script/index.html">Script</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">SearchQuery</a><span class="token operator">&lt;</span><a href="index.html">S</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Adds <a href="../-base-search-query/script-fields.html">fields</a> to the search query script fields list.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1486431511%2FFunctions%2F-1391351333" anchor-label="search" id="1486431511%2FFunctions%2F-1391351333" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="search.html"><span><span>search</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1486431511%2FFunctions%2F-1391351333"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="search.html"><span class="token function">search</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">index<span class="token operator">: </span><a href="../-elasticsearch-index/index.html">ElasticsearchIndex</a><span class="token punctuation">, </span></span><span class="parameter ">params<span class="token operator">: </span><a href="../-params/index.html">Params</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../-search-query-result/index.html">SearchQueryResult</a><span class="token operator">&lt;</span><a href="index.html">S</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Executes the search query using an <a href="search.html">index</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1090415915%2FFunctions%2F-1391351333" anchor-label="searchParams" id="1090415915%2FFunctions%2F-1391351333" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-base-search-query/search-params.html"><span>search</span><wbr><span><span>Params</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1090415915%2FFunctions%2F-1391351333"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="../-base-search-query/search-params.html"><span class="token function">searchParams</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">vararg </span>params<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-pair/index.html">Pair</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-any/index.html">Any</a><span class="token operator">?</span><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">SearchQuery</a><span class="token operator">&lt;</span><a href="index.html">S</a><span class="token operator">&gt;</span></div><div class="symbol monospace"><span class="token keyword">fun </span><a href="../-base-search-query/search-params.html"><span class="token function">searchParams</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">params<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-map/index.html">Map</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-any/index.html">Any</a><span class="token operator">?</span><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">SearchQuery</a><span class="token operator">&lt;</span><a href="index.html">S</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Updates search parameters.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-185541315%2FFunctions%2F-1391351333" anchor-label="searchType" id="-185541315%2FFunctions%2F-1391351333" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-base-search-query/search-type.html"><span>search</span><wbr><span><span>Type</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-185541315%2FFunctions%2F-1391351333"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="../-base-search-query/search-type.html"><span class="token function">searchType</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">searchType<span class="token operator">: </span><a href="../-search-type/index.html">SearchType</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">SearchQuery</a><span class="token operator">&lt;</span><a href="index.html">S</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Updates search type of the search query.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1598382365%2FFunctions%2F-1391351333" anchor-label="seqNoPrimaryTerm" id="1598382365%2FFunctions%2F-1391351333" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-base-search-query/seq-no-primary-term.html"><span>seq</span><wbr><span>No</span><wbr><span>Primary</span><wbr><span><span>Term</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1598382365%2FFunctions%2F-1391351333"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="../-base-search-query/seq-no-primary-term.html"><span class="token function">seqNoPrimaryTerm</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">seqNoPrimaryTerm<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">SearchQuery</a><span class="token operator">&lt;</span><a href="index.html">S</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Specifies if a sequence number and a primary term should be returned within a hit.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1066106875%2FFunctions%2F-1391351333" anchor-label="setTimeout" id="1066106875%2FFunctions%2F-1391351333" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-base-search-query/set-timeout.html"><span>set</span><wbr><span><span>Timeout</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1066106875%2FFunctions%2F-1391351333"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="../-base-search-query/set-timeout.html"><span class="token function">setTimeout</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">timeout<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.time/-duration/index.html">Duration</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">SearchQuery</a><span class="token operator">&lt;</span><a href="index.html">S</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Sets a timeout for the search query.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-284256777%2FFunctions%2F-1391351333" anchor-label="size" id="-284256777%2FFunctions%2F-1391351333" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-base-search-query/size.html"><span><span>size</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-284256777%2FFunctions%2F-1391351333"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="../-base-search-query/size.html"><span class="token function">size</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">size<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">SearchQuery</a><span class="token operator">&lt;</span><a href="index.html">S</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Sets a maximum number of hits in a search result.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1390533349%2FFunctions%2F-1391351333" anchor-label="sort" id="1390533349%2FFunctions%2F-1391351333" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-base-search-query/sort.html"><span><span>sort</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1390533349%2FFunctions%2F-1391351333"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="../-base-search-query/sort.html"><span class="token function">sort</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">clear<span class="token operator">: </span><a href="-c-l-e-a-r/index.html">SearchQuery.CLEAR</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">SearchQuery</a><span class="token operator">&lt;</span><a href="index.html">S</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Clears the existing sorts.</p></div><div class="symbol monospace"><span class="token keyword">fun </span><a href="../-base-search-query/sort.html"><span class="token function">sort</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">vararg </span>sorts<span class="token operator">: </span><a href="../../dev.evo.elasticmagic.query/-sort/index.html">Sort</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">SearchQuery</a><span class="token operator">&lt;</span><a href="index.html">S</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Adds <a href="../-base-search-query/sort.html">sorts</a> to the existing query sorting expressions.</p></div><div class="symbol monospace"><span class="token keyword">fun </span><a href="../-base-search-query/sort.html"><span class="token function">sort</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">sorts<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../../dev.evo.elasticmagic.query/-sort/index.html">Sort</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">SearchQuery</a><span class="token operator">&lt;</span><a href="index.html">S</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Adds <a href="../-base-search-query/sort.html">sorts</a> from a list to the existing query sorting expressions.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1071122813%2FFunctions%2F-1391351333" anchor-label="source" id="-1071122813%2FFunctions%2F-1391351333" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-base-search-query/source.html"><span><span>source</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1071122813%2FFunctions%2F-1391351333"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="../-base-search-query/source.html"><span class="token function">source</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">clear<span class="token operator">: </span><a href="-c-l-e-a-r/index.html">SearchQuery.CLEAR</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">SearchQuery</a><span class="token operator">&lt;</span><a href="index.html">S</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Clears source filtering values that were previously set.</p></div><div class="symbol monospace"><span class="token keyword">fun </span><a href="../-base-search-query/source.html"><span class="token function">source</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">vararg </span>includes<span class="token operator">: </span><a href="../../dev.evo.elasticmagic.query/-field-operations/index.html">FieldOperations</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">SearchQuery</a><span class="token operator">&lt;</span><a href="index.html">S</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Adds <a href="../-base-search-query/source.html">includes</a> field lists to the document source fields filtering.</p></div><div class="symbol monospace"><span class="token keyword">fun </span><a href="../-base-search-query/source.html"><span class="token function">source</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">enable<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">SearchQuery</a><span class="token operator">&lt;</span><a href="index.html">S</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Disables or enables document's source filtering.</p></div><div class="symbol monospace"><span class="token keyword">fun </span><a href="../-base-search-query/source.html"><span class="token function">source</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">includes<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../../dev.evo.elasticmagic.query/-field-operations/index.html">FieldOperations</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token operator">&gt;</span><span class="token operator">&gt;</span><span class="token operator"> = </span>emptyList()<span class="token punctuation">, </span></span><span class="parameter ">excludes<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../../dev.evo.elasticmagic.query/-field-operations/index.html">FieldOperations</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token operator">&gt;</span><span class="token operator">&gt;</span><span class="token operator"> = </span>emptyList()</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">SearchQuery</a><span class="token operator">&lt;</span><a href="index.html">S</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Adds <a href="../-base-search-query/source.html">includes</a> and <a href="../-base-search-query/source.html">excludes</a> field lists to the document source fields filtering.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="925628459%2FFunctions%2F-1391351333" anchor-label="stats" id="925628459%2FFunctions%2F-1391351333" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-base-search-query/stats.html"><span><span>stats</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="925628459%2FFunctions%2F-1391351333"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="../-base-search-query/stats.html"><span class="token function">stats</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">tag<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">SearchQuery</a><span class="token operator">&lt;</span><a href="index.html">S</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Marks the search query with a <a href="../-base-search-query/stats.html">tag</a> so it is possible to collect search query statistics by tags.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="431670980%2FFunctions%2F-1391351333" anchor-label="storedFields" id="431670980%2FFunctions%2F-1391351333" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-base-search-query/stored-fields.html"><span>stored</span><wbr><span><span>Fields</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="431670980%2FFunctions%2F-1391351333"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="../-base-search-query/stored-fields.html"><span class="token function">storedFields</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">clear<span class="token operator">: </span><a href="-c-l-e-a-r/index.html">SearchQuery.CLEAR</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">SearchQuery</a><span class="token operator">&lt;</span><a href="index.html">S</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Clears current search query stored fields.</p></div><div class="symbol monospace"><span class="token keyword">fun </span><a href="../-base-search-query/stored-fields.html"><span class="token function">storedFields</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">none<span class="token operator">: </span><a href="../../dev.evo.elasticmagic.query/-stored-field/-none/index.html">StoredField.None</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">SearchQuery</a><span class="token operator">&lt;</span><a href="index.html">S</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Disables retrieving any stored fields including meta fields like <code class="lang-kotlin">_id</code> and <code class="lang-kotlin">_routing</code>.</p></div><div class="symbol monospace"><span class="token keyword">fun </span><a href="../-base-search-query/stored-fields.html"><span class="token function">storedFields</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">vararg </span>fields<span class="token operator">: </span><a href="../../dev.evo.elasticmagic.query/-stored-field/index.html">StoredField</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">SearchQuery</a><span class="token operator">&lt;</span><a href="index.html">S</a><span class="token operator">&gt;</span></div><div class="symbol monospace"><span class="token keyword">fun </span><a href="../-base-search-query/stored-fields.html"><span class="token function">storedFields</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">fields<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../../dev.evo.elasticmagic.query/-stored-field/index.html">StoredField</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">SearchQuery</a><span class="token operator">&lt;</span><a href="index.html">S</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Adds <a href="../-base-search-query/stored-fields.html">fields</a> to the search query stored fields list.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1417683825%2FFunctions%2F-1391351333" anchor-label="terminateAfter" id="1417683825%2FFunctions%2F-1391351333" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-base-search-query/terminate-after.html"><span>terminate</span><wbr><span><span>After</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1417683825%2FFunctions%2F-1391351333"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="../-base-search-query/terminate-after.html"><span class="token function">terminateAfter</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">terminateAfter<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">SearchQuery</a><span class="token operator">&lt;</span><a href="index.html">S</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Sets a maximum number of matched documents per shard after which the query should be terminated.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="922614303%2FFunctions%2F-1391351333" anchor-label="trackScores" id="922614303%2FFunctions%2F-1391351333" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-base-search-query/track-scores.html"><span>track</span><wbr><span><span>Scores</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="922614303%2FFunctions%2F-1391351333"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="../-base-search-query/track-scores.html"><span class="token function">trackScores</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">trackScores<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">SearchQuery</a><span class="token operator">&lt;</span><a href="index.html">S</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">If <a href="../-base-search-query/track-scores.html">trackScores</a> is <code class="lang-kotlin">true</code> forces computing scores even when sorting on a field.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1711959480%2FFunctions%2F-1391351333" anchor-label="trackTotalHits" id="-1711959480%2FFunctions%2F-1391351333" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-base-search-query/track-total-hits.html"><span>track</span><wbr><span>Total</span><wbr><span><span>Hits</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1711959480%2FFunctions%2F-1391351333"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="../-base-search-query/track-total-hits.html"><span class="token function">trackTotalHits</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">trackTotalHits<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">SearchQuery</a><span class="token operator">&lt;</span><a href="index.html">S</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">When <a href="../-base-search-query/track-total-hits.html">trackTotalHits</a> is <code class="lang-kotlin">true</code> the search query will always count the total number of hits that match the query.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1428746374%2FFunctions%2F-1391351333" anchor-label="update" id="-1428746374%2FFunctions%2F-1391351333" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="update.html"><span><span>update</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1428746374%2FFunctions%2F-1391351333"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="update.html"><span class="token function">update</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">index<span class="token operator">: </span><a href="../-elasticsearch-index/index.html">ElasticsearchIndex</a><span class="token punctuation">, </span></span><span class="parameter ">script<span class="token operator">: </span><a href="../../dev.evo.elasticmagic.query/-script/index.html">Script</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">refresh<span class="token operator">: </span><a href="../-refresh/index.html">Refresh</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">conflicts<span class="token operator">: </span><a href="../-conflicts/index.html">Conflicts</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">maxDocs<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">scrollSize<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">params<span class="token operator">: </span><a href="../-params/index.html">Params</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../-update-by-query-result/index.html">UpdateByQueryResult</a></div><div class="brief "><p class="paragraph">Update by query API.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="836201258%2FFunctions%2F-1391351333" anchor-label="updateAsync" id="836201258%2FFunctions%2F-1391351333" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="update-async.html"><span>update</span><wbr><span><span>Async</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="836201258%2FFunctions%2F-1391351333"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="update-async.html"><span class="token function">updateAsync</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">index<span class="token operator">: </span><a href="../-elasticsearch-index/index.html">ElasticsearchIndex</a><span class="token punctuation">, </span></span><span class="parameter ">script<span class="token operator">: </span><a href="../../dev.evo.elasticmagic.query/-script/index.html">Script</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">refresh<span class="token operator">: </span><a href="../-refresh/index.html">Refresh</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">conflicts<span class="token operator">: </span><a href="../-conflicts/index.html">Conflicts</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">maxDocs<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">scrollSize<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">params<span class="token operator">: </span><a href="../-params/index.html">Params</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../-async-result/index.html">AsyncResult</a><span class="token operator">&lt;</span><a href="../-update-by-query-partial-result/index.html">UpdateByQueryPartialResult</a><span class="token punctuation">, </span><a href="../-update-by-query-result/index.html">UpdateByQueryResult</a><span class="token operator">?</span><span class="token operator">&gt;</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="899176107%2FFunctions%2F-1391351333" anchor-label="version" id="899176107%2FFunctions%2F-1391351333" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-base-search-query/version.html"><span><span>version</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="899176107%2FFunctions%2F-1391351333"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="../-base-search-query/version.html"><span class="token function">version</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">version<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">SearchQuery</a><span class="token operator">&lt;</span><a href="index.html">S</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Enables/disables a document version to be returned within a hit.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      <div class="footer">
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2025 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+      </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

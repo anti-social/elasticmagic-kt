@@ -1,0 +1,382 @@
+<!doctype html>
+<html class="no-js">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>TopHitsAgg</title>
+<link href="../../../images/logo-icon.svg" rel="icon" type="image/svg">    <script>var pathToRoot = "../../../";</script>
+    <script>document.documentElement.classList.replace("no-js","js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async></script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../../styles/font-jb-sans-auto.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/clipboard.js" async></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
+<body>
+    <div class="root">
+<nav class="navigation" id="navigation-wrapper">
+    <div class="navigation--inner">
+        <div class="navigation-title">
+            <button class="menu-toggle" id="menu-toggle" type="button">toggle menu</button>
+            <div class="library-name">
+<a class="library-name--link" href="../../../index.html">
+                            elasticmagic-kt
+                    </a>            </div>
+            <div class="library-version">0.3.4
+            </div>
+        </div>
+        <div class="filter-section" id="filter-section">
+                <button class="platform-tag platform-selector common-like" data-active="" data-filter=":elasticmagic:dokkaHtmlPartial/commonMain">common</button>
+        </div>
+    </div>
+    <div class="navigation-controls">
+        <button class="navigation-controls--btn navigation-controls--theme" id="theme-toggle-button" type="button">switch theme</button>
+        <div class="navigation-controls--btn navigation-controls--search" id="searchBar" role="button">search in API</div>
+    </div>
+</nav>
+        <div id="container">
+            <div class="sidebar" id="leftColumn">
+                <div class="sidebar--inner" id="sideMenu"></div>
+            </div>
+            <div id="main">
+<div class="main-content" data-page-type="classlike" id="content" pageids="elasticmagic::dev.evo.elasticmagic.aggs/TopHitsAgg///PointingToDeclaration//-1391351333">
+  <div class="breadcrumbs"><a href="../../index.html">elasticmagic</a><span class="delimiter">/</span><a href="../index.html">dev.evo.elasticmagic.aggs</a><span class="delimiter">/</span><span class="current">TopHitsAgg</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span>Top</span><wbr><span>Hits</span><wbr><span><span>Agg</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="index.html">TopHitsAgg</a><span class="token operator">&lt;</span><a href="index.html">S</a><span class="token operator"> : </span><a href="../../dev.evo.elasticmagic.doc/-base-doc-source/index.html">BaseDocSource</a><span class="token operator">&gt;</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>docSourceFactory<span class="token operator">: </span><span class="token punctuation">(</span>obj<span class="token operator">: </span><a href="../../../elasticmagic-serde/dev.evo.elasticmagic.serde/-deserializer/-object-ctx/index.html">Deserializer.ObjectCtx</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="index.html">S</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>from<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>size<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>sort<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../../dev.evo.elasticmagic.query/-sort/index.html">Sort</a><span class="token operator">&gt;</span><span class="token operator"> = </span>emptyList()<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>source<span class="token operator">: </span><a href="../../dev.evo.elasticmagic.query/-source/index.html">Source</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>fields<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../../dev.evo.elasticmagic.query/-field-format/index.html">FieldFormat</a><span class="token operator">&gt;</span><span class="token operator"> = </span>emptyList()<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>docvalueFields<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../../dev.evo.elasticmagic.query/-field-format/index.html">FieldFormat</a><span class="token operator">&gt;</span><span class="token operator"> = </span>emptyList()<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>storedFields<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../../dev.evo.elasticmagic.query/-stored-field/index.html">StoredField</a><span class="token operator">&gt;</span><span class="token operator"> = </span>emptyList()<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>params<span class="token operator">: </span><a href="../../dev.evo.elasticmagic/-params/index.html">Params</a><span class="token operator"> = </span>Params()</span></span><span class="token punctuation">)</span> : <a href="../-metric-aggregation/index.html">MetricAggregation</a><span class="token operator">&lt;</span><a href="../-top-hits-agg-result/index.html">TopHitsAggResult</a><span class="token operator">&lt;</span><a href="index.html">S</a><span class="token operator">&gt;</span><span class="token operator">&gt; </span></div></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="CONSTRUCTOR">
+        <h2 class="">Constructors</h2>
+        <div class="table"><a data-name="1197085892%2FConstructors%2F-1391351333" anchor-label="TopHitsAgg" id="1197085892%2FConstructors%2F-1391351333" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-togglable="CONSTRUCTOR" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-top-hits-agg.html"><span>Top</span><wbr><span>Hits</span><wbr><span><span>Agg</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1197085892%2FConstructors%2F-1391351333"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">docSourceFactory<span class="token operator">: </span><span class="token punctuation">(</span>obj<span class="token operator">: </span><a href="../../../elasticmagic-serde/dev.evo.elasticmagic.serde/-deserializer/-object-ctx/index.html">Deserializer.ObjectCtx</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="index.html">S</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter ">from<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">size<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">sort<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../../dev.evo.elasticmagic.query/-sort/index.html">Sort</a><span class="token operator">&gt;</span><span class="token operator"> = </span>emptyList()<span class="token punctuation">, </span></span><span class="parameter ">source<span class="token operator">: </span><a href="../../dev.evo.elasticmagic.query/-source/index.html">Source</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">fields<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../../dev.evo.elasticmagic.query/-field-format/index.html">FieldFormat</a><span class="token operator">&gt;</span><span class="token operator"> = </span>emptyList()<span class="token punctuation">, </span></span><span class="parameter ">docvalueFields<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../../dev.evo.elasticmagic.query/-field-format/index.html">FieldFormat</a><span class="token operator">&gt;</span><span class="token operator"> = </span>emptyList()<span class="token punctuation">, </span></span><span class="parameter ">storedFields<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../../dev.evo.elasticmagic.query/-stored-field/index.html">StoredField</a><span class="token operator">&gt;</span><span class="token operator"> = </span>emptyList()<span class="token punctuation">, </span></span><span class="parameter ">params<span class="token operator">: </span><a href="../../dev.evo.elasticmagic/-params/index.html">Params</a><span class="token operator"> = </span>Params()</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="TYPE">
+        <h2 class="">Types</h2>
+        <div class="table"><a data-name="-1395347497%2FClasslikes%2F-1391351333" anchor-label="Companion" id="-1395347497%2FClasslikes%2F-1391351333" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-companion/index.html"><span><span>Companion</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1395347497%2FClasslikes%2F-1391351333"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">object </span><a href="-companion/index.html">Companion</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="PROPERTY">
+        <h2 class="">Properties</h2>
+        <div class="table"><a data-name="557243219%2FProperties%2F-1391351333" anchor-label="docSourceFactory" id="557243219%2FProperties%2F-1391351333" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="doc-source-factory.html"><span>doc</span><wbr><span>Source</span><wbr><span><span>Factory</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="557243219%2FProperties%2F-1391351333"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">val </span><a href="doc-source-factory.html">docSourceFactory</a><span class="token operator">: </span><span class="token punctuation">(</span>obj<span class="token operator">: </span><a href="../../../elasticmagic-serde/dev.evo.elasticmagic.serde/-deserializer/-object-ctx/index.html">Deserializer.ObjectCtx</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="index.html">S</a><span class="token operator">?</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1839642184%2FProperties%2F-1391351333" anchor-label="docvalueFields" id="-1839642184%2FProperties%2F-1391351333" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="docvalue-fields.html"><span>docvalue</span><wbr><span><span>Fields</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1839642184%2FProperties%2F-1391351333"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">val </span><a href="docvalue-fields.html">docvalueFields</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../../dev.evo.elasticmagic.query/-field-format/index.html">FieldFormat</a><span class="token operator">&gt;</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="2019550513%2FProperties%2F-1391351333" anchor-label="fields" id="2019550513%2FProperties%2F-1391351333" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="fields.html"><span><span>fields</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2019550513%2FProperties%2F-1391351333"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">val </span><a href="fields.html">fields</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../../dev.evo.elasticmagic.query/-field-format/index.html">FieldFormat</a><span class="token operator">&gt;</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1015698272%2FProperties%2F-1391351333" anchor-label="from" id="-1015698272%2FProperties%2F-1391351333" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="from.html"><span><span>from</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1015698272%2FProperties%2F-1391351333"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">val </span><a href="from.html">from</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token operator">?</span><span class="token operator"> = </span>null</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1901684513%2FProperties%2F-1391351333" anchor-label="name" id="-1901684513%2FProperties%2F-1391351333" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="name.html"><span><span>name</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1901684513%2FProperties%2F-1391351333"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">val </span><a href="name.html">name</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="134167300%2FProperties%2F-1391351333" anchor-label="params" id="134167300%2FProperties%2F-1391351333" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="params.html"><span><span>params</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="134167300%2FProperties%2F-1391351333"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">val </span><a href="params.html">params</a><span class="token operator">: </span><a href="../../dev.evo.elasticmagic/-params/index.html">Params</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-857988055%2FProperties%2F-1391351333" anchor-label="size" id="-857988055%2FProperties%2F-1391351333" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="size.html"><span><span>size</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-857988055%2FProperties%2F-1391351333"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">val </span><a href="size.html">size</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token operator">?</span><span class="token operator"> = </span>null</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1024087764%2FProperties%2F-1391351333" anchor-label="sort" id="-1024087764%2FProperties%2F-1391351333" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="sort.html"><span><span>sort</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1024087764%2FProperties%2F-1391351333"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">val </span><a href="sort.html">sort</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../../dev.evo.elasticmagic.query/-sort/index.html">Sort</a><span class="token operator">&gt;</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1928261135%2FProperties%2F-1391351333" anchor-label="source" id="1928261135%2FProperties%2F-1391351333" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="source.html"><span><span>source</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1928261135%2FProperties%2F-1391351333"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">val </span><a href="source.html">source</a><span class="token operator">: </span><a href="../../dev.evo.elasticmagic.query/-source/index.html">Source</a><span class="token operator">?</span><span class="token operator"> = </span>null</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-273840306%2FProperties%2F-1391351333" anchor-label="storedFields" id="-273840306%2FProperties%2F-1391351333" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="stored-fields.html"><span>stored</span><wbr><span><span>Fields</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-273840306%2FProperties%2F-1391351333"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">val </span><a href="stored-fields.html">storedFields</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../../dev.evo.elasticmagic.query/-stored-field/index.html">StoredField</a><span class="token operator">&gt;</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="FUNCTION">
+        <h2 class="">Functions</h2>
+        <div class="table"><a data-name="1816208352%2FFunctions%2F-1391351333" anchor-label="accept" id="1816208352%2FFunctions%2F-1391351333" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../../dev.evo.elasticmagic.query/-named-expression/accept.html"><span><span>accept</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1816208352%2FFunctions%2F-1391351333"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../../dev.evo.elasticmagic.query/-named-expression/accept.html"><span class="token function">accept</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">ctx<span class="token operator">: </span><a href="../../../elasticmagic-serde/dev.evo.elasticmagic.serde/-serializer/-object-ctx/index.html">Serializer.ObjectCtx</a><span class="token punctuation">, </span></span><span class="parameter ">compiler<span class="token operator">: </span><a href="../../dev.evo.elasticmagic.compile/-base-search-query-compiler/index.html">BaseSearchQueryCompiler</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1219938501%2FFunctions%2F-1391351333" anchor-label="children" id="-1219938501%2FFunctions%2F-1391351333" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../../dev.evo.elasticmagic.query/-expression/children.html"><span><span>children</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1219938501%2FFunctions%2F-1391351333"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="../../dev.evo.elasticmagic.query/-expression/children.html"><span class="token function">children</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-iterator/index.html">Iterator</a><span class="token operator">&lt;</span><a href="../../dev.evo.elasticmagic.query/-expression/index.html">Expression</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token operator">&gt;</span><span class="token operator">&gt;</span><span class="token operator">?</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="774124883%2FFunctions%2F-1391351333" anchor-label="clone" id="774124883%2FFunctions%2F-1391351333" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="clone.html"><span><span>clone</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="774124883%2FFunctions%2F-1391351333"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="clone.html"><span class="token function">clone</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">TopHitsAgg</a><span class="token operator">&lt;</span><a href="index.html">S</a><span class="token operator">&gt;</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1391333085%2FFunctions%2F-1391351333" anchor-label="processResult" id="1391333085%2FFunctions%2F-1391351333" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-aggregation/process-result.html"><span>process</span><wbr><span><span>Result</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1391333085%2FFunctions%2F-1391351333"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="../-aggregation/process-result.html"><span class="token function">processResult</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">obj<span class="token operator">: </span><a href="../../../elasticmagic-serde/dev.evo.elasticmagic.serde/-deserializer/-object-ctx/index.html">Deserializer.ObjectCtx</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../-top-hits-agg-result/index.html">TopHitsAggResult</a><span class="token operator">&lt;</span><a href="index.html">S</a><span class="token operator">&gt;</span></div><br><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="process-result.html"><span class="token function">processResult</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">obj<span class="token operator">: </span><a href="../../../elasticmagic-serde/dev.evo.elasticmagic.serde/-deserializer/-object-ctx/index.html">Deserializer.ObjectCtx</a><span class="token punctuation">, </span></span><span class="parameter ">docSourceFactory<span class="token operator">: </span><span class="token punctuation">(</span><a href="../../../elasticmagic-serde/dev.evo.elasticmagic.serde/-deserializer/-object-ctx/index.html">Deserializer.ObjectCtx</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="../../dev.evo.elasticmagic.doc/-base-doc-source/index.html">BaseDocSource</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../-top-hits-agg-result/index.html">TopHitsAggResult</a><span class="token operator">&lt;</span><a href="index.html">S</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Processes corresponding aggregation response.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="742880500%2FFunctions%2F-1391351333" anchor-label="reduce" id="742880500%2FFunctions%2F-1391351333" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../../dev.evo.elasticmagic.query/-expression/reduce.html"><span><span>reduce</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="742880500%2FFunctions%2F-1391351333"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="../../dev.evo.elasticmagic.query/-expression/reduce.html"><span class="token function">reduce</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../dev.evo.elasticmagic.query/-expression/index.html">Expression</a><span class="token operator">&lt;</span><a href="../../../elasticmagic-serde/dev.evo.elasticmagic.serde/-serializer/-object-ctx/index.html">Serializer.ObjectCtx</a><span class="token operator">&gt;</span><span class="token operator">?</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1275545617%2FFunctions%2F-1391351333" anchor-label="rewrite" id="-1275545617%2FFunctions%2F-1391351333" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../../dev.evo.elasticmagic.query/-expression/rewrite.html"><span><span>rewrite</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1275545617%2FFunctions%2F-1391351333"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="../../dev.evo.elasticmagic.query/-expression/rewrite.html"><span class="token function">rewrite</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">newNode<span class="token operator">: </span><a href="../../dev.evo.elasticmagic.query/-query-expression-node/index.html">QueryExpressionNode</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../dev.evo.elasticmagic.query/-expression/index.html">Expression</a><span class="token operator">&lt;</span><a href="../../../elasticmagic-serde/dev.evo.elasticmagic.serde/-serializer/-object-ctx/index.html">Serializer.ObjectCtx</a><span class="token operator">&gt;</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-2060235134%2FFunctions%2F-1391351333" anchor-label="visit" id="-2060235134%2FFunctions%2F-1391351333" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain"></a>
+          <div class="table-row" data-filterable-current=":elasticmagic:dokkaHtmlPartial/commonMain" data-filterable-set=":elasticmagic:dokkaHtmlPartial/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="visit.html"><span><span>visit</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2060235134%2FFunctions%2F-1391351333"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":elasticmagic:dokkaHtmlPartial/commonMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="visit.html"><span class="token function">visit</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">ctx<span class="token operator">: </span><a href="../../../elasticmagic-serde/dev.evo.elasticmagic.serde/-serializer/-object-ctx/index.html">Serializer.ObjectCtx</a><span class="token punctuation">, </span></span><span class="parameter ">compiler<span class="token operator">: </span><a href="../../dev.evo.elasticmagic.compile/-base-search-query-compiler/index.html">BaseSearchQueryCompiler</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      <div class="footer">
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2025 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+      </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
