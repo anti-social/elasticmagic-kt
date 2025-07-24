@@ -476,11 +476,11 @@ abstract class BaseSearchQuery<S : BaseDocSource, T : BaseSearchQuery<S, T>>(
      *
      * @see <https://www.elastic.co/guide/en/elasticsearch/reference/current/search-fields.html#stored-fields>
      */
-    fun storedFields(vararg fields: FieldOperations<*>): T = self {
+    fun storedFields(vararg fields: StoredField): T = self {
         if (storedFields.firstOrNull() === StoredField.None) {
             storedFields.clear()
         }
-        storedFields += fields.map(StoredField.Companion::invoke)
+        storedFields += fields
     }
 
     /**
@@ -488,7 +488,7 @@ abstract class BaseSearchQuery<S : BaseDocSource, T : BaseSearchQuery<S, T>>(
      *
      * @see <https://www.elastic.co/guide/en/elasticsearch/reference/current/search-fields.html#stored-fields>
      */
-    fun storedFields(fields: List<FieldOperations<*>>): T = self {
+    fun storedFields(fields: List<StoredField>): T = self {
         storedFields(*fields.toTypedArray())
     }
 

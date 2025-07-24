@@ -3,6 +3,7 @@ package dev.evo.elasticmagic.aggs
 import dev.evo.elasticmagic.SearchHit
 import dev.evo.elasticmagic.doc.DynDocSource
 import dev.evo.elasticmagic.query.Source
+import dev.evo.elasticmagic.query.StoredField
 import dev.evo.elasticmagic.serde.DeserializationException
 
 import io.kotest.assertions.throwables.shouldThrow
@@ -16,6 +17,14 @@ class TopHitsTests : TestAggregation() {
     fun compile() {
         TopHitsAgg().compile() shouldContainExactly mapOf(
             "top_hits" to emptyMap<String, Any>()
+        )
+
+        TopHitsAgg(
+            storedFields = listOf(StoredField.None)
+        ).compile() shouldContainExactly mapOf(
+            "top_hits" to mapOf(
+                "stored_fields" to "_none_",
+            )
         )
 
         TopHitsAgg(

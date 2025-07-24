@@ -7,6 +7,7 @@ import dev.evo.elasticmagic.doc.BaseDocSource
 import dev.evo.elasticmagic.query.FieldFormat
 import dev.evo.elasticmagic.query.Sort
 import dev.evo.elasticmagic.query.Source
+import dev.evo.elasticmagic.query.StoredField
 import dev.evo.elasticmagic.serde.Deserializer
 import dev.evo.elasticmagic.serde.Serializer
 import dev.evo.elasticmagic.serde.forEachObj
@@ -26,7 +27,7 @@ data class TopHitsAgg<S : BaseDocSource>(
     val source: Source? = null,
     val fields: List<FieldFormat> = emptyList(),
     val docvalueFields: List<FieldFormat> = emptyList(),
-    val storedFields: List<FieldFormat> = emptyList(),
+    val storedFields: List<StoredField> = emptyList(),
     val params: Params = Params(),
 ) : MetricAggregation<TopHitsAggResult<S>>() {
     companion object {
@@ -38,7 +39,7 @@ data class TopHitsAgg<S : BaseDocSource>(
             source: Source? = null,
             fields: List<FieldFormat> = emptyList(),
             docvalueFields: List<FieldFormat> = emptyList(),
-            storedFields: List<FieldFormat> = emptyList(),
+            storedFields: List<StoredField> = emptyList(),
             params: Params = Params(),
         ): TopHitsAgg<S> {
             return TopHitsAgg(
@@ -61,7 +62,7 @@ data class TopHitsAgg<S : BaseDocSource>(
             source: Source? = null,
             fields: List<FieldFormat> = emptyList(),
             docvalueFields: List<FieldFormat> = emptyList(),
-            storedFields: List<FieldFormat> = emptyList(),
+            storedFields: List<StoredField> = emptyList(),
             params: Params = Params(),
         ): TopHitsAgg<BaseDocSource> {
             return TopHitsAgg(
@@ -104,8 +105,14 @@ data class TopHitsAgg<S : BaseDocSource>(
             }
         }
         if (storedFields.isNotEmpty()) {
-            ctx.array("stored_fields") {
-                compiler.visit(this, storedFields)
+            val firstStoredField = storedFields.first()
+            if (firstStoredField === StoredField.None) {
+                // Elasticsearch 8.x requires _none_ to be a scalar value
+                ctx.field("stored_fields", firstStoredField.toValue())
+            } else {
+                ctx.array("stored_fields") {
+                    compiler.visit(this, storedFields)
+                }
             }
         }
     }
