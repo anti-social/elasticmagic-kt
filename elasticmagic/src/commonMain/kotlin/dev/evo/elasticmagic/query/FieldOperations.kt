@@ -61,16 +61,10 @@ interface BoostedField : ToValue<String> {
 /**
  * Represents stored field in a search query.
  */
-sealed class StoredField : ToValue<String> {
-    internal companion object {
-        operator fun invoke(field: FieldOperations<*>): Field = Field(field)
-    }
+interface StoredField : ToValue<String> {
+    data class Field(val field: FieldOperations<*>) : StoredField, ToValue<String> by field
 
-    internal data class Field(val field: FieldOperations<*>) : StoredField() {
-        override fun toValue(): String = field.getQualifiedFieldName()
-    }
-
-    object None : StoredField() {
+    object None : StoredField {
         override fun toValue(): String = "_none_"
     }
 }
@@ -78,7 +72,7 @@ sealed class StoredField : ToValue<String> {
 /**
  * Holds field operations shortcuts.
  */
-interface FieldOperations<T> : Named, FieldFormat, BoostedField, Sort {
+interface FieldOperations<T> : Named, FieldFormat, BoostedField, StoredField, Sort {
     fun getFieldType(): FieldType<*, T>
 
     fun serializeTerm(v: T & Any): Any {
