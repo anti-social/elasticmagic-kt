@@ -83,7 +83,7 @@ fun RepositoryHandler.configureTestRepository(project: Project): MavenArtifactRe
 fun NexusRepositoryContainer.configureSonatypeRepository(project: Project) = sonatype {
     val baseSonatypeUrl = project.properties["sonatypeUrl"]?.toString()
         ?: System.getenv("SONATYPE_URL")
-        ?: "https://s01.oss.sonatype.org"
+        ?: "https://ossrh-staging-api.central.sonatype.com"
 
     nexusUrl.set(project.uri("$baseSonatypeUrl/service/local/"))
     snapshotRepositoryUrl.set(project.uri("$baseSonatypeUrl/content/repositories/snapshots/"))

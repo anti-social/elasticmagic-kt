@@ -248,6 +248,7 @@ jobs:
           -Psigning.secretKeyRingFile="$PWD/signing.gpg" \
           -Psigning.keyId='${{ secrets.SIGNING_KEY_ID }}' \
           -Psigning.password='${{ secrets.SIGNING_KEY_PASSPHRASE }}' \
+          -PsonatypeUrl='${{ secrets.SONATYPE_URL }}' \
           -PsonatypeUser='${{ secrets.SONATYPE_USER }}' \
           -PsonatypePassword='${{ secrets.SONATYPE_PASSWORD }}'
 
