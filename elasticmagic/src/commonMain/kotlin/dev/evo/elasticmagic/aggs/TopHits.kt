@@ -1,8 +1,10 @@
 package dev.evo.elasticmagic.aggs
 
+import dev.evo.elasticmagic.Params
 import dev.evo.elasticmagic.SearchHit
 import dev.evo.elasticmagic.compile.BaseSearchQueryCompiler
 import dev.evo.elasticmagic.doc.BaseDocSource
+import dev.evo.elasticmagic.query.FieldFormat
 import dev.evo.elasticmagic.query.Sort
 import dev.evo.elasticmagic.query.Source
 import dev.evo.elasticmagic.serde.Deserializer
@@ -20,16 +22,24 @@ data class TopHitsAgg<S : BaseDocSource>(
     val docSourceFactory: ((obj: Deserializer.ObjectCtx) -> S)?,
     val from: Int? = null,
     val size: Int? = null,
-    val sort: List<Sort>? = null,
+    val sort: List<Sort> = emptyList(),
     val source: Source? = null,
+    val fields: List<FieldFormat> = emptyList(),
+    val docvalueFields: List<FieldFormat> = emptyList(),
+    val storedFields: List<FieldFormat> = emptyList(),
+    val params: Params = Params(),
 ) : MetricAggregation<TopHitsAggResult<S>>() {
     companion object {
         operator fun <S : BaseDocSource> invoke(
             docSourceFactory: () -> S,
             from: Int? = null,
             size: Int? = null,
-            sort: List<Sort>? = null,
+            sort: List<Sort> = emptyList(),
             source: Source? = null,
+            fields: List<FieldFormat> = emptyList(),
+            docvalueFields: List<FieldFormat> = emptyList(),
+            storedFields: List<FieldFormat> = emptyList(),
+            params: Params = Params(),
         ): TopHitsAgg<S> {
             return TopHitsAgg(
                 { docSourceFactory() },
@@ -37,14 +47,22 @@ data class TopHitsAgg<S : BaseDocSource>(
                 size = size,
                 sort = sort,
                 source = source,
+                fields = fields,
+                docvalueFields = docvalueFields,
+                storedFields = storedFields,
+                params = params,
             )
         }
 
         operator fun invoke(
             from: Int? = null,
             size: Int? = null,
-            sort: List<Sort>? = null,
+            sort: List<Sort> = emptyList(),
             source: Source? = null,
+            fields: List<FieldFormat> = emptyList(),
+            docvalueFields: List<FieldFormat> = emptyList(),
+            storedFields: List<FieldFormat> = emptyList(),
+            params: Params = Params(),
         ): TopHitsAgg<BaseDocSource> {
             return TopHitsAgg(
                 null,
@@ -52,6 +70,10 @@ data class TopHitsAgg<S : BaseDocSource>(
                 size = size,
                 sort = sort,
                 source = source,
+                fields = fields,
+                docvalueFields = docvalueFields,
+                storedFields = storedFields,
+                params = params,
             )
         }
     }
@@ -63,13 +85,28 @@ data class TopHitsAgg<S : BaseDocSource>(
     override fun visit(ctx: Serializer.ObjectCtx, compiler: BaseSearchQueryCompiler) {
         ctx.fieldIfNotNull("from", from)
         ctx.fieldIfNotNull("size", size)
-        if (sort != null) {
+        if (sort.isNotEmpty()) {
             ctx.array("sort") {
                 compiler.visit(this, sort)
             }
         }
         if (source != null) {
             compiler.visit(ctx, source)
+        }
+        if (fields.isNotEmpty()) {
+            ctx.array("fields") {
+                compiler.visit(this, fields)
+            }
+        }
+        if (docvalueFields.isNotEmpty()) {
+            ctx.array("docvalue_fields") {
+                compiler.visit(this, docvalueFields)
+            }
+        }
+        if (storedFields.isNotEmpty()) {
+            ctx.array("stored_fields") {
+                compiler.visit(this, storedFields)
+            }
         }
     }
 

@@ -17,6 +17,7 @@ class TopHitsTests : TestAggregation() {
         TopHitsAgg().compile() shouldContainExactly mapOf(
             "top_hits" to emptyMap<String, Any>()
         )
+
         TopHitsAgg(
             from = 0,
             size = 20,
@@ -34,6 +35,32 @@ class TopHitsTests : TestAggregation() {
                     )
                 ),
                 "_source" to listOf("name", "status"),
+            )
+        )
+
+        TopHitsAgg(
+            from = 0,
+            size = 20,
+            sort = listOf(MovieDoc.numRatings.desc()),
+            source = Source.Filter.includes(listOf(MovieDoc.name, MovieDoc.status)),
+            fields = listOf(MovieDoc.genre),
+            docvalueFields = listOf(MovieDoc.rating),
+            storedFields = listOf(MovieDoc.numRatings),
+        ).compile() shouldContainExactly mapOf(
+            "top_hits" to mapOf(
+                "from" to 0,
+                "size" to 20,
+                "sort" to listOf(
+                    mapOf(
+                        "num_ratings" to mapOf(
+                            "order" to "desc"
+                        )
+                    )
+                ),
+                "_source" to listOf("name", "status"),
+                "fields" to listOf("genre"),
+                "docvalue_fields" to listOf("rating"),
+                "stored_fields" to listOf("num_ratings"),
             )
         )
     }
