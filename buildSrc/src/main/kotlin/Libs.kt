@@ -1,5 +1,3 @@
-import org.gradle.api.JavaVersion
-
 import java.util.Properties
 
 object Versions {
