@@ -54,6 +54,9 @@ fun Project.configureMultiplatform(
             nativeTarget.binaries {
                 for ((ix, entryPoint) in entryPoints.withIndex()) {
                     executable(if (ix == 0) "" else entryPoint) {
+                        // Otherwise the binary of the executable with an empty name prefix is placed
+                        // outside its output directory and the run task is skipped
+                        baseName = entryPoint
                         entryPoint("samples.$entryPoint.main")
                     }
                 }
