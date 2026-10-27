@@ -108,7 +108,7 @@ subprojects {
 
     tasks.withType<KotlinNativeHostTest>().configureEach {
         afterTest(
-            KotlinClosure2<TestDescriptor, TestResult, Unit>({ descriptor, result ->
+            KotlinClosure2<TestDescriptor, TestResult, Unit>({ _, result ->
                 result.exception?.let { exc ->
                     val lib = "dev.evo.elasticmagic"
                     println()
