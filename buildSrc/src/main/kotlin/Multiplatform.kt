@@ -6,8 +6,10 @@ import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.tasks.JavaExec
 import org.gradle.api.tasks.application.CreateStartScripts
 import org.gradle.kotlin.dsl.*
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.*
 
+@OptIn(ExperimentalKotlinGradlePluginApi::class)
 fun Project.configureMultiplatform(
     configureJvm: Boolean = true,
     configureJs: Boolean = true,
@@ -121,18 +123,18 @@ fun Project.configureMultiplatform(
                 val startScripts = tasks.getByName<CreateStartScripts>("startScripts")
 
                 for (entryPoint in entryPoints.slice(1 until entryPoints.size)) {
-                    val startScript = create("${entryPoint}StartScript", CreateStartScripts::class) {
+                    val startScript = register("${entryPoint}StartScript", CreateStartScripts::class) {
                         applicationName = entryPoint
                         mainClass.set("samples.$entryPoint.MainKt")
-                        classpath = sourceSets.getByName("main").runtimeClasspath
                         outputDir = startScripts.outputDir
                     }
                     startScripts.dependsOn(startScript)
 
-                    val runTaskName = "run${entryPoint.capitalize()}"
+                    val runTaskName = "run${entryPoint.replaceFirstChar { it.uppercaseChar() }}"
+                    val runtimeClasspath = sourceSets.getByName("main").runtimeClasspath
                     register<JavaExec>(runTaskName) {
-                        mainClass.set(startScript.mainClass)
-                        classpath = startScript.classpath!!
+                        mainClass.set(startScript.get().mainClass.get())
+                        classpath = runtimeClasspath
                         standardInput = System.`in`
                     }
                 }
