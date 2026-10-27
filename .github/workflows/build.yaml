@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        java-version: [11]
+        java-version: [17]
     steps:
     - uses: actions/checkout@v4
 
@@ -62,7 +62,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        java-version: [11]
+        java-version: [17]
     steps:
     - uses: actions/checkout@v4
 
@@ -171,7 +171,7 @@ jobs:
     - name: Setup
       uses: ./.github/setup
       with:
-        java-version: 11
+        java-version: 17
 
     - name: Load caches
       uses: ./.github/cache
@@ -224,7 +224,7 @@ jobs:
     - name: Setup
       uses: ./.github/setup
       with:
-        java-version: 11
+        java-version: 17
 
     - name: Load caches
       uses: ./.github/cache
@@ -271,7 +271,7 @@ jobs:
     - name: Setup
       uses: ./.github/setup
       with:
-        java-version: 11
+        java-version: 17
 
     - name: Load caches
       uses: ./.github/cache
