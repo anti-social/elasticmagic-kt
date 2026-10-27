@@ -2,12 +2,18 @@ package dev.evo.elasticmagic
 
 import dev.evo.elasticmagic.aggs.TermsAgg
 import dev.evo.elasticmagic.compile.BaseSearchQueryCompiler
+import dev.evo.elasticmagic.doc.BoundRuntimeField
 import dev.evo.elasticmagic.doc.Document
+import dev.evo.elasticmagic.ext.elasticsearch.DenseVector
+import dev.evo.elasticmagic.ext.elasticsearch.Knn
 import dev.evo.elasticmagic.query.FunctionScore
 import dev.evo.elasticmagic.query.NodeHandle
 import dev.evo.elasticmagic.query.QueryExpressionNode
+import dev.evo.elasticmagic.query.Script
 import dev.evo.elasticmagic.query.SearchExt
+import dev.evo.elasticmagic.query.Source
 import dev.evo.elasticmagic.serde.Serializer
+import dev.evo.elasticmagic.types.BooleanType
 import io.kotest.matchers.shouldBe
 import kotlin.test.Test
 import kotlin.time.Duration.Companion.seconds
@@ -49,6 +55,49 @@ class SearchQueryTests {
             it.size shouldBe 1
             it.filters.size shouldBe 2
             it.extensions.size shouldBe 1
+        }
+    }
+
+    @Test
+    fun cloningAllProperties() {
+        val hotelDoc = object : Document() {
+            val name by keyword()
+            val stars by int()
+            val location by Field(DenseVector(dims = 2))
+        }
+        val knn = Knn(hotelDoc.location, listOf(1.1F, 1.2F))
+        val runtimeField = BoundRuntimeField(
+            "has_name", BooleanType, Script.Source("emit(true)"), hotelDoc
+        )
+
+        val sq1 = SearchQuery()
+            .source(hotelDoc.name)
+            .knn(knn)
+            .runtimeMappings(runtimeField)
+            .filter(hotelDoc.stars.gte(3))
+        sq1.prepareSearch()
+
+        val sq2 = sq1.clone()
+        sq2.prepareSearch().let {
+            it.source shouldBe Source.Filter(listOf(hotelDoc.name), emptyList())
+            it.knn shouldBe knn
+            it.runtimeMappings shouldBe mapOf("has_name" to runtimeField)
+            it.filters shouldBe listOf(hotelDoc.stars.gte(3))
+        }
+
+        // Clones must not affect each other
+        sq2.filter(hotelDoc.stars.lte(4)).source(hotelDoc.stars)
+        sq1.filter(hotelDoc.stars.eq(5)).runtimeMappings(SearchQuery.CLEAR)
+
+        sq1.prepareSearch().let {
+            it.source shouldBe Source.Filter(listOf(hotelDoc.name), emptyList())
+            it.runtimeMappings shouldBe emptyMap()
+            it.filters shouldBe listOf(hotelDoc.stars.gte(3), hotelDoc.stars.eq(5))
+        }
+        sq2.prepareSearch().let {
+            it.source shouldBe Source.Filter(listOf(hotelDoc.name, hotelDoc.stars), emptyList())
+            it.runtimeMappings shouldBe mapOf("has_name" to runtimeField)
+            it.filters shouldBe listOf(hotelDoc.stars.gte(3), hotelDoc.stars.lte(4))
         }
     }
 
