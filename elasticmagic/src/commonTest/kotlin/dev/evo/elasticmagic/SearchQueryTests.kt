@@ -1,5 +1,6 @@
 package dev.evo.elasticmagic
 
+import dev.evo.elasticmagic.aggs.TermsAgg
 import dev.evo.elasticmagic.compile.BaseSearchQueryCompiler
 import dev.evo.elasticmagic.doc.Document
 import dev.evo.elasticmagic.query.FunctionScore
@@ -79,5 +80,71 @@ class SearchQueryTests {
             fsHandle,
             FunctionScore(functions = emptyList())
         )
+    }
+
+    @Test
+    fun preparedSearchIsNotAffectedByFurtherModifications() {
+        val productDoc = object : Document() {
+            val color by keyword()
+            val brand by keyword()
+            val isActive by boolean()
+        }
+
+        val sq = SearchQuery()
+            .filter(productDoc.isActive.eq(true))
+
+        // Typical multi search usage: reuse a base query to prepare several searches
+        val preparedQueries = listOf("red", "blue").map { color ->
+            sq.filter(productDoc.color.eq(color))
+                .aggs("brands" to TermsAgg(productDoc.brand))
+                .prepareSearch()
+        }
+
+        preparedQueries[0].filters shouldBe listOf(
+            productDoc.isActive.eq(true),
+            productDoc.color.eq("red"),
+        )
+        preparedQueries[1].filters shouldBe listOf(
+            productDoc.isActive.eq(true),
+            productDoc.color.eq("red"),
+            productDoc.color.eq("blue"),
+        )
+    }
+
+    @Test
+    fun preparedSearchIsSnapshot() {
+        val productDoc = object : Document() {
+            val price by float()
+            val brand by keyword()
+        }
+
+        val sq = SearchQuery()
+            .size(10)
+            .postFilter(productDoc.brand.eq("acme"))
+            .sort(productDoc.price.desc())
+        val prepared = sq.prepareSearch()
+        val preparedCount = sq.prepareCount()
+
+        sq.size(0)
+            .postFilter(productDoc.brand.eq("other"))
+            .aggs("prices" to TermsAgg(productDoc.price))
+            .sort(productDoc.price.asc())
+
+        prepared.size shouldBe 10
+        prepared.postFilters shouldBe listOf(productDoc.brand.eq("acme"))
+        prepared.aggregations shouldBe emptyMap()
+        prepared.sorts shouldBe listOf(productDoc.price.desc())
+        preparedCount.postFilters shouldBe listOf(productDoc.brand.eq("acme"))
+
+        // The builder itself must keep all the modifications
+        sq.prepareSearch().let {
+            it.size shouldBe 0
+            it.postFilters shouldBe listOf(
+                productDoc.brand.eq("acme"),
+                productDoc.brand.eq("other"),
+            )
+            it.aggregations.keys shouldBe setOf("prices")
+            it.sorts shouldBe listOf(productDoc.price.desc(), productDoc.price.asc())
+        }
     }
 }
