@@ -15,7 +15,7 @@ object JsonSerializer : StdSerializer(::ObjectCtx, ::ArrayCtx) {
         )
         .writerWithDefaultPrettyPrinter()
 
-    class ObjectCtx : StdSerializer.ObjectCtx(HashMap()) {
+    class ObjectCtx : StdSerializer.ObjectCtx(LinkedHashMap()) {
         override fun serialize(): String {
             return writer.writeValueAsString(map)
         }
@@ -37,7 +37,7 @@ object PrettyJsonSerializer : StdSerializer(::ObjectCtx, ::ArrayCtx) {
         )
         .writerWithDefaultPrettyPrinter()
 
-    class ObjectCtx : StdSerializer.ObjectCtx(HashMap()) {
+    class ObjectCtx : StdSerializer.ObjectCtx(LinkedHashMap()) {
         override fun serialize(): String {
             return writer.writeValueAsString(map)
         }

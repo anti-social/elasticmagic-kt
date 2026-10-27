@@ -19,7 +19,7 @@ sealed class JsonSerializer : Serializer {
     companion object : JsonSerializer()
 
     inner class ObjectCtx : Serializer.ObjectCtx {
-        private val content: MutableMap<String, JsonElement> = HashMap()
+        private val content: MutableMap<String, JsonElement> = LinkedHashMap()
 
         fun build(): JsonObject {
             return JsonObject(content)
