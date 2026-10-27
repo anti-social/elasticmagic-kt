@@ -2,7 +2,6 @@
 
 apply {
     plugin("org.jetbrains.kotlin.multiplatform")
-    plugin("application")
 }
 
 repositories {
@@ -44,22 +43,4 @@ configure<org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension> {
     }
 }
 
-val Project.sourceSets: SourceSetContainer
-    get() = extensions.getByType(JavaPluginExtension::class).sourceSets
-
-tasks {
-    val startScripts by getting(CreateStartScripts::class)
-
-    val subFieldsMistakeStartScript by registering(CreateStartScripts::class) {
-        applicationName = "subfields-mistake"
-        mainClass.set("samples.document.subfields.mistake.MistakeKt")
-        classpath = sourceSets.getByName("main").runtimeClasspath
-        outputDir = startScripts.outputDir
-    }
-    startScripts.dependsOn(subFieldsMistakeStartScript)
-
-    register<JavaExec>("runSubFieldsMistake") {
-        mainClass.set(subFieldsMistakeStartScript.get().mainClass)
-        classpath = subFieldsMistakeStartScript.get().classpath!!
-    }
-}
+registerJvmRunTask("runSubFieldsMistake", "samples.document.subfields.mistake.MistakeKt")
