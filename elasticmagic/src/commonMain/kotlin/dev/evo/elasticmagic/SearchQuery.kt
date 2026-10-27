@@ -39,20 +39,33 @@ abstract class BaseSearchQuery<S : BaseDocSource, T : BaseSearchQuery<S, T>>(
 ) {
     protected var queryNodes: Map<NodeHandle<*>, QueryExpressionNode<*>> = collectNodes(query)
 
-    protected val filters: MutableList<QueryExpression> = mutableListOf()
-    protected val postFilters: MutableList<QueryExpression> = mutableListOf()
+    // Collections below are passed to prepared queries without copying.
+    // They must only be modified inside of the `self { }` block
+    // that detaches them from the prepared queries.
+    protected var filters: MutableList<QueryExpression> = mutableListOf()
+        private set
+    protected var postFilters: MutableList<QueryExpression> = mutableListOf()
+        private set
 
-    protected val aggregations: MutableMap<String, Aggregation<*>> = mutableMapOf()
+    protected var aggregations: MutableMap<String, Aggregation<*>> = mutableMapOf()
+        private set
 
     protected var source: Source? = null
-    protected val fields: MutableList<FieldFormat> = mutableListOf()
-    protected val docvalueFields: MutableList<FieldFormat> = mutableListOf()
-    protected val storedFields: MutableList<StoredField> = mutableListOf()
-    protected val scriptFields: MutableMap<String, Script> = mutableMapOf()
-    protected val runtimeMappings: MutableMap<String, BoundRuntimeField<*>> = mutableMapOf()
+    protected var fields: MutableList<FieldFormat> = mutableListOf()
+        private set
+    protected var docvalueFields: MutableList<FieldFormat> = mutableListOf()
+        private set
+    protected var storedFields: MutableList<StoredField> = mutableListOf()
+        private set
+    protected var scriptFields: MutableMap<String, Script> = mutableMapOf()
+        private set
+    protected var runtimeMappings: MutableMap<String, BoundRuntimeField<*>> = mutableMapOf()
+        private set
 
-    protected val rescores: MutableList<Rescore> = mutableListOf()
-    protected val sorts: MutableList<Sort> = mutableListOf()
+    protected var rescores: MutableList<Rescore> = mutableListOf()
+        private set
+    protected var sorts: MutableList<Sort> = mutableListOf()
+        private set
 
     protected var knn: Knn<*, *>? = null
 
@@ -64,9 +77,15 @@ abstract class BaseSearchQuery<S : BaseDocSource, T : BaseSearchQuery<S, T>>(
     protected var terminateAfter: Int? = null
     protected var timeout: Duration? = null
 
-    protected val extensions: MutableList<SearchExt> = mutableListOf()
+    protected var extensions: MutableList<SearchExt> = mutableListOf()
+        private set
 
     protected val params: MutableParams = params.toMutable()
+
+    /**
+     * Set when collections are shared with a prepared query.
+     */
+    private var isShared: Boolean = false
 
     companion object {
         private fun collectNodes(
@@ -121,8 +140,32 @@ abstract class BaseSearchQuery<S : BaseDocSource, T : BaseSearchQuery<S, T>>(
     internal fun self(): T = this as T
 
     protected fun self(block: () -> Unit): T {
+        detachIfShared()
         block()
         return self()
+    }
+
+    /**
+     * Prepared queries hold references to the builder's collections.
+     * Copies the collections before the first modification after preparing a query,
+     * so already prepared queries are not affected by the modification.
+     */
+    private fun detachIfShared() {
+        if (!isShared) {
+            return
+        }
+        filters = filters.toMutableList()
+        postFilters = postFilters.toMutableList()
+        aggregations = aggregations.toMutableMap()
+        fields = fields.toMutableList()
+        docvalueFields = docvalueFields.toMutableList()
+        storedFields = storedFields.toMutableList()
+        scriptFields = scriptFields.toMutableMap()
+        runtimeMappings = runtimeMappings.toMutableMap()
+        rescores = rescores.toMutableList()
+        sorts = sorts.toMutableList()
+        extensions = extensions.toMutableList()
+        isShared = false
     }
 
     /**
@@ -761,6 +804,7 @@ abstract class BaseSearchQuery<S : BaseDocSource, T : BaseSearchQuery<S, T>>(
      * ```
      */
     fun prepareSearch(params: Params? = null): SearchQuery.Search<S> {
+        isShared = true
         return SearchQuery.Search(
             docSourceFactory,
             query = query,
@@ -791,6 +835,7 @@ abstract class BaseSearchQuery<S : BaseDocSource, T : BaseSearchQuery<S, T>>(
     }
 
     fun prepareCount(params: Params? = null): SearchQuery.Count {
+        isShared = true
         return SearchQuery.Count(
             query = query,
             filters = filters,
@@ -804,6 +849,7 @@ abstract class BaseSearchQuery<S : BaseDocSource, T : BaseSearchQuery<S, T>>(
     }
 
     fun prepareUpdate(script: Script? = null, params: Params? = null): SearchQuery.Update {
+        isShared = true
         return SearchQuery.Update(
             query = query,
             filters = filters,
@@ -818,6 +864,7 @@ abstract class BaseSearchQuery<S : BaseDocSource, T : BaseSearchQuery<S, T>>(
     }
 
     fun prepareDelete(params: Params? = null): SearchQuery.Delete {
+        isShared = true
         return SearchQuery.Delete(
             query = query,
             filters = filters,
