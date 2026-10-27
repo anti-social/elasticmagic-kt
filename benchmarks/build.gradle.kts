@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+
 plugins {
     id("org.jetbrains.kotlinx.benchmark") version Versions.kotlinxBenchmark
 }
@@ -8,7 +10,7 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation("org.jetbrains.kotlinx:kotlinx-benchmark-runtime:0.4.4")
+                implementation("org.jetbrains.kotlinx:kotlinx-benchmark-runtime:${Versions.kotlinxBenchmark}")
                 implementation(project(":elasticmagic-serde-kotlinx-json"))
             }
         }
@@ -32,6 +34,6 @@ benchmark {
 
     targets {
         register("jvm")
-        register("native")
+        kotlin.targets.withType<KotlinNativeTarget>().forEach { register(it.name) }
     }
 }
