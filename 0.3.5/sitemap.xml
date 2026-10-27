@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+         <loc>https://anti-social.github.io/elasticmagic-kt/0.3.5/</loc>
+         <lastmod>2026-10-27</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://anti-social.github.io/elasticmagic-kt/0.3.5/docsource/</loc>
+         <lastmod>2026-10-27</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://anti-social.github.io/elasticmagic-kt/0.3.5/document/</loc>
+         <lastmod>2026-10-27</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://anti-social.github.io/elasticmagic-kt/0.3.5/query-filters/</loc>
+         <lastmod>2026-10-27</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://anti-social.github.io/elasticmagic-kt/0.3.5/querying/</loc>
+         <lastmod>2026-10-27</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+</urlset>
