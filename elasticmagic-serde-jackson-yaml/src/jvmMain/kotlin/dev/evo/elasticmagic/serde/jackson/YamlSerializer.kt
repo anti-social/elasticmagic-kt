@@ -7,7 +7,7 @@ import dev.evo.elasticmagic.serde.StdSerializer
 object YamlSerializer : StdSerializer(::ObjectCtx, ::ArrayCtx) {
     private val mapper = YAMLMapper()
 
-    class ObjectCtx : StdSerializer.ObjectCtx(HashMap()) {
+    class ObjectCtx : StdSerializer.ObjectCtx(LinkedHashMap()) {
         override fun serialize(): String {
             return mapper.writeValueAsString(map)
         }

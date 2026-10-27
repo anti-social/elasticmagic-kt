@@ -25,7 +25,7 @@ abstract class BaseTest {
     }
 
     object TestSerializer : StdSerializer(::ObjectCtx, ::ArrayCtx) {
-        class ObjectCtx : StdSerializer.ObjectCtx(HashMap()) {
+        class ObjectCtx : StdSerializer.ObjectCtx(LinkedHashMap()) {
             override fun serialize(): String {
                 TODO("not implemented")
             }
