@@ -115,18 +115,25 @@ abstract class BaseSearchQuery<S : BaseDocSource, T : BaseSearchQuery<S, T>>(
         val cloned = new(docSourceFactory)
         cloned.query = query?.clone()
         cloned.queryNodes = queryNodes
-        cloned.filters.addAll(filters)
-        cloned.extensions.addAll(extensions)
-        cloned.postFilters.addAll(postFilters)
-        cloned.aggregations.putAll(aggregations)
-        cloned.rescores.addAll(rescores)
-        cloned.sorts.addAll(sorts)
+        // Collections are shared between both builders
+        // and will be copied by the one which is modified first
+        isShared = true
+        cloned.isShared = true
+        cloned.filters = filters
+        cloned.postFilters = postFilters
+        cloned.aggregations = aggregations
+        cloned.source = source
+        cloned.fields = fields
+        cloned.docvalueFields = docvalueFields
+        cloned.storedFields = storedFields
+        cloned.scriptFields = scriptFields
+        cloned.runtimeMappings = runtimeMappings
+        cloned.rescores = rescores
+        cloned.sorts = sorts
+        cloned.knn = knn
+        cloned.extensions = extensions
         cloned.trackScores = trackScores
         cloned.trackTotalHits = trackTotalHits
-        cloned.fields.addAll(fields)
-        cloned.docvalueFields.addAll(docvalueFields)
-        cloned.storedFields.addAll(storedFields)
-        cloned.scriptFields.putAll(scriptFields)
         cloned.size = size
         cloned.from = from
         cloned.terminateAfter = terminateAfter
