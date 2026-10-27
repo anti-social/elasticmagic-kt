@@ -19,4 +19,4 @@ runs:
     uses: actions/setup-java@v6
     with:
       java-version: ${{ inputs.java-version }}
-      distribution: adopt
+      distribution: temurin
