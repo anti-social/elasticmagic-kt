@@ -1,10 +1,6 @@
 import org.gradle.api.GradleException
-import org.gradle.api.JavaVersion
 import org.gradle.api.Project
-import org.gradle.api.plugins.JavaApplication
-import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.tasks.JavaExec
-import org.gradle.api.tasks.application.CreateStartScripts
 import org.gradle.kotlin.dsl.*
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.*
@@ -29,16 +25,6 @@ fun Project.configureMultiplatform(
                 }
                 testRuns["test"].executionTask.configure {
                     useJUnit()
-                }
-                if (entryPoints.isNotEmpty()) {
-                    withJava()
-                    configure<JavaPluginExtension> {
-                        sourceCompatibility = JavaVersion.VERSION_11
-                        targetCompatibility = JavaVersion.VERSION_11
-                    }
-                    configure<JavaApplication> {
-                        mainClass.set("samples.${entryPoints[0]}.MainKt")
-                    }
                 }
             }
         }
@@ -118,27 +104,25 @@ fun Project.configureMultiplatform(
                 false
             }
 
-            if (entryPoints.size > 1) {
-                val sourceSets = extensions.getByType(JavaPluginExtension::class).sourceSets
-                val startScripts = tasks.getByName<CreateStartScripts>("startScripts")
-
-                for (entryPoint in entryPoints.slice(1 until entryPoints.size)) {
-                    val startScript = register("${entryPoint}StartScript", CreateStartScripts::class) {
-                        applicationName = entryPoint
-                        mainClass.set("samples.$entryPoint.MainKt")
-                        outputDir = startScripts.outputDir
-                    }
-                    startScripts.dependsOn(startScript)
-
-                    val runTaskName = "run${entryPoint.replaceFirstChar { it.uppercaseChar() }}"
-                    val runtimeClasspath = sourceSets.getByName("main").runtimeClasspath
-                    register<JavaExec>(runTaskName) {
-                        mainClass.set(startScript.get().mainClass.get())
-                        classpath = runtimeClasspath
-                        standardInput = System.`in`
-                    }
+            for ((ix, entryPoint) in entryPoints.withIndex()) {
+                val runTaskName = if (ix == 0) {
+                    "run"
+                } else {
+                    "run${entryPoint.replaceFirstChar { it.uppercaseChar() }}"
                 }
+                registerJvmRunTask(runTaskName, "samples.$entryPoint.MainKt")
             }
         }
+    }
+}
+
+// Replacement for the 'application' plugin which is not compatible with Kotlin Multiplatform
+fun Project.registerJvmRunTask(name: String, mainClassName: String) {
+    val mainCompilation = the<KotlinMultiplatformExtension>().jvm().compilations.getByName("main")
+    tasks.register<JavaExec>(name) {
+        group = "application"
+        mainClass.set(mainClassName)
+        classpath = files(mainCompilation.output.allOutputs, mainCompilation.runtimeDependencyFiles)
+        standardInput = System.`in`
     }
 }
