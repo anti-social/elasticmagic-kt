@@ -21,7 +21,7 @@ fun Project.configureMultiplatform(
         if (configureJvm) {
             jvm {
                 compilerOptions {
-                    jvmTarget.set(JvmTarget.JVM_11)
+                    jvmTarget.set(JvmTarget.JVM_17)
                 }
                 testRuns["test"].executionTask.configure {
                     useJUnit()
