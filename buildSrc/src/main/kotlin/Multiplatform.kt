@@ -1,4 +1,5 @@
 import org.gradle.api.GradleException
+import org.gradle.api.JavaVersion
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaApplication
 import org.gradle.api.plugins.JavaPluginExtension
@@ -29,6 +30,10 @@ fun Project.configureMultiplatform(
                 }
                 if (entryPoints.isNotEmpty()) {
                     withJava()
+                    configure<JavaPluginExtension> {
+                        sourceCompatibility = JavaVersion.VERSION_11
+                        targetCompatibility = JavaVersion.VERSION_11
+                    }
                     configure<JavaApplication> {
                         mainClass.set("samples.${entryPoints[0]}.MainKt")
                     }
