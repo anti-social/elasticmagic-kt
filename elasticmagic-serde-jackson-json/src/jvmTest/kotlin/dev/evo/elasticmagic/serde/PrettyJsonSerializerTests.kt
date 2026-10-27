@@ -31,6 +31,37 @@ class JsonSerializerTests {
             [1,2,3]
         """.trimIndent()
     }
+
+    @Test
+    fun preserveFieldsOrder() {
+        val obj = JsonSerializer.obj {
+            obj("query") {
+                obj("bool") {
+                    array("must") {
+                        obj {
+                            obj("term") {
+                                field("status", "active")
+                            }
+                        }
+                    }
+                    array("filter") {}
+                }
+            }
+            field("size", 10)
+            field("from", 20)
+            array("sort") {
+                obj {
+                    field("rank", "desc")
+                    field("id", "asc")
+                }
+            }
+            obj("aggs") {}
+            field("_source", false)
+        }
+        obj.serialize() shouldBe """
+            {"query":{"bool":{"must":[{"term":{"status":"active"}}],"filter":[]}},"size":10,"from":20,"sort":[{"rank":"desc","id":"asc"}],"aggs":{},"_source":false}
+        """.trimIndent()
+    }
 }
 
 class PrettyJsonSerializerTests {
@@ -55,6 +86,30 @@ class PrettyJsonSerializerTests {
         }
         array.serialize() shouldBe """
             [ 1, 2, 3 ]
+        """.trimIndent()
+    }
+
+    @Test
+    fun preserveFieldsOrder() {
+        val obj = PrettyJsonSerializer.obj {
+            field("size", 10)
+            field("from", 20)
+            obj("query") {
+                field("zeta", 1)
+                field("alpha", 2)
+            }
+            field("_source", false)
+        }
+        obj.serialize() shouldBe """
+            {
+                "size" : 10,
+                "from" : 20,
+                "query" : {
+                    "zeta" : 1,
+                    "alpha" : 2
+                },
+                "_source" : false
+            }
         """.trimIndent()
     }
 }
